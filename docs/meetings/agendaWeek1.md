@@ -8,6 +8,8 @@
 --- 
 
 Date:           20/02/24\
+Time:           14:30
+Location:       Flux Hall B\
 Main focus:     TBD\
 Chair:          Lasse Geurts\
 Note taker:     Billy Runne
@@ -28,19 +30,12 @@ Note taker:     Billy Runne
     - Discuss rules about being late
  - Discuss a plan for the coming week
 
-
-
-
-
 # Any other business
-*If anybody has something that should be discussed but came up with that after the agenda was finalized (in point 2), he/she should bring that up now so that it can be discussed after all.*
+
 
 # Questions for the TA
-*Your TA will visit you in the second half of the lab session. Note down all questions that you have so that you can ask them then.*
 
 # Question round
-*If there are any questions, now is the time to ask them.*
 
 # Closing
-*Now you can start working on the project. Good luck!*
 
