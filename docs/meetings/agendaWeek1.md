@@ -23,35 +23,14 @@ Note taker:     Billy Runne
  - Creation/Modification of a quarter schedule
  - Creation of a "To-do" spreadsheet
  - Discuss the given template
-    - test
+    - Revisit the checkstyle-idea brought up last week (Use the one in the template or choose another one)
+ - Teamwork lecture
+    - Discuss rules about being late
+ - Discuss a plan for the coming week
 
- - Read Resources and Tools (on BrightSpace)
- - Make sure you have a Mattermost channel (your TA will create one for you)
- - It is your job that you and your team contribute (equally)
-	 - If there is a problem it is your job to notify the TA
- - Create a planning and put it on GitLab
-	 - Implement all items on the todo list
- - Discuss a cake rule: If you are late or not there at all, you have to bring cake (or something similar)
- - Things to research:
-	 - Scrum (see lecture 1) 
-        - How are you going to use scrum in the team?
-    - Git (see lecture 2)
-        - How does it work?
-        - What is branching?
-    - Gradle (see lecture 4)
-        - What does it do?
-        - How do you add a library to the build file?
-    - Code structure (see lecture 4)
-        - How will you use packages?
-        - What will your code structure look like? (UML)
-     - GUI
-        - OpenFX
-     - IDE
-        - Eclipse
-        - IntelliJ
 
-# Action points for next week (Scrum board)
-*Every week you fill the Scrum board with new action points for that week. See the to do list for the items you should implement.*
+
+
 
 # Any other business
 *If anybody has something that should be discussed but came up with that after the agenda was finalized (in point 2), he/she should bring that up now so that it can be discussed after all.*
