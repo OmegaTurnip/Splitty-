@@ -1,23 +1,28 @@
 ## Agenda Week 1
 
+--- 
+
+# Before the meeting
+ Familiarize yourself with the project template (Just look over it generally)
 
 ---
 
 Date:           20/02/24\
 Main focus:     TBD\
-Chair:          TBD\
-Note taker:     Billy Runne\
+Chair:          Lasse Geurts
+Note taker:     Billy Runne
 
-In italics, you will find some additional explanations of the agenda points. You will find mostly the same points in the next agendas.
+
 
 # Opening
-*Here you check that everybody is present.*
 
 # Approval of the agenda
-*Make sure everything that needs to be discussed is in the agenda or add it if something is missing.*
 
 # Points of action
-*The items below are things you should look into after the first meeting. During the meeting you can divide (some of) the work between the team members, so that everybody has something to do afterwards.*
+
+ - Creation/Modification of a quarter schedule
+ - Creation of a "To-do" spreadsheet
+ - Discuss 
 
  - Read Resources and Tools (on BrightSpace)
  - Make sure you have a Mattermost channel (your TA will create one for you)
