@@ -9,7 +9,7 @@
 
 Date:           20/02/24\
 Main focus:     TBD\
-Chair:          Lasse Geurts
+Chair:          Lasse Geurts\
 Note taker:     Billy Runne
 
 
@@ -22,7 +22,8 @@ Note taker:     Billy Runne
 
  - Creation/Modification of a quarter schedule
  - Creation of a "To-do" spreadsheet
- - Discuss 
+ - Discuss the given template
+    - test
 
  - Read Resources and Tools (on BrightSpace)
  - Make sure you have a Mattermost channel (your TA will create one for you)
