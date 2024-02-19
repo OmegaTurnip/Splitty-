@@ -8,7 +8,7 @@
 --- 
 
 Date:           20/02/24\
-Time:           14:30
+Time:           14:30\
 Location:       Flux Hall B\
 Main focus:     TBD\
 Chair:          Lasse Geurts\
