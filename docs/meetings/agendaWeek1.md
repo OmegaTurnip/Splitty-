@@ -1,11 +1,11 @@
-## Agenda Week 1
-
---- 
-
 # Before the meeting
  Familiarize yourself with the project template (Just look over it generally)
 
 ---
+
+## Agenda Week 1
+
+--- 
 
 Date:           20/02/24\
 Main focus:     TBD\
