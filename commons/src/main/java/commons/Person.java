@@ -36,18 +36,14 @@ public class Person {
     public String firstName;
     public String lastName;
 
-//    @SuppressWarnings("unused")
-//    private Person() {
-//        // for object mapper
-//    }
+    @SuppressWarnings("unused")
+    private Person() {
+        // for object mapper
+    }
 
     public Person(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
-    }
-
-    public Person() {
-
     }
 
     @Override
