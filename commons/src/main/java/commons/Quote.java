@@ -39,14 +39,18 @@ public class Quote {
     public Person person;
     public String quote;
 
-    @SuppressWarnings("unused")
-    private Quote() {
-        // for object mappers
-    }
+//    @SuppressWarnings("unused")
+//    private Quote() {
+//        // for object mappers
+//    }
 
     public Quote(Person person, String quote) {
         this.person = person;
         this.quote = quote;
+    }
+
+    public Quote() {
+
     }
 
     @Override
