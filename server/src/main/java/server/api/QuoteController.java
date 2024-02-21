@@ -36,16 +36,27 @@ public class QuoteController {
     private final Random random;
     private final QuoteRepository repo;
 
+    /**
+     * @param random no description was provided in the template.
+     * @param repo no description was provided in the template.
+     */
     public QuoteController(Random random, QuoteRepository repo) {
         this.random = random;
         this.repo = repo;
     }
 
+    /**
+     * @return no description was provided in the template.
+     */
     @GetMapping(path = { "", "/" })
     public List<Quote> getAll() {
         return repo.findAll();
     }
 
+    /**
+     * @param id no description was provided in the template.
+     * @return no description was provided in the template.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Quote> getById(@PathVariable("id") long id) {
         if (id < 0 || !repo.existsById(id)) {
@@ -54,12 +65,17 @@ public class QuoteController {
         return ResponseEntity.ok(repo.findById(id).get());
     }
 
+    /**
+     * @param quote no description was provided in the template.
+     * @return no description was provided in the template.
+     */
     @PostMapping(path = { "", "/" })
     public ResponseEntity<Quote> add(@RequestBody Quote quote) {
 
-        if (quote.person == null || isNullOrEmpty(quote.person.firstName)
-                || isNullOrEmpty(quote.person.lastName)
-                || isNullOrEmpty(quote.quote)) {
+        if (quote.getPerson() == null ||
+                isNullOrEmpty(quote.getPerson().getFirstName())
+                || isNullOrEmpty(quote.getPerson().getLastName())
+                || isNullOrEmpty(quote.getQuote())) {
             return ResponseEntity.badRequest().build();
         }
 
@@ -71,6 +87,9 @@ public class QuoteController {
         return s == null || s.isEmpty();
     }
 
+    /**
+     * @return no description was provided in the template.
+     */
     @GetMapping("rnd")
     public ResponseEntity<Quote> getRandom() {
         var quotes = repo.findAll();

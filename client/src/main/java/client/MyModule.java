@@ -25,6 +25,9 @@ import client.scenes.QuoteOverviewCtrl;
 
 public class MyModule implements Module {
 
+    /**
+     * @param binder no description was provided in the template.
+     */
     @Override
     public void configure(Binder binder) {
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);

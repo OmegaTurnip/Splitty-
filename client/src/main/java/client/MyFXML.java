@@ -33,10 +33,19 @@ public class MyFXML {
 
     private Injector injector;
 
+    /**
+     * @param injector no description was provided in the template.
+     */
     public MyFXML(Injector injector) {
         this.injector = injector;
     }
 
+    /**
+     * @param c no description was provided in the template.
+     * @param parts no description was provided in the template.
+     * @param <T> no description was provided in the template.
+     * @return no description was provided in the template.
+     */
     public <T> Pair<T, Parent> load(Class<T> c, String... parts) {
         try {
             var loader = new FXMLLoader(getLocation(parts), null, null,

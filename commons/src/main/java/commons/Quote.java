@@ -33,36 +33,95 @@ public class Quote {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public long id;
+    private long id;
 
     @OneToOne(cascade = CascadeType.PERSIST)
-    public Person person;
-    public String quote;
+    private Person person;
+    private String quote;
 
 //    @SuppressWarnings("unused")
 //    private Quote() {
 //        // for object mappers
 //    }
 
+    /**
+     * @param person no description was provided in the template.
+     * @param quote no description was provided in the template.
+     */
     public Quote(Person person, String quote) {
         this.person = person;
         this.quote = quote;
     }
 
+    /**
+     * no description was provided in the template.
+     */
     public Quote() {
 
     }
 
+    /**
+     * @return no description was provided in the template.
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
+     * @param id no description was provided in the template.
+     */
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    /**
+     * @return no description was provided in the template.
+     */
+    public Person getPerson() {
+        return person;
+    }
+
+    /**
+     * @param person no description was provided in the template.
+     */
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
+    /**
+     * @return no description was provided in the template.
+     */
+    public String getQuote() {
+        return quote;
+    }
+
+    /**
+     * @param quote no description was provided in the template.
+     */
+    public void setQuote(String quote) {
+        this.quote = quote;
+    }
+
+    /**
+     * @param obj no description was provided in the template.
+     * @return no description was provided in the template.
+     */
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
 
+    /**
+     * @return no description was provided in the template.
+     */
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
+    /**
+     * @return no description was provided in the template.
+     */
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);

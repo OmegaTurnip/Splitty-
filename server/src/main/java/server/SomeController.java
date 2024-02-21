@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/")
 public class SomeController {
 
+    /**
+     * @return no description was provided in the template.
+     */
     @GetMapping("/")
     @ResponseBody
     public String index() {
