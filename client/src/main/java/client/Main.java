@@ -33,11 +33,20 @@ public class Main extends Application {
     private static final Injector INJECTOR = createInjector(new MyModule());
     private static final MyFXML FXML = new MyFXML(INJECTOR);
 
+    /**
+     * @param args no description was provided in the template.
+     * @throws URISyntaxException no description was provided in the template.
+     * @throws IOException no description was provided in the template.
+     */
     public static void main(String[] args)
             throws URISyntaxException, IOException {
         launch();
     }
 
+    /**
+     * @param primaryStage no description was provided in the template.
+     * @throws IOException no description was provided in the template.
+     */
     @Override
     public void start(Stage primaryStage) throws IOException {
 

@@ -30,6 +30,11 @@ public class MainCtrl {
     private AddQuoteCtrl addCtrl;
     private Scene add;
 
+    /**
+     * @param primaryStage no description was provided in the template.
+     * @param overview no description was provided in the template.
+     * @param add no description was provided in the template.
+     */
     public void initialize(
             Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
             Pair<AddQuoteCtrl, Parent> add) {
@@ -44,12 +49,18 @@ public class MainCtrl {
         primaryStage.show();
     }
 
+    /**
+     * no description was provided in the template.
+     */
     public void showOverview() {
         primaryStage.setTitle("Quotes: Overview");
         primaryStage.setScene(overview);
         overviewCtrl.refresh();
     }
 
+    /**
+     * no description was provided in the template.
+     */
     public void showAdd() {
         primaryStage.setTitle("Quotes: Adding Quote");
         primaryStage.setScene(add);

@@ -23,6 +23,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class Config {
 
+    /**
+     * @return no description was provided in the template.
+     */
     @Bean
     public Random getRandom() {
         return new Random();

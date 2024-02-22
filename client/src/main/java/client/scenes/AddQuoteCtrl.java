@@ -41,6 +41,11 @@ public class AddQuoteCtrl {
     @FXML
     private TextField quote;
 
+
+    /**
+     * @param server no description was provided in the template.
+     * @param mainCtrl no description was provided in the template.
+     */
     @Inject
     public AddQuoteCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
@@ -48,11 +53,17 @@ public class AddQuoteCtrl {
 
     }
 
+    /**
+     *  no description was provided in the template.
+     */
     public void cancel() {
         clearFields();
         mainCtrl.showOverview();
     }
 
+    /**
+     *  no description was provided in the template.
+     */
     public void ok() {
         try {
             server.addQuote(getQuote());
@@ -81,6 +92,9 @@ public class AddQuoteCtrl {
         quote.clear();
     }
 
+    /**
+     * @param e  no description was provided in the template.
+     */
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
             case ENTER:
