@@ -38,9 +38,22 @@ public class Event {
      */
     public static String generateInviteCode() {
         UUID randomCode = UUID.randomUUID();
-        StringBuilder inBetween = new StringBuilder(randomCode.toString().replaceAll("_", ""));
+        StringBuilder inBetween = new StringBuilder(randomCode.toString()
+                .replaceAll("_", ""));
         inBetween.delete(8, 32);
         return inBetween.toString();
+    }
+
+    /**
+     * Calculates the total sum of all the expenses in the event.
+     * @return The total sum.
+     */
+    public int totalSumOfExpenses() {
+        int result = 0;
+        for (Expense expense : expenses) {
+            result += expense.getPrice();
+        }
+        return result;
     }
 
     /**
