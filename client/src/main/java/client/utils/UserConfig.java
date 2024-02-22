@@ -10,6 +10,7 @@ import java.util.Properties;
 public class UserConfig {
 
     public static final UserConfig USER_SETTINGS;
+    public static final String PATHNAME = "clientsettings.properties";
 
     static {
         try {
@@ -25,16 +26,19 @@ public class UserConfig {
     private String serverUrl;  // key: "serverUrl"
 
     // when adding new attributes, don't forget to:
-    // add getters, setters, update getDefault() & read()!
+    // add getters, setters & update read()!
 
 
 
     /**
      * Creates an empty {@code UserConfig} object.
+     *
+     * @throws  IOException
+     *          If an I/O error occurs writing to or creating the file in which
+     *          the configuration is stored.
      */
-    private UserConfig() throws IOException {
-        configFile = new ConfigFile(new File("clientsettings.properties"));
-        read();
+    UserConfig() throws IOException {
+        this(new ConfigFile(new File(PATHNAME)));
     }
 
     /**
@@ -42,9 +46,14 @@ public class UserConfig {
      *
      * @param   configFile
      *          The config file.
+     *
+     * @throws  IOException
+     *          If an I/O error occurs writing to or creating the file in which
+     *          the configuration is stored.
      */
-    private UserConfig(ConfigFile configFile) {
+    UserConfig(ConfigFile configFile) throws IOException {
         this.configFile = configFile;
+        read();
     }
 
 
@@ -82,8 +91,6 @@ public class UserConfig {
      *          the configuration is stored.
      */
     public void read() throws IOException {
-        UserConfig defaultConfig = UserConfig.getDefault();
-
         Properties properties;
         try {
             properties = configFile.getContent();
@@ -92,22 +99,7 @@ public class UserConfig {
         }
 
         setServerUrl(
-                properties.getProperty("serverUrl", defaultConfig.serverUrl));
+                properties.getProperty("serverUrl", "http://localhost:8080/"));
 
-    }
-
-
-    /**
-     * Generates a default {@code UserConfig} object for the case that the file
-     * or a specific setting is missing.
-     *
-     * @return a default {@code UserConfig} object.
-     */
-    private static UserConfig getDefault() {
-        UserConfig defaultConfig = new UserConfig(null);
-
-        defaultConfig.serverUrl = "http://localhost:8080/";
-
-        return defaultConfig;
     }
 }
