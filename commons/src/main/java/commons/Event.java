@@ -3,6 +3,7 @@ package commons;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Event {
 
@@ -35,9 +36,11 @@ public class Event {
      * Method for generating a random invite code upon calling.
      * @return Random invite code.
      */
-    private String generateInviteCode() {
-        return "ffff"; //We are going to fix this method to
-                       // generate a proper, random invite code.
+    public static String generateInviteCode() {
+        UUID randomCode = UUID.randomUUID();
+        StringBuilder inBetween = new StringBuilder(randomCode.toString().replaceAll("_", ""));
+        inBetween.delete(8, 32);
+        return inBetween.toString();
     }
 
     /**
