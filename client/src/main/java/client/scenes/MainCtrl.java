@@ -31,9 +31,9 @@ public class MainCtrl {
     private Scene add;
 
     /**
-     * @param primaryStage no description was provided in the template.
-     * @param overview no description was provided in the template.
-     * @param add no description was provided in the template.
+     * @param primaryStage the window.
+     * @param overview the fx for the start-up page.
+     * @param add the fx for the add quote page.
      */
     public void initialize(
             Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
@@ -50,7 +50,7 @@ public class MainCtrl {
     }
 
     /**
-     * no description was provided in the template.
+     * go to the start-up page (by changing the content of the window).
      */
     public void showOverview() {
         primaryStage.setTitle("Quotes: Overview");
@@ -59,7 +59,7 @@ public class MainCtrl {
     }
 
     /**
-     * no description was provided in the template.
+     * go to the add quote page (by changing the content of the window).
      */
     public void showAdd() {
         primaryStage.setTitle("Quotes: Adding Quote");
