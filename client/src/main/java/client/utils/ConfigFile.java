@@ -11,7 +11,7 @@ public class ConfigFile {
 
 
     /**
-     * A class containing a Properties file.
+     * Creates an object containing a Properties file.
      *
      * @param   file
      *          The path to the file.
@@ -24,7 +24,7 @@ public class ConfigFile {
     }
 
     /**
-     * A class containing a Properties file.
+     * Creates an object class containing a Properties file.
      *
      * @param   file
      *          The path to the file.
@@ -90,7 +90,6 @@ public class ConfigFile {
      *
      * @param   key
      *          The attribute name.
-     *
      * @param   value
      *          The attribute value.
      *
