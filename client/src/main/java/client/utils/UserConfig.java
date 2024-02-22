@@ -9,6 +9,17 @@ import java.util.Properties;
  */
 public class UserConfig {
 
+    public static final UserConfig USER_SETTINGS;
+
+    static {
+        try {
+            USER_SETTINGS = new UserConfig();
+        } catch (IOException e) {
+            throw new RuntimeException("Settings file couldn't be open with " +
+                    "the following error message: " + e.getMessage());
+        }
+    }
+
     private final ConfigFile configFile;
 
     private String serverUrl;  // key: "serverUrl"
@@ -21,8 +32,9 @@ public class UserConfig {
     /**
      * Creates an empty {@code UserConfig} object.
      */
-    public UserConfig() throws IOException {
-        configFile = new ConfigFile(new File("settings.properties"));
+    private UserConfig() throws IOException {
+        configFile = new ConfigFile(new File("clientsettings.properties"));
+        read();
     }
 
     /**
@@ -64,8 +76,12 @@ public class UserConfig {
 
     /**
      * Reads the settings from the properties file.
+     *
+     * @throws  IOException
+     *          If an I/O error occurs writing to or creating the file in which
+     *          the configuration is stored.
      */
-    public void read() {
+    public void read() throws IOException {
         UserConfig defaultConfig = UserConfig.getDefault();
 
         Properties properties;
@@ -75,8 +91,8 @@ public class UserConfig {
             properties = new Properties();
         }
 
-        this.serverUrl =
-                properties.getProperty("serverUrl", defaultConfig.serverUrl);
+        setServerUrl(
+                properties.getProperty("serverUrl", defaultConfig.serverUrl));
 
     }
 
