@@ -16,18 +16,18 @@ public class Currency {
         EUR(0.92),
         CHF(0.88);
 
-        public double ConversionRateThroughUSD;
+        private double conversionRateThroughUSD;
 
         /**
          * Initializes the currencies with associated rate
          * @param rate Exchange rate (hardcoded for now)
          */
         private Currencies(double rate){
-            this.ConversionRateThroughUSD = rate;
+            this.conversionRateThroughUSD = rate;
         }
 
         public double getConversionRate(){
-            return this.ConversionRateThroughUSD;
+            return this.conversionRateThroughUSD;
         }
 
         public double getConversionRate(String currency){
@@ -53,7 +53,8 @@ public class Currency {
     }
 
     /**
-     * Takes an input in decimal form and converts it to a cent-based integer format
+     * Takes an input in decimal form and converts it to a
+     * cent-based integer format
      * @param money Current amount of money in decimal form
      * @param currency Currency in which the expense is paid in
      */
@@ -63,6 +64,11 @@ public class Currency {
         this.convertedValue = (int) money * 100;
     }
 
+    /**
+     * Returns the corresponding currency when inputing the currency as string
+     * @param currency as string
+     * @return corresponding currency from enum
+     */
     public Currencies stringToCurrency(String currency){
         switch(currency){
             case "USD":
@@ -106,9 +112,10 @@ public class Currency {
         return convertedValue;
     }
 
-    /*The conversion below is not nearly what the final version should be. As we have to get the exchangerates via the
-    server (and store it in a local cache), and also should be able to query not only the current exchangerates but also
-    exchangerates of the past.*/
+    /*The conversion below is not nearly what the final version should be.
+    As we have to get the exchangerates via the server (and store it
+    in a local cache), and also should be able to query not only the
+    current exchangerates but also exchangerates of the past.*/
 
     /**
      * Way too simplified version of the conversion scheme
@@ -118,10 +125,15 @@ public class Currency {
         if (this.currency == stringToCurrency(conversionValuta)){
             return;
         }
-        this.convertedValue = (int) (this.conversionToDollar() * currency.getConversionRate(conversionValuta));
+        this.convertedValue = (int) (this.conversionToDollar() *
+                currency.getConversionRate(conversionValuta));
         this.currency = stringToCurrency(conversionValuta);
     }
 
+    /**
+     * Returns the instance converted to dollars in cents
+     * @return amount in dollarcents
+     */
     public int conversionToDollar(){
         if (this.currency == Currencies.USD){
             return this.cents;
@@ -139,7 +151,9 @@ public class Currency {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Currency currency1 = (Currency) o;
-        return getCents() == currency1.getCents() && getConvertedValue() == currency1.getConvertedValue() && getCurrency().equals(currency1.getCurrency());
+        return getCents() == currency1.getCents() && getConvertedValue()
+                == currency1.getConvertedValue() &&
+                getCurrency().equals(currency1.getCurrency());
     }
 
     /**
@@ -151,6 +165,10 @@ public class Currency {
         return Objects.hash(getCents(), getCurrency(), getConvertedValue());
     }
 
+    /**
+     * Formats the currency to a string
+     * @return Human readable format
+     */
     @Override
     public String toString() {
         double stringValue = (double) this.cents/100;
