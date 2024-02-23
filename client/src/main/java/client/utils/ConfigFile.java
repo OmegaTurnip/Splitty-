@@ -12,7 +12,7 @@ public class ConfigFile {
 
     /**
      * Creates an object containing a Properties file.
-     *
+     * 
      * @param   file
      *          The path to the file.
      *
