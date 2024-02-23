@@ -32,7 +32,9 @@ public class Expense {
         this.price = price;
         Map<Participant, Integer> mapDebtors = new HashMap<>();
         for (Participant participant : debtors) {
-            mapDebtors.put(participant, price);
+            if (!participant.equals(payer)) {
+                mapDebtors.put(participant, price);
+            }
         }
         this.debtors = mapDebtors;
         this.tag = tag;
