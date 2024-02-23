@@ -66,10 +66,18 @@ public class Event {
         return result;
     }
 
+    /**
+     * getter method
+     * @return list of tags
+     */
     public List<String> getTags() {
         return tags;
     }
 
+    /**
+     * adds a tag
+     * @param tag to be added
+     */
     public void addTag(String tag){
         tags.add(tag);
     }

@@ -22,6 +22,7 @@ public class Expense {
      * @param debtors The people who owe money
      *                due to this expense (key),
      *                and the amount they owe (value).
+     * @param tag The tag of the expense
      */
     public Expense(Participant payer,
                    String expenseName, Date date,
@@ -128,6 +129,10 @@ public class Expense {
         return debtors;
     }
 
+    /**
+     * Getter of the tag
+     * @return tag
+     */
     public String getTag() {
         return tag;
     }
