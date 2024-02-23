@@ -8,6 +8,7 @@ public class Participant {
 
     /**
      * Constructor.
+     *
      * @param name Name of the participant.
      */
     public Participant(String name) {
@@ -16,6 +17,7 @@ public class Participant {
 
     /**
      * Getter method.
+     *
      * @return .
      */
     public String getName() {
@@ -24,6 +26,7 @@ public class Participant {
 
     /**
      * Setter method.
+     *
      * @param name .
      */
     public void setName(String name) {
@@ -32,6 +35,7 @@ public class Participant {
 
     /**
      * Equals method.
+     *
      * @param o Participant to test equality on.
      * @return True or false depending on equality.
      */
@@ -45,6 +49,7 @@ public class Participant {
 
     /**
      * Hash code method.
+     *
      * @return .
      */
     @Override
@@ -52,3 +57,5 @@ public class Participant {
         return Objects.hash(name);
     }
 }
+
+

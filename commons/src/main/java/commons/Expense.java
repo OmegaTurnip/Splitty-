@@ -51,6 +51,7 @@ public class Expense {
 
     /**
      * Setter method.
+     *
      * @param payer .
      */
     public void setPayer(Participant payer) {
@@ -59,6 +60,7 @@ public class Expense {
 
     /**
      * Setter method.
+     *
      * @param expenseName .
      */
     public void setExpenseName(String expenseName) {
@@ -67,6 +69,7 @@ public class Expense {
 
     /**
      * Setter method.
+     *
      * @param date .
      */
     public void setDate(Date date) {
@@ -75,6 +78,7 @@ public class Expense {
 
     /**
      * Setter method.
+     *
      * @param price .
      */
     public void setPrice(int price) {
@@ -83,6 +87,7 @@ public class Expense {
 
     /**
      * Setter method.
+     *
      * @param debtors .
      */
     public void setDebtors(Map<Participant, Integer> debtors) {
@@ -91,6 +96,7 @@ public class Expense {
 
     /**
      * Getter method.
+     *
      * @return .
      */
     public Participant getPayer() {
@@ -99,6 +105,7 @@ public class Expense {
 
     /**
      * Getter method.
+     *
      * @return .
      */
     public String getExpenseName() {
@@ -107,6 +114,7 @@ public class Expense {
 
     /**
      * Getter method.
+     *
      * @return .
      */
     public Date getDate() {
@@ -115,6 +123,7 @@ public class Expense {
 
     /**
      * Getter method.
+     *
      * @return .
      */
     public int getPrice() {
@@ -123,6 +132,7 @@ public class Expense {
 
     /**
      * Getter method.
+     *
      * @return .
      */
     public Map<Participant, Integer> getDebtors() {
@@ -157,6 +167,7 @@ public class Expense {
 
     /**
      * Hash code method.
+     *
      * @return .
      */
     @Override
@@ -164,3 +175,4 @@ public class Expense {
         return Objects.hash(payer, expenseName, date, price, debtors);
     }
 }
+
