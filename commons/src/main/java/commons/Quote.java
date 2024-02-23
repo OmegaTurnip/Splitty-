@@ -46,7 +46,7 @@ public class Quote {
 
     /**
      * @param person no description was provided in the template.
-     * @param quote no description was provided in the template.
+     * @param quote  no description was provided in the template.
      */
     public Quote(Person person, String quote) {
         this.person = person;
