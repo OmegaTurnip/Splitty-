@@ -1,15 +1,15 @@
 package commons;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 
 public class Event {
 
     private String eventName;
-    private final Date eventCreationDate;
+    private LocalDate eventCreationDate;
     private String inviteCode;
     private Collection<Expense> expenses;
     private Collection<Participant> participants;
@@ -19,17 +19,16 @@ public class Event {
      * Constructor for an event. The attributes should be editable.
      *
      * @param eventName         The name of the event.
-     * @param eventCreationDate The creation date of the event.
      * @param expenses          The list of expenses made during the event.
      * @param participants      The participants of the event. Note that this
      *                          attribute is needed since not all participants
      *                          may owe a debt/have paid an expense.
      */
-    public Event(String eventName, Date eventCreationDate,
+    public Event(String eventName,
                  Collection<Expense> expenses,
                  Collection<Participant> participants) {
         this.eventName = eventName;
-        this.eventCreationDate = eventCreationDate;
+        this.eventCreationDate = LocalDate.now();
         this.inviteCode = generateInviteCode();
         this.expenses = expenses;
         this.participants = participants;
@@ -104,8 +103,12 @@ public class Event {
      *
      * @return .
      */
-    public Date getEventCreationDate() {
+    public LocalDate getEventCreationDate() {
         return eventCreationDate;
+    }
+
+    public void setEventCreationDate(LocalDate eventCreationDate) {
+        this.eventCreationDate = eventCreationDate;
     }
 
     /**

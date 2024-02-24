@@ -1,13 +1,18 @@
 package commons;
 
 
-import java.util.*;
+import java.time.LocalDate;
+
+import java.util.Objects;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Collection;
 
 public class Expense {
 
     private Participant payer;
     private String expenseName;
-    private Date date;
+    private LocalDate date;
     private int price;
     private Map<Participant, Integer> debtors;
 
@@ -16,18 +21,17 @@ public class Expense {
      *
      * @param payer       The person who paid for the expense.
      * @param expenseName The name of the expense.
-     * @param date        The date the expense was paid.
      * @param price       The price of the expense (in dollars).
      * @param debtors     The people who owe money
      *                    due to this expense (key),
      *                    and the amount they owe (value).
      */
     public Expense(Participant payer,
-                   String expenseName, Date date,
+                   String expenseName,
                    int price, Collection<Participant> debtors) {
         this.payer = payer;
         this.expenseName = expenseName;
-        this.date = date;
+        this.date = LocalDate.now();
         this.price = price;
         Map<Participant, Integer> mapDebtors = new HashMap<>();
         for (Participant participant : debtors) {
@@ -61,7 +65,7 @@ public class Expense {
      *
      * @param date .
      */
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
@@ -106,7 +110,7 @@ public class Expense {
      *
      * @return .
      */
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
