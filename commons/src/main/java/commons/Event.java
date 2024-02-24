@@ -2,6 +2,7 @@ package commons;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.UUID;
@@ -19,19 +20,13 @@ public class Event {
      * Constructor for an event. The attributes should be editable.
      *
      * @param eventName         The name of the event.
-     * @param expenses          The list of expenses made during the event.
-     * @param participants      The participants of the event. Note that this
-     *                          attribute is needed since not all participants
-     *                          may owe a debt/have paid an expense.
      */
-    public Event(String eventName,
-                 Collection<Expense> expenses,
-                 Collection<Participant> participants) {
+    public Event(String eventName) {
         this.eventName = eventName;
         this.eventCreationDate = LocalDate.now();
         this.inviteCode = generateInviteCode();
-        this.expenses = expenses;
-        this.participants = participants;
+        this.expenses = new ArrayList<>();
+        this.participants = new ArrayList<>();
         updateLastActivity();
     }
 
@@ -78,6 +73,10 @@ public class Event {
     public void setParticipants(Collection<Participant> participants) {
         this.participants = participants;
 
+    }
+
+    public void addParticipant(Participant participant) {
+        this.participants.add(participant);
     }
 
     /**

@@ -5,14 +5,16 @@ import java.util.Objects;
 public class Participant {
 
     private String name;
+    private Event event;
 
     /**
      * Constructor.
      *
      * @param name Name of the participant.
      */
-    public Participant(String name) {
+    public Participant(String name, Event event) {
         this.name = name;
+        this.event = event;
     }
 
     /**
@@ -31,6 +33,15 @@ public class Participant {
      */
     public void setName(String name) {
         this.name = name;
+        event.updateLastActivity();
+    }
+
+    /**
+     * Getter for event
+     * @return event
+     */
+    public Event getEvent() {
+        return event;
     }
 
     /**
@@ -44,7 +55,7 @@ public class Participant {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Participant that = (Participant) o;
-        return Objects.equals(name, that.name);
+        return Objects.equals(name, that.name) && Objects.equals(event, that.event);
     }
 
     /**
@@ -54,7 +65,7 @@ public class Participant {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(name, event);
     }
 }
 
