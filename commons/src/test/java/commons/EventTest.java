@@ -73,5 +73,32 @@ class EventTest {
         assertEquals(tags, testEvent.getTags());
     }
 
+    @Test
+    void testEquals(){
+      Participant testParticipant1 = new Participant("Josh");
+      Participant testParticipant2 = new Participant("Amy");
+      Participant testParticipant3 = new Participant("Pieter");
+      Date testDate1 = new Date(2023, Calendar.JULY, 23);
 
+      Collection<Participant> testParticipants1 = new ArrayList<>();
+      Collection<Participant> testParticipants2 = new ArrayList<>();
+
+
+      testParticipants1.add(testParticipant1);
+      testParticipants1.add(testParticipant2);
+
+      testParticipants2.add(testParticipant1);
+      testParticipants2.add(testParticipant2);
+
+      Expense testExpense1 = new Expense(testParticipant3, "Drinks", testDate1, 400, testParticipants1, "food");
+      Expense testExpense2 = new Expense(testParticipant3, "Drinks", testDate1, 400, testParticipants2, "food");
+      Collection<Expense> testExpenses1 = new ArrayList<>();
+      Collection<Expense> testExpenses2 = new ArrayList<>();
+      testExpenses1.add(testExpense1);
+      testExpenses2.add(testExpense2);
+
+      Event testEvent1 = new Event("drinks", testDate1, testExpenses1, testParticipants1);
+      Event testEvent2 = new Event("drinks", testDate1, testExpenses2, testParticipants2);
+      assertTrue(testEvent1.equals(testEvent2));
+    }
 }

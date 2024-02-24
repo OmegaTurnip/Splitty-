@@ -166,7 +166,9 @@ public class Event {
         return Objects.equals(eventName, event.eventName)
                 && Objects.equals(eventCreationDate, event.eventCreationDate)
                 && Objects.equals(inviteCode, event.inviteCode)
-                && Objects.equals(expenses, event.expenses);
+                && Objects.equals(expenses, event.expenses)
+                && Objects.equals(participants, event.participants)
+                && Objects.equals(tags, event.tags);
     }
 
     /**
@@ -178,4 +180,5 @@ public class Event {
         return Objects.hash(eventName, eventCreationDate, inviteCode, expenses);
     }
 }
+
 
