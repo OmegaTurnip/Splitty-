@@ -1,5 +1,6 @@
 package commons;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Objects;
@@ -12,6 +13,7 @@ public class Event {
     private String inviteCode;
     private Collection<Expense> expenses;
     private Collection<Participant> participants;
+    private LocalDateTime lastActivity;
 
     /**
      * Constructor for an event. The attributes should be editable.
@@ -31,6 +33,7 @@ public class Event {
         this.inviteCode = generateInviteCode();
         this.expenses = expenses;
         this.participants = participants;
+        updateLastActivity();
     }
 
     /**
@@ -75,6 +78,7 @@ public class Event {
      */
     public void setParticipants(Collection<Participant> participants) {
         this.participants = participants;
+
     }
 
     /**
@@ -141,6 +145,29 @@ public class Event {
     }
 
     /**
+     * Getter for the last activity on an event
+     * @return lastActivity
+     */
+    public LocalDateTime getLastActivity() {
+        return lastActivity;
+    }
+
+    /**
+     * Setter for lastActivity
+     * @param lastActivity the LocaDateTime to set it to
+     */
+    public void setLastActivity(LocalDateTime lastActivity) {
+        this.lastActivity = lastActivity;
+    }
+
+    /**
+     * Updates the last time of activity to now
+     */
+    public void updateLastActivity() {
+        this.lastActivity = LocalDateTime.now();
+    }
+
+    /**
      * Equals method.
      *
      * @param o Event to test equality on.
@@ -154,7 +181,8 @@ public class Event {
         return Objects.equals(eventName, event.eventName)
                 && Objects.equals(eventCreationDate, event.eventCreationDate)
                 && Objects.equals(inviteCode, event.inviteCode)
-                && Objects.equals(expenses, event.expenses);
+                && Objects.equals(expenses, event.expenses)
+                && Objects.equals(lastActivity, event.lastActivity);
     }
 
     /**
@@ -164,7 +192,7 @@ public class Event {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(eventName, eventCreationDate, inviteCode, expenses);
+        return Objects.hash(eventName, eventCreationDate, inviteCode, expenses, lastActivity);
     }
 }
 
