@@ -72,7 +72,7 @@ public class Event {
      */
     public void setParticipants(Collection<Participant> participants) {
         this.participants = participants;
-
+        updateLastActivity();
     }
 
     /**
@@ -81,6 +81,7 @@ public class Event {
      */
     public void addParticipant(Participant participant) {
         this.participants.add(participant);
+        updateLastActivity();
     }
 
     /**
@@ -99,6 +100,7 @@ public class Event {
      */
     public void setEventName(String eventName) {
         this.eventName = eventName;
+        updateLastActivity();
     }
 
     /**
@@ -116,6 +118,7 @@ public class Event {
      */
     public void setEventCreationDate(LocalDate eventCreationDate) {
         this.eventCreationDate = eventCreationDate;
+        updateLastActivity();
     }
 
     /**
@@ -134,6 +137,7 @@ public class Event {
      */
     public void setInviteCode(String inviteCode) {
         this.inviteCode = inviteCode;
+        updateLastActivity();
     }
 
     /**
@@ -152,6 +156,7 @@ public class Event {
      */
     public void setExpenses(Collection<Expense> expenses) {
         this.expenses = expenses;
+        updateLastActivity();
     }
 
     /**
@@ -160,6 +165,7 @@ public class Event {
      */
     public void addExpense(Expense expense) {
         expenses.add(expense);
+        updateLastActivity();
     }
     /**
      * Getter for the last activity on an event
@@ -175,6 +181,7 @@ public class Event {
      */
     public void setLastActivity(LocalDateTime lastActivity) {
         this.lastActivity = lastActivity;
+        updateLastActivity();
     }
 
     /**
