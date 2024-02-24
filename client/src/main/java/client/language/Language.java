@@ -1,19 +1,23 @@
 package client.language;
 
-import java.util.HashSet;
+import client.utils.PropertiesFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.Set;
 
 public class Language {
 
-    public static final Set<Language> languages = new HashSet<>();
+    public static final HashMap<String, Language> languages = new HashMap<>();
     private static Language english;
     private final String languageCode;
     private final Properties language;
 
     /**
-     * Creates a new language object, storing its translations.
+     * Creates a new language object, storing its translations. Also adds it to
+     * {@link Language#languages languages}.
      *
      * @param   languageCode
      *          The <a href="https://iso639-3.sil.org/code_tables/639/data">ISO
@@ -32,7 +36,7 @@ public class Language {
 
         this.languageCode = languageCode;
         this.language = language;
-        languages.add(this);
+        languages.put(languageCode, this);
 
         if ("eng".equals(languageCode)) english = this;
     }
@@ -79,6 +83,27 @@ public class Language {
             return "<TEXT DOESN'T EXIST>";
         else
             return '[' + english.getTranslation(textId) + ']';
+    }
+
+    /**
+     * Reads a language file and returns the Language object (also adding it to
+     * {@link Language#languages languages}).
+     *
+     * @param   languageCode
+     *          The <a href="https://iso639-3.sil.org/code_tables/639/data">ISO
+     *          639-3</a> code representing this language.
+     * @param   file
+     *          The path to the file containing the translations.
+     *
+     * @return  The resulting {@code Language} object.
+     *
+     * @throws  IOException
+     *          If an I/O error occurs reading from the language file.
+     */
+    public static Language fromLanguageFile(String languageCode, File file)
+            throws IOException {
+        PropertiesFile languageReader = new PropertiesFile(file);
+        return new Language(languageCode, languageReader.getContent());
     }
 
     /**

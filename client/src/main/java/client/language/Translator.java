@@ -47,7 +47,7 @@ public class Translator {
      *
      * @return the translation of a piece of text.
      */
-    public String getTranslation(String textId) {
+    public static String getTranslation(String textId) {
         return currentLanguage.getTranslation(textId);
     }
 
@@ -73,7 +73,8 @@ public class Translator {
             public static final String Ok = level + "ok";
             public static final String Cancel = level + "cancel";
             public static final String Abort = level + "abort";
-            public static final String Continue = level + "retry";
+            public static final String Continue = level + "continue";
+            public static final String Retry = level + "retry";
             public static final String Ignore = level + "ignore";
             public static final String Yes = level + "yes";
             public static final String No = level + "no";

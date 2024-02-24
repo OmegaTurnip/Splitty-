@@ -17,9 +17,11 @@ package client;
 
 import static com.google.inject.Guice.createInjector;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import client.language.Language;
 import com.google.inject.Injector;
 
 import client.scenes.AddQuoteCtrl;
@@ -34,12 +36,26 @@ public class Main extends Application {
     private static final MyFXML FXML = new MyFXML(INJECTOR);
 
     /**
-     * @param args no description was provided in the template.
-     * @throws URISyntaxException no description was provided in the template.
-     * @throws IOException no description was provided in the template.
+     * @param   args
+     *          Ignored.
+     *
+     * @throws  URISyntaxException
+     *          No description was provided in the template.
+     * @throws  IOException
+     *          If an I/O error occurs reading from the language files.
      */
     public static void main(String[] args)
             throws URISyntaxException, IOException {
+
+        Language.fromLanguageFile(
+                "eng", new File("../includedLanguages/eng.properties")
+        );
+        Language.fromLanguageFile(
+                "nld", new File("../includedLanguages/nld.properties")
+        );
+        Language.fromLanguageFile(
+                "deu", new File("../includedLanguages/deu.properties")
+        );
         launch();
     }
 
