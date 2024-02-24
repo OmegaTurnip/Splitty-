@@ -42,8 +42,8 @@ class EventTest {
 
     testEvent.setParticipants(testAllParticipants1);
 
-    Expense testExpense1 = new Expense(testParticipant1, "Drinks",400, testParticipants1);
-    Expense testExpense2 = new Expense(testParticipant2, "Lunch", 350, testParticipants2);
+    Expense testExpense1 = new Expense(testParticipant1, "Drinks",400, testParticipants1, testEvent);
+    Expense testExpense2 = new Expense(testParticipant2, "Lunch", 350, testParticipants2, testEvent);
     testExpense1.setDate(testDate1);
     testExpense2.setDate(testDate1);
     Collection<Expense> testExpenses1 = new ArrayList<>();

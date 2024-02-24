@@ -11,6 +11,7 @@ public class Participant {
      * Constructor.
      *
      * @param name Name of the participant.
+     * @param event Event the participant belongs to.
      */
     public Participant(String name, Event event) {
         this.name = name;
@@ -27,7 +28,7 @@ public class Participant {
     }
 
     /**
-     * Setter method.
+     * Setter method. Also updates last activity in the corresponding Event.
      *
      * @param name .
      */
@@ -55,7 +56,8 @@ public class Participant {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Participant that = (Participant) o;
-        return Objects.equals(name, that.name) && Objects.equals(event, that.event);
+        return Objects.equals(name, that.name)
+                && Objects.equals(event, that.event);
     }
 
     /**

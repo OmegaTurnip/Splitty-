@@ -75,6 +75,10 @@ public class Event {
 
     }
 
+    /**
+     * Adds a participant to the event
+     * @param participant Participant to add
+     */
     public void addParticipant(Participant participant) {
         this.participants.add(participant);
     }
@@ -106,6 +110,10 @@ public class Event {
         return eventCreationDate;
     }
 
+    /**
+     * Setter for eventCreationDate
+     * @param eventCreationDate the date to set
+     */
     public void setEventCreationDate(LocalDate eventCreationDate) {
         this.eventCreationDate = eventCreationDate;
     }
@@ -146,6 +154,13 @@ public class Event {
         this.expenses = expenses;
     }
 
+    /**
+     * Adds an expense to the event
+     * @param expense Expense to add
+     */
+    public void addExpense(Expense expense) {
+        expenses.add(expense);
+    }
     /**
      * Getter for the last activity on an event
      * @return lastActivity
@@ -194,7 +209,8 @@ public class Event {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(eventName, eventCreationDate, inviteCode, expenses, lastActivity);
+        return Objects.hash(eventName, eventCreationDate, inviteCode,
+                expenses, lastActivity);
     }
 }
 
