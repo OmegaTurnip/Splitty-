@@ -20,7 +20,7 @@ public class UserConfigTest {
     @BeforeEach
     public void setup() throws IOException {
         file.delete();
-        configFile = new ConfigFile(file);
+        configFile = new ConfigFile(file, "test");
         settingsShadow = new UserConfig(configFile);
     }
 

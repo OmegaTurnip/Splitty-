@@ -12,7 +12,7 @@ import java.util.Properties;
 public class UserConfig {
 
     public static final UserConfig USER_SETTINGS;
-    public static final String PATHNAME = "clientsettings.properties";
+    static final String PATHNAME = "client_settings.properties";
 
     static {
         try {
@@ -26,6 +26,7 @@ public class UserConfig {
     private final ConfigFile configFile;
 
     private String serverUrl;  // key: "serverUrl"
+    private String userLanguage;  // key: "userLanguage"
 
     // when adding new attributes, don't forget to:
     // add getters, setters & update read()!
@@ -40,7 +41,7 @@ public class UserConfig {
      *          the configuration is stored.
      */
     UserConfig() throws IOException {
-        this(new ConfigFile(new File(PATHNAME)));
+        this(new ConfigFile(new File(PATHNAME), "Client settings"));
     }
 
     /**
@@ -84,6 +85,29 @@ public class UserConfig {
         configFile.setAttribute("serverUrl", serverUrl);
     }
 
+    /**
+     * Gets the selected user language as an ISO 639-3 code.
+     *
+     * @return  the selected user language as an ISO 639-3 code.
+     */
+    public String getUserLanguage() {
+        return userLanguage;
+    }
+
+    /**
+     * Changes the language that should be used in the UI.
+     *
+     * @param   userLanguage
+     *          the new user language as an ISO 639-3 code.
+     *
+     * @throws  IOException
+     *          If an I/O error occurs writing to or creating the file in which
+     *          the configuration is stored.
+     */
+    public void setUserLanguage(String userLanguage) throws IOException {
+        this.userLanguage = userLanguage;
+        configFile.setAttribute("userLanguage", userLanguage);
+    }
 
     /**
      * Reads the settings from the properties file.
@@ -102,6 +126,8 @@ public class UserConfig {
 
         setServerUrl(
                 properties.getProperty("serverUrl", "http://localhost:8080/"));
+
+        setUserLanguage(properties.getProperty("userLanguage", "eng"));
 
     }
 

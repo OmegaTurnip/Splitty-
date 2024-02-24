@@ -18,7 +18,7 @@ public class ConfigFileTest {
     @BeforeEach
     public void setup() throws IOException {
         file.delete();
-        configFile = new ConfigFile(file);
+        configFile = new ConfigFile(file, "test");
     }
 
     @AfterAll
@@ -36,7 +36,7 @@ public class ConfigFileTest {
     @Test
     public void testPersistence() throws IOException {
         assertDoesNotThrow(() -> configFile.setAttribute("attr", "val"));
-        ConfigFile configFile1 = new ConfigFile(file);
+        ConfigFile configFile1 = new ConfigFile(file, "test");
         assertEquals("val", configFile1.getAttribute("attr"));
     }
 
