@@ -15,6 +15,8 @@
  */
 package client.utils;
 
+import static client.utils.UserConfig.USER_SETTINGS;
+
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.io.BufferedReader;
@@ -33,14 +35,14 @@ import jakarta.ws.rs.core.GenericType;
 
 public class ServerUtils {
 
-    private static final String SERVER = "http://localhost:8080/";
+    private static final String SERVER = USER_SETTINGS.getServerUrl();
 
     /**
      * @throws IOException no description was provided in the template.
      * @throws URISyntaxException no description was provided in the template.
      */
     public void getQuotesTheHardWay() throws IOException, URISyntaxException {
-        var url = new URI("http://localhost:8080/api/quotes").toURL();
+        var url = new URI(SERVER + "api/quotes").toURL();
         var is = url.openConnection().getInputStream();
         var br = new BufferedReader(new InputStreamReader(is));
         String line;
