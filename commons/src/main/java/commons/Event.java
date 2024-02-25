@@ -2,6 +2,7 @@ package commons;
 
 import java.util.*;
 
+
 public class Event {
 
     private String eventName;
@@ -10,7 +11,7 @@ public class Event {
     private Collection<Expense> expenses;
     private Collection<Participant> participants;
 
-    private List<String> tags;
+    private List<Tag> tags;
 
     /**
      * Constructor for an event. The attributes should be editable.
@@ -29,7 +30,7 @@ public class Event {
         this.inviteCode = generateInviteCode();
         this.expenses = expenses;
         this.participants = participants;
-        this.tags = new ArrayList<>();
+        this.tags = new ArrayList<Tag>();
         basicTags();
     }
 
@@ -37,9 +38,9 @@ public class Event {
      * method for adding the three standard tags
      */
     public void basicTags(){
-        addTag("food");
-        addTag("entrance fees");
-        addTag("Travel");
+        addTag(new Tag("food", "blue"));
+        addTag(new Tag("entrance fees", "green"));
+        addTag(new Tag("Travel", "yellow"));
     }
 
     /**
@@ -70,7 +71,7 @@ public class Event {
      * getter method
      * @return list of tags
      */
-    public List<String> getTags() {
+    public List<Tag> getTags() {
         return tags;
     }
 
@@ -78,12 +79,12 @@ public class Event {
      * adds a tag
      * @param tag to be added
      */
-    public void addTag(String tag){
+    public void addTag(Tag tag){
         tags.add(tag);
     }
     /**
      * Getter method.
-     * @return .
+     * @return participants
      */
     public Collection<Participant> getParticipants() {
         return participants;
@@ -153,6 +154,28 @@ public class Event {
         this.expenses = expenses;
     }
 
+    /**
+     * Adds an expense to the event.
+     * Checks if the tag is already in the list of tags.
+     * If it lists a tag with the same name but diff colour,
+     * it changes the colour.
+     * @param e
+     */
+    public void addExpense(Expense e){
+        expenses.add(e);
+        Tag expenseTag = e.getTag();
+        for(Tag tag : tags){
+            if(tag.equals(expenseTag)){
+                return;
+            }
+            if(tag.nameEquals(expenseTag)){
+                e.setTag(tag);
+                return;
+            }
+        }
+
+        tags.add(expenseTag);
+    }
     /**
      * Equals method.
      * @param o Event to test equality on.

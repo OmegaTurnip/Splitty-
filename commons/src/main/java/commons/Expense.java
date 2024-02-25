@@ -11,7 +11,7 @@ public class Expense {
     private int price;
     private Map<Participant, Integer> debtors;
 
-    private String tag;
+    private Tag tag;
 
     /**
      * Constructor.
@@ -26,7 +26,7 @@ public class Expense {
      */
     public Expense(Participant payer,
                    String expenseName, Date date,
-                   int price, Collection<Participant> debtors, String tag) {
+                   int price, Collection<Participant> debtors, Tag tag) {
         this.payer = payer;
         this.expenseName = expenseName;
         this.date = date;
@@ -42,10 +42,37 @@ public class Expense {
     }
 
     /**
+     * Default constructor, tag set to null
+     * @param payer The person who paid for the expense.
+     * @param expenseName The name of the expense.
+     * @param date The date the expense was paid.
+     * @param price The price of the expense (in dollars).
+     * @param debtors The people who owe money
+     *                due to this expense (key),
+     *                and the amount they owe (value).
+     */
+    public Expense(Participant payer,
+                   String expenseName, Date date,
+                   int price, Collection<Participant> debtors) {
+        this.payer = payer;
+        this.expenseName = expenseName;
+        this.date = date;
+        this.price = price;
+        Map<Participant, Integer> mapDebtors = new HashMap<>();
+        for (Participant participant : debtors) {
+            if (!participant.equals(payer)) {
+                mapDebtors.put(participant, price);
+            }
+        }
+        this.debtors = mapDebtors;
+        this.tag = null;
+    }
+
+    /**
      * Setter method
      * @param tag the tag of the expense
      */
-    public void setTag(String tag){
+    public void setTag(Tag tag){
         this.tag = tag;
     }
 
@@ -133,7 +160,7 @@ public class Expense {
      * Getter of the tag
      * @return tag
      */
-    public String getTag() {
+    public Tag getTag() {
         return tag;
     }
 
