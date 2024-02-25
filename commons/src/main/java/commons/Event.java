@@ -240,12 +240,14 @@ public class Event {
      * @param expenseName the name of the Expense to be registered
      * @param price       the price of the Expense
      * @param debtors     the debtors of the Expense
+     * @param tag          the tag
      */
     public void registerExpense(Participant payer,
                                 String expenseName,
                                 int price,
                                 Collection<Participant> debtors, Tag tag) {
-        expenses.add(new Expense(payer, expenseName, price, debtors, this, tag));
+        expenses.add(new Expense(payer, expenseName, price,
+                debtors, this, tag));
         updateLastActivity();
     }
 

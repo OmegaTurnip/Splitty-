@@ -11,8 +11,7 @@ class ParticipantTest{
     private Participant testParticipant1;
     private Participant testParticipant2;
     private Participant testParticipant3;
-
-        @BeforeEach
+    @BeforeEach
         void setup() {
             Event testEvent = new Event("Josh's Birthday Party");
 
