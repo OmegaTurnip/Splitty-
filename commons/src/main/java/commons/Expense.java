@@ -1,28 +1,21 @@
 package commons;
 
 
-import jakarta.persistence.*;
-
 import java.time.LocalDate;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Collection;
 
-@Entity
 public class Expense {
-    @Id
-    @GeneratedValue
-    private Long id;
-    @OneToOne
+
     private Participant payer;
     private String expenseName;
     private LocalDate date;
     private int price;
-    @OneToMany
-    private List<Debt> debts;
-    @ManyToOne
+    private Map<Participant, Integer> debtors;
     private Event event;
-
 
     /**
      * Constructor.
@@ -42,18 +35,16 @@ public class Expense {
         this.expenseName = expenseName;
         this.date = LocalDate.now();
         this.price = price;
-
-        this.debts = debtors.stream()
-                .map(p -> new Debt(p, price/debtors.size()))
-                .collect(Collectors.toList());
+        Map<Participant, Integer> mapDebtors = new HashMap<>();
+        for (Participant participant : debtors) {
+            if (!participant.equals(payer)) {
+                mapDebtors.put(participant, price);
+            }
+        }
+        this.debtors = mapDebtors;
         this.event = event;
         event.updateLastActivity();
     }
-
-    /**
-     * Constructor without parameters
-     */
-    public Expense() {}
 
     /**
      * Setter method. Also updates last activity in the corresponding Event.
@@ -96,6 +87,16 @@ public class Expense {
     }
 
     /**
+     * Setter method. Also updates last activity in the corresponding Event.
+     *
+     * @param debtors .
+     */
+    public void setDebtors(Map<Participant, Integer> debtors) {
+        this.debtors = debtors;
+        event.updateLastActivity();
+    }
+
+    /**
      * Getter method.
      *
      * @return .
@@ -132,6 +133,15 @@ public class Expense {
     }
 
     /**
+     * Getter method.
+     *
+     * @return .
+     */
+    public Map<Participant, Integer> getDebtors() {
+        return debtors;
+    }
+
+    /**
      * Getter method for event
      * @return the corresponding Event
      */
@@ -154,8 +164,7 @@ public class Expense {
                 && Objects.equals(payer, expense.payer)
                 && Objects.equals(expenseName, expense.expenseName)
                 && Objects.equals(date, expense.date)
-                && Objects.equals(debts, expense.debts)
-                && Objects.equals(id, expense.id);
+                && Objects.equals(debtors, expense.debtors);
     }
 
     /**
@@ -165,23 +174,7 @@ public class Expense {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(payer, expenseName, date, price, debts, id);
-    }
-
-    /**
-     * Setter for id
-     * @param id the id
-     */
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    /**
-     * Getter for id
-     * @return the id
-     */
-    public Long getId() {
-        return id;
+        return Objects.hash(payer, expenseName, date, price, debtors);
     }
 }
 
