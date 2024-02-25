@@ -1,26 +1,20 @@
 package commons;
 
 
-import jakarta.persistence.*;
-
 import java.time.LocalDate;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Collection;
 
-@Entity
 public class Expense {
-    @Id
-    @GeneratedValue
-    private Long id;
-    @OneToOne
+
     private Participant payer;
     private String expenseName;
     private LocalDate date;
     private int price;
-    @OneToMany
-    private List<Debt> debts;
-    @ManyToOne
+    private Map<Participant, Integer> debtors;
     private Event event;
 
 
@@ -109,6 +103,16 @@ public void setTag(Tag tag) {
     }
 
     /**
+     * Setter method. Also updates last activity in the corresponding Event.
+     *
+     * @param debtors .
+     */
+    public void setDebtors(Map<Participant, Integer> debtors) {
+        this.debtors = debtors;
+        event.updateLastActivity();
+    }
+
+    /**
      * Getter method.
      *
      * @return .
@@ -142,6 +146,15 @@ public void setTag(Tag tag) {
      */
     public int getPrice() {
         return price;
+    }
+
+    /**
+     * Getter method.
+     *
+     * @return .
+     */
+    public Map<Participant, Integer> getDebtors() {
+        return debtors;
     }
 
     /**
@@ -186,23 +199,7 @@ public void setTag(Tag tag) {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(payer, expenseName, date, price, debts, id);
-    }
-
-    /**
-     * Setter for id
-     * @param id the id
-     */
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    /**
-     * Getter for id
-     * @return the id
-     */
-    public Long getId() {
-        return id;
+        return Objects.hash(payer, expenseName, date, price, debtors);
     }
 }
 
