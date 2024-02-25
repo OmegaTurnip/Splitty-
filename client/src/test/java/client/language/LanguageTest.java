@@ -28,10 +28,10 @@ public class LanguageTest {
     void testEnglish() {
         Translator.setCurrentLanguage(Language.languages.get("eng"));
         assertEquals("English",
-                Translator.getTranslation(Translator.NativeLanguageName)
+                Translator.getTranslation(Text.NativeLanguageName)
         );
         assertEquals("Cancel",
-                Translator.getTranslation(Translator.MessageBox.Options.Cancel)
+                Translator.getTranslation(Text.MessageBox.Options.Cancel)
         );
         assertEquals("<TEXT DOESN'T EXIST>",
                 Translator.getTranslation("random-non-existing-text-id")
@@ -42,10 +42,10 @@ public class LanguageTest {
     void testDutch() {
         Translator.setCurrentLanguage(Language.languages.get("nld"));
         assertEquals("Nederlands",
-                Translator.getTranslation(Translator.NativeLanguageName)
+                Translator.getTranslation(Text.NativeLanguageName)
         );
         assertEquals("Annuleren",
-                Translator.getTranslation(Translator.MessageBox.Options.Cancel)
+                Translator.getTranslation(Text.MessageBox.Options.Cancel)
         );
         // The square brackets are a relic of checking if maybe an english
         // translation exists, but I'm not changing that as it's something only

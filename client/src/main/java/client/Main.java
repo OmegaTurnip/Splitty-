@@ -17,12 +17,12 @@ package client;
 
 import static com.google.inject.Guice.createInjector;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import client.language.Language;
 import com.google.inject.Injector;
+
+import client.scenes.LanguageTestCtrl;
 
 import client.scenes.AddQuoteCtrl;
 import client.scenes.MainCtrl;
@@ -56,13 +56,21 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws IOException {
+        if (false) {
+            var overview = FXML.load(QuoteOverviewCtrl.class,
+                    "client", "scenes", "QuoteOverview.fxml");
+            var add = FXML.load(AddQuoteCtrl.class,
+                    "client", "scenes", "AddQuote.fxml");
 
-        var overview = FXML.load(QuoteOverviewCtrl.class,
-                "client", "scenes", "QuoteOverview.fxml");
-        var add = FXML.load(AddQuoteCtrl.class,
-                "client", "scenes", "AddQuote.fxml");
+            var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+            mainCtrl.initialize(primaryStage, overview, add);
 
-        var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(primaryStage, overview, add);
+        } else {
+            var test = FXML.load(LanguageTestCtrl.class,
+                    "client", "scenes", "LanguageTest.fxml");
+            var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+            mainCtrl.initialize(primaryStage, test);
+        }
+
     }
 }

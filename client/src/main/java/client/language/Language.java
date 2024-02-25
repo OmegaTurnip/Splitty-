@@ -60,7 +60,7 @@ public class Language {
      *
      * @param   textId
      *          The id of the piece of text of which a translation is needed.
-     *          Should be constructed using the {@link Translator Translator}
+     *          Should be constructed using the {@link Text Text}
      *          class.
      *
      * @return the translation of a piece of text.
@@ -75,7 +75,7 @@ public class Language {
             return result;
         // Exception for the native language name, as this does not have a
         // valid translation in other languages.
-        else if (textId.equals(Translator.NativeLanguageName))
+        else if (textId.equals(Text.NativeLanguageName))
             return languageCode;
         else if (english == null)
             return "<TEXT DOESN'T EXIST AND NO ENGLISH FALLBACK>";

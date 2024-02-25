@@ -1,6 +1,7 @@
 package client.utils;
 
 import client.language.Language;
+import client.language.Translator;
 
 import java.io.File;
 import java.io.IOException;
@@ -127,12 +128,34 @@ public class UserConfig {
 
         configFile.setAttribute("userLanguage", userLanguage);
         this.userLanguage = userLanguage;
+        Translator.setCurrentLanguage(Language.languages.get(userLanguage));
     }
 
+    /**
+     * Gets a {@code HashMap} containing all available languages. The key is
+     * the language
+     * <a href="https://iso639-3.sil.org/code_tables/639/data">ISO 639-3</a>
+     * code, the value is the file in which the translations are stored.
+     *
+     * @return  A {@code HashMap} containing all available languages.
+     */
     public HashMap<String, File> getAvailableLanguages() {
         return availableLanguages;
     }
 
+    /**
+     * Sets all available languages using a {@code HashMap}. The key is the
+     * language
+     * <a href="https://iso639-3.sil.org/code_tables/639/data">ISO 639-3</a>
+     * code, the value is the file in which the translations are stored.
+     *
+     * @param   availableLanguages
+     *          A {@code HashMap} containing all available languages.
+     *
+     * @throws  IOException
+     *          If an I/O error occurs writing to or creating the file in which
+     *          the configuration is stored.
+     */
     public void setAvailableLanguages(HashMap<String, File> availableLanguages)
             throws IOException {
 
