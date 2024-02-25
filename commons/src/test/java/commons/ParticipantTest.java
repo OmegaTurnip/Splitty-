@@ -18,9 +18,9 @@ class ParticipantTest {
         testParticipant2 = new Participant("Amy", testEvent);
         testParticipant3 = new Participant("Josh", testEvent);
 
-        testEvent.addParticipant(testParticipant1);
-        testEvent.addParticipant(testParticipant2);
-        testEvent.addParticipant(testParticipant3);
+        testEvent.addParticipant("Josh");
+        testEvent.addParticipant("Amy");
+        testEvent.addParticipant("Josh");
     }
     @Test
     void getName() {
