@@ -23,7 +23,7 @@ public class Expense {
     @ManyToOne
     private Event event;
 
-
+    @OneToOne
     private Tag tag;
 
     /**
@@ -35,11 +35,12 @@ public class Expense {
      *                    due to this expense (key),
      *                    and the amount they owe (value).
      * @param event       The event the expense belongs to
->>>>>>> main
+    * @param tag          The tag of the expense
      */
     public Expense(Participant payer,
                    String expenseName,
-                   int price, Collection<Participant> debtors, Event event, Tag tag) {
+                   int price, Collection<Participant> debtors,
+                   Event event, Tag tag) {
         this.payer = payer;
         this.expenseName = expenseName;
         this.date = LocalDate.now();
@@ -64,9 +65,9 @@ public class Expense {
  * @param tag the tag of the expense
  */
 
-public void setTag(Tag tag) {
-    this.tag = tag;
-}
+    public void setTag(Tag tag) {
+        this.tag = tag;
+    }
 
     /**
      * Setter method. Also updates last activity in the corresponding Event.

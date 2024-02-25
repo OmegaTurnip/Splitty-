@@ -37,8 +37,8 @@ public class Event {
         this.eventName = eventName;
         this.eventCreationDate = LocalDate.now();
         this.inviteCode = generateInviteCode();
-        this.expenses = expenses;
-        this.participants = participants;
+        this.expenses = new ArrayList<Expense>();
+        this.participants = new ArrayList<Participant>();
         this.tags = new ArrayList<Tag>();
         basicTags();
         updateLastActivity();
@@ -127,7 +127,8 @@ public class Event {
      *
      * @param name name of the Participant to add
      */
-    public void addParticipant(Participant participant) {
+    public void addParticipant(String name) {
+        Participant participant = new Participant(name, this);
         this.participants.add(participant);
         updateLastActivity();
     }

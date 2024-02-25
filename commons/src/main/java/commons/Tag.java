@@ -25,6 +25,9 @@ public class Tag {
         this.colour = colour;
     }
 
+    /**
+     * Empty constructor
+     */
     public Tag() {
 
     }
