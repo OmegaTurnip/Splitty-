@@ -1,36 +1,33 @@
 package commons;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 
 public class Event {
 
     private String eventName;
-    private final Date eventCreationDate;
+    private LocalDate eventCreationDate;
     private String inviteCode;
     private Collection<Expense> expenses;
     private Collection<Participant> participants;
+    private LocalDateTime lastActivity;
 
     /**
      * Constructor for an event. The attributes should be editable.
      *
      * @param eventName         The name of the event.
-     * @param eventCreationDate The creation date of the event.
-     * @param expenses          The list of expenses made during the event.
-     * @param participants      The participants of the event. Note that this
-     *                          attribute is needed since not all participants
-     *                          may owe a debt/have paid an expense.
      */
-    public Event(String eventName, Date eventCreationDate,
-                 Collection<Expense> expenses,
-                 Collection<Participant> participants) {
+    public Event(String eventName) {
         this.eventName = eventName;
-        this.eventCreationDate = eventCreationDate;
+        this.eventCreationDate = LocalDate.now();
         this.inviteCode = generateInviteCode();
-        this.expenses = expenses;
-        this.participants = participants;
+        this.expenses = new ArrayList<>();
+        this.participants = new ArrayList<>();
+        updateLastActivity();
     }
 
     /**
@@ -75,6 +72,16 @@ public class Event {
      */
     public void setParticipants(Collection<Participant> participants) {
         this.participants = participants;
+        updateLastActivity();
+    }
+
+    /**
+     * Adds a participant to the event
+     * @param participant Participant to add
+     */
+    public void addParticipant(Participant participant) {
+        this.participants.add(participant);
+        updateLastActivity();
     }
 
     /**
@@ -93,6 +100,7 @@ public class Event {
      */
     public void setEventName(String eventName) {
         this.eventName = eventName;
+        updateLastActivity();
     }
 
     /**
@@ -100,8 +108,17 @@ public class Event {
      *
      * @return .
      */
-    public Date getEventCreationDate() {
+    public LocalDate getEventCreationDate() {
         return eventCreationDate;
+    }
+
+    /**
+     * Setter for eventCreationDate
+     * @param eventCreationDate the date to set
+     */
+    public void setEventCreationDate(LocalDate eventCreationDate) {
+        this.eventCreationDate = eventCreationDate;
+        updateLastActivity();
     }
 
     /**
@@ -120,6 +137,7 @@ public class Event {
      */
     public void setInviteCode(String inviteCode) {
         this.inviteCode = inviteCode;
+        updateLastActivity();
     }
 
     /**
@@ -138,8 +156,52 @@ public class Event {
      */
     public void setExpenses(Collection<Expense> expenses) {
         this.expenses = expenses;
+        updateLastActivity();
     }
 
+    /**
+     * Adds an expense to the event
+     * @param expense Expense to add
+     */
+    public void addExpense(Expense expense) {
+        expenses.add(expense);
+        updateLastActivity();
+    }
+    /**
+     * Getter for the last activity on an event
+     * @return lastActivity
+     */
+    public LocalDateTime getLastActivity() {
+        return lastActivity;
+    }
+
+    /**
+     * Setter for lastActivity
+     * @param lastActivity the LocaDateTime to set it to
+     */
+    public void setLastActivity(LocalDateTime lastActivity) {
+        this.lastActivity = lastActivity;
+        updateLastActivity();
+    }
+
+    /**
+     * Updates the last time of activity to now
+     */
+    public void updateLastActivity() {
+        this.lastActivity = LocalDateTime.now();
+    }
+
+    /**
+     * Gets the lastActivity as a String of the format dd/MM/yy hh:mm
+     * @return lastActivity as a String
+     */
+    public String getStringOfLastActivity() {
+        return lastActivity.getDayOfMonth() + "/" +
+                lastActivity.getMonthValue() + '/' +
+                lastActivity.getYear() + ' ' +
+                lastActivity.getHour() + ':' +
+                lastActivity.getMinute();
+    }
     /**
      * Equals method.
      *
@@ -154,7 +216,8 @@ public class Event {
         return Objects.equals(eventName, event.eventName)
                 && Objects.equals(eventCreationDate, event.eventCreationDate)
                 && Objects.equals(inviteCode, event.inviteCode)
-                && Objects.equals(expenses, event.expenses);
+                && Objects.equals(expenses, event.expenses)
+                && Objects.equals(lastActivity, event.lastActivity);
     }
 
     /**
@@ -164,7 +227,8 @@ public class Event {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(eventName, eventCreationDate, inviteCode, expenses);
+        return Objects.hash(eventName, eventCreationDate, inviteCode,
+                expenses, lastActivity);
     }
 }
 

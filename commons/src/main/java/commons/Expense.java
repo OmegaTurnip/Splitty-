@@ -1,33 +1,39 @@
 package commons;
 
 
-import java.util.*;
+import java.time.LocalDate;
+
+import java.util.Objects;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Collection;
 
 public class Expense {
 
     private Participant payer;
     private String expenseName;
-    private Date date;
+    private LocalDate date;
     private int price;
     private Map<Participant, Integer> debtors;
+    private Event event;
 
     /**
      * Constructor.
      *
      * @param payer       The person who paid for the expense.
      * @param expenseName The name of the expense.
-     * @param date        The date the expense was paid.
      * @param price       The price of the expense (in dollars).
      * @param debtors     The people who owe money
      *                    due to this expense (key),
      *                    and the amount they owe (value).
+     * @param event       The event the expense belongs to
      */
     public Expense(Participant payer,
-                   String expenseName, Date date,
-                   int price, Collection<Participant> debtors) {
+                   String expenseName,
+                   int price, Collection<Participant> debtors, Event event) {
         this.payer = payer;
         this.expenseName = expenseName;
-        this.date = date;
+        this.date = LocalDate.now();
         this.price = price;
         Map<Participant, Integer> mapDebtors = new HashMap<>();
         for (Participant participant : debtors) {
@@ -36,51 +42,58 @@ public class Expense {
             }
         }
         this.debtors = mapDebtors;
+        this.event = event;
+        event.updateLastActivity();
     }
 
     /**
-     * Setter method.
+     * Setter method. Also updates last activity in the corresponding Event.
      *
      * @param payer .
      */
     public void setPayer(Participant payer) {
         this.payer = payer;
+        event.updateLastActivity();
     }
 
     /**
-     * Setter method.
+     * Setter method. Also updates last activity in the corresponding Event.
      *
      * @param expenseName .
      */
     public void setExpenseName(String expenseName) {
         this.expenseName = expenseName;
+        event.updateLastActivity();
     }
 
     /**
-     * Setter method.
+     * Setter method. Also updates last activity in the corresponding Event.
      *
      * @param date .
      */
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
+        event.updateLastActivity();
     }
 
     /**
-     * Setter method.
+     * Setter method. Also updates last activity in the corresponding Event.
      *
      * @param price .
      */
     public void setPrice(int price) {
         this.price = price;
+        event.updateLastActivity();
     }
 
     /**
-     * Setter method.
+     * Setter method. Also updates last activity in the corresponding Event.
      *
      * @param debtors .
      */
     public void setDebtors(Map<Participant, Integer> debtors) {
         this.debtors = debtors;
+        event.updateLastActivity();
     }
 
     /**
@@ -106,7 +119,7 @@ public class Expense {
      *
      * @return .
      */
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
@@ -126,6 +139,14 @@ public class Expense {
      */
     public Map<Participant, Integer> getDebtors() {
         return debtors;
+    }
+
+    /**
+     * Getter method for event
+     * @return the corresponding Event
+     */
+    public Event getEvent() {
+        return event;
     }
 
     /**
