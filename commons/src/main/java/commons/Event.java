@@ -45,6 +45,7 @@ public class Event {
 
     /**
      * Method for generating a random invite code upon calling.
+     *
      * @return Random invite code.
      */
     public static String generateInviteCode() {
@@ -57,6 +58,7 @@ public class Event {
 
     /**
      * Calculates the total sum of all the expenses in the event.
+     *
      * @return The total sum.
      */
     public int totalSumOfExpenses() {
@@ -92,6 +94,7 @@ public class Event {
 
     /**
      * Setter method.
+     *
      * @param participants .
      */
     public void setParticipants(Collection<Participant> participants) {
@@ -100,6 +103,7 @@ public class Event {
 
     /**
      * Getter method.
+     *
      * @return .
      */
     public String getEventName() {
@@ -108,6 +112,7 @@ public class Event {
 
     /**
      * Setter method
+     *
      * @param eventName .
      */
     public void setEventName(String eventName) {
@@ -116,6 +121,7 @@ public class Event {
 
     /**
      * Getter method.
+     *
      * @return .
      */
     public Date getEventCreationDate() {
@@ -124,6 +130,7 @@ public class Event {
 
     /**
      * Getter method.
+     *
      * @return .
      */
     public String getInviteCode() {
@@ -132,6 +139,7 @@ public class Event {
 
     /**
      * Setter method.
+     *
      * @param inviteCode .
      */
     public void setInviteCode(String inviteCode) {
@@ -140,6 +148,7 @@ public class Event {
 
     /**
      * Getter method.
+     *
      * @return .
      */
     public Collection<Expense> getExpenses() {
@@ -148,6 +157,7 @@ public class Event {
 
     /**
      * Setter method.
+     *
      * @param expenses .
      */
     public void setExpenses(Collection<Expense> expenses) {
@@ -178,6 +188,7 @@ public class Event {
     }
     /**
      * Equals method.
+     *
      * @param o Event to test equality on.
      * @return True or false depending on equality.
      */
@@ -196,6 +207,7 @@ public class Event {
 
     /**
      * Hash code method.
+     *
      * @return .
      */
     @Override

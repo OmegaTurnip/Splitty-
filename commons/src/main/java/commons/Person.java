@@ -85,7 +85,7 @@ public class Person {
 
     /**
      * @param firstName no description was provided in the template.
-     * @param lastName no description was provided in the template.
+     * @param lastName  no description was provided in the template.
      */
     public Person(String firstName, String lastName) {
         this.firstName = firstName;
