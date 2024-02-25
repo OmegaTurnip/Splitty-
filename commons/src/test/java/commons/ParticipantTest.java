@@ -14,6 +14,13 @@ class ParticipantTest {
     void setup() {
         Event testEvent = new Event("Josh's Birthday Party");
 
+<<<<<<< HEAD
+=======
+        testParticipant1 = new Participant("Josh", testEvent);
+        testParticipant2 = new Participant("Amy", testEvent);
+        testParticipant3 = new Participant("Josh", testEvent);
+
+>>>>>>> main
         testEvent.addParticipant("Josh");
         testEvent.addParticipant("Amy");
         testEvent.addParticipant("Josh");
