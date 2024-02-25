@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.language.Text;
+import client.language.TextPage;
 import client.language.Translator;
 import client.utils.UserConfig;
 import com.google.inject.Inject;
@@ -12,7 +13,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class LanguageTestCtrl implements Initializable {
+public class LanguageTestCtrl implements Initializable, TextPage {
 
     private final String[] langs =
             UserConfig.USER_SETTINGS.getAvailableLanguages()
@@ -54,13 +55,15 @@ public class LanguageTestCtrl implements Initializable {
             throw new RuntimeException(e);
         }
         langIdx++;
-        reloadLang();
+        refreshText();
     }
 
     /**
-     * Updates the texts to the current language.
+     * Refreshes the text in the current language on the page, should also be
+     * used on initial start-up.
      */
-    public void reloadLang() {
+    @Override
+    public void refreshText() {
         currentLanguage.setText(
                 Translator.getTranslation(Text.NativeLanguageName)
         );

@@ -56,6 +56,7 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws IOException {
+        // Change to `true` to load the quote application.
         if (false) {
             var overview = FXML.load(QuoteOverviewCtrl.class,
                     "client", "scenes", "QuoteOverview.fxml");
@@ -65,6 +66,7 @@ public class Main extends Application {
             var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
             mainCtrl.initialize(primaryStage, overview, add);
 
+        // This is temporally here as a proof of concept.
         } else {
             var test = FXML.load(LanguageTestCtrl.class,
                     "client", "scenes", "LanguageTest.fxml");

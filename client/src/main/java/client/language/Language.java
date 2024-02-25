@@ -55,8 +55,7 @@ public class Language {
      * Returns the translation of a piece of text in this language.
      * If this language doesn't have a translation, it will try to fall back on
      * the english translation, surrounded by square brackets.
-     * It will return an error message if no english language or translation is
-     * available.
+     * It will return an error message if no english translation is available.
      *
      * @param   textId
      *          The id of the piece of text of which a translation is needed.

@@ -3,7 +3,7 @@ package client.utils;
 import java.io.*;
 import java.util.Properties;
 
-final class ConfigFile extends PropertiesFile {
+public final class ConfigFile extends PropertiesFile {
 
     private final String description;
     private final boolean doAutoFlush;
@@ -49,8 +49,6 @@ final class ConfigFile extends PropertiesFile {
         super(file, content);
         this.description = description;
         this.doAutoFlush = doAutoFlush;
-
-        read();
     }
 
     /**

@@ -11,7 +11,8 @@ public class Text {
 
     /**
      * General language class for the common messagebox texts.
-     * This class is to be used throughout the entire program (unlike most).
+     * This class is to be used throughout the entire program (unlike most that
+     * will be added later on down the line).
      */
     public static final class MessageBox {
 
