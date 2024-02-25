@@ -47,15 +47,6 @@ public class Main extends Application {
     public static void main(String[] args)
             throws URISyntaxException, IOException {
 
-        Language.fromLanguageFile(
-                "eng", new File("../includedLanguages/eng.properties")
-        );
-        Language.fromLanguageFile(
-                "nld", new File("../includedLanguages/nld.properties")
-        );
-        Language.fromLanguageFile(
-                "deu", new File("../includedLanguages/deu.properties")
-        );
         launch();
     }
 
