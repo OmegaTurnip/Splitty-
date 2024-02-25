@@ -3,6 +3,8 @@ package commons;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Iterator;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ParticipantTest {
@@ -14,13 +16,18 @@ class ParticipantTest {
     void setup() {
         Event testEvent = new Event("Josh's Birthday Party");
 
-        testParticipant1 = new Participant("Josh", testEvent);
-        testParticipant2 = new Participant("Amy", testEvent);
-        testParticipant3 = new Participant("Josh", testEvent);
+        testEvent.addParticipant("Josh");
+        testEvent.addParticipant("Amy");
+        testEvent.addParticipant("Josh");
 
-        testEvent.addParticipant(testParticipant1);
-        testEvent.addParticipant(testParticipant2);
-        testEvent.addParticipant(testParticipant3);
+        Iterator<Participant> participantIterator = testEvent.getParticipants().iterator();
+
+        testParticipant1 = participantIterator.next();
+        testParticipant2 = participantIterator.next();
+        testParticipant3 = participantIterator.next();
+
+        testParticipant1.setId((long) 2);
+        testParticipant3.setId((long) 2);
     }
     @Test
     void getName() {
