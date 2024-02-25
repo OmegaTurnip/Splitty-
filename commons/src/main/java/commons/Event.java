@@ -1,46 +1,62 @@
 package commons;
 
-import java.util.*;
 
+import jakarta.persistence.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.List;
+@Entity
 public class Event {
 
+    @Id
+    @GeneratedValue
+    private Long id;
     private String eventName;
-    private final Date eventCreationDate;
+    private LocalDate eventCreationDate;
     private String inviteCode;
+    @OneToMany
     private Collection<Expense> expenses;
+    @OneToMany
     private Collection<Participant> participants;
+    private LocalDateTime lastActivity;
 
+    @OneToMany
     private List<Tag> tags;
 
     /**
      * Constructor for an event. The attributes should be editable.
+     *
      * @param eventName The name of the event.
-     * @param eventCreationDate The creation date of the event.
-     * @param expenses The list of expenses made during the event.
-     * @param participants The participants of the event. Note that this
-     *                     attribute is needed since not all participants
-     *                     may owe a debt/have paid an expense.
      */
-    public Event(String eventName, Date eventCreationDate,
-                 Collection<Expense> expenses,
-                 Collection<Participant> participants) {
+    public Event(String eventName) {
         this.eventName = eventName;
-        this.eventCreationDate = eventCreationDate;
+        this.eventCreationDate = LocalDate.now();
         this.inviteCode = generateInviteCode();
         this.expenses = expenses;
         this.participants = participants;
         this.tags = new ArrayList<Tag>();
         basicTags();
+        updateLastActivity();
     }
 
     /**
      * method for adding the three standard tags
      */
-    public void basicTags(){
+    public void basicTags() {
         addTag(new Tag("food", "blue"));
         addTag(new Tag("entrance fees", "green"));
         addTag(new Tag("Travel", "yellow"));
+    }
+
+    /**
+     * Constructor without parameters
+     */
+    public Event() {
     }
 
     /**
@@ -71,6 +87,7 @@ public class Event {
 
     /**
      * getter method
+     *
      * @return list of tags
      */
     public List<Tag> getTags() {
@@ -79,13 +96,16 @@ public class Event {
 
     /**
      * adds a tag
+     *
      * @param tag to be added
      */
-    public void addTag(Tag tag){
+    public void addTag(Tag tag) {
         tags.add(tag);
     }
+
     /**
      * Getter method.
+     *
      * @return participants
      */
     public Collection<Participant> getParticipants() {
@@ -99,6 +119,17 @@ public class Event {
      */
     public void setParticipants(Collection<Participant> participants) {
         this.participants = participants;
+        updateLastActivity();
+    }
+
+    /**
+     * Adds a participant to the event
+     *
+     * @param name name of the Participant to add
+     */
+    public void addParticipant(String name) {
+        this.participants.add(new Participant(name, this));
+        updateLastActivity();
     }
 
     /**
@@ -117,6 +148,7 @@ public class Event {
      */
     public void setEventName(String eventName) {
         this.eventName = eventName;
+        updateLastActivity();
     }
 
     /**
@@ -124,8 +156,18 @@ public class Event {
      *
      * @return .
      */
-    public Date getEventCreationDate() {
+    public LocalDate getEventCreationDate() {
         return eventCreationDate;
+    }
+
+    /**
+     * Setter for eventCreationDate
+     *
+     * @param eventCreationDate the date to set
+     */
+    public void setEventCreationDate(LocalDate eventCreationDate) {
+        this.eventCreationDate = eventCreationDate;
+        updateLastActivity();
     }
 
     /**
@@ -144,6 +186,7 @@ public class Event {
      */
     public void setInviteCode(String inviteCode) {
         this.inviteCode = inviteCode;
+        updateLastActivity();
     }
 
     /**
@@ -162,6 +205,7 @@ public class Event {
      */
     public void setExpenses(Collection<Expense> expenses) {
         this.expenses = expenses;
+        updateLastActivity();
     }
 
     /**
@@ -169,16 +213,17 @@ public class Event {
      * Checks if the tag is already in the list of tags.
      * If it lists a tag with the same name but diff colour,
      * it changes the colour.
-     * @param e
+     *
+     * @param e expense
      */
-    public void addExpense(Expense e){
+    public void addExpense(Expense e) {
         expenses.add(e);
         Tag expenseTag = e.getTag();
-        for(Tag tag : tags){
-            if(tag.equals(expenseTag)){
+        for (Tag tag : tags) {
+            if (tag.equals(expenseTag)) {
                 return;
             }
-            if(tag.nameEquals(expenseTag)){
+            if (tag.nameEquals(expenseTag)) {
                 e.setTag(tag);
                 return;
             }
@@ -186,6 +231,62 @@ public class Event {
 
         tags.add(expenseTag);
     }
+
+    /**
+     * Register an expense with an event
+     *
+     * @param payer       the Participant that paid
+     * @param expenseName the name of the Expense to be registered
+     * @param price       the price of the Expense
+     * @param debtors     the debtors of the Expense
+     */
+    public void registerExpense(Participant payer,
+                                String expenseName,
+                                int price,
+                                Collection<Participant> debtors, Tag tag) {
+        expenses.add(new Expense(payer, expenseName, price, debtors, this, tag));
+        updateLastActivity();
+    }
+
+    /**
+     * Getter for the last activity on an event
+     *
+     * @return lastActivity
+     */
+    public LocalDateTime getLastActivity() {
+        return lastActivity;
+    }
+
+    /**
+     * Setter for lastActivity
+     *
+     * @param lastActivity the LocalDateTime to set it to
+     */
+    public void setLastActivity(LocalDateTime lastActivity) {
+        this.lastActivity = lastActivity;
+        updateLastActivity();
+    }
+
+    /**
+     * Updates the last time of activity to now
+     */
+    public void updateLastActivity() {
+        this.lastActivity = LocalDateTime.now();
+    }
+
+    /**
+     * Gets the lastActivity as a String of the format dd/MM/yy hh:mm
+     *
+     * @return lastActivity as a String
+     */
+    public String getStringOfLastActivity() {
+        return lastActivity.getDayOfMonth() + "/" +
+                lastActivity.getMonthValue() + '/' +
+                lastActivity.getYear() + ' ' +
+                lastActivity.getHour() + ':' +
+                lastActivity.getMinute();
+    }
+
     /**
      * Equals method.
      *
@@ -201,8 +302,9 @@ public class Event {
                 && Objects.equals(eventCreationDate, event.eventCreationDate)
                 && Objects.equals(inviteCode, event.inviteCode)
                 && Objects.equals(expenses, event.expenses)
-                && Objects.equals(participants, event.participants)
-                && Objects.equals(tags, event.tags);
+                && Objects.equals(lastActivity, event.lastActivity)
+                && Objects.equals(tags, event.tags)
+                && Objects.equals(id, event.id);
     }
 
     /**
@@ -212,8 +314,25 @@ public class Event {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(eventName, eventCreationDate, inviteCode, expenses);
+        return Objects.hash(eventName, eventCreationDate, inviteCode,
+                expenses, lastActivity, id);
+    }
+
+    /**
+     * Setter for id
+     *
+     * @param id the id
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * Getter for id
+     *
+     * @return the id
+     */
+    public Long getId() {
+        return id;
     }
 }
-
-

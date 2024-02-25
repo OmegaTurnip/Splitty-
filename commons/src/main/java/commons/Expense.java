@@ -1,15 +1,28 @@
 package commons;
 
 
+import jakarta.persistence.*;
+
+import java.time.LocalDate;
+
 import java.util.*;
+import java.util.stream.Collectors;
 
+@Entity
 public class Expense {
-
+    @Id
+    @GeneratedValue
+    private Long id;
+    @OneToOne
     private Participant payer;
     private String expenseName;
-    private Date date;
+    private LocalDate date;
     private int price;
-    private Map<Participant, Integer> debtors;
+    @OneToMany
+    private List<Debt> debts;
+    @ManyToOne
+    private Event event;
+
 
     private Tag tag;
 
@@ -17,108 +30,82 @@ public class Expense {
      * Constructor.
      * @param payer The person who paid for the expense.
      * @param expenseName The name of the expense.
-     * @param date The date the expense was paid.
-     * @param price The price of the expense (in dollars).
-     * @param debtors The people who owe money
-     *                due to this expense (key),
-     *                and the amount they owe (value).
-     * @param tag The tag of the expense
+     * @param price       The price of the expense (in dollars).
+     * @param debtors     The people who owe money
+     *                    due to this expense (key),
+     *                    and the amount they owe (value).
+     * @param event       The event the expense belongs to
+>>>>>>> main
      */
     public Expense(Participant payer,
-                   String expenseName, Date date,
-                   int price, Collection<Participant> debtors, Tag tag) {
+                   String expenseName,
+                   int price, Collection<Participant> debtors, Event event, Tag tag) {
         this.payer = payer;
         this.expenseName = expenseName;
-        this.date = date;
+        this.date = LocalDate.now();
         this.price = price;
-        Map<Participant, Integer> mapDebtors = new HashMap<>();
-        for (Participant participant : debtors) {
-            if (!participant.equals(payer)) {
-                mapDebtors.put(participant, price);
-            }
-        }
-        this.debtors = mapDebtors;
+        this.debts = debtors.stream()
+                .map(p -> new Debt(p, price/debtors.size()))
+                .collect(Collectors.toList());
+        this.event = event;
+        event.updateLastActivity();
         this.tag = tag;
     }
 
     /**
-     * Default constructor, tag set to null
-     * @param payer The person who paid for the expense.
-     * @param expenseName The name of the expense.
-     * @param date The date the expense was paid.
-     * @param price The price of the expense (in dollars).
-     * @param debtors The people who owe money
-     *                due to this expense (key),
-     *                and the amount they owe (value).
+     * Constructor without parameters
      */
-    public Expense(Participant payer,
-                   String expenseName, Date date,
-                   int price, Collection<Participant> debtors) {
-        this.payer = payer;
-        this.expenseName = expenseName;
-        this.date = date;
-        this.price = price;
-        Map<Participant, Integer> mapDebtors = new HashMap<>();
-        for (Participant participant : debtors) {
-            if (!participant.equals(payer)) {
-                mapDebtors.put(participant, price);
-            }
-        }
-        this.debtors = mapDebtors;
-        this.tag = null;
+    public Expense() {
+
     }
 
     /**
-     * Setter method
-     * @param tag the tag of the expense
-     */
-    public void setTag(Tag tag){
-        this.tag = tag;
-    }
+ * Setter method
+ * @param tag the tag of the expense
+ */
+
+public void setTag(Tag tag) {
+    this.tag = tag;
+}
 
     /**
-     * Setter method.
+     * Setter method. Also updates last activity in the corresponding Event.
      *
      * @param payer .
      */
     public void setPayer(Participant payer) {
         this.payer = payer;
+        event.updateLastActivity();
     }
 
     /**
-     * Setter method.
+     * Setter method. Also updates last activity in the corresponding Event.
      *
      * @param expenseName .
      */
     public void setExpenseName(String expenseName) {
         this.expenseName = expenseName;
+        event.updateLastActivity();
     }
 
     /**
-     * Setter method.
+     * Setter method. Also updates last activity in the corresponding Event.
      *
      * @param date .
      */
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
+        event.updateLastActivity();
     }
 
     /**
-     * Setter method.
+     * Setter method. Also updates last activity in the corresponding Event.
      *
      * @param price .
      */
     public void setPrice(int price) {
         this.price = price;
-    }
-
-    /**
-     * Setter method.
-     *
-     * @param debtors .
-     */
-    public void setDebtors(Map<Participant, Integer> debtors) {
-        this.debtors = debtors;
+        event.updateLastActivity();
     }
 
     /**
@@ -144,7 +131,7 @@ public class Expense {
      *
      * @return .
      */
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
@@ -158,12 +145,11 @@ public class Expense {
     }
 
     /**
-     * Getter method.
-     *
-     * @return .
+     * Getter method for event
+     * @return the corresponding Event
      */
-    public Map<Participant, Integer> getDebtors() {
-        return debtors;
+    public Event getEvent() {
+        return event;
     }
 
     /**
@@ -188,7 +174,8 @@ public class Expense {
                 && Objects.equals(payer, expense.payer)
                 && Objects.equals(expenseName, expense.expenseName)
                 && Objects.equals(date, expense.date)
-                && Objects.equals(debtors, expense.debtors)
+                && Objects.equals(debts, expense.debts)
+                && Objects.equals(id, expense.id)
                 && Objects.equals(tag, expense.tag);
     }
 
@@ -199,7 +186,23 @@ public class Expense {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(payer, expenseName, date, price, debtors);
+        return Objects.hash(payer, expenseName, date, price, debts, id);
+    }
+
+    /**
+     * Setter for id
+     * @param id the id
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * Getter for id
+     * @return the id
+     */
+    public Long getId() {
+        return id;
     }
 }
 

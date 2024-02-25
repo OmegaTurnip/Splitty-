@@ -1,9 +1,17 @@
 package commons;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+
 import java.util.Objects;
 
+@Entity
 public class Tag {
 
+    @Id
+    @GeneratedValue
+    private Long id;
     private String name;
     private String colour;
 
@@ -15,6 +23,10 @@ public class Tag {
     public Tag(String name, String colour) {
         this.name = name;
         this.colour = colour;
+    }
+
+    public Tag() {
+
     }
 
     /**

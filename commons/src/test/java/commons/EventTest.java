@@ -1,9 +1,14 @@
 package commons;
 
+import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -11,12 +16,17 @@ class EventTest {
 
     private Event testEvent;
 
-    @BeforeEach
-    void setup() {
-        Participant testParticipant1 = new Participant("Josh");
-        Participant testParticipant2 = new Participant("Amy");
-        Participant testParticipant3 = new Participant("Rizwan");
-        Date testDate1 = new Date(2023, Calendar.JULY, 23);
+
+  @BeforeEach
+  void setup() {
+    testEvent = new Event("Josh's Birthday Party");
+
+    LocalDate testDate1 = LocalDate.of(2023, 7, 23);
+    testEvent.setEventCreationDate(testDate1);
+
+    Participant testParticipant1 = new Participant("Josh", testEvent);
+    Participant testParticipant2 = new Participant("Amy", testEvent);
+    Participant testParticipant3 = new Participant("Rizwan", testEvent);
 
         Collection<Participant> testParticipants1 = new ArrayList<>();
         Collection<Participant> testParticipants2 = new ArrayList<>();
@@ -32,14 +42,18 @@ class EventTest {
         testAllParticipants1.add(testParticipant2);
         testAllParticipants1.add(testParticipant3);
 
-        Expense testExpense1 = new Expense(testParticipant1, "Drinks", testDate1, 400, testParticipants1, new Tag("food", "blue"));
-        Expense testExpense2 = new Expense(testParticipant2, "Lunch", testDate1, 350, testParticipants2, new Tag("food", "blue"));
-        Collection<Expense> testExpenses1 = new ArrayList<>();
-        testExpenses1.add(testExpense1);
-        testExpenses1.add(testExpense2);
+    testEvent.setParticipants(testAllParticipants1);
 
-        testEvent = new Event("Josh's Birthday Party", testDate1, testExpenses1, testAllParticipants1);
-    }
+    Expense testExpense1 = new Expense(testParticipant1, "Drinks",400, testParticipants1, testEvent, new Tag("food", "blue"));
+    Expense testExpense2 = new Expense(testParticipant2, "Lunch", 350, testParticipants2, testEvent, new Tag("food", "blue"));
+    testExpense1.setDate(testDate1);
+    testExpense2.setDate(testDate1);
+    Collection<Expense> testExpenses1 = new ArrayList<>();
+    testExpenses1.add(testExpense1);
+    testExpenses1.add(testExpense2);
+
+    testEvent.setExpenses(testExpenses1);
+  }
 
     @Test
     void generateInviteCodeTest() {
