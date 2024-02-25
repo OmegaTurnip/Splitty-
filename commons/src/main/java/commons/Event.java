@@ -16,11 +16,12 @@ public class Event {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
-
     private String eventName;
     private LocalDate eventCreationDate;
     private String inviteCode;
+    @OneToMany
     private Collection<Expense> expenses;
+    @OneToMany
     private Collection<Participant> participants;
     private LocalDateTime lastActivity;
 
