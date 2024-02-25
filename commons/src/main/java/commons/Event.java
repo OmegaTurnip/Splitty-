@@ -192,6 +192,17 @@ public class Event {
     }
 
     /**
+     * Gets the lastActivity as a String of the format dd/MM/yy hh:mm
+     * @return lastActivity as a String
+     */
+    public String getStringOfLastActivity() {
+        return lastActivity.getDayOfMonth() + "/" +
+                lastActivity.getMonthValue() + '/' +
+                lastActivity.getYear() + ' ' +
+                lastActivity.getHour() + ':' +
+                lastActivity.getMinute();
+    }
+    /**
      * Equals method.
      *
      * @param o Event to test equality on.
