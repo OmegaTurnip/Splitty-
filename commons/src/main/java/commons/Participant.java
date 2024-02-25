@@ -1,11 +1,18 @@
 package commons;
 
-import java.util.Objects;
+import jakarta.persistence.*;
 
+import java.util.Objects;
+@Entity
 public class Participant {
 
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    private Long id;
     private String name;
+    @ManyToOne
     private Event event;
+
 
     /**
      * Constructor.
@@ -17,6 +24,11 @@ public class Participant {
         this.name = name;
         this.event = event;
     }
+
+    /**
+     * Constructor without parameters
+     */
+    public Participant() {}
 
     /**
      * Getter method.
@@ -57,7 +69,8 @@ public class Participant {
         if (o == null || getClass() != o.getClass()) return false;
         Participant that = (Participant) o;
         return Objects.equals(name, that.name)
-                && Objects.equals(event, that.event);
+                && Objects.equals(event, that.event)
+                && Objects.equals(id, that.id);
     }
 
     /**
@@ -67,8 +80,22 @@ public class Participant {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(name, event);
+        return Objects.hash(name, event, id);
+    }
+
+    /**
+     * Setter for id
+     * @param id the id
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * Getter for id
+     * @return the id
+     */
+    public Long getId() {
+        return id;
     }
 }
-
-
