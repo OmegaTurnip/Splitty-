@@ -37,18 +37,10 @@ public class Formatter {
     public static String format(String format, Map<String, String> parameters) {
         if (!getParameterOccurrences(format).keySet()
                 .equals(parameters.keySet())) {
-            throw new IllegalArgumentException("Not all parameters were " +
-                    "present in the format string!");
+            throw new IllegalArgumentException(
+                    "Not all parameters were bound!");
         }
-
-        String result = formatUnsafe(format, parameters);
-
-        if (!getParameterOccurrences(result).isEmpty()) {
-            throw new IllegalArgumentException("Not all parameters were " +
-                    "assigned!");
-        }
-
-        return result;
+        return formatUnsafe(format, parameters);
     }
 
     /**
