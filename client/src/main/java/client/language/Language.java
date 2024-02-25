@@ -106,7 +106,7 @@ public class Language {
     }
 
     /**
-     * Checks if {@code this} is equal to {@code that}. Also considers the
+     * Checks if {@code this} is equal to {@code other}. Also considers the
      * translations (so just equivalent codes is not enough).
      *
      * @param   other
