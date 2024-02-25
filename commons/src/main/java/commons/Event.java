@@ -1,20 +1,31 @@
 package commons;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.UUID;
-
+@Entity
 public class Event {
 
+    @Id
+    @GeneratedValue
+    private Long id;
     private String eventName;
     private LocalDate eventCreationDate;
     private String inviteCode;
+    @OneToMany
     private Collection<Expense> expenses;
+    @OneToMany
     private Collection<Participant> participants;
     private LocalDateTime lastActivity;
+
 
     /**
      * Constructor for an event. The attributes should be editable.
@@ -29,6 +40,11 @@ public class Event {
         this.participants = new ArrayList<>();
         updateLastActivity();
     }
+
+    /**
+     * Constructor without parameters
+     */
+    public Event() {}
 
     /**
      * Method for generating a random invite code upon calling.
@@ -77,10 +93,10 @@ public class Event {
 
     /**
      * Adds a participant to the event
-     * @param participant Participant to add
+     * @param name name of the Participant to add
      */
-    public void addParticipant(Participant participant) {
-        this.participants.add(participant);
+    public void addParticipant(String name) {
+        this.participants.add(new Participant(name, this));
         updateLastActivity();
     }
 
@@ -160,11 +176,17 @@ public class Event {
     }
 
     /**
-     * Adds an expense to the event
-     * @param expense Expense to add
+     * Register an expense with an event
+     * @param payer the Participant that paid
+     * @param expenseName the name of the Expense to be registered
+     * @param price the price of the Expense
+     * @param debtors the debtors of the Expense
      */
-    public void addExpense(Expense expense) {
-        expenses.add(expense);
+    public void registerExpense(Participant payer,
+                                String expenseName,
+                                int price,
+                                Collection<Participant> debtors) {
+        expenses.add(new Expense(payer, expenseName, price, debtors, this));
         updateLastActivity();
     }
     /**
@@ -177,7 +199,7 @@ public class Event {
 
     /**
      * Setter for lastActivity
-     * @param lastActivity the LocaDateTime to set it to
+     * @param lastActivity the LocalDateTime to set it to
      */
     public void setLastActivity(LocalDateTime lastActivity) {
         this.lastActivity = lastActivity;
@@ -217,7 +239,8 @@ public class Event {
                 && Objects.equals(eventCreationDate, event.eventCreationDate)
                 && Objects.equals(inviteCode, event.inviteCode)
                 && Objects.equals(expenses, event.expenses)
-                && Objects.equals(lastActivity, event.lastActivity);
+                && Objects.equals(lastActivity, event.lastActivity)
+                && Objects.equals(id, event.id);
     }
 
     /**
@@ -228,7 +251,23 @@ public class Event {
     @Override
     public int hashCode() {
         return Objects.hash(eventName, eventCreationDate, inviteCode,
-                expenses, lastActivity);
+                expenses, lastActivity, id);
+    }
+
+    /**
+     * Setter for id
+     * @param id the id
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * Getter for id
+     * @return the id
+     */
+    public Long getId() {
+        return id;
     }
 }
 
