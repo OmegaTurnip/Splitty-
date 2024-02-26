@@ -33,7 +33,7 @@ public class TranslationCreator {
 
                 (Absolute) filepath of existing translation (probably english)
                  >\s""");
-        return new PropertiesFile(new File(input.next()));
+        return new PropertiesFile(new File(input.nextLine()));
     }
 
     private static ConfigFile getDestinationFileFromUser()
@@ -42,7 +42,7 @@ public class TranslationCreator {
 
                 (Absolute) filepath of language that needs translation
                  >\s""");
-        File file = new File(input.next());
+        File file = new File(input.nextLine());
         String comment = new Scanner(file).nextLine().substring(1);
         return new ConfigFile(file, comment);
     }
@@ -112,7 +112,7 @@ public class TranslationCreator {
             }
         }
         System.out.println("\nDone!\nPress enter to leave...");
-        input.next();
+        input.nextLine();
     }
 
     private static String getTranslation(String textId) {
@@ -120,7 +120,7 @@ public class TranslationCreator {
         System.out.println("Original text: (" + textId + ")");
         System.out.println(formatString(sourceTranslation));
         System.out.println("Translation:");
-        return input.next();
+        return input.nextLine();
     }
 
     private static String formatString(String format) {
