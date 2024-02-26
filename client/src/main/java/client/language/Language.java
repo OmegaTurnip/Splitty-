@@ -23,8 +23,8 @@ public class Language {
      *          The <a href="https://iso639-3.sil.org/code_tables/639/data">ISO
      *          639-3</a> code representing this language.
      * @param   language
-     *          The properties file in which the language is stored, should
-     *          already be loaded.
+     *          The properties file in which the language is stored. It should
+     *          already be initialised.
      */
     public Language(String languageCode, Properties language) {
         boolean isLegalLanguageCode =
