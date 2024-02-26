@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 public class Language {
 
@@ -14,6 +15,9 @@ public class Language {
     private static Language english;
     private final String languageCode;
     private final Properties language;
+
+    private static final Pattern LANGUAGE_CODE_PATTERN =
+            Pattern.compile("^[a-z]{3}$");
 
     /**
      * Creates a new language object, storing its translations. Also adds it to
@@ -27,11 +31,7 @@ public class Language {
      *          already be initialised.
      */
     public Language(String languageCode, Properties language) {
-        boolean isLegalLanguageCode =
-                languageCode != null && languageCode.length() == 3
-                && languageCode.equals(languageCode.toLowerCase());
-
-        if (!isLegalLanguageCode)
+        if (!isValidLanguageCode(languageCode))
             throw new IllegalArgumentException("Invalid languageCode");
 
         this.languageCode = languageCode;
@@ -49,6 +49,20 @@ public class Language {
      */
     public String getLanguageCode() {
         return languageCode;
+    }
+
+    /**
+     * Checks whether the inputted {@code String} is a valid
+     * <a href="https://iso639-3.sil.org/code_tables/639/data">ISO 639-3</a>
+     * code.
+     *
+     * @param   code
+     *          The string to be checked.
+     *
+     * @return  Whether the string is a valid ISO 639-3 code.
+     */
+    public static boolean isValidLanguageCode(String code) {
+        return code != null && LANGUAGE_CODE_PATTERN.matcher(code).matches();
     }
 
     /**
@@ -106,8 +120,8 @@ public class Language {
     }
 
     /**
-     * Checks if {@code this} is equal to {@code other}. Also considers the
-     * translations (so just equivalent codes is not enough).
+     * Checks if {@code this} is equal to {@code other}. Only considers the
+     * language code.
      *
      * @param   other
      *          The object to check.
@@ -119,8 +133,7 @@ public class Language {
         if (this == other) return true;
         if (other == null || getClass() != other.getClass()) return false;
         Language that = (Language) other;
-        return Objects.equals(languageCode, that.languageCode)
-                && Objects.equals(language, that.language);
+        return Objects.equals(languageCode, that.languageCode);
     }
 
     /**
@@ -130,6 +143,6 @@ public class Language {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(languageCode, language);
+        return Objects.hash(languageCode);
     }
 }

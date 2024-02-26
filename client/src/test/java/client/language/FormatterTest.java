@@ -35,6 +35,12 @@ class FormatterTest {
         hashMap.put("msg", "WoW!");
         assertEquals("price: €56, WoW!", Formatter.formatUnsafe("price: {{price}}, {{msg}}", hashMap));
         assertEquals("WoW! WoW!", Formatter.formatUnsafe("{{msg}} {{msg}}", hashMap));
+
+
+        assertThrows(IllegalArgumentException.class, () -> Formatter.formatUnsafe("test", null));
+        assertThrows(IllegalArgumentException.class, () -> Formatter.formatUnsafe("{{", hashMap));
+        hashMap.put("?", "value");
+        assertThrows(IllegalArgumentException.class, () -> Formatter.formatUnsafe("test", hashMap));
     }
 
     @Test
@@ -45,6 +51,8 @@ class FormatterTest {
         assertEquals(occurrences,  Formatter.getParameterOccurrences("dfas sf{{price}}ads{{price}}fds"));
         occurrences.put("name", 1);
         assertEquals(occurrences,  Formatter.getParameterOccurrences("dfas sf{{price}}a{{name}}ds{{price}}fds"));
+
+        assertThrows(IllegalArgumentException.class, () -> Formatter.getParameterOccurrences("{{"));
     }
 
     @Test
@@ -64,6 +72,7 @@ class FormatterTest {
         assertFalse(Formatter.isValidFormat("{{}}"));
         assertFalse(Formatter.isValidFormat("{{???}}"));
         assertFalse(Formatter.isValidFormat("{{}"));
+        assertFalse(Formatter.isValidFormat("{{{name}}"));
         assertFalse(Formatter.isValidFormat("{{"));
         assertFalse(Formatter.isValidFormat("{{{{name}}test}}"));
         assertFalse(Formatter.isValidFormat("Lorem {{second word}}"));
@@ -87,5 +96,7 @@ class FormatterTest {
         assertTrue(Formatter.isValidParameter("AZaz09"));
         assertTrue(Formatter.isValidParameter("secondWord"));
     }
+
+
 
 }

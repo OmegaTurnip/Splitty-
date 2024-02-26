@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
 
 public class LanguageTest {
 
@@ -23,6 +24,24 @@ public class LanguageTest {
         );
     }
 
+    @Test
+    void testLanguageCode() {
+        assertTrue(Language.isValidLanguageCode("eng"));
+
+        assertFalse(Language.isValidLanguageCode("en"));
+        assertFalse(Language.isValidLanguageCode("ENG"));
+        assertFalse(Language.isValidLanguageCode("..."));
+    }
+
+    @Test
+    void testConstructor() {
+        assertThrows(IllegalArgumentException.class, () -> new Language(null, new Properties()));
+    }
+
+    @Test
+    void testGetTranslation() {
+        assertThrows(IllegalArgumentException.class, () -> Language.languages.get("eng").getTranslation(null));
+    }
 
     @Test
     void testEnglish() {
@@ -36,11 +55,13 @@ public class LanguageTest {
         assertEquals("<TEXT DOESN'T EXIST>",
                 Translator.getTranslation("random-non-existing-text-id")
         );
+        assertEquals("eng", Language.languages.get("eng").getLanguageCode());
     }
 
     @Test
     void testDutch() {
         Translator.setCurrentLanguage(Language.languages.get("nld"));
+        assertEquals(Translator.getCurrentLanguage(), Language.languages.get("nld"));
         assertEquals("Nederlands",
                 Translator.getTranslation(Text.NativeLanguageName)
         );
@@ -54,5 +75,17 @@ public class LanguageTest {
         assertEquals("[<TEXT DOESN'T EXIST>]",
                 Translator.getTranslation("random-non-existing-text-id")
         );
+    }
+
+    @Test
+    void testEquals() {
+        assertEquals(Language.languages.get("eng"), Language.languages.get("eng"));
+        assertNotEquals(Language.languages.get("eng"), null);
+        assertNotEquals(Language.languages.get("eng"), Language.languages.get("nld"));
+    }
+
+    @Test
+    void testHashCode() {
+        assertEquals(Language.languages.get("eng").hashCode(), Language.languages.get("eng").hashCode());
     }
 }
