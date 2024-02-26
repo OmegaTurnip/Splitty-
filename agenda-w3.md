@@ -7,7 +7,7 @@
 | Minute Taker |      |
 | Attendees:   | Paras Khan, Esther Wit, Lasse Geurts, Billy Runne, Maurits Sloof     |
 
-#Agenda Items
+Agenda Items
 -
 - Opening by chair (1 min)
 - Check -in: How is everyone doing? (1 min)
@@ -31,3 +31,6 @@
 - Planned meeting duration != actual duration? Where/why did you mis -estimate? (2 min)
 - Question round: Does anyone have anything to add before the meeting closes? (1 min)
 - Closure (1 min)
+
+Action Points
+-
