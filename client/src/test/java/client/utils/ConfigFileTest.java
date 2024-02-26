@@ -42,7 +42,7 @@ public class ConfigFileTest {
     }
 
     @Test
-    void testOverwriting() throws IOException {
+    void testOverwriting() {
         assertDoesNotThrow(() -> configFile.setAttribute("attr", "val"));
         assertEquals("val", configFile.getAttribute("attr"));
         assertDoesNotThrow(() -> configFile.setAttribute("attr", "lav"));
