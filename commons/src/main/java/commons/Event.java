@@ -1,5 +1,6 @@
 package commons;
 
+
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.List;
 @Entity
 public class Event {
 
@@ -23,25 +25,39 @@ public class Event {
     private Collection<Participant> participants;
     private LocalDateTime lastActivity;
 
+    @OneToMany
+    private List<Tag> tags;
 
     /**
      * Constructor for an event. The attributes should be editable.
      *
-     * @param eventName         The name of the event.
+     * @param eventName The name of the event.
      */
     public Event(String eventName) {
         this.eventName = eventName;
         this.eventCreationDate = LocalDate.now();
         this.inviteCode = generateInviteCode();
-        this.expenses = new ArrayList<>();
-        this.participants = new ArrayList<>();
+        this.expenses = new ArrayList<Expense>();
+        this.participants = new ArrayList<Participant>();
+        this.tags = new ArrayList<Tag>();
+        basicTags();
         updateLastActivity();
+    }
+
+    /**
+     * method for adding the three standard tags
+     */
+    public void basicTags() {
+        addTag(new Tag("food", "blue"));
+        addTag(new Tag("entrance fees", "green"));
+        addTag(new Tag("Travel", "yellow"));
     }
 
     /**
      * Constructor without parameters
      */
-    public Event() {}
+    public Event() {
+    }
 
     /**
      * Method for generating a random invite code upon calling.
@@ -70,9 +86,27 @@ public class Event {
     }
 
     /**
+     * getter method
+     *
+     * @return list of tags
+     */
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    /**
+     * adds a tag
+     *
+     * @param tag to be added
+     */
+    public void addTag(Tag tag) {
+        tags.add(tag);
+    }
+
+    /**
      * Getter method.
      *
-     * @return .
+     * @return participants
      */
     public Collection<Participant> getParticipants() {
         return participants;
@@ -90,10 +124,12 @@ public class Event {
 
     /**
      * Adds a participant to the event
+     *
      * @param name name of the Participant to add
      */
     public void addParticipant(String name) {
-        this.participants.add(new Participant(name, this));
+        Participant participant = new Participant(name, this);
+        this.participants.add(participant);
         updateLastActivity();
     }
 
@@ -127,6 +163,7 @@ public class Event {
 
     /**
      * Setter for eventCreationDate
+     *
      * @param eventCreationDate the date to set
      */
     public void setEventCreationDate(LocalDate eventCreationDate) {
@@ -173,21 +210,50 @@ public class Event {
     }
 
     /**
+     * Adds an expense to the event.
+     * Checks if the tag is already in the list of tags.
+     * If it lists a tag with the same name but diff colour,
+     * it changes the colour.
+     *
+     * @param e expense
+     */
+    public void addExpense(Expense e) {
+        expenses.add(e);
+        Tag expenseTag = e.getTag();
+        for (Tag tag : tags) {
+            if (tag.equals(expenseTag)) {
+                return;
+            }
+            if (tag.nameEquals(expenseTag)) {
+                e.setTag(tag);
+                return;
+            }
+        }
+
+        tags.add(expenseTag);
+    }
+
+    /**
      * Register an expense with an event
-     * @param payer the Participant that paid
+     *
+     * @param payer       the Participant that paid
      * @param expenseName the name of the Expense to be registered
-     * @param price the price of the Expense
-     * @param debtors the debtors of the Expense
+     * @param price       the price of the Expense
+     * @param debtors     the debtors of the Expense
+     * @param tag          the tag
      */
     public void registerExpense(Participant payer,
                                 String expenseName,
                                 int price,
-                                Collection<Participant> debtors) {
-        expenses.add(new Expense(payer, expenseName, price, debtors, this));
+                                Collection<Participant> debtors, Tag tag) {
+        expenses.add(new Expense(payer, expenseName, price,
+                debtors, this, tag));
         updateLastActivity();
     }
+
     /**
      * Getter for the last activity on an event
+     *
      * @return lastActivity
      */
     public LocalDateTime getLastActivity() {
@@ -196,6 +262,7 @@ public class Event {
 
     /**
      * Setter for lastActivity
+     *
      * @param lastActivity the LocalDateTime to set it to
      */
     public void setLastActivity(LocalDateTime lastActivity) {
@@ -212,6 +279,7 @@ public class Event {
 
     /**
      * Gets the lastActivity as a String of the format dd/MM/yy hh:mm
+     *
      * @return lastActivity as a String
      */
     public String getStringOfLastActivity() {
@@ -221,6 +289,7 @@ public class Event {
                 lastActivity.getHour() + ':' +
                 lastActivity.getMinute();
     }
+
     /**
      * Equals method.
      *
@@ -237,6 +306,7 @@ public class Event {
                 && Objects.equals(inviteCode, event.inviteCode)
                 && Objects.equals(expenses, event.expenses)
                 && Objects.equals(lastActivity, event.lastActivity)
+                && Objects.equals(tags, event.tags)
                 && Objects.equals(id, event.id);
     }
 
@@ -253,6 +323,7 @@ public class Event {
 
     /**
      * Setter for id
+     *
      * @param id the id
      */
     public void setId(Long id) {
@@ -261,6 +332,7 @@ public class Event {
 
     /**
      * Getter for id
+     *
      * @return the id
      */
     public Long getId() {

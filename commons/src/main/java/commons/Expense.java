@@ -23,37 +23,51 @@ public class Expense {
     @ManyToOne
     private Event event;
 
+    @OneToOne
+    private Tag tag;
 
     /**
      * Constructor.
-     *
-     * @param payer       The person who paid for the expense.
+     * @param payer The person who paid for the expense.
      * @param expenseName The name of the expense.
      * @param price       The price of the expense (in dollars).
      * @param debtors     The people who owe money
      *                    due to this expense (key),
      *                    and the amount they owe (value).
      * @param event       The event the expense belongs to
+    * @param tag          The tag of the expense
      */
     public Expense(Participant payer,
                    String expenseName,
-                   int price, Collection<Participant> debtors, Event event) {
+                   int price, Collection<Participant> debtors,
+                   Event event, Tag tag) {
         this.payer = payer;
         this.expenseName = expenseName;
         this.date = LocalDate.now();
         this.price = price;
-
         this.debts = debtors.stream()
                 .map(p -> new Debt(p, price/debtors.size()))
                 .collect(Collectors.toList());
         this.event = event;
         event.updateLastActivity();
+        this.tag = tag;
     }
 
     /**
      * Constructor without parameters
      */
-    public Expense() {}
+    public Expense() {
+
+    }
+
+    /**
+ * Setter method
+ * @param tag the tag of the expense
+ */
+
+    public void setTag(Tag tag) {
+        this.tag = tag;
+    }
 
     /**
      * Setter method. Also updates last activity in the corresponding Event.
@@ -140,8 +154,15 @@ public class Expense {
     }
 
     /**
+     * Getter of the tag
+     * @return tag
+     */
+    public Tag getTag() {
+        return tag;
+    }
+
+    /**
      * Equals method.
-     *
      * @param o Expense to test equality on.
      * @return True or false depending on equality.
      */
@@ -155,7 +176,8 @@ public class Expense {
                 && Objects.equals(expenseName, expense.expenseName)
                 && Objects.equals(date, expense.date)
                 && Objects.equals(debts, expense.debts)
-                && Objects.equals(id, expense.id);
+                && Objects.equals(id, expense.id)
+                && Objects.equals(tag, expense.tag);
     }
 
     /**
