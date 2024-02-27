@@ -1,12 +1,16 @@
 package client.language;
 
+import client.utils.ConfigFile;
 import client.utils.PropertiesFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class Language {
@@ -117,6 +121,52 @@ public class Language {
             throws IOException {
         PropertiesFile languageReader = new PropertiesFile(file);
         return new Language(languageCode, languageReader.getContent());
+    }
+
+    /**
+     * Creates an empty language file containing all known text ids. This only
+     * exists because of the following requirement: "To generate an empty
+     * language template from the language selection, so I can contribute a new
+     * language to the project." This function *SHOULD NOT* be used by us to add
+     * a new language, use the {@link TranslationCreator TranslationCreator}
+     * application for that purpose.
+     *
+     * @param   file
+     *          The file in which the new language will be stored.
+     * @param   languageCode
+     *          The <a href="https://iso639-3.sil.org/code_tables/639/data">ISO
+     *          639-3</a> code representing the new language.
+     * @param   languageName
+     *          The English name of the language.
+     *
+     * @throws  IOException
+     *          If an I/O error occurs writing to or creating the file.
+     */
+    public static void createEmptyLanguageFile(File file, String languageCode,
+            String languageName) throws IOException {
+        if (!isValidLanguageCode(languageCode))
+            throw new IllegalArgumentException("Invalid languageCode");
+
+        if (file == null)
+            throw new IllegalArgumentException("file is null!");
+
+        if (languageName == null)
+            throw new IllegalArgumentException("languageName is null");
+
+        Set<String> textIds = new HashSet<>();
+        for (Language language : languages.values()) {
+            textIds.addAll(language.language.stringPropertyNames());
+        }
+
+        List<String> sortedTextIds = textIds.stream().sorted().toList();
+
+        ConfigFile resultingFile = new ConfigFile(file, "The " +
+                languageName + " translation of the program", false);
+
+        for (String textId : sortedTextIds) {
+            resultingFile.setAttribute(textId, "");
+        }
+        resultingFile.flush();
     }
 
     /**
