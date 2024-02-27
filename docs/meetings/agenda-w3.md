@@ -1,20 +1,19 @@
-| Key          | Value                                                            |
-|--------------|------------------------------------------------------------------|
-| Date:        | 27/02/24                                                         |
-| Time:        | 14.45-15.30                                                      |
-| Location:    | Flux Hall B                                                      |
-| Chair        | Billy                                                            |
-| Minute Taker | Esther                                                           |
-| Attendees:   | Paras Khan, Esther Wit, Lasse Geurts, Billy Runne, Maurits Sloof |
 
-Agenda Items
--
+| Key          | Value |
+|--------------|-------|
+| Date:        | 27/02/24    |
+| Time:        | 14.45-15.30     |
+| Location:    | Flux Hall B     |
+| Chair        | Billy     |
+| Minute Taker | Esther     |
+| Attendees:   | Paras Khan, Esther Wit, Lasse Geurts, Billy Runne, Maurits Sloof     |
+Agenda Items:
 - Opening by chair (1 min)
 - Check -in: How is everyone doing? (1 min)
 - Announcements by the team (1 min)
 - Approval of the agenda - Does anyone have any additions? (1 min)
 - Approval of last minutes - Did everyone read the minutes from the previous meeting? (2 min)
-    - Have the tasks from last week been done? (1 min)
+    - Have the tasks from last week been done? What have you worked on in the last week (1 min)
 
 - Announcements by the TA (3 min)
 - Presentation of the current app to TA (5 min)
