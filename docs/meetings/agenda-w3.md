@@ -1,11 +1,11 @@
-| Key          | Value |
-|--------------|-------|
-| Date:        | 27/02/24    |
-| Time:        | 14.45-15.30     |
-| Location:    | Flux Hall B     |
-| Chair        | Billy     |
-| Minute Taker |      |
-| Attendees:   | Paras Khan, Esther Wit, Lasse Geurts, Billy Runne, Maurits Sloof     |
+| Key          | Value                                                            |
+|--------------|------------------------------------------------------------------|
+| Date:        | 27/02/24                                                         |
+| Time:        | 14.45-15.30                                                      |
+| Location:    | Flux Hall B                                                      |
+| Chair        | Billy                                                            |
+| Minute Taker | Esther                                                           |
+| Attendees:   | Paras Khan, Esther Wit, Lasse Geurts, Billy Runne, Maurits Sloof |
 
 Agenda Items
 -
