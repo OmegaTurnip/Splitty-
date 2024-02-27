@@ -11,7 +11,10 @@ import java.util.regex.Pattern;
 
 
 /**
- * Class to help making translations easier.
+ * Class to help making translations easier. It is not part of the actual
+ * program but just a tool for us, the developers, to make adding new
+ * translations easier. (That's also why I didn't put effort in properly
+ * formatting the code).
  */
 public class TranslationCreator {
 

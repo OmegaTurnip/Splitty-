@@ -15,11 +15,28 @@ import java.util.regex.Pattern;
 
 public class Language {
 
+    /**
+     * A set containing all loaded languages.
+     */
     public static final HashMap<String, Language> languages = new HashMap<>();
-    private static Language english;
+
+    /**
+     * A default language to fall back on (the default language is English).
+     */
+    private static Language defaultLanguage;
     private final String languageCode;
     private final Properties language;
 
+    /**
+     * A regex for validating a language code. The {@code ^} character denotes
+     * the start of the string and the {@code $} the end. So, for a {@code
+     * String} to match, the expression between the {@code ^} and {@code $}
+     * character should apply to the whole of the {@code String}. The {@code
+     * [a-z]{3}} part means that for a {@code String} to match, a character from
+     * the ASCII/Unicode range a-z (i.e. a lowercase latin character) should be
+     * found exactly 3 times. I.e. the {@code String} should contain, from start
+     * to end, exactly 3 lowercase latin characters to match.
+     */
     private static final Pattern LANGUAGE_CODE_PATTERN =
             Pattern.compile("^[a-z]{3}$");
 
@@ -42,7 +59,7 @@ public class Language {
         this.language = language;
         languages.put(languageCode, this);
 
-        if ("eng".equals(languageCode)) english = this;
+        if ("eng".equals(languageCode)) defaultLanguage = this;
     }
 
     /**
@@ -94,12 +111,12 @@ public class Language {
         // valid translation in other languages.
         else if (textId.equals(Text.NativeLanguageName))
             return languageCode;
-        else if (english == null)
+        else if (defaultLanguage == null)
             return "<TEXT DOESN'T EXIST AND NO ENGLISH FALLBACK>";
-        else if (this == english)
+        else if (this == defaultLanguage)
             return "<TEXT DOESN'T EXIST>";
         else
-            return '[' + english.getTranslation(textId) + ']';
+            return '[' + defaultLanguage.getTranslation(textId) + ']';
     }
 
     /**

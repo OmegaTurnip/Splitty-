@@ -7,13 +7,32 @@ import java.util.regex.Pattern;
 
 public class Formatter {
 
+
+    /**
+     * A regex which checks if a {@code String} adheres to the specified format.
+     * I.e. no unmatched double curly brackets and all parameter names are
+     * alphanumeric.
+     */
     private static final Pattern FORMAT_PATTERN =
             Pattern.compile(
                      "^(?>[^{}]|(?>\\{[^{])|(?>}[^}]))*(?>\\{\\{" +
                            "\\p{Alnum}+}}(?>[^{}]|(?>\\{[^{])|(?>}[^}]))*)*$");
+    /**
+     * A regex which checks if a {@code String} would be a valid parameter name.
+     * I.e. all characters are alphanumeric and the string is not empty.
+     */
     private static final Pattern PARAMETER_NAME_PATTERN =
             Pattern.compile("^\\p{Alnum}+$");
 
+    /**
+     * A regex which will split the string in such a way that whenever the
+     * {@link Matcher#find() find()} method is called, the next parameter will
+     * be returned by a call to {@link Matcher#group(int) group(1)}. It is
+     * similar to {@link Formatter#FORMAT_PATTERN FORMAT_PATTERN} in a way, but
+     * where {@code FORMAT_PATTERN} is used to validate a format string, this
+     * pattern is used to retrieve all parameters from a format string in an
+     * iterator type fashion.
+     */
     private static final Pattern PARAMETER_PATTERN =
             Pattern.compile("\\G(?>[^{}]|(?>\\{[^{])|(?>}[^}]))*" +
                     "\\{\\{(\\p{Alnum}+)}}");
