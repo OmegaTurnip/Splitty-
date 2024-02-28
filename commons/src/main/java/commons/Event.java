@@ -66,10 +66,8 @@ public class Event {
      */
     public static String generateInviteCode() {
         UUID randomCode = UUID.randomUUID();
-        StringBuilder inBetween = new StringBuilder(randomCode.toString()
-                .replaceAll("_", ""));
-        inBetween.delete(8, 32);
-        return inBetween.toString();
+        return randomCode.toString()
+                .replaceAll("_", "");
     }
 
     /**
