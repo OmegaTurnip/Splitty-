@@ -67,11 +67,16 @@ public class TranslationCreator {
     public static void main(String[] args) throws IOException {
         source = getSourceFileFromUser();
 
+        System.out.println("\nMake sure the new language file already exists " +
+                "and has a comment on the first line, e.g. '# The _ " +
+                "translation of the program'");
+
         destination = getDestinationFileFromUser();
 
-        System.out.println("Use the '/goback' command to edit the previous " +
+        System.out.println("\nUse the '/goback' command to edit the previous " +
                 "entry. When inputted twice, it will go back 2 translations " +
                 "etc.");
+
 
         Set<Object> sourceTranslations = source.getContent().keySet();
         Set<Object>  destTranslations = destination.getContent().keySet();

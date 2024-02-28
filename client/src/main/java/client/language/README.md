@@ -108,7 +108,7 @@ Text.LoginScreen.EventSelection.eventCodePrompt
 Example usages are given in the previous chapter.
 
 ### Translating it
-Use the `TranslationCreator` for this purpose. 
+Use the `TranslationCreator` for this purpose.
 Following the instructions of the program should be sufficient to make a translation.
 Don't forget that you should _not_ translate parameter names.
 
