@@ -29,7 +29,6 @@ public class MainCtrl {
 
     private AddQuoteCtrl addCtrl;
     private Scene add;
-
     /**
      * @param primaryStage the window.
      * @param overview the fx for the start-up page.
@@ -46,6 +45,23 @@ public class MainCtrl {
         this.add = new Scene(add.getValue());
 
         showOverview();
+        primaryStage.show();
+    }
+
+    /**
+     * Temp test thingy
+     *
+     * @param primaryStage  .
+     * @param lang .
+     */
+    public void initialize(
+            Stage primaryStage, Pair<LanguageTestCtrl, Parent> lang) {
+        this.primaryStage = primaryStage;
+
+        primaryStage.setTitle("Language selector test");
+        primaryStage.setScene(new Scene(lang.getValue()));
+
+        lang.getKey().nextLang();
         primaryStage.show();
     }
 

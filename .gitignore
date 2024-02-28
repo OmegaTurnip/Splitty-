@@ -41,4 +41,6 @@ out/
 .vscode/
 
 ### local settings ###
+# /clientsettings.properties is the old file name
 /clientsettings.properties
+/client_settings.properties
