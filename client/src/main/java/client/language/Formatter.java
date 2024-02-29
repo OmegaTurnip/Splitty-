@@ -15,8 +15,8 @@ public class Formatter {
      */
     private static final Pattern FORMAT_PATTERN =
             Pattern.compile(
-                     "^(?>[^{}]|(?>\\{[^{])|(?>}[^}]))*(?>\\{\\{\\p{Alnum}+" +
-                             "}}(?>[^{}]|(?>\\{[^{])|(?>}[^}]))*)*[{}]?$");
+                     "^(?>[^{}]|\\{(?!\\{)|}(?!}))*(?>\\{\\{\\p{Alnum}+" +
+                             "}}(?>[^{}]|\\{(?!\\{)|}(?!}))*)*$");
     /**
      * A regex which checks if a {@code String} would be a valid parameter name.
      * I.e. all characters are alphanumeric and the string is not empty.
@@ -34,8 +34,8 @@ public class Formatter {
      * iterator type fashion.
      */
     private static final Pattern PARAMETER_PATTERN =
-            Pattern.compile("\\G(?>[^{}]|(?>\\{[^{])|(?>}[^}]))*" +
-                    "\\{\\{(\\p{Alnum}+)}}");
+            Pattern.compile("\\G(?>[^{}]|\\{(?!\\{)|}(?!}))*\\{\\{(" +
+                    "\\p{Alnum}+)}}");
 
 
     /**

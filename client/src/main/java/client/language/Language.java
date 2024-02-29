@@ -97,7 +97,7 @@ public class Language {
      *          Should be constructed using the {@link Text Text}
      *          class.
      *
-     * @return the translation of a piece of text.
+     * @return  The translation of a piece of text.
      */
     String getTranslation(String textId) {
         if (textId == null)
