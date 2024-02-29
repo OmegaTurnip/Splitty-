@@ -23,7 +23,7 @@ public class Formatter {
      */
     private static final Pattern PARAMETER_NAME_PATTERN =
             Pattern.compile("^\\p{Alnum}+$");
- 
+
     /**
      * A regex which will split the string in such a way that whenever the
      * {@link Matcher#find() find()} method is called, the next parameter will
