@@ -348,4 +348,8 @@ public class Event {
     public String toString() {
         return eventName;
     }
+
+    public boolean deleteExpense(Expense expense) {
+        return expenses.remove(expense);
+    }
 }
