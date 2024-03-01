@@ -418,7 +418,7 @@ public class UserConfig {
 
         // This check is intentionally not mentioned in the javadoc.
         if (stringConverter == null)
-            throw new IllegalArgumentException("an argument is null!");
+            throw new IllegalArgumentException("stringConverter is null!");
 
         if (entrySep.contains(keyValSep) || keyValSep.contains(entrySep))
             throw new IllegalArgumentException("entrySep and keyValSep " +
@@ -515,7 +515,7 @@ public class UserConfig {
 
         // This check is intentionally not mentioned in the javadoc.
         if (stringConverter == null)
-            throw new IllegalArgumentException("an argument is null!");
+            throw new IllegalArgumentException("stringConverter is null!");
 
         if (entrySep.equals(keyValSep))
             throw new IllegalArgumentException(
