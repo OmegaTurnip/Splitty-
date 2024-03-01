@@ -1,24 +1,32 @@
 package server.api;
 
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import commons.Participant;
+import commons.Event;
+
+import server.database.EventRepository;
 import server.database.ParticipantRepository;
 
-import java.util.List;
+import java.util.Collection;
 
 @RestController
 @RequestMapping("/api/events/{eventId}/participants")
 public class ParticipantController {
     private final ParticipantRepository repo;
+    private final EventRepository eventRepo;
 
     /**
      * Constructor
      * @param repo the repository
+     * @param eventRepo the event repository
      */
-    public ParticipantController(ParticipantRepository repo) {
+    public ParticipantController(ParticipantRepository repo, EventRepository eventRepo) {
         this.repo = repo;
+        this.eventRepo = eventRepo;
     }
 
     /**
@@ -74,8 +82,10 @@ public class ParticipantController {
      * @param eventId the event that the participant belongs to
      */
     @GetMapping(path = { "", "/" })
-    public List<Participant> getAll(@PathVariable("eventId") long eventId) {
-        return repo.findAll();
+    public Collection<Participant>
+        getAll(@PathVariable("eventId") long eventId) {
+        Event event = eventRepo.findById(eventId).get();
+        return event.getParticipants();
     }
 
     /**
