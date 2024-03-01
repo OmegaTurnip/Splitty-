@@ -24,7 +24,8 @@ public class ParticipantController {
      * @param repo the repository
      * @param eventRepo the event repository
      */
-    public ParticipantController(ParticipantRepository repo, EventRepository eventRepo) {
+    public ParticipantController(ParticipantRepository repo,
+                                 EventRepository eventRepo) {
         this.repo = repo;
         this.eventRepo = eventRepo;
     }
