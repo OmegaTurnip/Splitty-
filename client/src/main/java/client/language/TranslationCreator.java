@@ -28,7 +28,7 @@ public class TranslationCreator {
 
     private static final Pattern PARAMETER_PATTERN =
             Pattern.compile("\\G(?>[^{}]|\\{(?!\\{)|}(?!}))*\\{\\{(" +
-                    "\\p{Alnum}+)}}");
+                    "\\p{Alnum}+)}}(?!})");
 
     private static PropertiesFile getSourceFileFromUser()
             throws IOException {
