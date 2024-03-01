@@ -37,8 +37,7 @@ public class Translator {
      *
      * @param   textId
      *          The id of the piece of text of which a translation is needed.
-     *          Should be constructed using the {@link Text Text}
-     *          class.
+     *          Should be constructed using the {@link Text} class.
      *
      * @return the translation of a piece of text.
      */

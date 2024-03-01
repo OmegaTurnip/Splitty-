@@ -5,10 +5,9 @@ import client.language.Translator;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 /**
  * A class to store user settings, immediately storing them on disk.
@@ -19,12 +18,15 @@ public class UserConfig {
     static final String PATHNAME = "client_settings.properties";
 
     static {
+        UserConfig userSettings1;
         try {
-            USER_SETTINGS = new UserConfig();
+            userSettings1 = new UserConfig(
+                    new ConfigFile(new File(PATHNAME), "Client settings")
+            );
         } catch (IOException e) {
-            throw new RuntimeException("Settings file couldn't be open with " +
-                    "the following error message: " + e.getMessage());
+            userSettings1 = null;
         }
+        USER_SETTINGS = userSettings1;
     }
 
     private final ConfigFile configFile;
@@ -38,24 +40,15 @@ public class UserConfig {
     // key: "languages"
     private HashMap<String, File> availableLanguages;
 
+    // key: "events"
+    private List<String> eventCodes;
+
     // When adding new attributes, don't forget to:
     //  - add getters, setters
     //  - update read()
     //  - update the attribute only after writing to the file to prevent desyncs
     //    in the case an IOException is thrown.
 
-
-
-    /**
-     * Creates an empty {@code UserConfig} object.
-     *
-     * @throws  IOException
-     *          If an I/O error occurs writing to or creating the file in which
-     *          the configuration is stored.
-     */
-    UserConfig() throws IOException {
-        this(new ConfigFile(new File(PATHNAME), "Client settings"));
-    }
 
     /**
      * Creates an empty {@code UserConfig} object.
@@ -135,12 +128,15 @@ public class UserConfig {
      * Gets a {@code HashMap} containing all available languages. The key is
      * the language
      * <a href="https://iso639-3.sil.org/code_tables/639/data">ISO 639-3</a>
-     * code, the value is the file in which the translations are stored.
+     * code, the value is the file in which the translations are stored. Any
+     * changes made to this {@code HashMap} are not reflected in this class but
+     * should be stored using the
+     * {@link UserConfig#setAvailableLanguages(HashMap)} method.
      *
      * @return  A {@code HashMap} containing all available languages.
      */
     public HashMap<String, File> getAvailableLanguages() {
-        return availableLanguages;
+        return new HashMap<>(availableLanguages);
     }
 
     /**
@@ -160,12 +156,56 @@ public class UserConfig {
             throws IOException {
 
         if (availableLanguages == null)
-            throw new IllegalArgumentException("availableLanguages is null");
+            throw new IllegalArgumentException("availableLanguages is null!");
 
         configFile.setAttribute("languages",
                 fromHashMap(availableLanguages, File::getAbsolutePath));
         this.availableLanguages = availableLanguages;
     }
+
+    /**
+     * Gets the event codes entered by this user as a {@code List}. Any changes
+     * made to this {@code List<String>} are not reflected in this class but
+     * should be stored using the {@link UserConfig#setEventCodes(List)} method.
+     *
+     * @return  A {@code List} containing all event codes.
+     */
+    public List<String> getEventCodes() {
+        return new ArrayList<>(eventCodes);
+    }
+
+    private void setEventCodes(String[] eventCodes) throws IOException {
+        setEventCodes(Arrays.asList(eventCodes));
+    }
+
+    /**
+     * Sets the event codes entered by this user as a {@code List}.
+     *
+     * @param   eventCodes
+     *          A {@code List} containing all event codes.
+     *
+     * @throws  IOException
+     *          If an I/O error occurs writing to or creating the file in which
+     *          the configuration is stored.
+     */
+    public void setEventCodes(List<String> eventCodes) throws IOException {
+        if (eventCodes == null)
+            throw new IllegalArgumentException("eventCodes is null!");
+
+        ArrayList<String> eventCodesArrayList = new ArrayList<>(eventCodes);
+
+        // An empty array is stored by not having the property exist in the
+        // first place (as having the property empty would be read as [""]).
+        if (eventCodes.isEmpty())
+            configFile.removeAttribute("events");
+        else
+            configFile.setAttribute("events", fromArray(
+                    eventCodesArrayList.toArray(new String[0])
+            ));
+
+        this.eventCodes = eventCodesArrayList;
+    }
+
 
     /**
      * Reads the settings from the properties file.
@@ -175,33 +215,46 @@ public class UserConfig {
      *          the configuration is stored.
      */
     public void read() throws IOException {
-        Properties properties;
-        try {
-            properties = configFile.getContent();
-        } catch (IOException e) {
-            properties = new Properties();
-        }
+        Properties properties = configFile.getContent();
 
+        readServerUrl(properties);
+        readAvailableLanguages(properties);
+        readUserLanguage(properties);
+        readEventCodes(properties);
+    }
+
+    private void readServerUrl(Properties properties) throws IOException {
         setServerUrl(
                 properties.getProperty("serverUrl", "http://localhost:8080/"));
+    }
 
+    private void readAvailableLanguages(Properties properties)
+            throws IOException {
         HashMap<String, File> availableLanguages = toHashMap(
                 properties.getProperty("languages",
-                "eng,includedLanguages/eng.properties;" +
-                        "nld,includedLanguages/nld.properties;" +
-                        "deu,includedLanguages/deu.properties"
-            ), File::new
+                        "eng,includedLanguages/eng.properties;" +
+                                "nld,includedLanguages/nld.properties;" +
+                                "deu,includedLanguages/deu.properties"
+                ), File::new
         );
 
-        // load all languages
+        // load all languages to the language set in the Language class
         for (Map.Entry<String, File> language : availableLanguages.entrySet()) {
             Language.fromLanguageFile(language.getKey(), language.getValue());
         }
 
         setAvailableLanguages(availableLanguages);
+    }
 
+    private void readUserLanguage(Properties properties) throws IOException {
         setUserLanguage(properties.getProperty("userLanguage", "eng"));
     }
+
+    private void readEventCodes(Properties properties) throws IOException {
+        String events = properties.getProperty("events");
+        setEventCodes(events != null ? toArray(events) : new String[0]);
+    }
+
 
     /**
      * Converts a {@code String} to a {@code double}. Use this function to
@@ -212,7 +265,7 @@ public class UserConfig {
      *
      * @return  The converted {@code double}.
      */
-    private static double toDouble(String data) {
+    static double toDouble(String data) {
         return Double.parseDouble(data);
     }
 
@@ -225,7 +278,7 @@ public class UserConfig {
      *
      * @return  The converted {@code String}.
      */
-    private static String fromDouble(double data) {
+    static String fromDouble(double data) {
         return Double.toString(data);
     }
 
@@ -238,7 +291,7 @@ public class UserConfig {
      *
      * @return  The resulting array.
      */
-    private static String[] toArray(String string) {
+    static String[] toArray(String string) {
         return toArray(string, ',');
     }
 
@@ -253,8 +306,8 @@ public class UserConfig {
      *
      * @return  The resulting array.
      */
-    private static String[] toArray(String string, char separator) {
-        return string.split(String.valueOf(separator));
+    static String[] toArray(String string, char separator) {
+        return string.split(Pattern.quote(String.valueOf(separator)));
     }
 
     /**
@@ -268,7 +321,7 @@ public class UserConfig {
      * @throws  IllegalArgumentException
      *          If a {@code String} in the array contains {@code ','}.
      */
-    private static String fromArray(String[] array) {
+    static String fromArray(String[] array) {
         return fromArray(array, ',');
     }
 
@@ -285,7 +338,7 @@ public class UserConfig {
      * @throws  IllegalArgumentException
      *          If a {@code String} in the array contains the separator.
      */
-    private static String fromArray(String[] array, char separator) {
+    static String fromArray(String[] array, char separator) {
         String sep = String.valueOf(separator);
         for (String s : array) {
             if (s.contains(sep)) throw new
@@ -307,7 +360,7 @@ public class UserConfig {
      * @throws  IllegalArgumentException
      *          If an entry doesn't have exactly 2 attributes.
      */
-    private static HashMap<String, String> toHashMap(String hashMap) {
+    static HashMap<String, String> toHashMap(String hashMap) {
         return toHashMap(hashMap, ',', ';', (String s) -> s);
     }
 
@@ -329,7 +382,7 @@ public class UserConfig {
      * @throws  IllegalArgumentException
      *          If an entry doesn't have exactly 2 attributes.
      */
-    private static <T> HashMap<String, T> toHashMap(
+    static <T> HashMap<String, T> toHashMap(
             String hashMap, Function<String, T> stringConverter) {
         return toHashMap(hashMap, ',', ';', stringConverter);
     }
@@ -356,29 +409,29 @@ public class UserConfig {
      *          If {@code entrySeparator} is equal to {@code keyValueSeparator}
      *          or if an entry doesn't have exactly 2 attributes.
      */
-    private static <T> HashMap<String, T> toHashMap(
+    static <T> HashMap<String, T> toHashMap(
             String hashMap, char keyValueSeparator, char entrySeparator,
             Function<String, T> stringConverter) {
 
         String entrySep = String.valueOf(entrySeparator);
         String keyValSep = String.valueOf(keyValueSeparator);
 
-        boolean argumentsAreNotNull =
-                hashMap != null && stringConverter != null;
-
         // This check is intentionally not mentioned in the javadoc.
-        if (!argumentsAreNotNull)
+        if (stringConverter == null)
             throw new IllegalArgumentException("an argument is null!");
 
         if (entrySep.contains(keyValSep) || keyValSep.contains(entrySep))
             throw new IllegalArgumentException("entrySep and keyValSep " +
-                    "aren't distinct enough!");
+                    "aren't distinct!");
 
         HashMap<String, T> result = new HashMap<>();
-        String[] entries = hashMap.split(entrySep);
+        if (hashMap == null || hashMap.isEmpty())
+            return result;
+
+        String[] entries = hashMap.split(Pattern.quote(entrySep));
 
         for (String entry : entries) {
-            String[] keyVal = entry.split(keyValSep);
+            String[] keyVal = entry.split(Pattern.quote(keyValSep));
             if (keyVal.length != 2)
                 throw new IllegalArgumentException(
                     "Amount of attributes in entry is not equal to 2!"
@@ -403,7 +456,7 @@ public class UserConfig {
      * @throws  IllegalArgumentException
      *          If an entry contains {@code ','} or {@code ';'}.
      */
-    private static String fromHashMap(HashMap<String, String> hashMap) {
+    static String fromHashMap(HashMap<String, String> hashMap) {
         return fromHashMap(hashMap, ',', ';', (String s) -> s);
     }
 
@@ -425,7 +478,7 @@ public class UserConfig {
      * @throws  IllegalArgumentException
      *          If an entry contains {@code ','} or {@code ';'}.
      */
-    private static <T> String fromHashMap(HashMap<String, T> hashMap,
+    static <T> String fromHashMap(HashMap<String, T> hashMap,
                                       Function<T, String> stringConverter) {
         return fromHashMap(hashMap, ',', ';', stringConverter);
     }
@@ -453,7 +506,7 @@ public class UserConfig {
      *          If {@code entrySeparator} is equal to {@code keyValueSeparator}
      *          or if an entry contains a separator value.
      */
-    private static <T> String fromHashMap(HashMap<String, T> hashMap,
+    static <T> String fromHashMap(HashMap<String, T> hashMap,
             char keyValueSeparator, char entrySeparator,
             Function<T, String> stringConverter) {
 
@@ -461,14 +514,14 @@ public class UserConfig {
         String keyValSep = String.valueOf(keyValueSeparator);
 
         // This check is intentionally not mentioned in the javadoc.
-        if (hashMap == null || stringConverter == null)
+        if (stringConverter == null)
             throw new IllegalArgumentException("an argument is null!");
 
         if (entrySep.equals(keyValSep))
             throw new IllegalArgumentException(
                     "entrySeparator and keyValSeparator are equal!"
             );
-        if (hashMap.isEmpty()) return null;
+        if (hashMap == null || hashMap.isEmpty()) return null;
         String[] entries = new String[hashMap.size()];
         int entriesIdx = 0;
 

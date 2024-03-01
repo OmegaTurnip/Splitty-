@@ -37,7 +37,7 @@ public sealed class PropertiesFile permits ConfigFile {
      *
      * @return  The file content.
      */
-    public Properties getContent() throws IOException {
+    public Properties getContent() {
         return content;
     }
 

@@ -26,10 +26,10 @@ public class Formatter {
 
     /**
      * A regex which will split the string in such a way that whenever the
-     * {@link Matcher#find() find()} method is called, the next parameter will
+     * {@link Matcher#find()} method is called, the next parameter will
      * be returned by a call to {@link Matcher#group(int) group(1)}. It is
-     * similar to {@link Formatter#FORMAT_PATTERN FORMAT_PATTERN} in a way, but
-     * where {@code FORMAT_PATTERN} is used to validate a format string, this
+     * similar to {@link Formatter#FORMAT_PATTERN} in a way, but where
+     * {@code FORMAT_PATTERN} is used to validate a format string, this
      * pattern is used to retrieve all parameters from a format string in an
      * iterator type fashion.
      */

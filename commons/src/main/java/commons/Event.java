@@ -67,7 +67,7 @@ public class Event {
     public static String generateInviteCode() {
         UUID randomCode = UUID.randomUUID();
         return randomCode.toString()
-                .replaceAll("_", "");
+                .replaceAll("-", "");
     }
 
     /**

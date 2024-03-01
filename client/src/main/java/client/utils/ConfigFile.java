@@ -52,7 +52,7 @@ public final class ConfigFile extends PropertiesFile {
     }
 
     /**
-     * Sets the file content. If {@link #doAutoFlush doAutoFlush} is set, this
+     * Sets the file content. If {@link #doAutoFlush} is set, this
      * setter will also immediately flush the content to the file on disk.
      *
      * @param   content
@@ -68,7 +68,8 @@ public final class ConfigFile extends PropertiesFile {
     }
 
     /**
-     * Sets an attribute.
+     * Sets an attribute. If {@link #doAutoFlush} is set, this setter will also
+     * immediately flush the change to the file on disk.
      *
      * @param   key
      *          The attribute name.
@@ -81,6 +82,22 @@ public final class ConfigFile extends PropertiesFile {
      */
     public void setAttribute(String key, String value) throws IOException {
         content.setProperty(key, value);
+        if (doAutoFlush) flush();
+    }
+
+    /**
+     * Removes an attribute. If {@link #doAutoFlush} is set, this
+     * function will also immediately flush the change to the file on disk.
+     *
+     * @param   key
+     *          The attribute name.
+     *
+     * @throws  IOException
+     *          If an I/O error occurs writing to or creating the file in which
+     *          the configuration is stored.
+     */
+    public void removeAttribute(String key) throws IOException {
+        content.remove(key);
         if (doAutoFlush) flush();
     }
 

@@ -50,6 +50,13 @@ public class ConfigFileTest {
     }
 
     @Test
+    void testRemoveAttribute() {
+        assertDoesNotThrow(() -> configFile.setAttribute("attr", "val"));
+        assertDoesNotThrow(() -> configFile.removeAttribute("attr"));
+        assertNull(configFile.getAttribute("attr"));
+    }
+
+    @Test
     void testSetContent() throws IOException {
         Properties content = new Properties();
         content.setProperty("test", "val");
@@ -57,5 +64,4 @@ public class ConfigFileTest {
         configFile.setContent(content);
         assertEquals(content, configFile.getContent());
     }
-
 }
