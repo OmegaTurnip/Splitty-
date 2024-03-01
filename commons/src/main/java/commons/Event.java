@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.List;
 @Entity
+@Table(name = "event")
 public class Event {
 
     @Id
@@ -19,13 +20,13 @@ public class Event {
     private String eventName;
     private LocalDate eventCreationDate;
     private String inviteCode;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private Collection<Expense> expenses;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private Collection<Participant> participants;
     private LocalDateTime lastActivity;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Tag> tags;
 
     /**
@@ -337,5 +338,14 @@ public class Event {
      */
     public Long getId() {
         return id;
+    }
+
+    /**
+     * toString method
+     *
+     * @return String representation of the Event
+     */
+    public String toString() {
+        return eventName;
     }
 }

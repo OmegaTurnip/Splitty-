@@ -18,7 +18,7 @@ public class Expense {
     private String expenseName;
     private LocalDate date;
     private int price;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Debt> debts;
     @ManyToOne
     private Event event;

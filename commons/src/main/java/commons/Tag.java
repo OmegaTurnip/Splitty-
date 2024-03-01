@@ -79,6 +79,22 @@ public class Tag {
     }
 
     /**
+     * Getter method
+     * @return id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * Setter method
+     * @param id id of tag
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
      * Equals method that only checks name.
      * @param o Tag to test equality on.
      * @return True or false depending on equality.
