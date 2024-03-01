@@ -349,6 +349,11 @@ public class Event {
         return eventName;
     }
 
+    /**
+     * Deletes an expense from the event
+     * @param expense expense to be deleted
+     * @return  true if the expense was deleted, false if it was not found
+     */
     public boolean deleteExpense(Expense expense) {
         return expenses.remove(expense);
     }

@@ -15,7 +15,6 @@
  */
 package server;
 
-import commons.Event;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -41,15 +40,15 @@ public class Main {
     @Bean
     public CommandLineRunner run(EventRepository repo){
         return (args -> {
-            insertEvent(repo);
-            System.out.println(repo.findAll());
+            System.out.println("idem findAll can be inserted");
         });
     }
 
     /**
-     * insert event in the database
+     * Delete all events from the database
+     * @param repo events repository
      */
-    private void insertEvent(EventRepository repo){
-        repo.save(new Event("House"));
+    private void deleteAllEvents(EventRepository repo){
+        repo.deleteAll();
     }
 }

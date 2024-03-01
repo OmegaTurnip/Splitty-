@@ -10,16 +10,29 @@ public class EventController {
 
     private final EventRepository eventRepository;
 
+    /**
+     * Constructor for the EventController
+     * @param eventRepository The event repository
+     */
     public EventController(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
     }
 
+    /**
+     * Get all events
+     * @return  String of all events
+     */
     @GetMapping("/")
     @ResponseBody
     public String allEvents() {
         return eventRepository.findAll().toString();
     }
 
+    /**
+     * Add an event
+     * @param event The event to add
+     * @return  String of the event added
+     */
     @PutMapping("/")
     @ResponseBody
     public String addEvent(@RequestBody Event event) {
@@ -27,6 +40,11 @@ public class EventController {
         return "Event added";
     }
 
+    /**
+     * Delete an event
+     * @param event The event to delete
+     * @return String of the event deleted
+     */
     @DeleteMapping("/")
     @ResponseBody
     public String deleteEvent(@RequestBody Event event) {
@@ -34,6 +52,11 @@ public class EventController {
         return "Event deleted";
     }
 
+    /**
+     * Get an event by id
+     * @param id The id of the event
+     * @return String of the event
+     */
     @GetMapping("/{id}")
     @ResponseBody
     public String getEvent(@PathVariable("id") Long id) {
@@ -44,9 +67,16 @@ public class EventController {
         return event.toString();
     }
 
+    /**
+     * Add an expense to an event
+     * @param id The id of the event
+     * @param expense The expense to add
+     * @return String of the expense added
+     */
     @PostMapping("/{id}")
     @ResponseBody
-    public String addExpense(@PathVariable("id") Long id, @RequestBody Expense expense) {
+    public String addExpense(@PathVariable("id") Long id,
+                             @RequestBody Expense expense) {
         Event event = eventRepository.findById(id).orElse(null);
         if (event == null) {
             return "Event not found";
@@ -56,9 +86,16 @@ public class EventController {
         return "Expense added";
     }
 
+    /**
+     * Delete an expense from an event
+     * @param id The id of the event
+     * @param expense the expense to delete
+     * @return String of the expense deleted
+     */
     @DeleteMapping("/{id}")
     @ResponseBody
-    public String deleteExpense(@PathVariable("id") Long id, @RequestBody Expense expense) {
+    public String deleteExpense(@PathVariable("id") Long id,
+                                @RequestBody Expense expense) {
         Event event = eventRepository.findById(id).orElse(null);
         if (event == null) {
             return "Event not found";
