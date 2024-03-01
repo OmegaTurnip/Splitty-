@@ -126,11 +126,13 @@ public class Event {
      * Adds a participant to the event
      *
      * @param name name of the Participant to add
+     * @return     the participant that was added
      */
-    public void addParticipant(String name) {
+    public Participant addParticipant(String name) {
         Participant participant = new Participant(name, this);
         this.participants.add(participant);
         updateLastActivity();
+        return participant;
     }
 
     /**
@@ -240,15 +242,18 @@ public class Event {
      * @param expenseName the name of the Expense to be registered
      * @param price       the price of the Expense
      * @param debtors     the debtors of the Expense
-     * @param tag          the tag
+     * @param tag         the tag
+     * @return            the expense registered
      */
-    public void registerExpense(Participant payer,
+    public Expense registerExpense(Participant payer,
                                 String expenseName,
                                 int price,
                                 Collection<Participant> debtors, Tag tag) {
-        expenses.add(new Expense(payer, expenseName, price,
-                debtors, this, tag));
+        Expense e = new Expense(payer, expenseName, price,
+                debtors, this, tag);
+        expenses.add(e);
         updateLastActivity();
+        return e;
     }
 
     /**
