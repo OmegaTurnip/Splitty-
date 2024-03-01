@@ -80,22 +80,28 @@ public class ParticipantController {
 
     /**
      * Mapping for changing a Participant
-     * @param participant the updated participant to change to
+     * @param name the name to change to
      * @param id the id of the participant to change
      * @param eventId the event that the participant belongs to
      * @return the participant changed or a bad request if no
      * participant can be found
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Participant> changeParticipant
-    (@RequestBody Participant participant, @PathVariable long id,
-        @PathVariable("eventId") long eventId) {
-        if (id < 0 || !repo.existsById(id)
-                || participant.getEvent().getId() != eventId) {
+    public ResponseEntity<Participant>
+        changeName(@RequestBody String name,
+              @PathVariable long id,
+              @PathVariable("eventId") long eventId) {
+        if (id < 0 || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }
-        return repo.findById(id)
-                .map(p -> ResponseEntity.ok(repo.save(p))).get();
+
+        Participant participant = repo.findById(id).get();
+
+        if (participant.getEvent().getId() != eventId)
+            return ResponseEntity.badRequest().build();
+
+        participant.setName(name);
+        return ResponseEntity.ok(repo.save(participant));
     }
 
     /**
