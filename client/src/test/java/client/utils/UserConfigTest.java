@@ -36,6 +36,7 @@ class UserConfigTest {
 
     @Test
     void toArray() {
+        assertArrayEquals(new String[0], UserConfig.toArray(null));
         assertArrayEquals(new String[] {""}, UserConfig.toArray(""));
         assertArrayEquals(new String[] {"ab", "bc"}, UserConfig.toArray("ab,bc"));
     }
@@ -47,7 +48,8 @@ class UserConfigTest {
 
     @Test
     void fromArray() {
-        assertEquals("", UserConfig.fromArray(new String[0]));
+        assertNull(UserConfig.fromArray(new String[0]));
+        assertNull(UserConfig.fromArray(null));
         assertEquals("", UserConfig.fromArray(new String[] {""}));
         assertEquals("ab,bc", UserConfig.fromArray(new String[] {"ab", "bc"}));
     }

@@ -69,7 +69,7 @@ public class UserConfig {
     /**
      * Gets the url used to connect to the server.
      *
-     * @return  the url used to connect to the server.
+     * @return  The url used to connect to the server.
      */
     public String getServerUrl() {
         return serverUrl;
@@ -109,7 +109,7 @@ public class UserConfig {
      * Changes the language that should be used in the UI.
      *
      * @param   userLanguage
-     *          the new user language as an ISO 639-3 code.
+     *          The new user language as an ISO 639-3 code.
      *
      * @throws  IOException
      *          If an I/O error occurs writing to or creating the file in which
@@ -158,7 +158,7 @@ public class UserConfig {
         if (availableLanguages == null)
             throw new IllegalArgumentException("availableLanguages is null!");
 
-        configFile.setAttribute("languages",
+        configFile.setAttributeOrRemoveOnNull("languages",
                 fromHashMap(availableLanguages, File::getAbsolutePath));
         this.availableLanguages = availableLanguages;
     }
@@ -196,12 +196,9 @@ public class UserConfig {
 
         // An empty array is stored by not having the property exist in the
         // first place (as having the property empty would be read as [""]).
-        if (eventCodes.isEmpty())
-            configFile.removeAttribute("events");
-        else
-            configFile.setAttribute("events", fromArray(
-                    eventCodesArrayList.toArray(new String[0])
-            ));
+        configFile.setAttributeOrRemoveOnNull("events", fromArray(
+            eventCodesArrayList.toArray(new String[0])
+        ));
 
         this.eventCodes = eventCodesArrayList;
     }
@@ -284,7 +281,8 @@ public class UserConfig {
 
     /**
      * Converts an {@code String}, formatted to be used as an array, to an
-     * actual array. Defaults to using {@code ','} as the separator.
+     * actual array. Defaults to using {@code ','} as the separator. Returns an
+     * empty array if string is null.
      *
      * @param   string
      *          The {@code String} that needs to be converted to an array.
@@ -297,7 +295,7 @@ public class UserConfig {
 
     /**
      * Converts an {@code String} formatted to be used as an array to an actual
-     * array.
+     * array. Returns an empty array if string is null.
      *
      * @param   string
      *          The {@code String} that needs to be converted to an array.
@@ -307,12 +305,15 @@ public class UserConfig {
      * @return  The resulting array.
      */
     static String[] toArray(String string, char separator) {
+        if (string == null) return new String[0];
         return string.split(Pattern.quote(String.valueOf(separator)));
     }
 
     /**
      * Converts an array to a format to be used in combination with Properties.
-     * Defaults to using {@code ','} as the separator.
+     * Defaults to using {@code ','} as the separator. Returns {@code null} if
+     * the array is null or empty.
+     *
      * @param   array
      *          The array that should be converted.
      *
@@ -327,6 +328,7 @@ public class UserConfig {
 
     /**
      * Converts an array to a format to be used in combination with Properties.
+     * Returns {@code null} if the array is null or empty.
      *
      * @param   array
      *          The array that should be converted.
@@ -339,6 +341,7 @@ public class UserConfig {
      *          If a {@code String} in the array contains the separator.
      */
     static String fromArray(String[] array, char separator) {
+        if (array == null || array.length == 0) return null;
         String sep = String.valueOf(separator);
         for (String s : array) {
             if (s.contains(sep)) throw new
@@ -446,7 +449,8 @@ public class UserConfig {
     /**
      * Converts an {@code HashMap} to a format to be used in combination with
      * Properties. Defaults to using {@code ','} as the key value separator
-     * and {@code ';'} as the entry separator.
+     * and {@code ';'} as the entry separator. Returns {@code null} if the
+     * {@code HashMap} is empty.
      *
      * @param   hashMap
      *          The {@code HashMap} to be converted.
@@ -463,7 +467,8 @@ public class UserConfig {
     /**
      * Converts an {@code HashMap} to a format to be used in combination with
      * Properties. Defaults to using {@code ','} as the key value separator
-     * and {@code ';'} as the entry separator.
+     * and {@code ';'} as the entry separator. Returns {@code null} if the
+     * {@code HashMap} is empty.
      *
      * @param   hashMap
      *          The {@code HashMap} to be converted.

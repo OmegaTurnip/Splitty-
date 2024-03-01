@@ -42,15 +42,30 @@ public sealed class PropertiesFile permits ConfigFile {
     }
 
     /**
-     * Gets an attribute.
+     * Gets an attribute. It will return {@code null} if the attribute is not
+     * set.
      *
      * @param   key
      *          The attribute name.
      *
-     * @return  The attribute or null if the attribute is not set.
+     * @return  The attribute or {@code null} if the attribute is not set.
      */
     public String getAttribute(String key) {
         return content.getProperty(key);
+    }
+
+
+    /**
+     * Checks if an attribute is present.
+     *
+     * @param   key
+     *          The attribute name.
+     *
+     * @return  whether the attribute is present.
+     */
+    public boolean hasAttribute(String key) {
+        // equivalent to content.getProperty(key) != null
+        return content.containsKey(key);
     }
 
     /**
