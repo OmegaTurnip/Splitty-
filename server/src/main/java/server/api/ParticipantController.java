@@ -11,7 +11,6 @@ import commons.Event;
 import server.database.EventRepository;
 import server.database.ParticipantRepository;
 
-import java.util.Collection;
 import java.util.List;
 
 @RestController
