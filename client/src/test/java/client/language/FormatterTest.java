@@ -78,6 +78,10 @@ class FormatterTest {
         assertFalse(Formatter.isValidFormat("Lorem {{second word}}"));
 
         assertTrue(Formatter.isValidFormat(""));
+        assertTrue(Formatter.isValidFormat("{"));
+        assertTrue(Formatter.isValidFormat("}"));
+        assertTrue(Formatter.isValidFormat("{}"));
+        assertTrue(Formatter.isValidFormat("{}{}{}{}{}{"));
         assertTrue(Formatter.isValidFormat("{{param}}"));
         assertTrue(Formatter.isValidFormat("Lorem Ipsum"));
         assertTrue(Formatter.isValidFormat("Lorem {{word2}}"));
