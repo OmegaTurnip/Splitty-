@@ -10,7 +10,7 @@ public class Participant {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
     private String name;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     private Event event;
 
 
