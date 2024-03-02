@@ -40,7 +40,7 @@ public class Translator {
      *          Should be constructed using the {@link Text Text}
      *          class.
      *
-     * @return the translation of a piece of text.
+     * @return  The translation of a piece of text.
      */
     public static String getTranslation(String textId) {
         return currentLanguage.getTranslation(textId);
