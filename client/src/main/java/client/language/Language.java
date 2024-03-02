@@ -42,7 +42,7 @@ public class Language {
 
     /**
      * Creates a new language object, storing its translations. Also adds it to
-     * {@link Language#languages languages}.
+     * {@link Language#languages}.
      *
      * @param   languageCode
      *          The <a href="https://iso639-3.sil.org/code_tables/639/data">ISO
@@ -94,7 +94,7 @@ public class Language {
      *
      * @param   textId
      *          The id of the piece of text of which a translation is needed.
-     *          Should be constructed using the {@link Text Text}
+     *          Should be constructed using the {@link Text}
      *          class.
      *
      * @return  The translation of a piece of text.
@@ -121,7 +121,7 @@ public class Language {
 
     /**
      * Reads a language file and returns the Language object (also adding it to
-     * {@link Language#languages languages}).
+     * {@link Language#languages}).
      *
      * @param   languageCode
      *          The <a href="https://iso639-3.sil.org/code_tables/639/data">ISO
@@ -145,8 +145,8 @@ public class Language {
      * exists because of the following requirement: "To generate an empty
      * language template from the language selection, so I can contribute a new
      * language to the project." This function *SHOULD NOT* be used by us to add
-     * a new language, use the {@link TranslationCreator TranslationCreator}
-     * application for that purpose.
+     * a new language, use the {@link TranslationCreator} application for that
+     * purpose.
      *
      * @param   file
      *          The file in which the new language will be stored.

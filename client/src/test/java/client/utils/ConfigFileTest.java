@@ -25,13 +25,17 @@ public class ConfigFileTest {
     @AfterAll
     static void cleanup() {
         ConfigFileTest.file.delete();
+        File file = new File(UserConfig.PATHNAME);
+        file.delete();
     }
 
     @Test
     void testAttributes() {
         assertNull(configFile.getAttribute("attr"));
+        assertFalse(configFile.hasAttribute("attr"));
         assertDoesNotThrow(() -> configFile.setAttribute("attr", "val"));
         assertEquals("val", configFile.getAttribute("attr"));
+        assertTrue(configFile.hasAttribute("attr"));
     }
 
     @Test
@@ -50,6 +54,14 @@ public class ConfigFileTest {
     }
 
     @Test
+    void testRemoveAttribute() {
+        assertDoesNotThrow(() -> configFile.setAttribute("attr", "val"));
+        assertDoesNotThrow(() -> configFile.removeAttribute("attr"));
+        assertNull(configFile.getAttribute("attr"));
+        assertFalse(configFile.hasAttribute("attr"));
+    }
+
+    @Test
     void testSetContent() throws IOException {
         Properties content = new Properties();
         content.setProperty("test", "val");
@@ -58,4 +70,13 @@ public class ConfigFileTest {
         assertEquals(content, configFile.getContent());
     }
 
+    @Test
+    void setAttributeOrRemoveOnNull() {
+        assertDoesNotThrow(() -> configFile.setAttributeOrRemoveOnNull("attr", "val"));
+        assertEquals("val", configFile.getAttribute("attr"));
+        assertTrue(configFile.hasAttribute("attr"));
+        assertDoesNotThrow(() -> configFile.setAttributeOrRemoveOnNull("attr", null));
+        assertNull(configFile.getAttribute("attr"));
+        assertFalse(configFile.hasAttribute("attr"));
+    }
 }
