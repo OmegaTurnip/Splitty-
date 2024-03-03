@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.List;
 @Entity
+@Table(name = "event")
 public class Event {
 
     @Id
@@ -19,13 +20,13 @@ public class Event {
     private String eventName;
     private LocalDate eventCreationDate;
     private String inviteCode;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private Collection<Expense> expenses;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private Collection<Participant> participants;
     private LocalDateTime lastActivity;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Tag> tags;
 
     /**
@@ -347,5 +348,23 @@ public class Event {
      */
     public Long getId() {
         return id;
+    }
+
+    /**
+     * toString method
+     *
+     * @return String representation of the Event
+     */
+    public String toString() {
+        return eventName;
+    }
+
+    /**
+     * Deletes an expense from the event
+     * @param expense expense to be deleted
+     * @return  true if the expense was deleted, false if it was not found
+     */
+    public boolean deleteExpense(Expense expense) {
+        return expenses.remove(expense);
     }
 }

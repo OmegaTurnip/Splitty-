@@ -15,9 +15,11 @@
  */
 package server;
 
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 @EntityScan(basePackages = { "commons", "server" })
@@ -28,5 +30,25 @@ public class Main {
      */
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
+    }
+
+    /**
+     * Put some events in the database
+     * @param repo The event repository
+     * @return runs command line
+     */
+    @Bean
+    public CommandLineRunner run(EventRepository repo){
+        return (args -> {
+            System.out.println("idem findAll can be inserted");
+        });
+    }
+
+    /**
+     * Delete all events from the database
+     * @param repo events repository
+     */
+    private void deleteAllEvents(EventRepository repo){
+        repo.deleteAll();
     }
 }
