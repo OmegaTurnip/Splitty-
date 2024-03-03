@@ -3,31 +3,34 @@ package client.utils;
 import java.io.*;
 import java.util.Properties;
 
-public class ConfigFile {
+public final class ConfigFile extends PropertiesFile {
 
-    private final File file;
-    private Properties content;
+    private final String description;
     private final boolean doAutoFlush;
 
 
     /**
-     * Creates an object containing a Properties file.
+     * Creates an object containing a Properties file with writing capabilities.
      * 
      * @param   file
      *          The path to the file.
+     * @param   description
+     *          A description that will be stored on top of the config file.
      *
      * @throws  IOException
      *          If an I/O error occurs reading from the file.
      */
-    public ConfigFile(File file) throws IOException {
-        this(file, new Properties(), true);
+    public ConfigFile(File file, String description) throws IOException {
+        this(file, new Properties(), description, true);
     }
 
     /**
-     * Creates an object class containing a Properties file.
+     * Creates an object containing a Properties file with writing capabilities.
      *
      * @param   file
      *          The path to the file.
+     * @param   description
+     *          A description that will be stored on top of the config file.
      * @param   doAutoFlush
      *          Whether a change to the content should immediately be flushed or
      *          not.
@@ -35,30 +38,21 @@ public class ConfigFile {
      * @throws  IOException
      *          If an I/O error occurs reading from the file.
      */
-    public ConfigFile(File file, boolean doAutoFlush) throws IOException {
-        this(file, new Properties(), doAutoFlush);
-    }
-
-    private ConfigFile(File file, Properties content, boolean doAutoFlush)
+    public ConfigFile(File file, String description, boolean doAutoFlush)
             throws IOException {
-        this.file = file;
-        this.content = content;
+        this(file, new Properties(), description, doAutoFlush);
+    }
+
+
+    ConfigFile(File file, Properties content, String description,
+               boolean doAutoFlush) throws IOException {
+        super(file, content);
+        this.description = description;
         this.doAutoFlush = doAutoFlush;
-
-        read();
     }
 
     /**
-     * Gets the file content.
-     *
-     * @return  The file content.
-     */
-    public Properties getContent() throws IOException {
-        return content;
-    }
-
-    /**
-     * Sets the file content. If {@link #doAutoFlush doAutoFlush} is set, this
+     * Sets the file content. If {@link #doAutoFlush} is set, this
      * setter will also immediately flush the content to the file on disk.
      *
      * @param   content
@@ -74,19 +68,9 @@ public class ConfigFile {
     }
 
     /**
-     * Gets an attribute.
-     *
-     * @param   key
-     *          The attribute name.
-     *
-     * @return  The attribute or null if the attribute is not set.
-     */
-    public String getAttribute(String key) {
-        return content.getProperty(key);
-    }
-
-    /**
-     * Sets an attribute.
+     * Sets an attribute. Doesn't allow the value to be {@code null}. If
+     * {@link #doAutoFlush} is set, this setter will also immediately flush the
+     * change to the file on disk.
      *
      * @param   key
      *          The attribute name.
@@ -103,6 +87,44 @@ public class ConfigFile {
     }
 
     /**
+     * Sets an attribute if the value is not {@code null}, deletes it otherwise.
+     * If {@link #doAutoFlush} is set, this function will also immediately flush
+     * the change to the file on disk.
+     *
+     * @param   key
+     *          The attribute name.
+     * @param   value
+     *          The attribute value or {@code null} to delete the attribute.
+     *
+     * @throws  IOException
+     *          If an I/O error occurs writing to or creating the file in which
+     *          the configuration is stored.
+     */
+    public void setAttributeOrRemoveOnNull(String key, String value)
+            throws IOException {
+        if (value == null)
+            removeAttribute(key);
+        else
+            setAttribute(key, value);
+    }
+
+    /**
+     * Removes an attribute. If {@link #doAutoFlush} is set, this
+     * function will also immediately flush the change to the file on disk.
+     *
+     * @param   key
+     *          The attribute name.
+     *
+     * @throws  IOException
+     *          If an I/O error occurs writing to or creating the file in which
+     *          the configuration is stored.
+     */
+    public void removeAttribute(String key) throws IOException {
+        content.remove(key);
+        if (doAutoFlush) flush();
+    }
+
+    /**
      * Flushes the file to disk.
      *
      * @throws  IOException
@@ -110,20 +132,7 @@ public class ConfigFile {
      */
     public void flush() throws IOException {
         FileOutputStream fol = new FileOutputStream(file);
-        content.store(fol, "Client settings");
+        content.store(fol, this.description);
         fol.close();
-    }
-
-    /**
-     * Reads the file from disk.
-     *
-     * @throws  IOException
-     *          If an I/O error occurs reading from the file.
-     */
-    public void read() throws IOException {
-        file.createNewFile();
-        FileInputStream fil = new FileInputStream(file);
-        content.load(fil);
-        fil.close();
     }
 }

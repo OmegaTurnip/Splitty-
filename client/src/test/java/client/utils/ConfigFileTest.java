@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
 
 
 public class ConfigFileTest {
@@ -16,35 +17,66 @@ public class ConfigFileTest {
     private static final File file = new File("unittest.properties");
 
     @BeforeEach
-    public void setup() throws IOException {
+    void setup() throws IOException {
         file.delete();
-        configFile = new ConfigFile(file);
+        configFile = new ConfigFile(file, "test");
     }
 
     @AfterAll
-    public static void cleanup() {
+    static void cleanup() {
         ConfigFileTest.file.delete();
+        File file = new File(UserConfig.PATHNAME);
+        file.delete();
     }
 
     @Test
-    public void testAttributes() {
+    void testAttributes() {
         assertNull(configFile.getAttribute("attr"));
+        assertFalse(configFile.hasAttribute("attr"));
         assertDoesNotThrow(() -> configFile.setAttribute("attr", "val"));
         assertEquals("val", configFile.getAttribute("attr"));
+        assertTrue(configFile.hasAttribute("attr"));
     }
 
     @Test
-    public void testPersistence() throws IOException {
+    void testPersistence() throws IOException {
         assertDoesNotThrow(() -> configFile.setAttribute("attr", "val"));
-        ConfigFile configFile1 = new ConfigFile(file);
+        ConfigFile configFile1 = new ConfigFile(file, "test");
         assertEquals("val", configFile1.getAttribute("attr"));
     }
 
     @Test
-    public void testOverwriting() throws IOException {
+    void testOverwriting() {
         assertDoesNotThrow(() -> configFile.setAttribute("attr", "val"));
         assertEquals("val", configFile.getAttribute("attr"));
         assertDoesNotThrow(() -> configFile.setAttribute("attr", "lav"));
         assertEquals("lav", configFile.getAttribute("attr"));
+    }
+
+    @Test
+    void testRemoveAttribute() {
+        assertDoesNotThrow(() -> configFile.setAttribute("attr", "val"));
+        assertDoesNotThrow(() -> configFile.removeAttribute("attr"));
+        assertNull(configFile.getAttribute("attr"));
+        assertFalse(configFile.hasAttribute("attr"));
+    }
+
+    @Test
+    void testSetContent() throws IOException {
+        Properties content = new Properties();
+        content.setProperty("test", "val");
+        ConfigFile configFile = new ConfigFile(file, "test", false);
+        configFile.setContent(content);
+        assertEquals(content, configFile.getContent());
+    }
+
+    @Test
+    void setAttributeOrRemoveOnNull() {
+        assertDoesNotThrow(() -> configFile.setAttributeOrRemoveOnNull("attr", "val"));
+        assertEquals("val", configFile.getAttribute("attr"));
+        assertTrue(configFile.hasAttribute("attr"));
+        assertDoesNotThrow(() -> configFile.setAttributeOrRemoveOnNull("attr", null));
+        assertNull(configFile.getAttribute("attr"));
+        assertFalse(configFile.hasAttribute("attr"));
     }
 }

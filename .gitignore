@@ -41,6 +41,14 @@ out/
 .vscode/
 
 ### local settings ###
+# /clientsettings.properties is the old file name
 /clientsettings.properties
 
+
+/client_settings.properties
+# testing relics
+/client/client_settings.properties
+client/client_settings.properties
+
+##database trace 
 h2-database.trace.db

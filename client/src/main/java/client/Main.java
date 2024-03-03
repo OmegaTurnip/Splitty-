@@ -22,6 +22,8 @@ import java.net.URISyntaxException;
 
 import com.google.inject.Injector;
 
+import client.scenes.LanguageTestCtrl;
+
 import client.scenes.AddQuoteCtrl;
 import client.scenes.MainCtrl;
 import client.scenes.QuoteOverviewCtrl;
@@ -34,12 +36,17 @@ public class Main extends Application {
     private static final MyFXML FXML = new MyFXML(INJECTOR);
 
     /**
-     * @param args no description was provided in the template.
-     * @throws URISyntaxException no description was provided in the template.
-     * @throws IOException no description was provided in the template.
+     * @param   args
+     *          Ignored.
+     *
+     * @throws  URISyntaxException
+     *          No description was provided in the template.
+     * @throws  IOException
+     *          If an I/O error occurs reading from the language files.
      */
     public static void main(String[] args)
             throws URISyntaxException, IOException {
+
         launch();
     }
 
@@ -49,13 +56,23 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws IOException {
+        // Change to `true` to load the quote application.
+        if (false) {
+            var overview = FXML.load(QuoteOverviewCtrl.class,
+                    "client", "scenes", "QuoteOverview.fxml");
+            var add = FXML.load(AddQuoteCtrl.class,
+                    "client", "scenes", "AddQuote.fxml");
 
-        var overview = FXML.load(QuoteOverviewCtrl.class,
-                "client", "scenes", "QuoteOverview.fxml");
-        var add = FXML.load(AddQuoteCtrl.class,
-                "client", "scenes", "AddQuote.fxml");
+            var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+            mainCtrl.initialize(primaryStage, overview, add);
 
-        var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(primaryStage, overview, add);
+        // This is temporally here as a proof of concept.
+        } else {
+            var test = FXML.load(LanguageTestCtrl.class,
+                    "client", "scenes", "LanguageTest.fxml");
+            var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+            mainCtrl.initialize(primaryStage, test);
+        }
+
     }
 }

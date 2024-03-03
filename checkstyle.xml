@@ -57,6 +57,8 @@
             <property name="protectedAllowed" value="true"/>
         </module>
 
+        <module name="SuppressWarningsHolder"/>
+
         <module name="OuterTypeFilename">
             <property name="severity" value="warning"/>
         </module>
@@ -114,6 +116,7 @@
         <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
     </module>
 
+    <module name="SuppressWarningsFilter"/>
     <module name="FileTabCharacter">
         <property name="fileExtensions" value="java"/>
         <property name="eachLine" value="true"/>

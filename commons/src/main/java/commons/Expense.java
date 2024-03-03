@@ -20,9 +20,8 @@ public class Expense {
     private int price;
     @OneToMany(cascade = CascadeType.ALL)
     private List<Debt> debts;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     private Event event;
-
     @OneToOne
     private Tag tag;
 
