@@ -42,3 +42,5 @@ out/
 
 ### local settings ###
 /clientsettings.properties
+
+h2-database.trace.db

@@ -4,6 +4,8 @@ import commons.Event;
 import commons.Expense;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/event")
 public class EventController {
@@ -24,8 +26,8 @@ public class EventController {
      */
     @GetMapping("/")
     @ResponseBody
-    public String allEvents() {
-        return eventRepository.findAll().toString();
+    public List<Event> allEvents() {
+        return eventRepository.findAll();
     }
 
     /**
