@@ -14,7 +14,7 @@ import java.util.List;
 public class Event {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String eventName;
     private LocalDate eventCreationDate;
@@ -106,10 +106,17 @@ public class Event {
      *
      * @return participants
      */
-    public Collection<Participant> getParticipants() {
-        return participants;
+    public List<Participant> getParticipants() {
+        return (List<Participant>) participants;
     }
 
+    /**
+     * Remove participant from event
+     * @param participant Participant to be removed.
+     */
+    public void removeParticipant(Participant participant) {
+        participants.remove(participant);
+    }
     /**
      * Setter method.
      *

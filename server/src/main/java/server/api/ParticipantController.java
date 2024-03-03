@@ -11,7 +11,7 @@ import commons.Event;
 import server.database.EventRepository;
 import server.database.ParticipantRepository;
 
-import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/events/{eventId}/participants")
@@ -83,10 +83,10 @@ public class ParticipantController {
      * @param eventId the event that the participant belongs to
      */
     @GetMapping(path = { "", "/" })
-    public Collection<Participant>
+    public ResponseEntity< List<Participant>>
         getAll(@PathVariable("eventId") long eventId) {
         Event event = eventRepo.findById(eventId).get();
-        return event.getParticipants();
+        return ResponseEntity.ok(event.getParticipants());
     }
 
     /**
@@ -130,10 +130,12 @@ public class ParticipantController {
             return ResponseEntity.badRequest().build();
         }
         Participant participant = repo.findById(id).get();
+        Event event = eventRepo.findById(eventId).get();
 
         if (participant.getEvent().getId() != eventId)
             return ResponseEntity.badRequest().build();
         repo.deleteById(id);
+        event.removeParticipant(participant);
         return ResponseEntity.ok(participant);
     }
 }
