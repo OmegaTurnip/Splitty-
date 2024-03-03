@@ -2,6 +2,7 @@ package server;
 
 import commons.Event;
 import commons.Expense;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,8 +27,9 @@ public class EventController {
      */
     @GetMapping("/")
     @ResponseBody
-    public List<Event> allEvents() {
-        return eventRepository.findAll();
+    public ResponseEntity<List<Event>> allEvents() {
+        List<Event> events = eventRepository.findAll();
+        return ResponseEntity.ok(events);
     }
 
     /**
@@ -37,9 +39,9 @@ public class EventController {
      */
     @PutMapping("/")
     @ResponseBody
-    public String addEvent(@RequestBody Event event) {
+    public ResponseEntity<Event> addEvent(@RequestBody Event event) {
         eventRepository.save(event);
-        return "Event added";
+        return ResponseEntity.ok(event);
     }
 
     /**
@@ -49,9 +51,9 @@ public class EventController {
      */
     @DeleteMapping("/")
     @ResponseBody
-    public String deleteEvent(@RequestBody Event event) {
+    public ResponseEntity<Event> deleteEvent(@RequestBody Event event) {
         eventRepository.delete(event);
-        return "Event deleted";
+        return ResponseEntity.ok(event);
     }
 
     /**
@@ -61,12 +63,12 @@ public class EventController {
      */
     @GetMapping("/{id}")
     @ResponseBody
-    public String getEvent(@PathVariable("id") Long id) {
+    public ResponseEntity<Event> getEvent(@PathVariable("id") Long id) {
         Event event = eventRepository.findById(id).orElse(null);
         if (event == null) {
-            return "Event not found";
+            return ResponseEntity.notFound().build();
         }
-        return event.toString();
+        return ResponseEntity.ok(event);
     }
 
     /**
@@ -77,15 +79,15 @@ public class EventController {
      */
     @PostMapping("/{id}")
     @ResponseBody
-    public String addExpense(@PathVariable("id") Long id,
+    public ResponseEntity<Event> addExpense(@PathVariable("id") Long id,
                              @RequestBody Expense expense) {
         Event event = eventRepository.findById(id).orElse(null);
         if (event == null) {
-            return "Event not found";
+            return ResponseEntity.notFound().build();
         }
         event.addExpense(expense);
         eventRepository.save(event);
-        return "Expense added";
+        return ResponseEntity.ok(event);
     }
 
     /**
@@ -96,18 +98,18 @@ public class EventController {
      */
     @DeleteMapping("/{id}")
     @ResponseBody
-    public String deleteExpense(@PathVariable("id") Long id,
+    public ResponseEntity<Event> deleteExpense(@PathVariable("id") Long id,
                                 @RequestBody Expense expense) {
         Event event = eventRepository.findById(id).orElse(null);
         if (event == null) {
-            return "Event not found";
+            return ResponseEntity.notFound().build();
         }
         boolean deleted = event.deleteExpense(expense);
         if(!deleted) {
-            return "Expense not found";
+            return ResponseEntity.badRequest().build();
         }
         eventRepository.save(event);
-        return "Expense deleted";
+        return ResponseEntity.ok(event);
     }
 
 }
