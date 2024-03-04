@@ -20,14 +20,13 @@ import static com.google.inject.Guice.createInjector;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import client.scenes.*;
 import com.google.inject.Injector;
 
-import client.scenes.LanguageTestCtrl;
-
-import client.scenes.AddQuoteCtrl;
-import client.scenes.MainCtrl;
-import client.scenes.QuoteOverviewCtrl;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -57,21 +56,25 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         // Change to `true` to load the quote application.
-        if (false) {
-            var overview = FXML.load(QuoteOverviewCtrl.class,
-                    "client", "scenes", "QuoteOverview.fxml");
-            var add = FXML.load(AddQuoteCtrl.class,
-                    "client", "scenes", "AddQuote.fxml");
+        if (false){
+            try{
+                Parent root = FXMLLoader.load(getClass().getResource
+                        ("EventOverview.fxml"));
+                Scene scene = new Scene(root);
+                primaryStage.setScene(scene);
+                primaryStage.show();
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
 
+        } else {
+            var overview = FXML.load(EventOverviewCtrl.class,
+                    "client", "scenes", "EventOverview.fxml");
+            var add = FXML.load(AddParticipantCtrl.class, "client", "scenes",
+                    "AddParticipant.fxml");
             var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
             mainCtrl.initialize(primaryStage, overview, add);
-
-        // This is temporally here as a proof of concept.
-        } else {
-            var test = FXML.load(LanguageTestCtrl.class,
-                    "client", "scenes", "LanguageTest.fxml");
-            var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-            mainCtrl.initialize(primaryStage, test);
         }
 
     }
