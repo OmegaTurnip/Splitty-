@@ -11,7 +11,7 @@ public interface TransactionRepository
      * @param transactionName The transaction name
      * @return The transaction.
      */
-    Transaction findExpenseByExpenseName(String transactionName);
+    Transaction findTransactionByTransactionName(String transactionName);
 
 
 
