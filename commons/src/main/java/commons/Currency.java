@@ -44,7 +44,7 @@ public class Currency {
     /**
      *
      * @param cents Current amount of money in cents
-     * @param currency Currency in which the expense is paid in
+     * @param currency Currency in which the transaction is paid in
      */
     public Currency(int cents, String currency){
         this.cents = cents;
@@ -56,7 +56,7 @@ public class Currency {
      * Takes an input in decimal form and converts it to a
      * cent-based integer format
      * @param money Current amount of money in decimal form
-     * @param currency Currency in which the expense is paid in
+     * @param currency Currency in which the transaction is paid in
      */
     public Currency(double money, String currency){
         this.cents = (int) (money * 100);
@@ -97,8 +97,8 @@ public class Currency {
     }
 
     /**
-     * Gets the currency in which the expense has been paid
-     * @return currency in which the expense has been paid
+     * Gets the currency in which the transaction has been paid
+     * @return currency in which the transaction has been paid
      */
     public String getCurrency() {
         return currency.name();

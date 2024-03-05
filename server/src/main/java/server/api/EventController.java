@@ -1,7 +1,7 @@
 package server.api;
 
 import commons.Event;
-import commons.Expense;
+import commons.Transaction;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
@@ -73,39 +73,41 @@ public class EventController {
     }
 
     /**
-     * Add an expense to an event
+     * Add a transaction to an event
      * @param id The id of the event
-     * @param expense The expense to add
-     * @return Expense added
+     * @param transaction The transaction to add
+     * @return Transaction added
      */
     @PostMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Event> addExpense(@PathVariable("id") Long id,
-                             @RequestBody Expense expense) {
+    public ResponseEntity<Event>
+        addTransaction(@PathVariable("id") Long id,
+                       @RequestBody Transaction transaction) {
         Event event = eventRepository.findById(id).orElse(null);
         if (event == null) {
             return ResponseEntity.notFound().build();
         }
-        event.addExpense(expense);
+        event.addTransaction(transaction);
         eventRepository.save(event);
         return ResponseEntity.ok(event);
     }
 
     /**
-     * Delete an expense from an event
+     * Delete a transaction from an event
      * @param id The id of the event
-     * @param expense the expense to delete
-     * @return The expense deleted
+     * @param transaction the transaction to delete
+     * @return The transaction deleted
      */
     @DeleteMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Event> deleteExpense(@PathVariable("id") Long id,
-                                @RequestBody Expense expense) {
+    public ResponseEntity<Event>
+        deleteTransaction(@PathVariable("id") Long id,
+                          @RequestBody Transaction transaction) {
         Event event = eventRepository.findById(id).orElse(null);
         if (event == null) {
             return ResponseEntity.notFound().build();
         }
-        boolean deleted = event.deleteExpense(expense);
+        boolean deleted = event.deleteTransaction(transaction);
         if(!deleted) {
             return ResponseEntity.badRequest().build();
         }

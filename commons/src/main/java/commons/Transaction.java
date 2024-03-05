@@ -6,20 +6,19 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Entity
-public class Expense {
+public class Transaction {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
     @OneToOne
     private Participant payer;
-    private String expenseName;
+    private String transactionName;
     private LocalDate date;
     private int price;
     @OneToMany(cascade = CascadeType.ALL)
-    private List<Debt> debts;
+    private List<Participant> participants;
     @ManyToOne(cascade = CascadeType.REMOVE)
     private Event event;
     @OneToOne
@@ -27,26 +26,24 @@ public class Expense {
 
     /**
      * Constructor.
-     * @param payer The person who paid for the expense.
-     * @param expenseName The name of the expense.
-     * @param price       The price of the expense (in euro cents).
-     * @param debtors     The people who owe money
-     *                    due to this expense (key),
+     * @param payer The person who paid for the transaction.
+     * @param transactionName The name of the transaction.
+     * @param price       The price of the transaction (in euro cents).
+     * @param participants     The people who owe money
+     *                    due to this transaction (key),
      *                    and the amount they owe (value).
-     * @param event       The event the expense belongs to
-    * @param tag          The tag of the expense
+     * @param event       The event the transactions belongs to
+    * @param tag          The tag of the transaction
      */
-    Expense(Participant payer,
-                   String expenseName,
-                   int price, Collection<Participant> debtors,
-                   Event event, Tag tag) {
+    Transaction(Participant payer,
+                String transactionName,
+                int price, List<Participant> participants,
+                Event event, Tag tag) {
         this.payer = payer;
-        this.expenseName = expenseName;
+        this.transactionName = transactionName;
         this.date = LocalDate.now();
         this.price = price;
-        this.debts = debtors.stream()
-                .map(p -> new Debt(p, price/debtors.size()))
-                .collect(Collectors.toList());
+        this.participants = participants;
         this.event = event;
         event.updateLastActivity();
         this.tag = tag;
@@ -55,13 +52,13 @@ public class Expense {
     /**
      * Constructor without parameters
      */
-    public Expense() {
+    public Transaction() {
 
     }
 
     /**
  * Setter method
- * @param tag the tag of the expense
+ * @param tag the tag of the transaction
  */
 
     public void setTag(Tag tag) {
@@ -81,10 +78,10 @@ public class Expense {
     /**
      * Setter method. Also updates last activity in the corresponding Event.
      *
-     * @param expenseName .
+     * @param transactionName .
      */
-    public void setExpenseName(String expenseName) {
-        this.expenseName = expenseName;
+    public void setTransactionName(String transactionName) {
+        this.transactionName = transactionName;
         event.updateLastActivity();
     }
 
@@ -122,8 +119,8 @@ public class Expense {
      *
      * @return .
      */
-    public String getExpenseName() {
-        return expenseName;
+    public String getTransactionName() {
+        return transactionName;
     }
 
     /**
@@ -162,21 +159,21 @@ public class Expense {
 
     /**
      * Equals method.
-     * @param o Expense to test equality on.
+     * @param o Transaction to test equality on.
      * @return True or false depending on equality.
      */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Expense expense = (Expense) o;
-        return price == expense.price
-                && Objects.equals(payer, expense.payer)
-                && Objects.equals(expenseName, expense.expenseName)
-                && Objects.equals(date, expense.date)
-                && Objects.equals(debts, expense.debts)
-                && Objects.equals(id, expense.id)
-                && Objects.equals(tag, expense.tag);
+        Transaction transaction = (Transaction) o;
+        return price == transaction.price
+                && Objects.equals(payer, transaction.payer)
+                && Objects.equals(transactionName, transaction.transactionName)
+                && Objects.equals(date, transaction.date)
+                && Objects.equals(participants, transaction.participants)
+                && Objects.equals(id, transaction.id)
+                && Objects.equals(tag, transaction.tag);
     }
 
     /**
@@ -186,7 +183,8 @@ public class Expense {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(payer, expenseName, date, price, debts, id);
+        return Objects.hash(payer, transactionName, date,
+                price, participants, id);
     }
 
     /**

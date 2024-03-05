@@ -1,6 +1,5 @@
 package commons;
 
-import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,9 +27,9 @@ class EventTest {
     Participant testParticipant2 = new Participant("Amy", testEvent);
     Participant testParticipant3 = new Participant("Rizwan", testEvent);
 
-        Collection<Participant> testParticipants1 = new ArrayList<>();
-        Collection<Participant> testParticipants2 = new ArrayList<>();
-        Collection<Participant> testAllParticipants1 = new ArrayList<>();
+        List<Participant> testParticipants1 = new ArrayList<>();
+        List<Participant> testParticipants2 = new ArrayList<>();
+        List<Participant> testAllParticipants1 = new ArrayList<>();
 
         testParticipants1.add(testParticipant2);
         testParticipants1.add(testParticipant3);
@@ -44,15 +43,15 @@ class EventTest {
 
     testEvent.setParticipants(testAllParticipants1);
 
-    Expense testExpense1 = new Expense(testParticipant1, "Drinks",400, testParticipants1, testEvent, new Tag("food", "blue"));
-    Expense testExpense2 = new Expense(testParticipant2, "Lunch", 350, testParticipants2, testEvent, new Tag("food", "blue"));
-    testExpense1.setDate(testDate1);
-    testExpense2.setDate(testDate1);
-    Collection<Expense> testExpenses1 = new ArrayList<>();
-    testExpenses1.add(testExpense1);
-    testExpenses1.add(testExpense2);
+    Transaction testTransaction1 = new Transaction(testParticipant1, "Drinks",400, testParticipants1, testEvent, new Tag("food", "blue"));
+    Transaction testTransaction2 = new Transaction(testParticipant2, "Lunch", 350, testParticipants2, testEvent, new Tag("food", "blue"));
+    testTransaction1.setDate(testDate1);
+    testTransaction2.setDate(testDate1);
+    Collection<Transaction> testTransactions1 = new ArrayList<>();
+    testTransactions1.add(testTransaction1);
+    testTransactions1.add(testTransaction2);
 
-    testEvent.setExpenses(testExpenses1);
+    testEvent.setTransactions(testTransactions1);
   }
 
     @Test
