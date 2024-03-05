@@ -1,6 +1,7 @@
 package commons;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ public class Transaction {
     @Id
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
+    @JsonIgnore
     private Event event;
     @OneToOne
     private Participant payer;
