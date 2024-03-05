@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Entity
+@IdClass(TransactionId.class)
 public class Transaction {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -19,7 +20,9 @@ public class Transaction {
     private int price;
     @OneToMany(cascade = CascadeType.ALL)
     private List<Participant> participants;
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "event_id", nullable = false)
     private Event event;
     @OneToOne
     private Tag tag;
