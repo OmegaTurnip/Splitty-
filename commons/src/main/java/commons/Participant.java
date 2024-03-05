@@ -20,7 +20,7 @@ public class Participant {
      * @param name Name of the participant.
      * @param event Event the participant belongs to.
      */
-    public Participant(String name, Event event) {
+    Participant(String name, Event event) {
         this.name = name;
         this.event = event;
     }
