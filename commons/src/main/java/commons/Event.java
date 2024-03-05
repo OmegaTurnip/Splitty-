@@ -254,7 +254,8 @@ public class Event {
     public Transaction registerTransaction(Participant payer,
                                            String transactionName,
                                            int price,
-                                           List<Participant> participants, Tag tag) {
+                                           List<Participant> participants,
+                                           Tag tag) {
         Transaction e = new Transaction(payer, transactionName, price,
                 participants, this, tag);
         transactions.add(e);

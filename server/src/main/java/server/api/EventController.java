@@ -80,8 +80,9 @@ public class EventController {
      */
     @PostMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Event> addTransaction(@PathVariable("id") Long id,
-                                                @RequestBody Transaction transaction) {
+    public ResponseEntity<Event>
+        addTransaction(@PathVariable("id") Long id,
+                       @RequestBody Transaction transaction) {
         Event event = eventRepository.findById(id).orElse(null);
         if (event == null) {
             return ResponseEntity.notFound().build();
@@ -99,8 +100,9 @@ public class EventController {
      */
     @DeleteMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Event> deleteTransaction(@PathVariable("id") Long id,
-                                                   @RequestBody Transaction transaction) {
+    public ResponseEntity<Event>
+        deleteTransaction(@PathVariable("id") Long id,
+                          @RequestBody Transaction transaction) {
         Event event = eventRepository.findById(id).orElse(null);
         if (event == null) {
             return ResponseEntity.notFound().build();

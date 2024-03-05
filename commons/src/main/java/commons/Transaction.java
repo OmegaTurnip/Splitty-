@@ -183,7 +183,8 @@ public class Transaction {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(payer, transactionName, date, price, participants, id);
+        return Objects.hash(payer, transactionName, date,
+                price, participants, id);
     }
 
     /**
