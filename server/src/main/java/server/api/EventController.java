@@ -8,6 +8,7 @@ import server.database.EventRepository;
 
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/event")
 public class EventController {
@@ -69,26 +70,6 @@ public class EventController {
         if (event == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(event);
-    }
-
-    /**
-     * Add a transaction to an event
-     * @param id The id of the event
-     * @param transaction The transaction to add
-     * @return Transaction added
-     */
-    @PostMapping("/{id}")
-    @ResponseBody
-    public ResponseEntity<Event>
-        addTransaction(@PathVariable("id") Long id,
-                       @RequestBody Transaction transaction) {
-        Event event = eventRepository.findById(id).orElse(null);
-        if (event == null) {
-            return ResponseEntity.notFound().build();
-        }
-        event.addTransaction(transaction);
-        eventRepository.save(event);
         return ResponseEntity.ok(event);
     }
 
