@@ -35,7 +35,7 @@ public class LanguageTest {
 
     @Test
     void testConstructor() {
-        assertThrows(IllegalArgumentException.class, () -> new Language(null, new Properties()));
+        assertThrows(IllegalArgumentException.class, () -> new Language(null, new Properties(), null));
     }
 
     @Test
