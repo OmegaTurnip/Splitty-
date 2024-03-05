@@ -26,6 +26,16 @@ public class Language {
     private static Language defaultLanguage;
     private final String languageCode;
     private final Properties language;
+    private final File iconFile;
+
+
+    /**
+     * This icon is used when no icon is found. Should also be used for the
+     * 'Download Template' button in the 'Language Selection' menu if an icon is
+     * needed there.
+     */
+    public static final File EMPTY_ICON_FILE =
+            new File("includedLanguages/empty.png");
 
     /**
      * A regex for validating a language code. The {@code ^} character denotes
@@ -51,12 +61,15 @@ public class Language {
      *          The properties file in which the language is stored. It should
      *          already be initialised.
      */
-    public Language(String languageCode, Properties language) {
+    Language(String languageCode, Properties language, File iconFile) {
+
         if (!isValidLanguageCode(languageCode))
             throw new IllegalArgumentException("Invalid languageCode");
 
         this.languageCode = languageCode;
         this.language = language;
+        this.iconFile = iconFile;
+
         languages.put(languageCode, this);
 
         if ("eng".equals(languageCode)) defaultLanguage = this;
@@ -73,6 +86,16 @@ public class Language {
     }
 
     /**
+     * Gets the filepath to the png with the language icon. It will return a
+     * default icon if no icon is found.
+     *
+     * @return  The filepath to the language icon png.
+     */
+    public File getIconFile() {
+        return iconFile != null ? iconFile : EMPTY_ICON_FILE;
+    }
+
+    /**
      * Checks whether the inputted {@code String} is a valid
      * <a href="https://iso639-3.sil.org/code_tables/639/data">ISO 639-3</a>
      * code.
@@ -84,6 +107,27 @@ public class Language {
      */
     public static boolean isValidLanguageCode(String code) {
         return code != null && LANGUAGE_CODE_PATTERN.matcher(code).matches();
+    }
+
+    /**
+     * Generates the file object that stores the language icon or null if it
+     * doesn't exist.
+     *
+     * @param   languageCode
+     *          The ISO 639-3 code of the language.
+     * @param   languageFile
+     *          The file in which the translations are stored.
+     *
+     * @return  The file containing the language icon.
+     */
+    private static File generateIconFile(String languageCode,
+                                         File languageFile) {
+        File iconFile =
+                languageFile.toPath()
+                            .resolveSibling(languageCode + ".png")
+                            .toFile();
+
+        return iconFile.exists() ? iconFile : null;
     }
 
     /**
@@ -136,8 +180,13 @@ public class Language {
      */
     public static Language fromLanguageFile(String languageCode, File file)
             throws IOException {
+
+        if (!isValidLanguageCode(languageCode))
+            throw new IllegalArgumentException("Invalid languageCode");
+
         PropertiesFile languageReader = new PropertiesFile(file);
-        return new Language(languageCode, languageReader.getContent());
+        return new Language(languageCode, languageReader.getContent(),
+                generateIconFile(languageCode, file));
     }
 
     /**

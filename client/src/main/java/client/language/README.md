@@ -57,6 +57,9 @@ public void refreshText() {
 ### Adding translations
 Lastly, the code also contains a simple console application (`TranslationCreator`) which can be used to translate a new language. You first input the source language and the language that needs translations. Then it will resolve all entries present in the source language and not in the 'destination' language and lets you enter translations for those. It will also check if all parameters are present and valid in the translation.
 
+#### Adding icons
+To add an icon/flag for the language, add a `png` file with the language code in the same directory as the translation file. 
+For english this would be `eng.png`. I recommend the icon to be `300x200px` (even if the flags ratio is not `3:2`).
 
 # Tutorial on adding a new piece of text
 When you want to add a new piece of text, think a little about where its used/will be reused.
