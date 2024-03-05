@@ -21,7 +21,7 @@ public class Event {
     private LocalDate eventCreationDate;
     private String inviteCode;
     @OneToMany(cascade = CascadeType.ALL)
-    private Collection<Expense> expenses;
+    private Collection<Transaction> transactions;
     @OneToMany(cascade = CascadeType.ALL)
     private Collection<Participant> participants;
     private LocalDateTime lastActivity;
@@ -38,7 +38,7 @@ public class Event {
         this.eventName = eventName;
         this.eventCreationDate = LocalDate.now();
         this.inviteCode = generateInviteCode();
-        this.expenses = new ArrayList<Expense>();
+        this.transactions = new ArrayList<Transaction>();
         this.participants = new ArrayList<Participant>();
         this.tags = new ArrayList<Tag>();
         basicTags();
@@ -72,14 +72,14 @@ public class Event {
     }
 
     /**
-     * Calculates the total sum of all the expenses in the event.
+     * Calculates the total sum of all the transactions in the event.
      *
      * @return The total sum.
      */
     public int totalSumOfExpenses() {
         int result = 0;
-        for (Expense expense : expenses) {
-            result += expense.getPrice();
+        for (Transaction transaction : transactions) {
+            result += transaction.getPrice();
         }
         return result;
     }
@@ -203,61 +203,61 @@ public class Event {
      *
      * @return .
      */
-    public Collection<Expense> getExpenses() {
-        return expenses;
+    public Collection<Transaction> getTransactions() {
+        return transactions;
     }
 
     /**
      * Setter method.
      *
-     * @param expenses .
+     * @param transactions .
      */
-    public void setExpenses(Collection<Expense> expenses) {
-        this.expenses = expenses;
+    public void setTransactions(Collection<Transaction> transactions) {
+        this.transactions = transactions;
         updateLastActivity();
     }
 
     /**
-     * Adds an expense to the event.
+     * Adds an transaction to the event.
      * Checks if the tag is already in the list of tags.
      * If it lists a tag with the same name but diff colour,
      * it changes the colour.
      *
-     * @param e expense
+     * @param e transaction
      */
-    public void addExpense(Expense e) {
-        expenses.add(e);
-        Tag expenseTag = e.getTag();
+    public void addTransaction(Transaction e) {
+        transactions.add(e);
+        Tag transactionTag = e.getTag();
         for (Tag tag : tags) {
-            if (tag.equals(expenseTag)) {
+            if (tag.equals(transactionTag)) {
                 return;
             }
-            if (tag.nameEquals(expenseTag)) {
+            if (tag.nameEquals(transactionTag)) {
                 e.setTag(tag);
                 return;
             }
         }
 
-        tags.add(expenseTag);
+        tags.add(transactionTag);
     }
 
     /**
-     * Register an expense with an event
+     * Register a transaction with an event
      *
      * @param payer       the Participant that paid
-     * @param expenseName the name of the Expense to be registered
-     * @param price       the price of the Expense
-     * @param debtors     the debtors of the Expense
+     * @param transactionName the name of the Transaction to be registered
+     * @param price       the price of the Transaction
+     * @param participants the participants of the Transaction
      * @param tag         the tag
-     * @return            the expense registered
+     * @return            the transaction registered
      */
-    public Expense registerExpense(Participant payer,
-                                String expenseName,
-                                int price,
-                                Collection<Participant> debtors, Tag tag) {
-        Expense e = new Expense(payer, expenseName, price,
-                debtors, this, tag);
-        expenses.add(e);
+    public Transaction registerTransaction(Participant payer,
+                                           String transactionName,
+                                           int price,
+                                           List<Participant> participants, Tag tag) {
+        Transaction e = new Transaction(payer, transactionName, price,
+                participants, this, tag);
+        transactions.add(e);
         updateLastActivity();
         return e;
     }
@@ -315,7 +315,7 @@ public class Event {
         return Objects.equals(eventName, event.eventName)
                 && Objects.equals(eventCreationDate, event.eventCreationDate)
                 && Objects.equals(inviteCode, event.inviteCode)
-                && Objects.equals(expenses, event.expenses)
+                && Objects.equals(transactions, event.transactions)
                 && Objects.equals(lastActivity, event.lastActivity)
                 && Objects.equals(tags, event.tags)
                 && Objects.equals(id, event.id);
@@ -329,7 +329,7 @@ public class Event {
     @Override
     public int hashCode() {
         return Objects.hash(eventName, eventCreationDate, inviteCode,
-                expenses, lastActivity, id);
+                transactions, lastActivity, id);
     }
 
     /**
@@ -360,11 +360,11 @@ public class Event {
     }
 
     /**
-     * Deletes an expense from the event
-     * @param expense expense to be deleted
-     * @return  true if the expense was deleted, false if it was not found
+     * Deletes a transaction from the event
+     * @param transaction transaction to be deleted
+     * @return  true if the transaction was deleted, false if it was not found
      */
-    public boolean deleteExpense(Expense expense) {
-        return expenses.remove(expense);
+    public boolean deleteTransaction(Transaction transaction) {
+        return transactions.remove(transaction);
     }
 }

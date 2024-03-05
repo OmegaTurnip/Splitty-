@@ -28,18 +28,18 @@ If a translation is not found in the current language, `Translator.getTranslatio
 
 Another feature implemented in this merge request is text formatting, which is closely related to translation of text. Take for example the case where we want to display to the user a message like "David paid €54 for Drinks". Translating the general pattern (_payer_ paid _price_ for _expense_) can be quite difficult as word ordering differs in different languages.
 
-That is why the `Formatter` class was made so now pieces of text that need dynamic information can be properly translated. The aforementioned message would be stored as `"{{payer}} paid {{price}} for {{expense}}"`. Calling the `Formatter.format()` function on this string in combination with a hashmap containing the parameters and their replacement values will produce the final correct string.
+That is why the `Formatter` class was made so now pieces of text that need dynamic information can be properly translated. The aforementioned message would be stored as `"{{payer}} paid {{price}} for {{transaction}}"`. Calling the `Formatter.format()` function on this string in combination with a hashmap containing the parameters and their replacement values will produce the final correct string.
 
 Code example:
 ```java
 HashMap<String, String> parameters = new HashMap<>();
 parameters.put("payer", "David");
 parameters.put("price", "€54");
-parameters.put("expense", "Drinks");
-Formatter.format("{{payer}} paid {{price}} for {{expense}}", parameters); // this will equal "David paid €54 for Drinks"
+parameters.put("transaction", "Drinks");
+Formatter.format("{{payer}} paid {{price}} for {{transaction}}", parameters); // this will equal "David paid €54 for Drinks"
 ```
 
-The translation of this string to Dutch should be `"{{payer}} betaalde {{price}} voor {{expense}}"`. A actual code example would look like this:
+The translation of this string to Dutch should be `"{{payer}} betaalde {{price}} voor {{transaction}}"`. A actual code example would look like this:
 
 ```java
 // assume `lastExpense` (fxml object) and `lastExpenseParameters` (hashmap) are valid attributes.
