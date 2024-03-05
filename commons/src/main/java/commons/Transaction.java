@@ -13,6 +13,10 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "event_id", nullable = false)
+    private Event event;
     @OneToOne
     private Participant payer;
     private String transactionName;
@@ -20,10 +24,6 @@ public class Transaction {
     private int price;
     @OneToMany(cascade = CascadeType.ALL)
     private List<Participant> participants;
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "event_id", nullable = false)
-    private Event event;
     @OneToOne
     private Tag tag;
 
