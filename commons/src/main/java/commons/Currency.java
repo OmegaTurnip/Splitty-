@@ -167,7 +167,7 @@ public class Currency {
 
     /**
      * Formats the currency to a string
-     * @return Human readable format
+     * @return Human-readable format
      */
     @Override
     public String toString() {

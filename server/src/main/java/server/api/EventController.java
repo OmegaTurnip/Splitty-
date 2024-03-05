@@ -1,9 +1,10 @@
-package server;
+package server.api;
 
 import commons.Event;
 import commons.Expense;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import server.database.EventRepository;
 
 import java.util.List;
 
@@ -23,9 +24,9 @@ public class EventController {
 
     /**
      * Get all events
-     * @return  String of all events
+     * @return  All events
      */
-    @GetMapping("/")
+    @GetMapping(path = { "", "/" })
     @ResponseBody
     public ResponseEntity<List<Event>> allEvents() {
         List<Event> events = eventRepository.findAll();
@@ -35,9 +36,9 @@ public class EventController {
     /**
      * Add an event
      * @param event The event to add
-     * @return  String of the event added
+     * @return  The event added
      */
-    @PutMapping("/")
+    @PutMapping(path = { "", "/" })
     @ResponseBody
     public ResponseEntity<Event> addEvent(@RequestBody Event event) {
         eventRepository.save(event);
@@ -47,9 +48,9 @@ public class EventController {
     /**
      * Delete an event
      * @param event The event to delete
-     * @return String of the event deleted
+     * @return The event deleted
      */
-    @DeleteMapping("/")
+    @DeleteMapping(path = { "", "/" })
     @ResponseBody
     public ResponseEntity<Event> deleteEvent(@RequestBody Event event) {
         eventRepository.delete(event);
@@ -59,7 +60,7 @@ public class EventController {
     /**
      * Get an event by id
      * @param id The id of the event
-     * @return String of the event
+     * @return The event
      */
     @GetMapping("/{id}")
     @ResponseBody
@@ -75,7 +76,7 @@ public class EventController {
      * Add an expense to an event
      * @param id The id of the event
      * @param expense The expense to add
-     * @return String of the expense added
+     * @return Expense added
      */
     @PostMapping("/{id}")
     @ResponseBody
@@ -94,7 +95,7 @@ public class EventController {
      * Delete an expense from an event
      * @param id The id of the event
      * @param expense the expense to delete
-     * @return String of the expense deleted
+     * @return The expense deleted
      */
     @DeleteMapping("/{id}")
     @ResponseBody

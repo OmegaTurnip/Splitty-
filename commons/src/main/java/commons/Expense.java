@@ -29,14 +29,14 @@ public class Expense {
      * Constructor.
      * @param payer The person who paid for the expense.
      * @param expenseName The name of the expense.
-     * @param price       The price of the expense (in dollars).
+     * @param price       The price of the expense (in euro cents).
      * @param debtors     The people who owe money
      *                    due to this expense (key),
      *                    and the amount they owe (value).
      * @param event       The event the expense belongs to
     * @param tag          The tag of the expense
      */
-    public Expense(Participant payer,
+    Expense(Participant payer,
                    String expenseName,
                    int price, Collection<Participant> debtors,
                    Event event, Tag tag) {
