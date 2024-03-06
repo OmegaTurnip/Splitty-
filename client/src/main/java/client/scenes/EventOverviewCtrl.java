@@ -106,7 +106,7 @@ public class EventOverviewCtrl {
         german.setText(
                 Translator.getTranslation(Text.Menu.German));
         rto.setText(
-                Translator.getTranslation(Text.Menu.RTO));
+                Translator.getTranslation(Text.Menu.ReturnToOverview));
         close.setText(
                 Translator.getTranslation(Text.Menu.Close));
     }
