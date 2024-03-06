@@ -217,29 +217,6 @@ public class Event {
         updateLastActivity();
     }
 
-    /**
-     * Adds an transaction to the event.
-     * Checks if the tag is already in the list of tags.
-     * If it lists a tag with the same name but diff colour,
-     * it changes the colour.
-     *
-     * @param e transaction
-     */
-    public void addTransaction(Transaction e) {
-        transactions.add(e);
-        Tag transactionTag = e.getTag();
-        for (Tag tag : tags) {
-            if (tag.equals(transactionTag)) {
-                return;
-            }
-            if (tag.nameEquals(transactionTag)) {
-                e.setTag(tag);
-                return;
-            }
-        }
-
-        tags.add(transactionTag);
-    }
 
     /**
      * Register a transaction with an event

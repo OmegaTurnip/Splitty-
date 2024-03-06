@@ -202,4 +202,20 @@ public class Transaction {
     public Long getId() {
         return id;
     }
+
+    /**
+     * Getter for participants
+     * @return the participants
+     */
+    public List<Participant> getParticipants() {
+        return participants;
+    }
+
+    /**
+     * Setter for participants
+     * @param participants the participants to set
+     */
+    public void setParticipants(List<Participant> participants) {
+        this.participants = participants;
+    }
 }
