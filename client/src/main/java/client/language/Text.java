@@ -16,7 +16,7 @@ public class Text {
      */
     public static final class MessageBox {
 
-        private static final String level = "Messagebox.";
+        private static final String level = "MessageBox.";
 
         /**
          * General language class for the common messagebox options.
