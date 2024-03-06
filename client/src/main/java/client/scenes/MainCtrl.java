@@ -68,6 +68,7 @@ public class MainCtrl {
      * go to the start-up page (by changing the content of the window).
      */
     public void showOverview() {
+        this.overviewCtrl.refreshText();
         primaryStage.setTitle("Event Overview");
         primaryStage.setScene(overview);
     }
@@ -76,7 +77,10 @@ public class MainCtrl {
      * go to the add quote page (by changing the content of the window).
      */
     public void showAdd() {
+        this.addParticipantCtrl.refreshText();
         primaryStage.setTitle("Event Overview: Adding participant");
         primaryStage.setScene(add);
     }
+
+
 }

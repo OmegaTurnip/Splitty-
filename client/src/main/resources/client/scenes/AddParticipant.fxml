@@ -42,25 +42,25 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="150.0" prefWidth="287.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddParticipantCtrl">
+<VBox prefHeight="271.0" prefWidth="287.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddParticipantCtrl">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
             <Menu fx:id="languages" mnemonicParsing="false" text="Languages">
               <items>
-                  <CheckMenuItem fx:id="english" mnemonicParsing="false" text="English" />
-                  <CheckMenuItem fx:id="dutch" mnemonicParsing="false" text="Dutch" />
-                  <CheckMenuItem fx:id="german" mnemonicParsing="false" text="German" />
+                  <CheckMenuItem fx:id="english" mnemonicParsing="false" onAction="#setEnglish" text="English" />
+                  <CheckMenuItem fx:id="dutch" mnemonicParsing="false" onAction="#setDutch" text="Dutch" />
+                  <CheckMenuItem fx:id="german" mnemonicParsing="false" onAction="#setGerman" text="German" />
               </items>
             </Menu>
             <Menu fx:id="rto" mnemonicParsing="false" text="Return to Overview" />
             <Menu fx:id="close" mnemonicParsing="false" text="Close" />
       </menus>
     </MenuBar>
-    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="110.0" prefWidth="281.0" VBox.vgrow="ALWAYS">
+    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="238.0" prefWidth="287.0" VBox.vgrow="ALWAYS">
          <children>
             <TextField fx:id="usernameTextField" layoutX="86.0" layoutY="45.0" prefHeight="26.0" prefWidth="186.0" />
-            <Label layoutX="14.0" layoutY="4.0" text="Add a participant">
+            <Label fx:id="title" layoutX="14.0" layoutY="4.0" text="Add a participant">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
@@ -70,8 +70,26 @@
                   <Font size="15.0" />
                </font>
             </Label>
-            <Button fx:id="cancel" cancelButton="true" layoutX="151.0" layoutY="81.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="55.0" text="Cancel" />
-            <Button fx:id="addParticipant" cancelButton="true" layoutX="217.0" layoutY="82.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="55.0" text="Add" />
+            <Button fx:id="cancel" cancelButton="true" layoutX="151.0" layoutY="208.0" mnemonicParsing="false" onAction="#cancel" prefHeight="26.0" prefWidth="55.0" text="Cancel" />
+            <Button fx:id="addParticipant" cancelButton="true" layoutX="217.0" layoutY="208.0" mnemonicParsing="false" onAction="#addParticipant" prefHeight="26.0" prefWidth="55.0" text="Add" />
+            <TextField fx:id="emailTextField" layoutX="85.0" layoutY="85.0" prefHeight="26.0" prefWidth="186.0" />
+            <Label fx:id="username1" layoutX="16.0" layoutY="87.0" text="Email:">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <TextField fx:id="ibanTextField" layoutX="85.0" layoutY="125.0" prefHeight="26.0" prefWidth="186.0" />
+            <Label fx:id="username2" layoutX="16.0" layoutY="127.0" text="IBAN:">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <TextField fx:id="bicTextField" layoutX="84.0" layoutY="165.0" prefHeight="26.0" prefWidth="186.0" />
+            <Label fx:id="username11" layoutX="15.0" layoutY="167.0" text="BIC:">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
          </children></AnchorPane>
   </children>
 </VBox>

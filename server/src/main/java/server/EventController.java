@@ -4,6 +4,7 @@ import commons.Event;
 import commons.Expense;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import server.database.EventRepository;
 
 import java.util.List;
 

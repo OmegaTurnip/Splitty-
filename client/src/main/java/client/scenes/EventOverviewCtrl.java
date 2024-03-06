@@ -4,7 +4,9 @@ package client.scenes;
 
 import client.language.Text;
 import client.language.Translator;
+import client.utils.ServerUtils;
 import client.utils.UserConfig;
+import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
@@ -45,9 +47,20 @@ public class EventOverviewCtrl {
     private Label participantsList;
     @FXML
     private Label expenses;
-    private MainCtrl mainCtrl;
+    private final ServerUtils server;
+    private final MainCtrl mainCtrl;
 
 
+    /**
+     * Initializes the controller
+     * @param server .
+     * @param mainCtrl .
+     */
+    @Inject
+    public EventOverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
+        this.server = server;
+        this.mainCtrl = mainCtrl;
+    }
     /**
      * Refreshes all the text
      */
@@ -101,7 +114,8 @@ public class EventOverviewCtrl {
      * Still in construction
      */
     public void addParticipant(){
-        //mainCtrl.showAdd();
+        mainCtrl.showAdd();
+        refreshText();
     }
 
     /**
@@ -109,7 +123,7 @@ public class EventOverviewCtrl {
      * @param username name to be added to list
      */
     public void displayName(String username){
-        participantsList.setText(username);
+        this.participantsList.setText(username);
     }
 
     /**
