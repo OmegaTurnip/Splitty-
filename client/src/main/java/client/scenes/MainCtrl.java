@@ -24,10 +24,10 @@ public class MainCtrl {
 
     private Stage primaryStage;
 
-    private QuoteOverviewCtrl overviewCtrl;
+    private EventOverviewCtrl overviewCtrl;
     private Scene overview;
 
-    private AddQuoteCtrl addCtrl;
+    private AddParticipantCtrl addParticipantCtrl;
     private Scene add;
     /**
      * @param primaryStage the window.
@@ -35,13 +35,13 @@ public class MainCtrl {
      * @param add the fx for the add quote page.
      */
     public void initialize(
-            Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
-            Pair<AddQuoteCtrl, Parent> add) {
+            Stage primaryStage, Pair<EventOverviewCtrl, Parent> overview,
+            Pair<AddParticipantCtrl, Parent> add) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
 
-        this.addCtrl = add.getKey();
+        this.addParticipantCtrl = add.getKey();
         this.add = new Scene(add.getValue());
 
         showOverview();
@@ -55,13 +55,12 @@ public class MainCtrl {
      * @param lang .
      */
     public void initialize(
-            Stage primaryStage, Pair<LanguageTestCtrl, Parent> lang) {
+            Stage primaryStage, Pair<EventOverviewCtrl, Parent> lang) {
         this.primaryStage = primaryStage;
 
         primaryStage.setTitle("Language selector test");
         primaryStage.setScene(new Scene(lang.getValue()));
 
-        lang.getKey().nextLang();
         primaryStage.show();
     }
 
@@ -69,17 +68,19 @@ public class MainCtrl {
      * go to the start-up page (by changing the content of the window).
      */
     public void showOverview() {
-        primaryStage.setTitle("Quotes: Overview");
+        this.overviewCtrl.refreshText();
+        primaryStage.setTitle("Event Overview");
         primaryStage.setScene(overview);
-        overviewCtrl.refresh();
     }
 
     /**
      * go to the add quote page (by changing the content of the window).
      */
     public void showAdd() {
-        primaryStage.setTitle("Quotes: Adding Quote");
+        this.addParticipantCtrl.refreshText();
+        primaryStage.setTitle("Event Overview: Adding participant");
         primaryStage.setScene(add);
-        add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
     }
+
+
 }

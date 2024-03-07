@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright (c) 2015, 2019, Gluon and/or its affiliates.
+  All rights reserved. Use is subject to license terms.
+
+  This file is available and licensed under the following license:
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  - Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in
+    the documentation and/or other materials provided with the distribution.
+  - Neither the name of Oracle Corporation nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="425.0" prefWidth="426.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EventOverviewCtrl">
+  <children>
+    <MenuBar VBox.vgrow="NEVER">
+      <menus>
+            <Menu fx:id="languages" mnemonicParsing="false" text="Languages">
+              <items>
+                  <CheckMenuItem fx:id="english" mnemonicParsing="false" onAction="#setEnglish" text="English" />
+                  <CheckMenuItem fx:id="dutch" mnemonicParsing="false" onAction="#setDutch" text="Dutch" />
+                  <CheckMenuItem fx:id="german" mnemonicParsing="false" onAction="#setGerman" text="German" />
+              </items>
+            </Menu>
+            <Menu fx:id="rto" mnemonicParsing="false" text="Return to Overview" />
+            <Menu fx:id="close" mnemonicParsing="false" text="Close" />
+      </menus>
+    </MenuBar>
+    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="374.0" prefWidth="426.0" VBox.vgrow="ALWAYS">
+      <children>
+        <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" style="&#10;" text="EventTitle" textAlignment="CENTER" textFill="#565656" wrapText="false">
+          <font>
+            <Font name="System Bold" size="18.0" />
+          </font>
+        </Label>
+            <Button fx:id="inviteCodeButton" layoutX="305.0" layoutY="15.0" mnemonicParsing="false" text="Send Invite Code" AnchorPane.rightAnchor="15.0" />
+            <Label fx:id="participants" alignment="CENTER" layoutX="14.0" layoutY="56.0" style="&#10;" text="Participants" textAlignment="CENTER" textFill="#545454" wrapText="false">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Button fx:id="editParticipant" alignment="CENTER" layoutX="99.0" layoutY="57.0" mnemonicParsing="false" text="Edit">
+               <padding>
+                  <Insets bottom="2.0" left="6.0" right="6.0" top="2.0" />
+               </padding></Button>
+            <Button fx:id="addParticipant" alignment="CENTER" layoutX="177.0" layoutY="57.0" mnemonicParsing="false" onAction="#addParticipant" text="Add">
+               <padding>
+                  <Insets bottom="2.0" left="6.0" right="6.0" top="2.0" />
+               </padding></Button>
+            <Label fx:id="participantsList" layoutX="14.0" layoutY="84.0" text="Chris, John, Anna, David" />
+            <ListView fx:id="ExpenseList" layoutX="33.0" layoutY="200.0" prefHeight="162.0" prefWidth="360.0" style="-fx-border-color: Black;" />
+            <Button fx:id="settleDebts" layoutX="284.0" layoutY="368.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="127.0" text="Settle Debts" AnchorPane.rightAnchor="15.0" />
+            <Label fx:id="expenses" alignment="CENTER" layoutX="14.0" layoutY="107.0" style="&#10;" text="Expenses" textAlignment="CENTER" textFill="#545454" wrapText="false">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Button fx:id="addExpense" alignment="CENTER" layoutX="14.0" layoutY="169.0" mnemonicParsing="false" text="Add Expense">
+               <padding>
+                  <Insets bottom="2.0" left="4.0" right="4.0" top="2.0" />
+               </padding></Button>
+            <ChoiceBox fx:id="ParticipantDropdown" layoutX="14.0" layoutY="134.0" prefHeight="27.0" prefWidth="98.0" />
+      </children>
+    </AnchorPane>
+  </children>
+</VBox>
