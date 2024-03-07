@@ -20,13 +20,13 @@ public class Event {
     private String eventName;
     private LocalDate eventCreationDate;
     private String inviteCode;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
     private Collection<Transaction> transactions;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
     private Collection<Participant> participants;
     private LocalDateTime lastActivity;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
     private List<Tag> tags;
 
     /**

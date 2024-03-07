@@ -1,17 +1,23 @@
 package commons;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.Objects;
 @Entity
+@IdClass(ParticipantId.class)
 public class Participant {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
-    private String name;
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "event_id", nullable = false)
+    @JsonIgnore
     private Event event;
+    private String name;
+
 
 
     /**

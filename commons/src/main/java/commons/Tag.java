@@ -1,17 +1,22 @@
 package commons;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
 @Entity
+@IdClass(TagId.class)
 public class Tag {
 
     @Id
     @GeneratedValue
     private Long id;
+    @Id
+    @ManyToOne
+    @JoinColumn(name="event_id", nullable = false)
+    @JsonIgnore
+    private Event event;
     private String name;
     private String colour;
 
