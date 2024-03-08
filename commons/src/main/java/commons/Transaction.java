@@ -163,6 +163,24 @@ public class Transaction {
     }
 
     /**
+     * check null
+     *
+     */
+    public boolean hasNull(Transaction transaction){
+        if (transaction.getEvent() == null
+                || transaction.getTransactionName() == null
+                || transaction.getTransactionName().isEmpty()
+                || transaction.getPayer() == null
+                || transaction.getPrice() == 0
+                || transaction.getParticipants() == null
+                || transaction.getParticipants().isEmpty()) {
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    /**
      * Equals method.
      * @param o Transaction to test equality on.
      * @return True or false depending on equality.
