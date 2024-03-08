@@ -164,6 +164,8 @@ public class Transaction {
 
     /**
      * check null
+        * @param transaction the transaction to check for null values
+     *    @return true if the transaction has null values, false otherwise
      *
      */
     public boolean hasNull(Transaction transaction){

@@ -23,10 +23,17 @@ public class TransactionController {
         this.eventRepository = eventRepository;
         this.repo = repo;
     }
-
+    /**
+     * Get transaction
+     * @param id id of the event
+     * @param transactionId  id of the transaction
+     * @return  Transaction
+     */
     @GetMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Transaction> getTransaction(@PathVariable("id") Long id, @PathVariable Long transactionId) {
+    public ResponseEntity<Transaction> getTransaction(
+            @PathVariable("id") Long id,
+            @PathVariable Long transactionId) {
         Transaction transaction = repo.findById(transactionId).orElse(null);
         Event event = eventRepository.findById(id).orElse(null);
 
@@ -42,10 +49,21 @@ public class TransactionController {
 
     }
 
+    /**
+     * Edit a transaction
+     * @param id The id of the event
+     * @param transactionId The id of the transaction
+     * @param transaction the transaction to what it should be updated
+     * @return updated transaction
+     */
     @PutMapping
     @ResponseBody
-    public ResponseEntity<Transaction> editTransaction(@PathVariable("id") Long id, @PathVariable Long transactionId, @RequestBody Transaction transaction) {
-        Transaction updateTransaction = repo.findById(transactionId).orElse(null);
+    public ResponseEntity<Transaction> editTransaction(
+            @PathVariable("id") Long id,
+            @PathVariable Long transactionId,
+            @RequestBody Transaction transaction) {
+        Transaction updateTransaction = repo.findById(transactionId)
+                                        .orElse(null);
         Event event = eventRepository.findById(id).orElse(null);
         if(updateTransaction == null || event == null) {
             return ResponseEntity.notFound().build();
@@ -94,9 +112,9 @@ public class TransactionController {
      */
     @DeleteMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Transaction>
-    deleteTransaction(@PathVariable("id") Long id,
-                      @PathVariable Long transactionId) {
+    public ResponseEntity<Transaction> deleteTransaction(
+            @PathVariable("id") Long id,
+            @PathVariable Long transactionId) {
 
         Transaction transaction = repo.findById(transactionId).orElse(null);
         Event event = eventRepository.findById(id).orElse(null);
