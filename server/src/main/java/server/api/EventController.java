@@ -10,7 +10,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/event")
+@RequestMapping("/api/event")
 public class EventController {
 
     private final EventRepository eventRepository;
@@ -39,10 +39,13 @@ public class EventController {
      * @param event The event to add
      * @return  The event added
      */
-    @PutMapping(path = { "", "/" })
+    @PostMapping(path = { "", "/" })
     @ResponseBody
     public ResponseEntity<Event> addEvent(@RequestBody Event event) {
-        eventRepository.save(event);
+
+        eventRepository.save(event); //<---CAUSES PROBLEMS!
+        eventRepository.flush();
+
         return ResponseEntity.ok(event);
     }
 

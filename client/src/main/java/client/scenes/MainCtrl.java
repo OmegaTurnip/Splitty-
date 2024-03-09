@@ -29,22 +29,28 @@ public class MainCtrl {
 
     private AddParticipantCtrl addParticipantCtrl;
     private Scene add;
+    private StartUpCtrl startUpCtrl;
+    private Scene startUp;
     /**
      * @param primaryStage the window.
-     * @param overview the fx for the start-up page.
-     * @param add the fx for the add quote page.
+     * @param overview the fx for the event overview page.
+     * @param add the fx for the add participant page.
+     * @param startUp The fx for the start-up page.
      */
     public void initialize(
             Stage primaryStage, Pair<EventOverviewCtrl, Parent> overview,
-            Pair<AddParticipantCtrl, Parent> add) {
+            Pair<AddParticipantCtrl, Parent> add,
+            Pair<StartUpCtrl, Parent> startUp) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
+        this.startUpCtrl = startUp.getKey();
+        this.startUp = new Scene(startUp.getValue());
 
         this.addParticipantCtrl = add.getKey();
         this.add = new Scene(add.getValue());
 
-        showOverview();
+        showStartUp();
         primaryStage.show();
     }
 
@@ -71,6 +77,15 @@ public class MainCtrl {
         this.overviewCtrl.refreshText();
         primaryStage.setTitle("Event Overview");
         primaryStage.setScene(overview);
+    }
+
+    /**
+     * Show the start-up page.
+     */
+    public void showStartUp() {
+        this.startUpCtrl.refresh();
+        primaryStage.setTitle("Splitty!");
+        primaryStage.setScene(startUp);
     }
 
     /**

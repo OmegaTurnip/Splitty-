@@ -26,6 +26,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+
+import commons.Event;
 import org.glassfish.jersey.client.ClientConfig;
 
 import commons.Quote;
@@ -36,6 +38,7 @@ import jakarta.ws.rs.core.GenericType;
 public class ServerUtils {
 
     private static final String SERVER = USER_SETTINGS.getServerUrl();
+
 
     /**
      * @throws IOException no description was provided in the template.
@@ -72,5 +75,18 @@ public class ServerUtils {
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
+    }
+
+    /**
+     * Create Event REST API request.
+     * @param event The event to be created.
+     * @return The created event.
+     */
+    public Event createEvent(Event event) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("api/event") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(event, APPLICATION_JSON), Event.class);
     }
 }

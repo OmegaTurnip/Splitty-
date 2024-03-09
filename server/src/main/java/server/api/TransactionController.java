@@ -7,7 +7,7 @@ import server.database.EventRepository;
 import server.database.TransactionRepository;
 
 @RestController
-@RequestMapping("/event")
+@RequestMapping("/api/event")
 public class TransactionController {
     private final TransactionRepository repo;
     private final EventRepository eventRepository;
