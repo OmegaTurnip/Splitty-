@@ -99,6 +99,11 @@ public class StartUpCtrl {
      * Refreshes the page and updates the list view.
      */
     public void refresh() {
-
+        yourEvents.getItems().clear();
+        List<Event> myEvents = server.getMyEvents();
+        for (Event event : myEvents) {
+            yourEvents.getItems().add(event.getEventName());
+        }
+        System.out.println("Page has been refreshed!");
     }
 }

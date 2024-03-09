@@ -89,4 +89,14 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(event, APPLICATION_JSON), Event.class);
     }
+
+    public List<Event> getMyEvents() {
+        List<String> invCodes = USER_SETTINGS.getEventCodes();
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("api/event/myEvents")
+                .queryParam("invCodes", invCodes)
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<Event>>() {});
+    }
 }
