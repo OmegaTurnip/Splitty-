@@ -15,8 +15,6 @@
  */
 package client.utils;
 
-import static client.utils.UserConfig.USER_SETTINGS;
-
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.io.BufferedReader;
@@ -37,7 +35,18 @@ import jakarta.ws.rs.core.GenericType;
 
 public class ServerUtils {
 
-    private static final String SERVER = USER_SETTINGS.getServerUrl();
+    private final UserConfig userSettings;
+
+    private final String server;
+
+    /**
+     * Server Utils constructed with UserConfig file.
+     */
+    public ServerUtils() {
+        this.userSettings = UserConfig.get();
+        this.server = userSettings.getServerUrl();
+    }
+
 
 
     /**
@@ -45,7 +54,7 @@ public class ServerUtils {
      * @throws URISyntaxException no description was provided in the template.
      */
     public void getQuotesTheHardWay() throws IOException, URISyntaxException {
-        var url = new URI(SERVER + "api/quotes").toURL();
+        var url = new URI(server + "api/quotes").toURL();
         var is = url.openConnection().getInputStream();
         var br = new BufferedReader(new InputStreamReader(is));
         String line;
@@ -59,7 +68,7 @@ public class ServerUtils {
      */
     public List<Quote> getQuotes() {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/quotes") //
+                .target(server).path("api/quotes") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .get(new GenericType<List<Quote>>() {});
@@ -71,7 +80,7 @@ public class ServerUtils {
      */
     public Quote addQuote(Quote quote) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/quotes") //
+                .target(server).path("api/quotes") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
@@ -84,16 +93,20 @@ public class ServerUtils {
      */
     public Event createEvent(Event event) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/event") //
+                .target(server).path("api/event") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(event, APPLICATION_JSON), Event.class);
     }
 
+    /**
+     * Gets user events
+     * @return List of Events
+     */
     public List<Event> getMyEvents() {
-        List<String> invCodes = USER_SETTINGS.getEventCodes();
+        List<String> invCodes = userSettings.getEventCodes();
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/event/myEvents")
+                .target(server).path("api/event/myEvents")
                 .queryParam("invCodes", invCodes)
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
