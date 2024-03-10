@@ -83,7 +83,6 @@ public class MainCtrl {
      * Show the start-up page.
      */
     public void showStartUp() {
-        this.startUpCtrl.refresh();
         primaryStage.setTitle("Splitty!");
         primaryStage.setScene(startUp);
     }
