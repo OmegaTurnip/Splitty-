@@ -6,6 +6,7 @@ import commons.Event;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -13,9 +14,11 @@ import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
+import java.util.ResourceBundle;
 
-public class StartUpCtrl {
+public class StartUpCtrl implements Initializable {
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
@@ -39,6 +42,11 @@ public class StartUpCtrl {
     public StartUpCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        refresh();
     }
 
     /**
@@ -106,4 +114,6 @@ public class StartUpCtrl {
         }
         System.out.println("Page has been refreshed!");
     }
+
+
 }
