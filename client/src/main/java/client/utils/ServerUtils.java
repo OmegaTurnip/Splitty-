@@ -80,6 +80,7 @@ public class ServerUtils {
      * Injectable constructor
      * @param userSettings Inject the userSettings.
      * @param server Inject custom URL.
+     * @param client Inject client.
      */
     public ServerUtils(UserConfig userSettings, String server, Client client) {
         this.userSettings = userSettings;

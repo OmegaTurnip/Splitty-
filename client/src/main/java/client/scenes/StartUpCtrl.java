@@ -1,7 +1,6 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
-import client.utils.UserConfig;
 import commons.Event;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
@@ -44,6 +43,24 @@ public class StartUpCtrl implements Initializable {
         this.mainCtrl = mainCtrl;
     }
 
+    /**
+     * Injector setter
+     * @param yourEvents yourEvents listview.
+     */
+    public void setYourEvents(ListView<String> yourEvents) {
+        this.yourEvents = yourEvents;
+    }
+
+    /**
+     * Initialise the start-up window.
+     * @param location
+     * The location used to resolve relative paths for the root object, or
+     * {@code null} if the location is not known.
+     *
+     * @param resources
+     * The resources used to localize the root object, or {@code null} if
+     * the root object was not localized.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         refresh();
@@ -70,9 +87,9 @@ public class StartUpCtrl implements Initializable {
                         "Empty text field! Please write an event name" +
                         " before creating an event.", 422);
             }
-            List<String> eventCodes = UserConfig.USER_SETTINGS.getEventCodes();
+            List<String> eventCodes = server.getUserSettings().getEventCodes();
             eventCodes.add(e.getInviteCode());
-            UserConfig.USER_SETTINGS.setEventCodes(eventCodes);
+            server.getUserSettings().setEventCodes(eventCodes);
 
             server.createEvent(getEvent());
             System.out.println("event created!");

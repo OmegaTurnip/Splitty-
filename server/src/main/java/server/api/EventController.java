@@ -2,7 +2,6 @@ package server.api;
 
 import commons.Event;
 import commons.Transaction;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
@@ -32,8 +31,10 @@ public class EventController {
      */
     @GetMapping(path = {"/myEvents"})
     @ResponseBody
-    public ResponseEntity<List<Event>> myEvents(@RequestParam("invCodes") List<String> invCodes) {
-        List<Event> myE = eventRepository.findAllByInviteCodeIsIn(invCodes);
+    public ResponseEntity<List<Event>> myEvents(@RequestParam("invCodes")
+                                                    List<String> invCodes) {
+        List<Event> myE = eventRepository
+                .findAllByInviteCodeIsIn(invCodes);
         return ResponseEntity.ok(myE);
     }
 
