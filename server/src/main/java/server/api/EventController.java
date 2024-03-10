@@ -1,7 +1,6 @@
 package server.api;
 
 import commons.Event;
-import commons.Transaction;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
@@ -73,27 +72,6 @@ public class EventController {
         return ResponseEntity.ok(event);
     }
 
-    /**
-     * Delete a transaction from an event
-     * @param id The id of the event
-     * @param transaction the transaction to delete
-     * @return The transaction deleted
-     */
-    @DeleteMapping("/{id}")
-    @ResponseBody
-    public ResponseEntity<Event>
-        deleteTransaction(@PathVariable("id") Long id,
-                          @RequestBody Transaction transaction) {
-        Event event = eventRepository.findById(id).orElse(null);
-        if (event == null) {
-            return ResponseEntity.notFound().build();
-        }
-        boolean deleted = event.deleteTransaction(transaction);
-        if(!deleted) {
-            return ResponseEntity.badRequest().build();
-        }
-        eventRepository.save(event);
-        return ResponseEntity.ok(event);
-    }
+
 
 }
