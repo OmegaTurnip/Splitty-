@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 
-public sealed class PropertiesFile permits ConfigFile {
+public class PropertiesFile {
 
     protected final File file;
     protected Properties content;

@@ -15,8 +15,6 @@
  */
 package client.utils;
 
-import static client.utils.UserConfig.USER_SETTINGS;
-
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.io.BufferedReader;
@@ -35,7 +33,7 @@ import jakarta.ws.rs.core.GenericType;
 
 public class ServerUtils {
 
-    private static final String SERVER = USER_SETTINGS.getServerUrl();
+    private static final String SERVER = UserConfig.get().getServerUrl();
 
     /**
      * @throws IOException no description was provided in the template.
