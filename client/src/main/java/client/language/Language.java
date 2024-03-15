@@ -255,7 +255,7 @@ public class Language {
     /**
      * Generates a hash code corresponding to {@code this}.
      *
-     * @return a hash value.
+     * @return  A hash value.
      */
     @Override
     public int hashCode() {
