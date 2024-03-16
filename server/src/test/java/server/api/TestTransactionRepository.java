@@ -139,7 +139,8 @@ public class TestTransactionRepository implements TransactionRepository {
      * @return
      */
     @Override
-    public <S extends Transaction> List<S> findAll(Example<S> example, Sort sort) {
+    public <S extends Transaction> List<S> findAll(
+            Example<S> example, Sort sort) {
 
         return null;
     }
@@ -184,7 +185,10 @@ public class TestTransactionRepository implements TransactionRepository {
      * @return
      */
     @Override
-    public <S extends Transaction, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
+    public <S extends Transaction, R> R findBy(
+            Example<S> example,
+            Function<FluentQuery.FetchableFluentQuery<S>,
+                    R> queryFunction) {
         return null;
     }
 
