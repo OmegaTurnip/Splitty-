@@ -1,7 +1,6 @@
 package server.api;
 
-import commons.Event;
-import commons.Participant;
+
 import commons.Transaction;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;

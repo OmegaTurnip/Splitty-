@@ -40,9 +40,9 @@ public class TransactionControllerTest {
         testP1.setId(500L);
         group = new ArrayList<>();
         group.add(testP1);
-        transaction = testEvent1.registerTransaction(testP1, "testTransaction1", 100, group, null);
+        transaction = testEvent1.registerTransaction(testP1, "testTransaction1", 100, group, testEvent1.getTags().get(0));
         transaction.setId(600L);
-        editTransaction = new Transaction(testP1, "editTransaction",  100, group, testEvent1,null);
+        editTransaction = new Transaction(testP1, "editTransaction",  100, group, testEvent1,testEvent1.getTags().get(0));
 
     }
 
