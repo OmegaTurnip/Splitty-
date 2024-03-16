@@ -82,7 +82,7 @@ public class StartUpCtrl implements Initializable {
     public void createEvent() throws WebApplicationException {
         try {
             Event e = getEvent();
-            if (e.getEventName().equals("")) {
+            if (e.getEventName().isEmpty()) {
                 throw new WebApplicationException(
                         "Empty text field! Please write an event name" +
                         " before creating an event.", 422);
@@ -90,8 +90,7 @@ public class StartUpCtrl implements Initializable {
             List<String> eventCodes = server.getUserSettings().getEventCodes();
             eventCodes.add(e.getInviteCode());
             server.getUserSettings().setEventCodes(eventCodes);
-
-            server.createEvent(getEvent());
+            server.createEvent(e);
             System.out.println("event created!");
         } catch (WebApplicationException e) {
             e.printStackTrace();
