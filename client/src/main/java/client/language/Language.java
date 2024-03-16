@@ -62,7 +62,6 @@ public class Language {
      *          already be initialised.
      */
     Language(String languageCode, Properties language, File iconFile) {
-
         if (!isValidLanguageCode(languageCode))
             throw new IllegalArgumentException("Invalid languageCode");
 
@@ -131,6 +130,21 @@ public class Language {
     }
 
     /**
+     * Returns a {@code String} containing the Locale of this language specified
+     * as a <a href="https://en.wikipedia.org/wiki/IETF_language_tag">IETF BCP
+     * 47</a> code. It will default to {@code "en-GB"} if no locale is
+     * specified.
+     *
+     * @return  The locale of this language.
+     */
+    String getLocale() {
+        if (language.containsKey(Text.Locale))
+            return language.getProperty(Text.Locale);
+        else
+            return "en-GB";
+    }
+
+    /**
      * Returns the translation of a piece of text in this language.
      * If this language doesn't have a translation, it will try to fall back on
      * the english translation, surrounded by square brackets.
@@ -193,9 +207,9 @@ public class Language {
      * Creates an empty language file containing all known text ids. This only
      * exists because of the following requirement: "To generate an empty
      * language template from the language selection, so I can contribute a new
-     * language to the project." This function *SHOULD NOT* be used by us to add
-     * a new language, use the {@link TranslationCreator} application for that
-     * purpose.
+     * language to the project." This function <em><strong>SHOULD NOT</strong>
+     * </em> be used by us to add a new language. Use the {@link
+     * TranslationCreator} application for that purpose.
      *
      * @param   file
      *          The file in which the new language will be stored.

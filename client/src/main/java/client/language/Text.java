@@ -8,7 +8,7 @@ package client.language;
 public class Text {
 
     public static final String NativeLanguageName = "NativeLanguageName";
-    public static final String Locale = "Locale";
+    static final String Locale = "Locale";
 
     /**
      * General language class for the common messagebox texts.
