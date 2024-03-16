@@ -22,7 +22,9 @@ public class TestTransactionRepository implements TransactionRepository {
      * @return
      */
     @Override
-    public Transaction findTransactionByTransactionName(String transactionName) {
+    public Transaction findTransactionByTransactionName(
+            String transactionName) {
+
         return null;
     }
 
@@ -50,7 +52,9 @@ public class TestTransactionRepository implements TransactionRepository {
      * @return
      */
     @Override
-    public <S extends Transaction> List<S> saveAllAndFlush(Iterable<S> entities) {
+    public <S extends Transaction> List<S> saveAllAndFlush(
+            Iterable<S> entities) {
+
         return null;
     }
 
@@ -84,6 +88,7 @@ public class TestTransactionRepository implements TransactionRepository {
      */
     @Override
     public Transaction getOne(Long aLong) {
+
         return null;
     }
 
@@ -112,6 +117,7 @@ public class TestTransactionRepository implements TransactionRepository {
      */
     @Override
     public <S extends Transaction> Optional<S> findOne(Example<S> example) {
+
         return Optional.empty();
     }
 
@@ -122,6 +128,7 @@ public class TestTransactionRepository implements TransactionRepository {
      */
     @Override
     public <S extends Transaction> List<S> findAll(Example<S> example) {
+
         return null;
     }
 
@@ -133,6 +140,7 @@ public class TestTransactionRepository implements TransactionRepository {
      */
     @Override
     public <S extends Transaction> List<S> findAll(Example<S> example, Sort sort) {
+
         return null;
     }
 
@@ -143,7 +151,8 @@ public class TestTransactionRepository implements TransactionRepository {
      * @return
      */
     @Override
-    public <S extends Transaction> Page<S> findAll(Example<S> example, Pageable pageable) {
+    public <S extends Transaction> Page<S> findAll(
+            Example<S> example, Pageable pageable) {
         return null;
     }
 
