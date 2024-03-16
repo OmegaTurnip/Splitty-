@@ -26,6 +26,7 @@ import java.util.List;
 
 
 import commons.Event;
+import jakarta.ws.rs.client.Client;
 import org.glassfish.jersey.client.ClientConfig;
 
 import commons.Quote;
@@ -39,15 +40,53 @@ public class ServerUtils {
 
     private final String server;
 
+    private Client client;
+
+    /**
+     * Getter.
+     * @return Get User Settings.
+     */
+    public UserConfig getUserSettings() {
+        return userSettings;
+    }
+
+    /**
+     * Getter.
+     * @return Get server URL.
+     */
+    public String getServer() {
+        return server;
+    }
+
     /**
      * Server Utils constructed with UserConfig file.
      */
     public ServerUtils() {
         this.userSettings = UserConfig.get();
         this.server = userSettings.getServerUrl();
+        this.client = ClientBuilder.newClient(new ClientConfig());
     }
 
+    /**
+     * Injectable constructor
+     * @param userSettings Inject the userSettings.
+     */
+    public ServerUtils(UserConfig userSettings) {
+        this.userSettings = userSettings;
+        this.server = userSettings.getServerUrl();
+    }
 
+    /**
+     * Injectable constructor
+     * @param userSettings Inject the userSettings.
+     * @param server Inject custom URL.
+     * @param client Inject client.
+     */
+    public ServerUtils(UserConfig userSettings, String server, Client client) {
+        this.userSettings = userSettings;
+        this.server = server;
+        this.client = client;
+    }
 
     /**
      * @throws IOException no description was provided in the template.
@@ -67,7 +106,7 @@ public class ServerUtils {
      * @return no description was provided in the template.
      */
     public List<Quote> getQuotes() {
-        return ClientBuilder.newClient(new ClientConfig()) //
+        return client //
                 .target(server).path("api/quotes") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
@@ -79,7 +118,7 @@ public class ServerUtils {
      * @return no description was provided in the template.
      */
     public Quote addQuote(Quote quote) {
-        return ClientBuilder.newClient(new ClientConfig()) //
+        return client //
                 .target(server).path("api/quotes") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
@@ -92,7 +131,7 @@ public class ServerUtils {
      * @return The created event.
      */
     public Event createEvent(Event event) {
-        return ClientBuilder.newClient(new ClientConfig()) //
+        return client //
                 .target(server).path("api/event") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
@@ -105,7 +144,7 @@ public class ServerUtils {
      */
     public List<Event> getMyEvents() {
         List<String> invCodes = userSettings.getEventCodes();
-        return ClientBuilder.newClient(new ClientConfig()) //
+        return client //
                 .target(server).path("api/event/myEvents")
                 .queryParam("invCodes", invCodes)
                 .request(APPLICATION_JSON) //

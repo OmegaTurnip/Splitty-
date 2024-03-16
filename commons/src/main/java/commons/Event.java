@@ -203,8 +203,8 @@ public class Event {
      *
      * @return .
      */
-    public Collection<Transaction> getTransactions() {
-        return transactions;
+    public List<Transaction> getTransactions() {
+        return (List<Transaction>) transactions;
     }
 
     /**
