@@ -9,7 +9,7 @@ public class Translator {
      * Gets the language in which the {@code String}s will be provided as a
      * {@code Language} object.
      *
-     * @return  the {@code Language} in which the {@code String}s will be
+     * @return  The {@code Language} in which the {@code String}s will be
      *          provided.
      */
     public static Language getCurrentLanguage() {
