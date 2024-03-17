@@ -14,20 +14,8 @@ import java.util.regex.Pattern;
  */
 public class UserConfig {
 
-    public static final UserConfig USER_SETTINGS;
+    private static UserConfig userSettings;
     static final String PATHNAME = "client_settings.properties";
-
-    static {
-        UserConfig userSettings1;
-        try {
-            userSettings1 = new UserConfig(
-                    new ConfigFile(new File(PATHNAME), "Client settings")
-            );
-        } catch (IOException e) {
-            userSettings1 = null;
-        }
-        USER_SETTINGS = userSettings1;
-    }
 
     private final ConfigFile configFile;
 
@@ -51,7 +39,7 @@ public class UserConfig {
 
 
     /**
-     * Creates an empty {@code UserConfig} object.
+     * Creates an {@code UserConfig} object based on a {@link ConfigFile}.
      *
      * @param   configFile
      *          The config file.
@@ -60,11 +48,28 @@ public class UserConfig {
      *          If an I/O error occurs writing to or creating the file in which
      *          the configuration is stored.
      */
-    UserConfig(ConfigFile configFile) throws IOException {
+    public UserConfig(ConfigFile configFile) throws IOException {
         this.configFile = configFile;
         read();
     }
 
+    /**
+     * Gets the global {@code UserConfig} object.
+     *
+     * @return  The global {@code UserConfig} object.
+     */
+    public static UserConfig get() {
+        if (userSettings == null) {
+            try {
+                userSettings = new UserConfig(
+                        new ConfigFile(new File(PATHNAME), "Client settings")
+                );
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to load settings file!");
+            }
+        }
+        return userSettings;
+    }
 
     /**
      * Gets the url used to connect to the server.

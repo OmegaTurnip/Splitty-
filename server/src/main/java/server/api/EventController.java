@@ -10,7 +10,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/event")
+@RequestMapping("/api/event")
 public class EventController {
 
     private final EventRepository eventRepository;
@@ -21,6 +21,21 @@ public class EventController {
      */
     public EventController(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
+    }
+
+    /**
+     * Gets all the events matching the list of invite codes
+     * sent in the request body
+     * @param invCodes List of invite codes
+     * @return List of events
+     */
+    @GetMapping(path = {"/myEvents"})
+    @ResponseBody
+    public ResponseEntity<List<Event>> myEvents(@RequestParam("invCodes")
+                                                    List<String> invCodes) {
+        List<Event> myE = eventRepository
+                .findAllByInviteCodeIsIn(invCodes);
+        return ResponseEntity.ok(myE);
     }
 
     /**
@@ -39,10 +54,13 @@ public class EventController {
      * @param event The event to add
      * @return  The event added
      */
-    @PutMapping(path = { "", "/" })
+    @PostMapping(path = { "", "/" })
     @ResponseBody
     public ResponseEntity<Event> addEvent(@RequestBody Event event) {
-        eventRepository.save(event);
+
+        eventRepository.save(event); //<---CAUSES PROBLEMS!
+        eventRepository.flush();
+
         return ResponseEntity.ok(event);
     }
 

@@ -14,6 +14,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class EventTest {
 
     private Event testEvent;
+    Participant testParticipant1;
+    Participant testParticipant2;
+    Participant testParticipant3;
+    Transaction testTransaction1;
+    Transaction testTransaction2;
 
 
   @BeforeEach
@@ -23,9 +28,9 @@ class EventTest {
     LocalDate testDate1 = LocalDate.of(2023, 7, 23);
     testEvent.setEventCreationDate(testDate1);
 
-    Participant testParticipant1 = new Participant("Josh", testEvent);
-    Participant testParticipant2 = new Participant("Amy", testEvent);
-    Participant testParticipant3 = new Participant("Rizwan", testEvent);
+    testParticipant1 = new Participant("Josh", testEvent);
+    testParticipant2 = new Participant("Amy", testEvent);
+    testParticipant3 = new Participant("Rizwan", testEvent);
 
         List<Participant> testParticipants1 = new ArrayList<>();
         List<Participant> testParticipants2 = new ArrayList<>();
@@ -43,8 +48,8 @@ class EventTest {
 
     testEvent.setParticipants(testAllParticipants1);
 
-    Transaction testTransaction1 = new Transaction(testParticipant1, "Drinks",400, testParticipants1, testEvent, new Tag("food", "blue"));
-    Transaction testTransaction2 = new Transaction(testParticipant2, "Lunch", 350, testParticipants2, testEvent, new Tag("food", "blue"));
+    testTransaction1 = new Transaction(testParticipant1, "Drinks",400, testParticipants1, testEvent, new Tag("food", "blue"));
+    testTransaction2 = new Transaction(testParticipant2, "Lunch", 350, testParticipants2, testEvent, new Tag("food", "blue"));
     testTransaction1.setDate(testDate1);
     testTransaction2.setDate(testDate1);
     Collection<Transaction> testTransactions1 = new ArrayList<>();
@@ -84,5 +89,32 @@ class EventTest {
         tags.add(new Tag("school", "white"));
         testEvent.addTag(new Tag("school", "white"));
         assertEquals(tags, testEvent.getTags());
+    }
+
+    @Test
+    void removeParticipant() {
+      testEvent.removeParticipant(testParticipant1);
+      assertTrue(!testEvent.getParticipants().contains(testParticipant1));
+    }
+
+    @Test
+    void registerTransaction() {
+      Transaction testTransaction3 = new Transaction(testParticipant1,
+              "Movies",
+              400, List.of(testParticipant1, testParticipant2, testParticipant3),
+              testEvent,testEvent.getTags().getFirst());
+      testEvent.registerTransaction(testParticipant1,
+              "Movies",
+              400, List.of(testParticipant1, testParticipant2, testParticipant3),
+              testEvent.getTags().getFirst());
+
+      assertEquals(testEvent.getTransactions().get(2),  testTransaction3);
+    }
+
+    @Test
+    void deleteTransaction() {
+      assertTrue(testEvent.deleteTransaction(testTransaction1));
+      assertFalse(testEvent.getTransactions().contains(testTransaction1));
+
     }
 }

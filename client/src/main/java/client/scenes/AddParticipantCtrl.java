@@ -121,7 +121,7 @@ public class AddParticipantCtrl{
      */
     public void setDutch(){
         try {
-            UserConfig.USER_SETTINGS.setUserLanguage("nld");
+            UserConfig.get().setUserLanguage("nld");
             refreshText();
         }catch (IOException e) {
             throw new RuntimeException(e);
@@ -133,7 +133,7 @@ public class AddParticipantCtrl{
      */
     public void setEnglish(){
         try {
-            UserConfig.USER_SETTINGS.setUserLanguage("eng");
+            UserConfig.get().setUserLanguage("eng");
             refreshText();
         }catch (IOException e) {
             throw new RuntimeException(e);
@@ -145,7 +145,7 @@ public class AddParticipantCtrl{
      */
     public void setGerman(){
         try {
-            UserConfig.USER_SETTINGS.setUserLanguage("deu");
+            UserConfig.get().setUserLanguage("deu");
             refreshText();
         }catch (IOException e) {
             throw new RuntimeException(e);
