@@ -40,10 +40,10 @@ public class Transaction {
      * @param event       The event the transactions belongs to
     * @param tag          The tag of the transaction
      */
-    Transaction(Participant payer,
-                String transactionName,
-                int price, List<Participant> participants,
-                Event event, Tag tag) {
+    public Transaction(Participant payer,
+                       String transactionName,
+                       int price, List<Participant> participants,
+                       Event event, Tag tag) {
         this.payer = payer;
         this.transactionName = transactionName;
         this.date = LocalDate.now();
