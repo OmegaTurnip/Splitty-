@@ -3,6 +3,7 @@ package server.util;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.Currency;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class ExchangeRate {
@@ -188,5 +189,45 @@ public class ExchangeRate {
         } catch (NullPointerException | IllegalArgumentException e) {
             return false;
         }
+    }
+
+    /**
+     * Checks if {@code this} is equal to {@code other}.
+     *
+     * @param   other
+     *          The object to check.
+     *
+     * @return  Whether {@code this} and {@code other} are equal.
+     */
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (other == null || getClass() != other.getClass()) return false;
+        ExchangeRate that = (ExchangeRate) other;
+        return Double.compare(rate, that.rate) == 0
+                && Objects.equals(date, that.date)
+                && Objects.equals(from, that.from)
+                && Objects.equals(to, that.to);
+    }
+
+    /**
+     * Generates a hash code corresponding to {@code this}.
+     *
+     * @return  A hash value.
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(date, from, to, rate);
+    }
+
+    /**
+     * Generates a {@code String} representing {@code this}.
+     *
+     * @return  A {@code String} representing {@code this}.
+     */
+    @Override
+    public String toString() {
+        return "ExchangeRate on " + date + " from " + from + " to " + to + " is"
+                + rate;
     }
 }
