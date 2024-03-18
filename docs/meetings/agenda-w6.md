@@ -21,7 +21,7 @@ Agenda Items:
 - Questions for TA (5 min)
 
 - Talking Points: (Inform/ brainstorm/ decision-making/ discuss)
-    - Future course deadlines
+    - Future course deadlines (2 min)
     - Milestone for this week (5 min)
 
 - Summarize action points: Who, what, when? (5 min)
