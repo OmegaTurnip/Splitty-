@@ -14,13 +14,14 @@ Agenda Items:
 - Announcements by the team (1 min)
 - Approval of the agenda - Does anyone have any additions? (1 min)
 - Approval of last minutes - Did everyone read the minutes from the previous meeting? (2 min)
-    - Have the tasks from last week been done? What have you worked on in the last week (1 min)
+    - Have the tasks from last week been done? What have you worked on in the last week (2 min)
 
 - Announcements by the TA (3 min)
 - Presentation of the current app to TA (5 min)
 - Questions for TA (5 min)
 
 - Talking Points: (Inform/ brainstorm/ decision-making/ discuss)
+    - Future course deadlines
     - Milestone for this week (5 min)
 
 - Summarize action points: Who, what, when? (5 min)
