@@ -31,6 +31,7 @@ Agenda Items:
     - commit descriptions should be more descriptive 
     - subtasks need a more elaborate description
   - Everyone should read the HCI to make sure their windows comply.
+  - Presentation date
 
   - Milestone for this week (5 min)
 
