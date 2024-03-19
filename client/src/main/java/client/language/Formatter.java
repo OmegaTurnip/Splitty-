@@ -7,7 +7,6 @@ import java.util.regex.Pattern;
 
 public class Formatter {
 
-
     /**
      * A regex which checks if a {@code String} adheres to the specified format.
      * I.e. no unmatched double curly brackets and all parameter names are
@@ -17,6 +16,7 @@ public class Formatter {
             Pattern.compile(
                      "^(?>[^{}]|\\{(?!\\{)|}(?!}))*(?>\\{\\{\\p{Alnum}+" +
                              "}}(?!})(?>[^{}]|\\{(?!\\{)|}(?!}))*)*$");
+
     /**
      * A regex which checks if a {@code String} would be a valid parameter name.
      * I.e. all characters are alphanumeric and the string is not empty.
