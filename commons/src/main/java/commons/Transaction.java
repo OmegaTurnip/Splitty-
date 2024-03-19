@@ -40,10 +40,10 @@ public class Transaction {
      * @param event       The event the transactions belongs to
     * @param tag          The tag of the transaction
      */
-    Transaction(Participant payer,
-                String transactionName,
-                int price, List<Participant> participants,
-                Event event, Tag tag) {
+    public Transaction(Participant payer,
+                       String transactionName,
+                       int price, List<Participant> participants,
+                       Event event, Tag tag) {
         this.payer = payer;
         this.transactionName = transactionName;
         this.date = LocalDate.now();
@@ -162,6 +162,26 @@ public class Transaction {
         return tag;
     }
 
+    /**
+     * check null
+        * @param transaction the transaction to check for null values
+     *    @return true if the transaction has null values, false otherwise
+     *
+     */
+    public boolean hasNull(Transaction transaction){
+        if (transaction.getEvent() == null
+                || transaction.getTransactionName() == null
+                || transaction.getTransactionName().isEmpty()
+                || transaction.getPayer() == null
+                || transaction.getPrice() == 0
+                || transaction.getParticipants() == null
+                || transaction.getParticipants().isEmpty()) {
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
     /**
      * Equals method.
      * @param o Transaction to test equality on.

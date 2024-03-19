@@ -16,13 +16,11 @@
 package client;
 
 import static com.google.inject.Guice.createInjector;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 import client.scenes.*;
 import com.google.inject.Injector;
-
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -42,7 +40,6 @@ public class Main extends Application {
      */
     public static void main(String[] args)
             throws URISyntaxException, IOException {
-
         launch();
     }
 
@@ -52,11 +49,13 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws IOException {
+        var startUp = FXML.load(StartUpCtrl.class,
+                "client", "scenes", "StartUp.fxml");
         var overview = FXML.load(EventOverviewCtrl.class,
                 "client", "scenes", "EventOverview.fxml");
         var add = FXML.load(AddParticipantCtrl.class, "client", "scenes",
                 "AddParticipant.fxml");
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(primaryStage, overview, add);
+        mainCtrl.initialize(primaryStage, overview, add, startUp);
     }
 }

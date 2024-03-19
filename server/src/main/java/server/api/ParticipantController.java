@@ -14,7 +14,7 @@ import server.database.ParticipantRepository;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/events/{eventId}/participants")
+@RequestMapping("/api/event/{eventId}/participants")
 public class ParticipantController {
     private final ParticipantRepository repo;
     private final EventRepository eventRepo;

@@ -373,4 +373,14 @@ public class TestEventRepository implements EventRepository {
         // TODO Auto-generated method stub
         return null;
     }
+
+    /**
+     * .
+     * @param inviteCodes .
+     * @return .
+     */
+    @Override
+    public List<Event> findAllByInviteCodeIsIn(List<String> inviteCodes) {
+        return null;
+    }
 }

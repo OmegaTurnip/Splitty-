@@ -34,6 +34,13 @@ public class LanguageTest {
     }
 
     @Test
+    void testLanguageLocale() {
+        Translator.setCurrentLanguage(Language.languages.get("deu"));
+        assertEquals("de-DE", Translator.getCurrentLanguage().getLocale());
+
+    }
+
+    @Test
     void testConstructor() {
         assertThrows(IllegalArgumentException.class, () -> new Language(null, new Properties(), null));
     }

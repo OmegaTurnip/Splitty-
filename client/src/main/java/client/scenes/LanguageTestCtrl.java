@@ -16,7 +16,7 @@ import java.util.ResourceBundle;
 public class LanguageTestCtrl implements Initializable, TextPage {
 
     private final String[] langs =
-            UserConfig.USER_SETTINGS.getAvailableLanguages()
+            UserConfig.get().getAvailableLanguages()
                     .keySet().toArray(new String[0]);
 
     private int langIdx = 0;
@@ -50,7 +50,7 @@ public class LanguageTestCtrl implements Initializable, TextPage {
     public void nextLang() {
         langIdx %= langs.length;
         try {
-            UserConfig.USER_SETTINGS.setUserLanguage(langs[langIdx]);
+            UserConfig.get().setUserLanguage(langs[langIdx]);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
