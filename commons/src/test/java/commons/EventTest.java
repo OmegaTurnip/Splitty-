@@ -46,9 +46,9 @@ class EventTest {
 
     testEvent.setParticipants(testAllParticipants1);
 
-    testTransaction1 = new Transaction(testParticipant1, "Drinks", new Money(BigDecimal.ONE, Currency.getInstance("EUR")),
+    testTransaction1 = new Transaction(testParticipant1, "Drinks", Money.fromLong(2, "EUR"),
             testParticipants1, testEvent, new Tag("food", "blue"));
-    testTransaction2 = new Transaction(testParticipant2, "Lunch", new Money(BigDecimal.TWO, Currency.getInstance("EUR")),
+    testTransaction2 = new Transaction(testParticipant2, "Lunch", Money.fromLong(2, "EUR"),
             testParticipants2, testEvent, new Tag("food", "blue"));
     testTransaction1.setDate(testDate1);
     testTransaction2.setDate(testDate1);
@@ -101,11 +101,11 @@ class EventTest {
     void registerTransaction() {
       Transaction testTransaction3 = new Transaction(testParticipant1,
               "Movies",
-              new Money(BigDecimal.TWO, Currency.getInstance("EUR")), List.of(testParticipant1, testParticipant2, testParticipant3),
+                Money.fromLong(2, "EUR"), List.of(testParticipant1, testParticipant2, testParticipant3),
               testEvent,testEvent.getTags().getFirst());
       testEvent.registerTransaction(testParticipant1,
               "Movies",
-              new Money(BigDecimal.TWO, Currency.getInstance("EUR")), List.of(testParticipant1, testParticipant2, testParticipant3),
+              Money.fromLong(200, "EUR"), List.of(testParticipant1, testParticipant2, testParticipant3),
               testEvent.getTags().getFirst());
 
       assertEquals(testEvent.getTransactions().get(2),  testTransaction3);

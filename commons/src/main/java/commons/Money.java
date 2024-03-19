@@ -85,6 +85,30 @@ public class Money implements java.io.Serializable, Comparable<Money> {
     }
 
     /**
+     * Creates a {@code Money} object from the given arguments, skipping the
+     * verbose step of creating a {@link BigDecimal} object first. <em><strong>
+     * SHOULD ONLY BE USED IN UNIT TESTS!</em></strong>
+     *
+     * @param   amount
+     *          The value.
+     * @param   currency
+     *          The currency in which the value was specified.
+     *
+     * @return  A new {@code Money} object.
+     */
+    static Money fromLong(long amount, String currency) {
+        Currency currency1 = Currency.getInstance(currency);
+        return new Money(
+                new BigDecimal(amount)
+                        .setScale(
+                                currency1.getDefaultFractionDigits(),
+                                RoundingMode.UNNECESSARY
+                        ),
+                currency1
+        );
+    }
+
+    /**
      * Compares {@code this} to {@code other}. Throws {@link
      * IllegalArgumentException} if {@link Money#currency this.currency}
      * {@code != other.currency}.

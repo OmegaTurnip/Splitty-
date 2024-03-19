@@ -30,11 +30,11 @@ class TransactionTest {
         testParticipants.add(testParticipant1);
         testParticipants.add(testParticipant2);
 
-        testTransaction1 = new Transaction(testParticipant1, "Drinks", new Money(new BigDecimal(400), Currency.getInstance("EUR")),
+        testTransaction1 = new Transaction(testParticipant1, "Drinks", Money.fromLong(400, "EUR"),
                 testParticipants, testEvent, new Tag("food", "blue"));
-        testTransaction2 = new Transaction(testParticipant2, "Bowling", new Money(new BigDecimal(200), Currency.getInstance("EUR")),
+        testTransaction2 = new Transaction(testParticipant2, "Bowling", Money.fromLong(200, "EUR"),
                 testEvent.getParticipants(), testEvent, new Tag("activities", "red"));
-        testTransaction3 = new Transaction(testParticipant1, "Drinks", new Money(new BigDecimal(400), Currency.getInstance("EUR")),
+        testTransaction3 = new Transaction(testParticipant1, "Drinks", Money.fromLong(400, "EUR"),
                 testParticipants, testEvent, new Tag("food", "blue"));
     }
 

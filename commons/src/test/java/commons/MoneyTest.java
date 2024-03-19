@@ -15,14 +15,12 @@ class MoneyTest {
     private Money money2;
     private Money money3;
     private static final Currency EUR = Currency.getInstance("EUR");
-    private static final Currency USD = Currency.getInstance("USD");
-    private static final Currency JPY = Currency.getInstance("JPY");
 
     @BeforeEach
     void setup() {
-        money1 = new Money(BigDecimal.TEN, EUR);
-        money2 = new Money(new BigDecimal(100_000_000), USD);
-        money3 = new Money(BigDecimal.TWO, JPY);
+        money1 = Money.fromLong(10, "EUR");
+        money2 = Money.fromLong(100_000_000, "USD");
+        money3 = Money.fromLong(2, "JPY");
     }
 
     @Test
@@ -64,19 +62,19 @@ class MoneyTest {
 
     @Test
     void compareTo() {
-        assertTrue(money2.compareTo(new Money(new BigDecimal(100), USD)) > 0);
+        assertTrue(money2.compareTo(Money.fromLong(100, "USD")) > 0);
         assertThrows(IllegalArgumentException.class, () -> money1.compareTo(money2));
     }
 
     @Test
     void testEquals() {
         assertNotEquals(money1, money2);
-        assertEquals(money1, new Money(BigDecimal.TEN, EUR));
+        assertEquals(money1, Money.fromLong(10, "EUR"));
     }
 
     @Test
     void testHashCode() {
-        assertEquals(money1.hashCode(), new Money(BigDecimal.TEN, EUR).hashCode());
+        assertEquals(money1.hashCode(), Money.fromLong(10, "EUR").hashCode());
     }
 
     @Test
