@@ -90,8 +90,8 @@ public class StartUpCtrl implements Initializable {
             List<String> eventCodes = server.getUserSettings().getEventCodes();
             eventCodes.add(e.getInviteCode());
             server.getUserSettings().setEventCodes(eventCodes);
-            server.createEvent(e);
-            System.out.println("event created!");
+            Event result = server.createEvent(e);
+            System.out.println("Event: "+ result.getEventName() + " created!");
         } catch (WebApplicationException e) {
             e.printStackTrace();
             var alert = new Alert(Alert.AlertType.ERROR);
@@ -104,7 +104,8 @@ public class StartUpCtrl implements Initializable {
         }
 
         clearFields();
-        mainCtrl.showStartUp();
+//        mainCtrl.showStartUp();
+        refresh();
     }
 
     private void clearFields() {

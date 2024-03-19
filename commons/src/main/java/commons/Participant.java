@@ -1,6 +1,8 @@
 package commons;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.Objects;
@@ -14,7 +16,7 @@ public class Participant {
     @Id
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
-    @JsonIgnore
+    @JsonBackReference
     private Event event;
     private String name;
 
@@ -74,8 +76,7 @@ public class Participant {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Participant that = (Participant) o;
-        return Objects.equals(name, that.name)
-                && Objects.equals(event, that.event)
+        return Objects.equals(event, that.event)
                 && Objects.equals(id, that.id);
     }
 
@@ -86,7 +87,7 @@ public class Participant {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(name, event, id);
+        return Objects.hash(event, id);
     }
 
     /**

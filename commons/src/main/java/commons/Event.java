@@ -1,6 +1,8 @@
 package commons;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -20,12 +22,14 @@ public class Event {
     private String eventName;
     private LocalDate eventCreationDate;
     private String inviteCode;
+    @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
     private Collection<Transaction> transactions;
+    @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
     private Collection<Participant> participants;
     private LocalDateTime lastActivity;
-
+    @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
     private List<Tag> tags;
 
@@ -271,7 +275,7 @@ public class Event {
      *
      * @return lastActivity as a String
      */
-    public String getStringOfLastActivity() {
+    public String stringOfLastActivity() {
         return lastActivity.getDayOfMonth() + "/" +
                 lastActivity.getMonthValue() + '/' +
                 lastActivity.getYear() + ' ' +
@@ -290,13 +294,7 @@ public class Event {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Event event = (Event) o;
-        return Objects.equals(eventName, event.eventName)
-                && Objects.equals(eventCreationDate, event.eventCreationDate)
-                && Objects.equals(inviteCode, event.inviteCode)
-                && Objects.equals(transactions, event.transactions)
-                && Objects.equals(lastActivity, event.lastActivity)
-                && Objects.equals(tags, event.tags)
-                && Objects.equals(id, event.id);
+        return Objects.equals(id, event.id);
     }
 
     /**
@@ -306,8 +304,7 @@ public class Event {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(eventName, eventCreationDate, inviteCode,
-                transactions, lastActivity, id);
+        return Objects.hash(id);
     }
 
     /**

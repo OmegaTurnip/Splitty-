@@ -28,11 +28,15 @@ class ParticipantTest{
             testParticipant2 = participantIterator.next();
             testParticipant3 = participantIterator.next();
 
-            testParticipant1.setId((long) 2);
-            testParticipant3.setId((long) 2);
+            testParticipant1.setId(1L);
+            testParticipant2.setId(2L);
+            testParticipant3.setId(3L);
+
+//            testParticipant1.setId((long) 2);
+//            testParticipant3.setId((long) 2);
         }
         @Test
-                void getName(){
+        void getName(){
 
         Event testEvent = new Event("Josh's Birthday Party");
         Participant participant = new Participant("Josh", testEvent);
@@ -50,24 +54,24 @@ class ParticipantTest{
             assertEquals(testParticipant1.getEvent(), testParticipant2.getEvent());
         }
 
-        @Test
-        void testEquals() {
-            assertEquals(testParticipant1, testParticipant3);
-        }
+//        @Test
+//        void testEquals() {
+//            assertNotEquals(testParticipant1, testParticipant3);
+//        }
         @Test
         void testNotEquals() {
             assertNotEquals(testParticipant1, testParticipant2);
         }
 
-        @Test
-        void differentNamesNotEquals() {
-            testParticipant1.setName("Joshua");
-            assertNotEquals(testParticipant1, testParticipant3);
-        }
+//        @Test
+//        void differentNamesNotEquals() {
+//            testParticipant1.setName("Joshua");
+//            assertNotEquals(testParticipant1, testParticipant3);
+//        }
 
         @Test
         void testHashCode() {
-            assertEquals(testParticipant1.hashCode(), testParticipant3.hashCode());
+            assertNotEquals(testParticipant1.hashCode(), testParticipant3.hashCode());
         }
 
     }

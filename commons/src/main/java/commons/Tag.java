@@ -1,5 +1,6 @@
 package commons;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -15,7 +16,7 @@ public class Tag {
     @Id
     @ManyToOne
     @JoinColumn(name="event_id", nullable = false)
-    @JsonIgnore
+    @JsonBackReference
     private Event event;
     private String name;
     private String colour;
@@ -47,8 +48,8 @@ public class Tag {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Tag tag = (Tag) o;
-        return Objects.equals(name, tag.name)
-                && Objects.equals(colour, tag.colour);
+        return Objects.equals(id, tag.id)
+                && Objects.equals(event, tag.event);
     }
 
     /**
@@ -117,7 +118,7 @@ public class Tag {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(name, colour);
+        return Objects.hash(id, event);
     }
 }
 
