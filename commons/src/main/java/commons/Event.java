@@ -2,7 +2,6 @@ package commons;
 
 
 import jakarta.persistence.*;
-import org.apache.commons.lang3.NotImplementedException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
