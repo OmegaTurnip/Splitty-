@@ -5,18 +5,13 @@ import client.utils.PropertiesFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class Language {
 
     /**
-     * A set containing all loaded languages.
+     * A hash map containing all loaded languages.
      */
     public static final HashMap<String, Language> languages = new HashMap<>();
 
@@ -130,18 +125,16 @@ public class Language {
     }
 
     /**
-     * Returns a {@code String} containing the Locale of this language specified
-     * as a <a href="https://en.wikipedia.org/wiki/IETF_language_tag">IETF BCP
-     * 47</a> code. It will default to {@code "en-GB"} if no locale is
-     * specified.
+     * Returns a {@link Locale} containing the specified locale of this
+     * language. It will default to {@code "en-GB"} if no locale is specified in
+     * the language file.
      *
      * @return  The locale of this language.
      */
-    String getLocale() {
-        if (language.containsKey(Text.Locale))
-            return language.getProperty(Text.Locale);
-        else
-            return "en-GB";
+    public Locale getLocale() {
+        return Locale.forLanguageTag(
+                language.getProperty(Text.Locale, "en-GB")
+        );
     }
 
     /**
