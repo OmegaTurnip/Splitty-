@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Properties;
 
 public class LanguageTest {
@@ -36,8 +37,7 @@ public class LanguageTest {
     @Test
     void testLanguageLocale() {
         Translator.setCurrentLanguage(Language.languages.get("deu"));
-        assertEquals("de-DE", Translator.getCurrentLanguage().getLocale());
-
+        assertEquals("de_DE", Translator.getCurrentLanguage().getLocale().toString());
     }
 
     @Test
