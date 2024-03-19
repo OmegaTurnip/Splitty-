@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 import java.util.*;
 
+
 @Entity
 @IdClass(TransactionId.class)
 public class Transaction {
@@ -21,38 +22,94 @@ public class Transaction {
     private Event event;
     @OneToOne
     private Participant payer;
-    private String transactionName;
+    private String name;
     private LocalDate date;
-    private int price;
+    private Money amount;
+    private boolean isPayoff;
     @OneToMany(cascade = CascadeType.ALL)
     private List<Participant> participants;
     @OneToOne
     private Tag tag;
 
     /**
-     * Constructor.
-     * @param payer The person who paid for the transaction.
-     * @param transactionName The name of the transaction.
-     * @param price       The price of the transaction (in euro cents).
-     * @param participants     The people who owe money
-     *                    due to this transaction (key),
-     *                    and the amount they owe (value).
-     * @param event       The event the transactions belongs to
-    * @param tag          The tag of the transaction
+     * General purpose constructor.
+     *
+     * @param   payer
+     *          The person who paid for the transaction.
+     * @param   name
+     *          The name of the transaction.
+     * @param   amount
+     *          The amount of money transferred in the transaction.
+     * @param   participants
+     *          The people/person who owe/gets money.
+     * @param   event
+     *          The event the transactions belongs to
+     * @param   tag
+     *          The tag of the transaction
      */
-    public Transaction(Participant payer,
-                       String transactionName,
-                       int price, List<Participant> participants,
-                       Event event, Tag tag) {
+    @SuppressWarnings("checkstyle:ParameterNumber") // no other option really
+    private Transaction(Participant payer, String name, Money amount,
+                        List<Participant> participants, Event event, Tag tag,
+                        Void distinguishFromPublicConstructor) {
         this.payer = payer;
-        this.transactionName = transactionName;
+        this.name = name;
         this.date = LocalDate.now();
-        this.price = price;
+        this.amount = amount;
         this.participants = participants;
         this.event = event;
-        event.updateLastActivity();
         this.tag = tag;
+        event.updateLastActivity();
     }
+
+    /**
+     * Creates a transaction that creates a debt. Note that the difference
+     * between payoff and not payoff is the participants list.
+     *
+     * @param   payer
+     *          The person who paid for the transaction.
+     * @param   name
+     *          The name of the transaction.
+     * @param   amount
+     *          The amount of money transferred in the transaction.
+     * @param   participants
+     *          The people who owe money.
+     * @param   event
+     *          The event the transactions belongs to
+     * @param   tag
+     *          The tag of the transaction
+     */
+    public Transaction(Participant payer, String name,
+                       Money amount, List<Participant> participants,
+                       Event event, Tag tag) {
+        this(payer, name, amount, participants, event, tag, null);
+        this.isPayoff = false;
+    }
+
+
+    /**
+     * Creates a transaction that creates a debt. Note that the difference
+     * between payoff and not payoff is the (lack of) participants list.
+     *
+     * @param   payer
+     *          The person who paid for the transaction.
+     * @param   name
+     *          The name of the transaction.
+     * @param   amount
+     *          The amount of money transferred in the transaction.
+     * @param   receiver
+     *          The person who received money.
+     * @param   event
+     *          The event the transactions belongs to
+     * @param   tag
+     *          The tag of the transaction
+     */
+    public Transaction(Participant payer, String name, Money amount,
+                       Participant receiver, Event event, Tag tag) {
+        this(payer, name, amount, List.of(receiver), event, tag, null);
+        this.isPayoff = true;
+    }
+
+
 
     /**
      * Constructor without parameters
@@ -62,9 +119,9 @@ public class Transaction {
     }
 
     /**
- * Setter method
- * @param tag the tag of the transaction
- */
+    * Setter method
+    * @param tag the tag of the transaction
+    */
 
     public void setTag(Tag tag) {
         this.tag = tag;
@@ -85,8 +142,8 @@ public class Transaction {
      *
      * @param transactionName .
      */
-    public void setTransactionName(String transactionName) {
-        this.transactionName = transactionName;
+    public void setName(String transactionName) {
+        this.name = transactionName;
         event.updateLastActivity();
     }
 
@@ -105,8 +162,8 @@ public class Transaction {
      *
      * @param price .
      */
-    public void setPrice(int price) {
-        this.price = price;
+    public void setAmount(Money price) {
+        this.amount = price;
         event.updateLastActivity();
     }
 
@@ -124,8 +181,8 @@ public class Transaction {
      *
      * @return .
      */
-    public String getTransactionName() {
-        return transactionName;
+    public String getName() {
+        return name;
     }
 
     /**
@@ -142,8 +199,17 @@ public class Transaction {
      *
      * @return .
      */
-    public int getPrice() {
-        return price;
+    public Money getAmount() {
+        return amount;
+    }
+
+    /**
+     * Returns whether this transaction is a payoff or a 'debt'.
+     *
+     * @return  Whether this transaction is a payoff or a 'debt'.
+     */
+    public boolean isPayoff() {
+        return isPayoff;
     }
 
     /**
@@ -163,53 +229,49 @@ public class Transaction {
     }
 
     /**
-     * check null
-        * @param transaction the transaction to check for null values
-     *    @return true if the transaction has null values, false otherwise
+     * Checks whether this {@code Transaction} is valid, i.e. no fields are
+     * {@code null}.
      *
+     * @return  Whether this {@code Transaction} is valid.
      */
-    public boolean hasNull(Transaction transaction){
-        if (transaction.getEvent() == null
-                || transaction.getTransactionName() == null
-                || transaction.getTransactionName().isEmpty()
-                || transaction.getPayer() == null
-                || transaction.getPrice() == 0
-                || transaction.getParticipants() == null
-                || transaction.getParticipants().isEmpty()) {
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-    /**
-     * Equals method.
-     * @param o Transaction to test equality on.
-     * @return True or false depending on equality.
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Transaction transaction = (Transaction) o;
-        return price == transaction.price
-                && Objects.equals(payer, transaction.payer)
-                && Objects.equals(transactionName, transaction.transactionName)
-                && Objects.equals(date, transaction.date)
-                && Objects.equals(participants, transaction.participants)
-                && Objects.equals(id, transaction.id)
-                && Objects.equals(tag, transaction.tag);
+    public boolean isValid(){
+        return event != null && name != null && !name.isEmpty() && payer != null
+                && amount != null && participants != null
+                && !participants.isEmpty();
     }
 
     /**
-     * Hash code method.
+     * Checks if {@code this} is equal to {@code other}.
      *
-     * @return .
+     * @param   other
+     *          The object to check.
+     *
+     * @return  Whether {@code this} and {@code other} are equal.
+     */
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (other == null || getClass() != other.getClass()) return false;
+        Transaction that = (Transaction) other;
+        return isPayoff == that.isPayoff && Objects.equals(id, that.id)
+                && Objects.equals(event, that.event)
+                && Objects.equals(payer, that.payer)
+                && Objects.equals(name, that.name)
+                && Objects.equals(date, that.date)
+                && Objects.equals(amount, that.amount)
+                && Objects.equals(participants, that.participants)
+                && Objects.equals(tag, that.tag);
+    }
+
+    /**
+     * Generates a hash code corresponding to {@code this}.
+     *
+     * @return  A hash value.
      */
     @Override
     public int hashCode() {
-        return Objects.hash(payer, transactionName, date,
-                price, participants, id);
+        return Objects.hash(id, event, payer, name, date, amount, isPayoff,
+                participants, tag);
     }
 
     /**

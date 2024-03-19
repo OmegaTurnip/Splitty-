@@ -2,6 +2,7 @@ package commons;
 
 
 import jakarta.persistence.*;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -71,18 +72,21 @@ public class Event {
                 .replaceAll("-", "");
     }
 
-    /**
-     * Calculates the total sum of all the transactions in the event.
-     *
-     * @return The total sum.
-     */
-    public int totalSumOfExpenses() {
-        int result = 0;
-        for (Transaction transaction : transactions) {
-            result += transaction.getPrice();
-        }
-        return result;
-    }
+//    /**
+//     * Calculates the total sum of all the transactions in the event in euro
+//     * cents.
+//     *
+//     * @return The total sum.
+//     */
+//    public long totalSumOfExpenses() {
+//        throw new NotImplementedException("conversion to euros cents needs " +
+//                "to be implemented");
+//        long result = 0;
+//        for (Transaction transaction : transactions) {
+//            result += transaction.getAmount().getAmount();
+//        }
+//        return result;
+//    }
 
     /**
      * getter method
@@ -230,7 +234,7 @@ public class Event {
      */
     public Transaction registerTransaction(Participant payer,
                                            String transactionName,
-                                           int price,
+                                           Money price,
                                            List<Participant> participants,
                                            Tag tag) {
         Transaction e = new Transaction(payer, transactionName, price,
