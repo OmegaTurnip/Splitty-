@@ -6,10 +6,9 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 
 import java.io.IOException;
@@ -30,7 +29,7 @@ public class StartUpCtrl implements Initializable {
     private Button joinEventButton1;
 
     @FXML
-    private ListView<String> yourEvents;
+    private ListView<Event> yourEvents;
 
     /**
      * Constructor
@@ -47,7 +46,7 @@ public class StartUpCtrl implements Initializable {
      * Injector setter
      * @param yourEvents yourEvents listview.
      */
-    public void setYourEvents(ListView<String> yourEvents) {
+    public void setYourEvents(ListView<Event> yourEvents) {
         this.yourEvents = yourEvents;
     }
 
@@ -63,6 +62,37 @@ public class StartUpCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        yourEvents.setCellFactory(param -> new ListCell<>() {
+            private final StackPane stackPane = new StackPane();
+            private final Text text = new Text();
+
+            {
+                stackPane.getStyleClass().add("event-cell");
+                setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                stackPane.getChildren().addAll(text);
+                setOnMouseClicked(event -> {
+                    Event selected = getItem();
+                    if (selected != null) {
+                        System.out.println("Event clicked: " + selected.getEventName());
+                        mainCtrl.showEventOverview(selected);
+                    }
+                });
+            }
+            @Override
+            protected void updateItem(Event item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || item == null || item.getEventName() == null) {
+                    setGraphic(null);
+                    setText(null);
+                    stackPane.setVisible(false);
+                } else {
+                    text.setText(item.getEventName());
+                    setGraphic(stackPane);
+                    stackPane.setVisible(true);
+                }
+            }
+        });
         refresh();
     }
 
@@ -126,9 +156,10 @@ public class StartUpCtrl implements Initializable {
     public void refresh() {
         yourEvents.getItems().clear();
         List<Event> myEvents = server.getMyEvents();
-        for (Event event : myEvents) {
-            yourEvents.getItems().add(event.getEventName());
-        }
+//        for (Event event : myEvents) {
+//            yourEvents.getItems().add(event.getEventName());
+//        }
+        yourEvents.getItems().addAll(myEvents);
         System.out.println("Page has been refreshed!");
     }
 

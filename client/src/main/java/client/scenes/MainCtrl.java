@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import commons.Event;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -46,6 +47,7 @@ public class MainCtrl {
         this.overview = new Scene(overview.getValue());
         this.startUpCtrl = startUp.getKey();
         this.startUp = new Scene(startUp.getValue());
+        this.startUp.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
         this.addParticipantCtrl = add.getKey();
         this.add = new Scene(add.getValue());
@@ -73,7 +75,8 @@ public class MainCtrl {
     /**
      * go to the start-up page (by changing the content of the window).
      */
-    public void showOverview() {
+    public void showEventOverview(Event event) {
+        overviewCtrl.setEvent(event);
         this.overviewCtrl.refreshText();
         primaryStage.setTitle("Event Overview");
         primaryStage.setScene(overview);
@@ -90,7 +93,8 @@ public class MainCtrl {
     /**
      * go to the add quote page (by changing the content of the window).
      */
-    public void showAdd() {
+    public void showAddParticipant(Event event) {
+        addParticipantCtrl.setEvent(event);
         this.addParticipantCtrl.refreshText();
         primaryStage.setTitle("Event Overview: Adding participant");
         primaryStage.setScene(add);

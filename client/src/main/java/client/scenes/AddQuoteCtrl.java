@@ -56,29 +56,29 @@ public class AddQuoteCtrl {
     /**
      *  no description was provided in the template.
      */
-    public void cancel() {
-        clearFields();
-        mainCtrl.showOverview();
-    }
+//    public void cancel() {
+//        clearFields();
+//        mainCtrl.showEventOverview();
+//    }
 
     /**
      *  no description was provided in the template.
      */
-    public void ok() {
-        try {
-            server.addQuote(getQuote());
-        } catch (WebApplicationException e) {
-
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
-            return;
-        }
-
-        clearFields();
-        mainCtrl.showOverview();
-    }
+//    public void ok() {
+//        try {
+//            server.addQuote(getQuote());
+//        } catch (WebApplicationException e) {
+//
+//            var alert = new Alert(Alert.AlertType.ERROR);
+//            alert.initModality(Modality.APPLICATION_MODAL);
+//            alert.setContentText(e.getMessage());
+//            alert.showAndWait();
+//            return;
+//        }
+//
+//        clearFields();
+//        mainCtrl.showEventOverview();
+//    }
 
     private Quote getQuote() {
         var p = new Person(firstName.getText(), lastName.getText());
@@ -95,16 +95,16 @@ public class AddQuoteCtrl {
     /**
      * @param e  no description was provided in the template.
      */
-    public void keyPressed(KeyEvent e) {
-        switch (e.getCode()) {
-            case ENTER:
-                ok();
-                break;
-            case ESCAPE:
-                cancel();
-                break;
-            default:
-                break;
-        }
-    }
+//    public void keyPressed(KeyEvent e) {
+//        switch (e.getCode()) {
+//            case ENTER:
+//                ok();
+//                break;
+//            case ESCAPE:
+//                cancel();
+//                break;
+//            default:
+//                break;
+//        }
+//    }
 }

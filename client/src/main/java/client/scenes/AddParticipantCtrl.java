@@ -5,6 +5,7 @@ import client.language.Translator;
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
 import com.google.inject.Inject;
+import commons.Event;
 import commons.Participant;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -46,6 +47,7 @@ public class AddParticipantCtrl{
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
     private final EventOverviewCtrl eventOverviewCtrl;
+    private Event event;
 
     /**
      * Initalizes the controller
@@ -100,7 +102,7 @@ public class AddParticipantCtrl{
      */
     public void cancel(){
         refreshText();
-        mainCtrl.showOverview();
+        mainCtrl.showEventOverview(event);
     }
 
     /**
@@ -109,7 +111,7 @@ public class AddParticipantCtrl{
     public void addParticipant(){
         String username = usernameTextField.getText();
         this.eventOverviewCtrl.displayName(username);
-        this.mainCtrl.showOverview();
+        this.mainCtrl.showEventOverview(event);
     }
 
     private Participant getParticipant(){
@@ -153,4 +155,7 @@ public class AddParticipantCtrl{
     }
 
 
+    public void setEvent(Event event) {
+        this.event = event;
+    }
 }

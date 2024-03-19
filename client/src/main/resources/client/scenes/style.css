@@ -1,0 +1,27 @@
+.event-cell {
+    -fx-background-color: #9370DB;
+    -fx-border-color: transparent;
+    -fx-padding: 10;
+    -fx-background-radius: 12;
+    -fx-margin: 10;
+    -fx-font-family: Garamond;
+    -fx-font-size: 18px;
+}
+
+.event-cell:hover {
+    -fx-background-color: #8A2BE2;
+    /*-fx-transform: scale(1.1);*/
+}
+
+/*.list-view {*/
+/*    -fx-background-color: transparent;*/
+/*}*/
+
+.list-cell:empty {
+    -fx-background-color: transparent;
+}
+
+.list-cell:filled {
+    -fx-background-color: transparent;
+    -fx-margin: 10;
+}
