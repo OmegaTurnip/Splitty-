@@ -155,6 +155,10 @@ public class AddParticipantCtrl{
     }
 
 
+    /**
+     * Setter.
+     * @param event The event to be set.
+     */
     public void setEvent(Event event) {
         this.event = event;
     }

@@ -3,6 +3,7 @@ package client.scenes;
 
 
 import client.language.Text;
+import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
@@ -18,7 +19,7 @@ import javafx.scene.control.Menu;
 import java.io.IOException;
 
 
-public class EventOverviewCtrl {
+public class EventOverviewCtrl implements TextPage {
 
     private Event event;
 
@@ -178,6 +179,10 @@ public class EventOverviewCtrl {
     }
 
 
+    /**
+     * Setter.
+     * @param event Event to be set.
+     */
     public void setEvent(Event event) {
         this.event = event;
     }

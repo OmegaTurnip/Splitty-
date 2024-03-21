@@ -32,6 +32,7 @@ public class MainCtrl {
     private Scene add;
     private StartUpCtrl startUpCtrl;
     private Scene startUp;
+
     /**
      * @param primaryStage the window.
      * @param overview the fx for the event overview page.
@@ -47,10 +48,13 @@ public class MainCtrl {
         this.overview = new Scene(overview.getValue());
         this.startUpCtrl = startUp.getKey();
         this.startUp = new Scene(startUp.getValue());
-        this.startUp.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        this.startUp.getStylesheets().add(getClass()
+                .getResource("style.css").toExternalForm());
 
         this.addParticipantCtrl = add.getKey();
         this.add = new Scene(add.getValue());
+
+
 
         showStartUp();
         primaryStage.show();
@@ -74,6 +78,7 @@ public class MainCtrl {
 
     /**
      * go to the start-up page (by changing the content of the window).
+     * @param event the event to show.
      */
     public void showEventOverview(Event event) {
         overviewCtrl.setEvent(event);
@@ -92,6 +97,7 @@ public class MainCtrl {
 
     /**
      * go to the add quote page (by changing the content of the window).
+     * @param event the event the participant is a part of.
      */
     public void showAddParticipant(Event event) {
         addParticipantCtrl.setEvent(event);
@@ -101,4 +107,19 @@ public class MainCtrl {
     }
 
 
+    /**
+     * Get the primary stage.
+     * @return the primary stage.
+     */
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
+
+    /**
+     * Set the primary stage.
+     * @param primaryStage the primary stage.
+     */
+    public void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
 }
