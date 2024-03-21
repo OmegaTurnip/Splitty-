@@ -3,10 +3,13 @@ package client.scenes;
 
 
 import client.language.Text;
+import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
 import com.google.inject.Inject;
+import commons.Event;
+import commons.Participant;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
@@ -16,8 +19,12 @@ import javafx.scene.control.Menu;
 import java.io.IOException;
 
 
-public class EventOverviewCtrl {
+public class EventOverviewCtrl implements TextPage {
 
+    private Event event;
+
+    @FXML
+    private Label eventTitle;
 
     @FXML
     private Button editParticipant;
@@ -91,6 +98,15 @@ public class EventOverviewCtrl {
 
         expenses.setText(
                 Translator.getTranslation(Text.EventOverview.Labels.Expenses));
+
+        eventTitle.setText(event.getEventName());
+
+        StringBuilder participantsString = new StringBuilder();
+        for (Participant participant : event.getParticipants()) {
+            participantsString.append(participant.getName()).append("\n");
+        }
+
+        participantsList.setText(participantsString.toString());
     }
 
     /**
@@ -114,7 +130,7 @@ public class EventOverviewCtrl {
      * Still in construction
      */
     public void addParticipant(){
-        mainCtrl.showAdd();
+        mainCtrl.showAddParticipant(event);
         refreshText();
     }
 
@@ -163,9 +179,11 @@ public class EventOverviewCtrl {
     }
 
 
-
-
-
-
-
+    /**
+     * Setter.
+     * @param event Event to be set.
+     */
+    public void setEvent(Event event) {
+        this.event = event;
+    }
 }

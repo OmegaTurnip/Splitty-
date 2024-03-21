@@ -34,6 +34,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
 
+
 public class ServerUtils {
 
     private final UserConfig userSettings;
@@ -139,16 +140,43 @@ public class ServerUtils {
     }
 
     /**
-     * Gets user events
+     * Gets all events
      * @return List of Events
      */
     public List<Event> getMyEvents() {
-        List<String> invCodes = userSettings.getEventCodes();
+//        List<String> invCodes = userSettings.getEventCodes();
         return client //
-                .target(server).path("api/event/myEvents")
-                .queryParam("invCodes", invCodes)
+                .target(server).path("api/event")
+//                .queryParam("invCodes", invCodes)
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .get(new GenericType<List<Event>>() {});
+    }
+
+    /**
+     * Join an event
+     * @param code The event code
+     * @return The event
+     */
+    public Event joinEvent(String code) {
+        return client //
+                .target(server).path("api/event/invite/" + code) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(Event.class);
+    }
+
+    /**
+     * Save events
+     * @param events The events to save
+     * @return The saved events
+     */
+    public List<Event> saveEvents(List<Event> events) {
+        return client //
+                .target(server).path("api/event") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .put(Entity.entity(events, APPLICATION_JSON),
+                        new GenericType<List<Event>>() {});
     }
 }

@@ -80,9 +80,9 @@ public class QuoteOverviewCtrl implements Initializable {
     /**
      * no description was provided in the template.
      */
-    public void addQuote() {
-        mainCtrl.showAdd();
-    }
+//    public void addQuote() {
+//        mainCtrl.showAdd();
+//    }
 
     /**
      * no description was provided in the template.

@@ -27,14 +27,18 @@ public class TagTest {
     @Test
     void testEqual(){
         Tag food = new Tag("food", "blue");
+        food.setId(1L);
         Tag food2 = new Tag("food", "blue");
+        food2.setId(1L);
         assertTrue(food.equals(food2));
     }
 
     @Test
     void testNotEqual(){
         Tag food = new Tag("food", "blue");
+        food.setId(1L);
         Tag movies = new Tag("movies", "red");
+        food.setId(1L);
         assertFalse(food.equals(movies));
     }
 

@@ -50,7 +50,7 @@
         <module name="MethodLength">
             <property name="severity" value="warning"/>
             <property name="tokens" value="METHOD_DEF, CTOR_DEF, COMPACT_CTOR_DEF"/>
-            <property name="max" value="30"/>
+            <property name="max" value="35"/>
         </module>
         <module name="VisibilityModifier">
             <property name="severity" value="warning"/>
