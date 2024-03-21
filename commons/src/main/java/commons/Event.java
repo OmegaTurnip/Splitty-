@@ -220,27 +220,61 @@ public class Event {
         updateLastActivity();
     }
 
+    /**
+     * Register a transaction carrying a debt with an event.
+     *
+     * @param   creditor
+     *          The {@link Participant} that paid.
+     * @param   name
+     *          The name of the {@link Transaction} to be registered.
+     * @param   price
+     *          The money spend.
+     * @param   participants
+     *          The {@code participant}s over which the {@code Transaction}
+     *          should be divided.
+     * @param   tag
+     *          The {@link Tag}.
+     *
+     * @return  The registered {@code Transaction}.
+     */
+    public Transaction registerDebt(Participant creditor, String name,
+                                    Money price, List<Participant> participants,
+                                    Tag tag) {
+        Transaction t =
+                Transaction.createDebt(
+                        creditor, name, price, participants, this, tag
+                );
+        transactions.add(t);
+        updateLastActivity();
+        return t;
+    }
 
     /**
-     * Register a transaction with an event
+     * Register a transaction carrying a payoff with an event.
      *
-     * @param payer       the Participant that paid
-     * @param transactionName the name of the Transaction to be registered
-     * @param price       the price of the Transaction
-     * @param participants the participants of the Transaction
-     * @param tag         the tag
-     * @return            the transaction registered
+     * @param   payer
+     *          The {@link Participant} that paid.
+     * @param   name
+     *          The name of the {@link Transaction} to be registered.
+     * @param   amount
+     *          The money paid.
+     * @param   receiver
+     *          The {@code participant} receiving the money.
+     * @param   tag
+     *          The {@link Tag}.
+     *
+     * @return  The registered {@code Transaction}.
      */
-    public Transaction registerTransaction(Participant payer,
-                                           String transactionName,
-                                           Money price,
-                                           List<Participant> participants,
-                                           Tag tag) {
-        Transaction e = new Transaction(payer, transactionName, price,
-                participants, this, tag);
-        transactions.add(e);
+    public Transaction registerPayoff(Participant payer, String name,
+                                      Money amount, Participant receiver,
+                                      Tag tag) {
+        Transaction t =
+                Transaction.createPayoff(
+                        payer, name, amount, receiver, this, tag
+                );
+        transactions.add(t);
         updateLastActivity();
-        return e;
+        return t;
     }
 
     /**
@@ -293,13 +327,7 @@ public class Event {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Event event = (Event) o;
-        return Objects.equals(eventName, event.eventName)
-                && Objects.equals(eventCreationDate, event.eventCreationDate)
-                && Objects.equals(inviteCode, event.inviteCode)
-                && Objects.equals(transactions, event.transactions)
-                && Objects.equals(lastActivity, event.lastActivity)
-                && Objects.equals(tags, event.tags)
-                && Objects.equals(id, event.id);
+        return Objects.equals(id, event.id);
     }
 
     /**
@@ -309,8 +337,7 @@ public class Event {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(eventName, eventCreationDate, inviteCode,
-                transactions, lastActivity, id);
+        return Objects.hash(id);
     }
 
     /**

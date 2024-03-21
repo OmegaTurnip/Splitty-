@@ -59,11 +59,11 @@ class ParticipantTest{
             assertNotEquals(testParticipant1, testParticipant2);
         }
 
-        @Test
-        void differentNamesNotEquals() {
-            testParticipant1.setName("Joshua");
-            assertNotEquals(testParticipant1, testParticipant3);
-        }
+//        @Test
+//        void differentNamesNotEquals() {
+//            testParticipant1.setName("Joshua");
+//            assertNotEquals(testParticipant1, testParticipant3);
+//        }
 
         @Test
         void testHashCode() {

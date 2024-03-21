@@ -74,9 +74,7 @@ public class Participant {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Participant that = (Participant) o;
-        return Objects.equals(name, that.name)
-                && Objects.equals(event, that.event)
-                && Objects.equals(id, that.id);
+        return Objects.equals(id, that.id);
     }
 
     /**
@@ -86,7 +84,18 @@ public class Participant {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(name, event, id);
+        return Objects.hash(id);
+    }
+
+    /**
+     * Generates a {@code String} representing {@code this}.
+     *
+     * @return  A {@code String} representing {@code this}.
+     */
+    @Override
+    public String toString() {
+        return "Participant { '" + name +  "' (id: " + id + ") in the event '" +
+                event.getEventName() + "' }";
     }
 
     /**

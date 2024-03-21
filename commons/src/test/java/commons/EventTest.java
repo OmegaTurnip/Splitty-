@@ -3,7 +3,6 @@ package commons;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -27,34 +26,41 @@ class EventTest {
     testEvent.setEventCreationDate(testDate1);
 
     testParticipant1 = new Participant("Josh", testEvent);
+    testParticipant1.setId(1L);
     testParticipant2 = new Participant("Amy", testEvent);
+    testParticipant1.setId(2L);
     testParticipant3 = new Participant("Rizwan", testEvent);
+    testParticipant1.setId(3L);
 
-        List<Participant> testParticipants1 = new ArrayList<>();
-        List<Participant> testParticipants2 = new ArrayList<>();
-        List<Participant> testAllParticipants1 = new ArrayList<>();
+    List<Participant> testParticipants1 = new ArrayList<>();
+    List<Participant> testParticipants2 = new ArrayList<>();
+    List<Participant> testAllParticipants1 = new ArrayList<>();
 
-        testParticipants1.add(testParticipant2);
-        testParticipants1.add(testParticipant3);
+    testParticipants1.add(testParticipant2);
+    testParticipants1.add(testParticipant3);
 
-        testParticipants2.add(testParticipant1);
-        testParticipants2.add(testParticipant3);
+    testParticipants2.add(testParticipant1);
+    testParticipants2.add(testParticipant3);
 
-        testAllParticipants1.add(testParticipant1);
-        testAllParticipants1.add(testParticipant2);
-        testAllParticipants1.add(testParticipant3);
+    testAllParticipants1.add(testParticipant1);
+    testAllParticipants1.add(testParticipant2);
+    testAllParticipants1.add(testParticipant3);
 
     testEvent.setParticipants(testAllParticipants1);
 
-    testTransaction1 = new Transaction(testParticipant1, "Drinks", Money.fromLong(2, "EUR"),
+    testTransaction1 = Transaction.createDebt(testParticipant1, "Drinks", Money.fromLong(2, "EUR"),
             testParticipants1, testEvent, new Tag("food", "blue"));
-    testTransaction2 = new Transaction(testParticipant2, "Lunch", Money.fromLong(2, "EUR"),
+    testTransaction2 = Transaction.createDebt(testParticipant2, "Lunch", Money.fromLong(2, "EUR"),
+
             testParticipants2, testEvent, new Tag("food", "blue"));
     testTransaction1.setDate(testDate1);
     testTransaction2.setDate(testDate1);
     Collection<Transaction> testTransactions1 = new ArrayList<>();
     testTransactions1.add(testTransaction1);
     testTransactions1.add(testTransaction2);
+
+    testTransaction1.setId(1L);
+    testTransaction2.setId(2L);
 
     testEvent.setTransactions(testTransactions1);
   }
@@ -99,11 +105,11 @@ class EventTest {
 
     @Test
     void registerTransaction() {
-      Transaction testTransaction3 = new Transaction(testParticipant1,
+      Transaction testTransaction3 = Transaction.createDebt(testParticipant1,
               "Movies",
                 Money.fromLong(2, "EUR"), List.of(testParticipant1, testParticipant2, testParticipant3),
               testEvent,testEvent.getTags().getFirst());
-      testEvent.registerTransaction(testParticipant1,
+      testEvent.registerDebt(testParticipant1,
               "Movies",
               Money.fromLong(200, "EUR"), List.of(testParticipant1, testParticipant2, testParticipant3),
               testEvent.getTags().getFirst());
@@ -115,6 +121,5 @@ class EventTest {
     void deleteTransaction() {
       assertTrue(testEvent.deleteTransaction(testTransaction1));
       assertFalse(testEvent.getTransactions().contains(testTransaction1));
-
     }
 }

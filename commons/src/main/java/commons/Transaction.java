@@ -43,14 +43,14 @@ public class Transaction {
      * @param   participants
      *          The people/person who owe/gets money.
      * @param   event
-     *          The event the transactions belongs to
+     *          The event the transactions belongs to.
      * @param   tag
-     *          The tag of the transaction
+     *          The tag of the transaction.
      */
     @SuppressWarnings("checkstyle:ParameterNumber") // no other option really
     private Transaction(Participant payer, String name, Money amount,
                         List<Participant> participants, Event event, Tag tag,
-                        Void distinguishFromPublicConstructor) {
+                        Void distinguishFromOtherConstructors) {
         this.payer = payer;
         this.name = name;
         this.date = LocalDate.now();
@@ -65,30 +65,58 @@ public class Transaction {
      * Creates a transaction that creates a debt. Note that the difference
      * between payoff and not payoff is the participants list.
      *
+     * @param   creditor
+     *          The person who paid for the transaction.
+     * @param   name
+     *          The name of the transaction.
+     * @param   amount
+     *          The amount of money transferred in the transaction.
+     * @param   debtors
+     *          The people who owe money.
+     * @param   event
+     *          The event the transactions belongs to.
+     * @param   tag
+     *          The tag of the transaction.
+     */
+    private Transaction(Participant creditor, String name, Money amount,
+                        List<Participant> debtors, Event event, Tag tag) {
+        this(creditor, name, amount, debtors, event, tag, null);
+        this.isPayoff = false;
+    }
+
+
+    /**
+     * Creates a transaction that creates a payoff. Note that the difference
+     * between payoff and not payoff is the (lack of) participants list.
+     *
      * @param   payer
      *          The person who paid for the transaction.
      * @param   name
      *          The name of the transaction.
      * @param   amount
      *          The amount of money transferred in the transaction.
-     * @param   participants
-     *          The people who owe money.
+     * @param   receiver
+     *          The person who received money.
      * @param   event
-     *          The event the transactions belongs to
+     *          The event the transactions belongs to.
      * @param   tag
-     *          The tag of the transaction
+     *          The tag of the transaction.
      */
-    public Transaction(Participant payer, String name,
-                       Money amount, List<Participant> participants,
-                       Event event, Tag tag) {
-        this(payer, name, amount, participants, event, tag, null);
-        this.isPayoff = false;
+    private Transaction(Participant payer, String name, Money amount,
+                       Participant receiver, Event event, Tag tag) {
+        this(payer, name, amount, List.of(receiver), event, tag, null);
+        this.isPayoff = true;
     }
 
+    /**
+     * Constructor without parameters.
+     */
+    public Transaction() {
+
+    }
 
     /**
-     * Creates a transaction that creates a debt. Note that the difference
-     * between payoff and not payoff is the (lack of) participants list.
+     * Creates a transaction that creates a payoff.
      *
      * @param   payer
      *          The person who paid for the transaction.
@@ -101,22 +129,42 @@ public class Transaction {
      * @param   event
      *          The event the transactions belongs to
      * @param   tag
-     *          The tag of the transaction
+     *          The tag of the transaction.
+     *
+     * @return  The resulting transaction.
      */
-    public Transaction(Participant payer, String name, Money amount,
-                       Participant receiver, Event event, Tag tag) {
-        this(payer, name, amount, List.of(receiver), event, tag, null);
-        this.isPayoff = true;
+    public static Transaction createPayoff(Participant payer, String name,
+                                            Money amount, Participant receiver,
+                                            Event event, Tag tag) {
+        return new Transaction(payer, name, amount, receiver, event, tag);
     }
-
-
 
     /**
-     * Constructor without parameters
+     * Creates a transaction that creates a debt. Note that the difference
+     * between payoff and not payoff is the participants list.
+     *
+     * @param   creditor
+     *          The person who paid for the transaction.
+     * @param   name
+     *          The name of the transaction.
+     * @param   amount
+     *          The amount of money transferred in the transaction.
+     * @param   debtors
+     *          The people who owe money.
+     * @param   event
+     *          The event the transactions belongs to
+     * @param   tag
+     *          The tag of the transaction.
+     *
+     * @return  The resulting transaction.
      */
-    public Transaction() {
-
+    public static Transaction createDebt(
+            Participant creditor, String name, Money amount,
+            List<Participant> debtors, Event event, Tag tag) {
+        return new Transaction(creditor, name, amount, debtors, event, tag);
     }
+
+
 
     /**
     * Setter method
@@ -253,14 +301,7 @@ public class Transaction {
         if (this == other) return true;
         if (other == null || getClass() != other.getClass()) return false;
         Transaction that = (Transaction) other;
-        return isPayoff == that.isPayoff && Objects.equals(id, that.id)
-                && Objects.equals(event, that.event)
-                && Objects.equals(payer, that.payer)
-                && Objects.equals(name, that.name)
-                && Objects.equals(date, that.date)
-                && Objects.equals(amount, that.amount)
-                && Objects.equals(participants, that.participants)
-                && Objects.equals(tag, that.tag);
+        return Objects.equals(id, that.id);
     }
 
     /**
@@ -270,8 +311,7 @@ public class Transaction {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(id, event, payer, name, date, amount, isPayoff,
-                participants, tag);
+        return Objects.hash(id);
     }
 
     /**
