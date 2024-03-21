@@ -43,12 +43,6 @@ public class StartUpCtrl implements Initializable, TextPage {
     private final MainCtrl mainCtrl;
 
     @FXML
-    private Label createNewEventLabel;
-
-    @FXML
-    private Label joinEventLabel;
-
-    @FXML
     private Label yourEventsLabel;
 
     @FXML
@@ -285,12 +279,6 @@ public class StartUpCtrl implements Initializable, TextPage {
         joinEventButton1.setText(Translator
                 .getTranslation(client.language
                         .Text.StartUp.Buttons.JoinEventButton));
-        createNewEventLabel.setText(Translator
-                .getTranslation(client.language
-                        .Text.StartUp.createNewEventLabel));
-        joinEventLabel.setText(Translator
-                .getTranslation(client.language
-                        .Text.StartUp.joinEventLabel));
         yourEventsLabel.setText(Translator
                 .getTranslation(client.language
                         .Text.StartUp.yourEventsLabel));
