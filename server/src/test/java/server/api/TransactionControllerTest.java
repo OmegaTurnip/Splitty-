@@ -43,10 +43,10 @@ public class TransactionControllerTest {
         testP1.setId(500L);
         group = new ArrayList<>();
         group.add(testP1);
-        transaction = testEvent1.registerTransaction(testP1, "testTransaction1", new Money(new BigDecimal(100), Currency.getInstance("EUR")),
+        transaction = testEvent1.registerDebt(testP1, "testTransaction1", new Money(new BigDecimal(100), Currency.getInstance("EUR")),
                 group, testEvent1.getTags().get(0));
         transaction.setId(600L);
-        editTransaction = new Transaction(testP1, "editTransaction",  new Money(new BigDecimal(100), Currency.getInstance("EUR")), group, testEvent1,testEvent1.getTags().get(0));
+        editTransaction = Transaction.createDebt(testP1, "editTransaction",  new Money(new BigDecimal(100), Currency.getInstance("EUR")), group, testEvent1,testEvent1.getTags().get(0));
 
     }
 
