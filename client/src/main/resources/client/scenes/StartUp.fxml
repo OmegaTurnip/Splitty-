@@ -39,8 +39,6 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.ColorAdjust?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -54,22 +52,7 @@
          <top>
           <MenuBar prefHeight="0.0" prefWidth="758.0" style="-fx-background-color: #fefdfd;" BorderPane.alignment="CENTER">
             <menus>
-              <Menu mnemonicParsing="false" text="Splitty!">
-                <items>
-                  <MenuItem mnemonicParsing="false" text="New" />
-                  <MenuItem mnemonicParsing="false" text="Open…" />
-                  <Menu mnemonicParsing="false" text="Open Recent" />
-                  <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" text="Close" />
-                  <MenuItem mnemonicParsing="false" text="Save" />
-                  <MenuItem mnemonicParsing="false" text="Save As…" />
-                  <MenuItem mnemonicParsing="false" text="Revert" />
-                  <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" text="Preferences…" />
-                  <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" text="Quit" />
-                </items>
-              </Menu>
+              <Menu fx:id="languages" mnemonicParsing="false" text="Languages" />
             </menus>
           </MenuBar>
          </top>
@@ -103,7 +86,7 @@
                               <Cursor fx:constant="TEXT" />
                            </cursor>
                         </TextField>
-                        <Button fx:id="joinEventButton1" layoutX="398.0" layoutY="143.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="173.0" style="-fx-background-color: #010101; -fx-font-weight: bold;" text="Join" textFill="#fefdfd">
+                        <Button fx:id="joinEventButton1" layoutX="398.0" layoutY="143.0" mnemonicParsing="false" onAction="#joinEvent" prefHeight="44.0" prefWidth="173.0" style="-fx-background-color: #010101; -fx-font-weight: bold;" text="Join" textFill="#fefdfd">
                            <font>
                               <Font name="Garamond" size="18.0" />
                            </font>
@@ -116,17 +99,17 @@
                               <Cursor fx:constant="TEXT" />
                            </cursor>
                         </TextField>
-                        <Label layoutX="68.0" layoutY="90.0" prefHeight="57.0" prefWidth="110.0" style="-fx-font-weight: bold;" text="Join Event" textFill="#fefdfd">
+                        <Label fx:id="joinEventLabel" layoutX="68.0" layoutY="90.0" prefHeight="57.0" prefWidth="110.0" style="-fx-font-weight: bold;" text="Join Event" textFill="#fefdfd">
                            <font>
                               <Font name="Garamond" size="24.0" />
                            </font>
                         </Label>
-                        <Label layoutX="68.0" layoutY="-1.0" prefHeight="58.0" prefWidth="200.0" style="-fx-font-weight: bold;" text="Create New Event" textFill="#fefdfd">
+                        <Label fx:id="createNewEventLabel" layoutX="68.0" layoutY="-1.0" prefHeight="58.0" prefWidth="200.0" style="-fx-font-weight: bold;" text="Create New Event" textFill="#fefdfd">
                            <font>
                               <Font name="Garamond" size="24.0" />
                            </font>
                         </Label>
-                        <Label layoutX="68.0" layoutY="187.0" prefHeight="58.0" prefWidth="269.0" style="-fx-font-weight: bold;" text="Your Events:" textFill="#fefdfd">
+                        <Label fx:id="yourEventsLabel" layoutX="68.0" layoutY="187.0" prefHeight="58.0" prefWidth="269.0" style="-fx-font-weight: bold;" text="Your Events:" textFill="#fefdfd">
                            <font>
                               <Font name="Garamond" size="24.0" />
                            </font>
