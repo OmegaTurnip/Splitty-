@@ -1,7 +1,6 @@
 package server.api;
 
 import commons.Event;
-import commons.Transaction;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
@@ -23,20 +22,22 @@ public class EventController {
         this.eventRepository = eventRepository;
     }
 
-    /**
-     * Gets all the events matching the list of invite codes
-     * sent in the request body
-     * @param invCodes List of invite codes
-     * @return List of events
-     */
-    @GetMapping(path = {"/myEvents"})
-    @ResponseBody
-    public ResponseEntity<List<Event>> myEvents(@RequestParam("invCodes")
-                                                    List<String> invCodes) {
-        List<Event> myE = eventRepository
-                .findAllByInviteCodeIsIn(invCodes);
-        return ResponseEntity.ok(myE);
-    }
+//    /**
+//     * Gets all the events matching the list of invite codes
+//     * sent in the request body
+//     * @param invCodes List of invite codes
+//     * @return List of events
+//     */
+//    @GetMapping(path = {"/myEvents"})
+//    @ResponseBody
+//    public ResponseEntity<List<Event>> myEvents(@RequestParam("invCodes")
+//                                                    List<String> invCodes) {
+//        System.out.println(invCodes);
+//        List<Event> myE = eventRepository
+//                .findAllByInviteCodeIsIn(invCodes);
+//        System.out.println(myE);
+//        return ResponseEntity.ok(myE);
+//    }
 
     /**
      * Get all events
@@ -50,6 +51,19 @@ public class EventController {
     }
 
     /**
+     * Save events
+     * @param events The events to save
+     * @return The events saved
+     */
+    @PutMapping(path = { "", "/" })
+    @ResponseBody
+    public ResponseEntity<List<Event>> saveEvents(
+            @RequestBody Iterable<Event> events) {
+        eventRepository.saveAll(events);
+        return ResponseEntity.ok((List<Event>) events);
+    }
+
+    /**
      * Add an event
      * @param event The event to add
      * @return  The event added
@@ -58,8 +72,7 @@ public class EventController {
     @ResponseBody
     public ResponseEntity<Event> addEvent(@RequestBody Event event) {
 
-        eventRepository.save(event); //<---CAUSES PROBLEMS!
-        eventRepository.flush();
+        eventRepository.saveAndFlush(event);
 
         return ResponseEntity.ok(event);
     }
@@ -92,25 +105,18 @@ public class EventController {
     }
 
     /**
-     * Delete a transaction from an event
-     * @param id The id of the event
-     * @param transaction the transaction to delete
-     * @return The transaction deleted
+     * Get an event by invite code.
+     * @param inviteCode The invite code
+     * @return The event
      */
-    @DeleteMapping("/{id}")
+    @GetMapping("/invite/{inviteCode}")
     @ResponseBody
-    public ResponseEntity<Event>
-        deleteTransaction(@PathVariable("id") Long id,
-                          @RequestBody Transaction transaction) {
-        Event event = eventRepository.findById(id).orElse(null);
+    public ResponseEntity<Event> getEventByInviteCode(
+            @PathVariable("inviteCode") String inviteCode) {
+        Event event = eventRepository.findByInviteCode(inviteCode);
         if (event == null) {
             return ResponseEntity.notFound().build();
         }
-        boolean deleted = event.deleteTransaction(transaction);
-        if(!deleted) {
-            return ResponseEntity.badRequest().build();
-        }
-        eventRepository.save(event);
         return ResponseEntity.ok(event);
     }
 
