@@ -40,7 +40,6 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.effect.ColorAdjust?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
@@ -57,7 +56,7 @@
           </MenuBar>
          </top>
          <bottom>
-            <ListView fx:id="yourEvents" prefHeight="531.0" prefWidth="640.0" style="-fx-background-color: #331575;" BorderPane.alignment="CENTER">
+            <ListView fx:id="yourEvents" prefHeight="531.0" prefWidth="640.0" styleClass="bottom-BG" stylesheets="@style.css" BorderPane.alignment="CENTER">
                <padding>
                   <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
                </padding>
@@ -68,8 +67,7 @@
                <center>
                   <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="262.0" prefWidth="598.0" style="-fx-background-color: #8e3edd;" BorderPane.alignment="CENTER">
                      <children>
-                        <Label alignment="CENTER" layoutX="155.0" layoutY="177.0" style="&#10;" textAlignment="CENTER" textFill="#e0ddf2"
-                               wrapText="false">
+                        <Label alignment="CENTER" layoutX="155.0" layoutY="177.0" style="&#10;" textAlignment="CENTER" textFill="#e0ddf2" wrapText="false">
                            <font>
                               <Font size="18.0" />
                            </font>
