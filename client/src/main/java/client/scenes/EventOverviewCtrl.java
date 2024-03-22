@@ -10,13 +10,13 @@ import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
+import commons.Transaction;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
+import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 
 import java.io.IOException;
+import java.util.List;
 
 
 public class EventOverviewCtrl implements TextPage {
@@ -24,36 +24,23 @@ public class EventOverviewCtrl implements TextPage {
     private Event event;
 
     @FXML
-    private Label eventTitle;
-
-    @FXML
-    private Button editParticipant;
-    @FXML
-    private Button addParticipant;
-    @FXML
-    private Button settleDebts;
-    @FXML
-    private Button addExpense;
-    @FXML
-    private Button inviteCodeButton;
-    @FXML
-    private Label participants;
+    private Label eventNameLabel;
     @FXML
     private Menu languages;
     @FXML
-    private CheckMenuItem english;
+    private ImageView addParticipantButton;
     @FXML
-    private CheckMenuItem dutch;
+    private ImageView addExpenseButton;
     @FXML
-    private CheckMenuItem german;
+    private ChoiceBox<String> expensesDropDown;
     @FXML
-    private Menu rto;
+    private Button settleDebtsButton;
     @FXML
-    private Menu close;
+    private Button sendInviteButton;
     @FXML
-    private Label participantsList;
+    private ListView<Participant> participantsListView;
     @FXML
-    private Label expenses;
+    private ListView<Transaction> expensesListView;
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
 
@@ -79,55 +66,36 @@ public class EventOverviewCtrl implements TextPage {
      * Refreshes the text of EventOverview
      */
     public void refreshTextEventOverview() {
-        inviteCodeButton.setText(
-                Translator.getTranslation(Text.EventOverview.Buttons.SendInvite)
-        );
-        participants.setText(
-                Translator.getTranslation
-                        (Text.EventOverview.Labels.Participants));
-        editParticipant.setText(
-                Translator.getTranslation(Text.EventOverview.Buttons.Edit));
-        addParticipant.setText(
-                Translator.getTranslation(Text.EventOverview.Buttons.Add));
-        settleDebts.setText(
-                Translator.getTranslation
-                        (Text.EventOverview.Buttons.SettleDebts));
-        addExpense.setText(
-                Translator.getTranslation(Text.EventOverview.Buttons.AddExpense)
-        );
+//        inviteCodeButton.setText(
+//                Translator.getTranslation(Text.EventOverview.Buttons.SendInvite)
+//        );
+//        participants.setText(
+//                Translator.getTranslation
+//                        (Text.EventOverview.Labels.Participants));
+//        editParticipant.setText(
+//                Translator.getTranslation(Text.EventOverview.Buttons.Edit));
+//        addParticipant.setText(
+//                Translator.getTranslation(Text.EventOverview.Buttons.Add));
+//        settleDebts.setText(
+//                Translator.getTranslation
+//                        (Text.EventOverview.Buttons.SettleDebts));
+//        addExpense.setText(
+//                Translator.getTranslation(Text.EventOverview.Buttons.AddExpense)
+//        );
+//
+//        expenses.setText(
+//                Translator.getTranslation(Text.EventOverview.Labels.Expenses));
 
-        expenses.setText(
-                Translator.getTranslation(Text.EventOverview.Labels.Expenses));
-
-        eventTitle.setText(event.getEventName());
-
-        StringBuilder participantsString = new StringBuilder();
-        for (Participant participant : event.getParticipants()) {
-            participantsString.append(participant.getName()).append("\n");
-        }
-
-        participantsList.setText(participantsString.toString());
+        eventNameLabel.setText(event.getEventName());
     }
 
     /**
      * Refreshes text of everything in the menu
      */
     public void refreshMenu(){
-        languages.setText(
-                Translator.getTranslation(Text.Menu.Languages));
-        english.setText(
-                Translator.getTranslation(Text.Menu.English));
-        dutch.setText(
-                Translator.getTranslation(Text.Menu.Dutch));
-        german.setText(
-                Translator.getTranslation(Text.Menu.German));
-        rto.setText(
-                Translator.getTranslation(Text.Menu.ReturnToOverview));
-        close.setText(
-                Translator.getTranslation(Text.Menu.Close));
     }
     /**
-     * Still in construction
+     * Add participant to event
      */
     public void addParticipant(){
         mainCtrl.showAddParticipant(event);
@@ -135,48 +103,55 @@ public class EventOverviewCtrl implements TextPage {
     }
 
     /**
-     * Still in construction (planning to add name to list of participants)
-     * @param username name to be added to list
+     * Add expense to the event
      */
-    public void displayName(String username){
-        this.participantsList.setText(username);
+    public void addExpense() {
+
     }
 
-    /**
-     * Sets language to Dutch
-     */
-    public void setDutch(){
-        try {
-            UserConfig.get().setUserLanguage("nld");
-            refreshText();
-        }catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Sets language to English
-     */
-    public void setEnglish(){
-        try {
-            UserConfig.get().setUserLanguage("eng");
-            refreshText();
-        }catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Sets language to German
-     */
-    public void setGerman(){
-        try {
-            UserConfig.get().setUserLanguage("deu");
-            refreshText();
-        }catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    /**
+//     * Still in construction (planning to add name to list of participants)
+//     * @param username name to be added to list
+//     */
+//    public void displayName(String username){
+//        this.participantsList.setText(username);
+//    }
+//
+//    /**
+//     * Sets language to Dutch
+//     */
+//    public void setDutch(){
+//        try {
+//            UserConfig.get().setUserLanguage("nld");
+//            refreshText();
+//        }catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
+//    /**
+//     * Sets language to English
+//     */
+//    public void setEnglish(){
+//        try {
+//            UserConfig.get().setUserLanguage("eng");
+//            refreshText();
+//        }catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
+//    /**
+//     * Sets language to German
+//     */
+//    public void setGerman(){
+//        try {
+//            UserConfig.get().setUserLanguage("deu");
+//            refreshText();
+//        }catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
 
     /**

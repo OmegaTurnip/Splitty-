@@ -18,3 +18,12 @@
 .list-cell:focused .event-cell {
     -fx-background-color: #8A2BE2;
 }
+
+.bottom-BG {
+    -fx-background-color: radial-gradient(center 96.2% 89.9%, radius 100%,  rgb(142, 62, 221)  0%, rgb(51, 21, 117) 92%);
+}
+
+.button {
+    -fx-cursor: hand;
+}
+

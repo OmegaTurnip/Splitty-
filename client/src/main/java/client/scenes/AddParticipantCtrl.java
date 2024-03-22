@@ -110,7 +110,7 @@ public class AddParticipantCtrl{
      */
     public void addParticipant(){
         String username = usernameTextField.getText();
-        this.eventOverviewCtrl.displayName(username);
+//        this.eventOverviewCtrl.displayName(username);
         this.mainCtrl.showEventOverview(event);
     }
 
