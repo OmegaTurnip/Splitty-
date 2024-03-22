@@ -50,7 +50,7 @@
           </MenuBar>
          </top>
          <bottom>
-            <ListView fx:id="yourEvents" prefHeight="531.0" prefWidth="640.0" style="-fx-background-color: #3a3153;" BorderPane.alignment="CENTER">
+            <ListView fx:id="yourEvents" prefHeight="531.0" prefWidth="640.0" style="-fx-background-color: #331575;" BorderPane.alignment="CENTER">
                <padding>
                   <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
                </padding>
@@ -59,58 +59,54 @@
          <center>
             <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <center>
-                  <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="262.0" prefWidth="598.0" style="-fx-background-color: #5f43b2;" BorderPane.alignment="CENTER">
+                  <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="262.0" prefWidth="598.0" style="-fx-background-color: #8e3edd;" BorderPane.alignment="CENTER">
                      <children>
-                        <Label alignment="CENTER" layoutX="155.0" layoutY="177.0" style="&#10;" textAlignment="CENTER" textFill="#9f9f9f" wrapText="false">
+                        <Label alignment="CENTER" layoutX="155.0" layoutY="177.0" style="&#10;" textAlignment="CENTER" textFill="#e0ddf2"
+                               wrapText="false">
                            <font>
                               <Font size="18.0" />
                            </font>
                         </Label>
-                        <Button fx:id="newEventButton1" layoutX="398.0" layoutY="46.0" mnemonicParsing="false" onAction="#createEvent" prefHeight="44.0" prefWidth="173.0" style="-fx-background-color: #010101; -fx-font-weight: bold;" text="Create" textFill="#fefdfd">
+                        <Button fx:id="newEventButton1" layoutX="398.0" layoutY="46.0" mnemonicParsing="false" onAction="#createEvent" prefHeight="40.0" prefWidth="173.0" style="-fx-background-radius: 5pt; -fx-background-color: #0d0d0d; -fx-font-weight: bold;" text="Create event" textFill="#fefdfd">
                            <font>
-                              <Font name="Garamond" size="18.0" />
+                              <Font name="Arial" size="18.0" />
                            </font>
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </Button>
-                        <TextField fx:id="newEvent1" layoutX="68.0" layoutY="48.0" prefHeight="40.0" prefWidth="306.0" style="-fx-background-color: #b1aebb;">
-                           <cursor>
+                        <TextField fx:id="newEvent1" layoutX="68.0" layoutY="48.0" prefHeight="40.0" prefWidth="306.0" promptText="Choose a name for a new event..." style="-fx-background-color: #8f3ede; -fx-prompt-text-fill: #fefdfd; -fx-border-color: #e0ddf2; -fx-border-radius: 5pt; -fx-border-width: 1.5pt;">
+
+                        <cursor>
                               <Cursor fx:constant="TEXT" />
                            </cursor>
-                        </TextField>
-                        <Button fx:id="joinEventButton1" layoutX="398.0" layoutY="143.0" mnemonicParsing="false" onAction="#joinEvent" prefHeight="44.0" prefWidth="173.0" style="-fx-background-color: #010101; -fx-font-weight: bold;" text="Join" textFill="#fefdfd">
                            <font>
-                              <Font name="Garamond" size="18.0" />
+                              <Font size="16.0" />
+                           </font>
+                        </TextField>
+                        <Button fx:id="joinEventButton1" layoutX="398.0" layoutY="103.0" mnemonicParsing="false" onAction="#joinEvent" prefHeight="40.0" prefWidth="173.0" style="-fx-background-color: #0d0d0d; -fx-font-weight: bold; -fx-background-radius: 5pt;" text="Join event" textFill="#fefdfd">
+
+                        <font>
+                              <Font name="Arial" size="18.0" />
                            </font>
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </Button>
-                        <TextField fx:id="joinEvent1" layoutX="68.0" layoutY="145.0" prefHeight="40.0" prefWidth="306.0" style="-fx-background-color: #b1aebb;">
+                        <TextField fx:id="joinEvent1" layoutX="68.0" layoutY="103.0" prefHeight="40.0" prefWidth="306.0" promptText="Enter an event invite code..." style="-fx-background-color: #8E3EDD; -fx-border-color: #E0DDF2; -fx-prompt-text-fill: #fefdfd; -fx-border-radius: 5pt; -fx-border-width: 1.5pt;">
                            <cursor>
                               <Cursor fx:constant="TEXT" />
                            </cursor>
+                           <font>
+                              <Font size="16.0" />
+                           </font>
                         </TextField>
-                        <Label fx:id="joinEventLabel" layoutX="68.0" layoutY="90.0" prefHeight="57.0" prefWidth="307.0" style="-fx-font-weight: bold;" text="Join Event" textFill="#fefdfd">
+                        <Label fx:id="yourEventsLabel" layoutX="68.0" layoutY="188.0" prefHeight="58.0" prefWidth="269.0" style="-fx-font-weight: bold;" text="Your Events" textFill="#fefdfd">
                            <font>
-                              <Font name="Garamond" size="24.0" />
-                           </font>
-                        </Label>
-                        <Label fx:id="createNewEventLabel" layoutX="68.0" layoutY="-1.0" prefHeight="58.0" prefWidth="309.0" style="-fx-font-weight: bold;" text="Create New Event" textFill="#fefdfd">
-                           <font>
-                              <Font name="Garamond" size="24.0" />
-                           </font>
-                        </Label>
-                        <Label fx:id="yourEventsLabel" layoutX="68.0" layoutY="187.0" prefHeight="58.0" prefWidth="269.0" style="-fx-font-weight: bold;" text="Your Events:" textFill="#fefdfd">
-                           <font>
-                              <Font name="Garamond" size="24.0" />
+                              <Font name="Arial" size="36.0" />
                            </font>
                         </Label>
                      </children>
-                     <effect>
-                        <ColorAdjust brightness="-0.11" contrast="-0.06" hue="-0.02" saturation="0.04" />
-                     </effect>
                      <opaqueInsets>
                         <Insets />
                      </opaqueInsets>

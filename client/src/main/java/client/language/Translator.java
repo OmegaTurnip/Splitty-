@@ -44,6 +44,4 @@ public class Translator {
     public static String getTranslation(String textId) {
         return currentLanguage.getTranslation(textId);
     }
-
-
 }
