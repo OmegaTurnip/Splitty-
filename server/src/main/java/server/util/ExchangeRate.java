@@ -174,7 +174,7 @@ public class ExchangeRate {
      */
     @Override
     public String toString() {
-        return "ExchangeRate on " + date + " from " + from + " to " + to + " is"
-                + rate;
+        return "ExchangeRate on " + date + " from " + from + " to " + to +
+                " is " + rate;
     }
 }

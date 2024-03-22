@@ -205,8 +205,8 @@ public class ExchangeRateFactory {
                     "(?<from>[A-Z]{3})\\.(?<to>[A-Z]{3})\\.txt$");
 
     /**
-     * Loads all {@code ExchangeRate} objects into memory from the directory
-     * {@link ExchangeRateFactory#directory}.
+     * Loads all {@code ExchangeRate} objects into memory from the {@link
+     * ExchangeRateFactory#directory}.
      *
      * @throws  IOException
      *          If an IO error occurred.
@@ -244,7 +244,7 @@ public class ExchangeRateFactory {
 
     /**
      * Loads an {@code ExchangeRate} object from the corresponding file in the
-     * directory {@link ExchangeRateFactory#directory}. Returns {@code null} if
+     * {@link ExchangeRateFactory#directory}. Returns {@code null} if
      * for any reason the {@code ExchangeRate} couldn't be fetched from that
      * file.
      *

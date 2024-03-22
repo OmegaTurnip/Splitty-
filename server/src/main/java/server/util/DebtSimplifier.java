@@ -19,6 +19,8 @@ public class DebtSimplifier {
     private final PriorityQueue<ParticipantMoneyPair> debtors =
             new PriorityQueue<>();
 
+    private ParticipantMoneyPair zeroMoneyInBaseCurrency;
+
     /**
      * Creates a new {@code DebtSimplifier} object.
      *
@@ -147,35 +149,73 @@ public class DebtSimplifier {
 
     /**
      * Simplifies the debt structure. Returns a simplified version of the debts
-     * with at most n-1 payments.
+     * with at most {@code n-1} payments.<br/>Pseudocode <i>(Khan, 2024)</i>:
+     * <pre><code>
+     *     Let G be a directed simple graph (V, E) in which the vertices are<!--
+     *     --> participants and edges are debts.
+     *     Let d be a min priority queue of debtors and their debt.
+     *     Let c be a min priority queue of creditors and their credit.
+     *     Let r be a collection of debts.
+     *
+     *     G := The unsimplified debt structure.
+     *     d := ∅
+     *     c := ∅
+     *     r := ∅
+     *
+     *     Foreach v in V(G):
+     *         Let m := Σw({u, v}) - Σw({v, u}).
+     *         If m > 0:
+     *             Enqueue m, paired with v, to c.
+     *         If m < 0:
+     *             Enqueue -m, paired with v, to d.
+     *
+     *     While c ≠ ∅:
+     *         Poll c' from c.
+     *         Poll d' from d.
+     *         Let r' := c' - d'.
+     *         Add min(c', d'), as a debt from d' to c', to r.
+     *         If r' > 0:
+     *             Enqueue r', paired with c', to c.
+     *         If r' < 0:
+     *             Enqueue -r', paired with d', to d.
+     *
+     *     r = The simplified debt structure.</code></pre>
      *
      * @param   base
-     *          The currency in which the debt structure should be expressed, a
+     *          The currency in which the debt structure should be expressed. A
      *          base currency of sorts.
      *
-     * @return  A simplified version of the debts.
+     * @return  The simplified version of the debts.
      *
      * @author  Maurits Sloof
      * @author  Paras Khan
      */
     public Collection<Debt> simplify(Currency base) {
-        final ParticipantMoneyPair ZERO_MONEY = new ParticipantMoneyPair(null,
-                                new Money(BigDecimal.ZERO, base));
         creditors.clear();
         debtors.clear();
+        setZeroMoneyInBaseCurrency(base);
 
-        for (Participant participant : participants.keySet()) {
-            Money result = normalise(calculateParticipantValue(
-                    participant, participants.get(participant)
-            ), base);
-
-            addToCorrectQueue(new ParticipantMoneyPair(participant, result),
-                    ZERO_MONEY);
-        }
+        for (Participant participant : participants.keySet())
+            enqueue(new ParticipantMoneyPair(
+                    participant,
+                    reduce(
+                            participant,
+                            participants.get(participant),
+                            base
+                    )
+            ));
 
         return collapse(base);
     }
 
+    /**
+     * Collapses the graph into a simplified one.
+     *
+     * @param   base
+     *          The {@link Currency} of the resulting graph.
+     *
+     * @return  The simplified graph.
+     */
     private LinkedList<Debt> collapse(Currency base) {
         LinkedList<Debt> result = new LinkedList<>();
 
@@ -186,43 +226,83 @@ public class DebtSimplifier {
             if (creditor == null || debtor == null)
                 throw new NullPointerException("this shouldn't happen...");
 
+            // simplify the cancel function
             if (creditor.money.equals(debtor.money)) {
                 result.add(new Debt(debtor.participant, creditor.participant,
                         creditor.money));
                 continue;
             }
 
-            collectRemainder(base, creditor, debtor, result);
+            cancel(base, creditor, debtor, result);
         }
         return result;
     }
 
-    private void collectRemainder(Currency base, ParticipantMoneyPair creditor,
-                                  ParticipantMoneyPair debtor,
-                                  LinkedList<Debt> result) {
-        BigDecimal maxPayoff = creditor.money().getAmount().min(
+    /**
+     * Cancels two debts against each other, adding the remainder to the
+     * appropriate priority queue.
+     *
+     * @param   base
+     *          The {@link Currency} of the resulting graph.
+     * @param   creditor
+     *          The creditor in the debt.
+     * @param   debtor
+     *          The debtor in the debt.
+     * @param   result
+     *          The {@link List} in which the resulting simplified version of
+     *          the debts are stored.
+     */
+    private void cancel(Currency base, ParticipantMoneyPair creditor,
+                        ParticipantMoneyPair debtor, List<Debt> result) {
+        BigDecimal max = creditor.money().getAmount().max(
+                debtor.money().getAmount());
+        BigDecimal min = creditor.money().getAmount().min(
                 debtor.money().getAmount());
 
-        Money maxPayoffMoney = new Money(maxPayoff, base);
-        Money remainderMoney = new Money(creditor.money().getAmount().max(
-                debtor.money().getAmount())
-                .subtract(maxPayoff), base);
+        Money maxPayoffMoney = new Money(min, base);
+        Money remainderMoney = new Money(max.subtract(min), base);
 
         result.add(new Debt(debtor.participant, creditor.participant,
                 maxPayoffMoney));
 
         // re-enqueue undivided money
-        if (creditor.money.equals(maxPayoffMoney)) {
+        if (creditor.money.equals(maxPayoffMoney))
             debtors.add(new ParticipantMoneyPair(debtor.participant,
                     remainderMoney));
-        } else {
+        else
             creditors.add(new ParticipantMoneyPair(creditor.participant,
                     remainderMoney));
-        }
     }
 
+    /**
+     * Reduces a Participant to its monetary value.
+     *
+     * @param   participant
+     *          The participant to reduce.
+     * @param   transactions
+     *          The transactions to and from the participant.
+     * @param   base
+     *          The {@link Currency} of the resulting monetary value.
+     *
+     * @return  The resulting monetary value as a {@link Money} object.
+     */
+    private Money reduce(Participant participant, LinkedList<Debt> transactions,
+                         Currency base) {
+        return normalise(calculate(participant, transactions), base);
+    }
 
-    private HashMap<Currency, Money> calculateParticipantValue(
+    /**
+     * Calculates the netto debt/credit of a {@code Participant} as a {@code
+     * HashMap} of the {@link Currency Currencies}.
+     *
+     * @param   participant
+     *          The participant to consider.
+     * @param   transactions
+     *          The transactions linked to {@code participant} to consider.
+     *
+     * @return  The netto debt/credit.
+     */
+    private HashMap<Currency, Money> calculate(
             Participant participant, LinkedList<Debt> transactions) {
 
         // improve debts cancelling each other in non-base currencies
@@ -247,9 +327,21 @@ public class DebtSimplifier {
         return debtsInCurrencies;
     }
 
+    /**
+     * Normalises a {@code HashMap} of {@link Money} in different {@link
+     * Currency Currencies} to a single {@code Money} object in a base {@code
+     * Currency}.
+     *
+     * @param   debt
+     *          The {@code HashMap} to consider.
+     * @param   base
+     *          The {@code Currency} of the result.
+     *
+     * @return  The resulting amount of {@code Money}.
+     */
     private Money normalise(HashMap<Currency, Money> debt, Currency base) {
         Money result = new Money(BigDecimal.ZERO, base);
-        for (Currency currency : debt.keySet()) {
+        for (Currency currency : debt.keySet())
             // add all converted money values, will raise a NullPointerException
             // if an exchange rate is unavailable, but that (throwing an
             // exception) is expected behaviour
@@ -258,24 +350,34 @@ public class DebtSimplifier {
                             .convert(debt.get(currency))
                             .getAmount()
             ));
-        }
         return result;
     }
 
-    private void addToCorrectQueue(ParticipantMoneyPair participantMoneyPair,
-                                   ParticipantMoneyPair pivot) {
-        if (participantMoneyPair.compareTo(pivot) < 0) {
-            // result is negative, aka a debt
+    /**
+     * Enqueues a participant in the correct priority queue.
+     *
+     * @param   participantMoneyPair
+     *          The participant to enqueue.
+     */
+    private void enqueue(ParticipantMoneyPair participantMoneyPair) {
+        if (participantMoneyPair.compareTo(zeroMoneyInBaseCurrency) < 0) {
+            // result is negative, aka a debt.
             // also, make the debt positive
             participantMoneyPair.money.setAmount(
                     participantMoneyPair.money.getAmount().negate());
             debtors.add(participantMoneyPair);
-        } else if (participantMoneyPair.compareTo(pivot) > 0) {
+        }
+        else if (participantMoneyPair.compareTo(zeroMoneyInBaseCurrency) > 0) {
             // result is positive, aka credits
             creditors.add(participantMoneyPair);
         }
         // else, remove the participant from the calculation (everything cancels
         // out)
+    }
+
+    private void setZeroMoneyInBaseCurrency(Currency base) {
+        this.zeroMoneyInBaseCurrency = new ParticipantMoneyPair(null,
+                new Money(BigDecimal.ZERO, base));
     }
 
     private record ParticipantMoneyPair(Participant participant, Money money)
@@ -296,7 +398,7 @@ public class DebtSimplifier {
 
         private final Participant from;
         private final Participant to;
-        private Money amount;
+        private final Money amount;
 
         /**
          * Creates an object storing the debt between two {@link Participant}s.
