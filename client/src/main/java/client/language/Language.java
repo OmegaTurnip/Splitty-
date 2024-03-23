@@ -145,6 +145,16 @@ public class Language {
     }
 
     /**
+     * Gets the native name of this language, falling back on the language code
+     * if no name was specified.
+     *
+     * @return  The native language name.
+     */
+    public String getNativeName() {
+        return this.getTranslation(Text.NativeLanguageName);
+    }
+    
+    /**
      * Returns the translation of a piece of text in this language.
      * If this language doesn't have a translation, it will try to fall back on
      * the english translation, surrounded by square brackets.
