@@ -21,7 +21,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
@@ -45,9 +44,6 @@ public class StartUpCtrl implements Initializable, TextPage {
 
     @FXML
     private Label yourEventsLabel;
-
-    @FXML
-    private AnchorPane TopBG;
 
     @FXML
     private TextField newEvent1;

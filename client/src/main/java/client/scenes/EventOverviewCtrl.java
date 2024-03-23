@@ -2,6 +2,7 @@ package client.scenes;
 
 
 
+import client.language.Language;
 import client.language.Text;
 import client.language.TextPage;
 import client.language.Translator;
@@ -12,19 +13,27 @@ import commons.Event;
 import commons.Participant;
 import commons.Transaction;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.io.IOException;
-import java.util.List;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.ResourceBundle;
 
 
-public class EventOverviewCtrl implements TextPage {
+public class EventOverviewCtrl implements TextPage, Initializable {
 
     private Event event;
 
     @FXML
     private Label eventNameLabel;
+    @FXML
+    private Label participantsLabel;
+    @FXML
+    private Label expensesLabel;
     @FXML
     private Menu languages;
     @FXML
@@ -55,44 +64,42 @@ public class EventOverviewCtrl implements TextPage {
         this.server = server;
         this.mainCtrl = mainCtrl;
     }
+
     /**
-     * Refreshes all the text
+     * Initialise the page.
+     * @param location
+     * The location used to resolve relative paths for the root object, or
+     * {@code null} if the location is not known.
+     *
+     * @param resources
+     * The resources used to localize the root object, or {@code null} if
+     * the root object was not localized.
      */
-    public void refreshText(){
-        refreshMenu();
-        refreshTextEventOverview();
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        fetchLanguages();
+    }
+
+    /**
+     * Refreshes the page.
+     */
+    public void refresh() {
+        refreshText();
     }
     /**
      * Refreshes the text of EventOverview
      */
-    public void refreshTextEventOverview() {
-//        inviteCodeButton.setText(
-//                Translator.getTranslation(Text.EventOverview.Buttons.SendInvite)
-//        );
-//        participants.setText(
-//                Translator.getTranslation
-//                        (Text.EventOverview.Labels.Participants));
-//        editParticipant.setText(
-//                Translator.getTranslation(Text.EventOverview.Buttons.Edit));
-//        addParticipant.setText(
-//                Translator.getTranslation(Text.EventOverview.Buttons.Add));
-//        settleDebts.setText(
-//                Translator.getTranslation
-//                        (Text.EventOverview.Buttons.SettleDebts));
-//        addExpense.setText(
-//                Translator.getTranslation(Text.EventOverview.Buttons.AddExpense)
-//        );
-//
-//        expenses.setText(
-//                Translator.getTranslation(Text.EventOverview.Labels.Expenses));
+    public void refreshText() {
+        participantsLabel.setText(Translator
+                .getTranslation(Text.EventOverview.participantsLabel));
+        expensesLabel.setText(Translator
+                .getTranslation(Text.EventOverview.expensesLabel));
+        settleDebtsButton.setText(Translator
+                .getTranslation(Text.EventOverview.Buttons.settleDebtsButton));
+        sendInviteButton.setText(Translator
+                .getTranslation(Text.EventOverview.Buttons.sendInviteButton));
 
         eventNameLabel.setText(event.getEventName());
-    }
-
-    /**
-     * Refreshes text of everything in the menu
-     */
-    public void refreshMenu(){
     }
     /**
      * Add participant to event
@@ -107,6 +114,42 @@ public class EventOverviewCtrl implements TextPage {
      */
     public void addExpense() {
 
+    }
+
+    /**
+     * Fetch the languages and add to languages drop down menu.
+     */
+    private void fetchLanguages() {
+        HashMap<String, Language> languages = Language.languages;
+
+        for (String langKey : languages.keySet()) {
+            MenuItem item = new MenuItem(langKey);
+
+            item.setOnAction(event -> {
+                setLanguage(langKey);
+            });
+
+            Image image = new Image(languages
+                    .get(langKey).getIconFile().toURI().toString());
+            ImageView imageView = new ImageView(image);
+            imageView.setFitHeight(20);
+            imageView.setFitWidth(20);
+            item.setGraphic(imageView);
+            this.languages.getItems().add(item);
+        }
+    }
+
+    /**
+     * Set user language.
+     * @param langKey The language to set.
+     */
+    private void setLanguage(String langKey) {
+        try {
+            UserConfig.get().setUserLanguage(langKey);
+            refreshText();
+        }catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 //    /**
@@ -161,4 +204,6 @@ public class EventOverviewCtrl implements TextPage {
     public void setEvent(Event event) {
         this.event = event;
     }
+
+
 }
