@@ -61,7 +61,7 @@
     </MenuBar>
     <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="374.0" prefWidth="426.0" VBox.vgrow="ALWAYS">
       <children>
-        <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" style="&#10;" text="EventTitle" textAlignment="CENTER" textFill="#565656" wrapText="false">
+        <Label fx:id="eventTitle" alignment="CENTER" layoutX="14.0" layoutY="14.0" style="&#10;" text="EventTitle" textAlignment="CENTER" textFill="#565656" wrapText="false">
           <font>
             <Font name="System Bold" size="18.0" />
           </font>

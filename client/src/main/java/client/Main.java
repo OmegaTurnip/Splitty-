@@ -19,9 +19,11 @@ import static com.google.inject.Guice.createInjector;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import client.language.Translator;
 import client.scenes.*;
 import com.google.inject.Injector;
 import javafx.application.Application;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -49,13 +51,30 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws IOException {
-        var startUp = FXML.load(StartUpCtrl.class,
-                "client", "scenes", "StartUp.fxml");
-        var overview = FXML.load(EventOverviewCtrl.class,
-                "client", "scenes", "EventOverview.fxml");
-        var add = FXML.load(AddParticipantCtrl.class, "client", "scenes",
-                "AddParticipant.fxml");
-        var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(primaryStage, overview, add, startUp);
+        try {
+            var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+            mainCtrl.setPrimaryStage(primaryStage);
+            //I need to initialise this stage first before anything else,
+            // so that is why it is here.
+            var startUp = FXML.load(StartUpCtrl.class,
+                    "client", "scenes", "StartUp.fxml");
+            var overview = FXML.load(EventOverviewCtrl.class,
+                    "client", "scenes", "EventOverview.fxml");
+            var add = FXML.load(AddParticipantCtrl.class, "client", "scenes",
+                    "AddParticipant.fxml");
+            mainCtrl.initialize(primaryStage, overview, add, startUp);
+        } catch (RuntimeException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(Translator
+                    .getTranslation(client.language
+                            .Text.Alert.serverDownTitle));
+            alert.setHeaderText(null);
+            alert.setContentText(Translator
+                    .getTranslation(client.language
+                            .Text.Alert.serverDownContent));
+            alert.showAndWait();
+        }
+
+
     }
 }

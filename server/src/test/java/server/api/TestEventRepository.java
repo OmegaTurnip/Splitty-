@@ -383,4 +383,14 @@ public class TestEventRepository implements EventRepository {
     public List<Event> findAllByInviteCodeIsIn(List<String> inviteCodes) {
         return null;
     }
+
+    /**
+     * Find event by invite code
+     * @param inviteCode The invite code
+     * @return The event
+     */
+    @Override
+    public Event findByInviteCode(String inviteCode) {
+        return null;
+    }
 }

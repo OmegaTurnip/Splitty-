@@ -8,4 +8,6 @@ public interface TextPage {
      */
     void refreshText();
 
+
+
 }

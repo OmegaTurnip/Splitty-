@@ -24,13 +24,17 @@ class EventTest {
   @BeforeEach
   void setup() {
     testEvent = new Event("Josh's Birthday Party");
+    testEvent.setId(1L);
 
     LocalDate testDate1 = LocalDate.of(2023, 7, 23);
     testEvent.setEventCreationDate(testDate1);
 
     testParticipant1 = new Participant("Josh", testEvent);
+    testParticipant1.setId(1L);
     testParticipant2 = new Participant("Amy", testEvent);
+    testParticipant2.setId(2L);
     testParticipant3 = new Participant("Rizwan", testEvent);
+    testParticipant3.setId(3L);
 
         List<Participant> testParticipants1 = new ArrayList<>();
         List<Participant> testParticipants2 = new ArrayList<>();
@@ -49,7 +53,9 @@ class EventTest {
     testEvent.setParticipants(testAllParticipants1);
 
     testTransaction1 = new Transaction(testParticipant1, "Drinks",400, testParticipants1, testEvent, new Tag("food", "blue"));
+    testTransaction1.setId(1L);
     testTransaction2 = new Transaction(testParticipant2, "Lunch", 350, testParticipants2, testEvent, new Tag("food", "blue"));
+    testTransaction2.setId(2L);
     testTransaction1.setDate(testDate1);
     testTransaction2.setDate(testDate1);
     Collection<Transaction> testTransactions1 = new ArrayList<>();

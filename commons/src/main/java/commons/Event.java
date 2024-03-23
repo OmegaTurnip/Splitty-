@@ -1,6 +1,7 @@
 package commons;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -20,12 +21,14 @@ public class Event {
     private String eventName;
     private LocalDate eventCreationDate;
     private String inviteCode;
+    @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
     private Collection<Transaction> transactions;
+    @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
     private Collection<Participant> participants;
     private LocalDateTime lastActivity;
-
+    @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
     private List<Tag> tags;
 
@@ -119,11 +122,19 @@ public class Event {
         participants.remove(participant);
     }
     /**
-     * Setter method.
+     * Setter method (for Jackson).
      *
      * @param participants .
      */
     public void setParticipants(Collection<Participant> participants) {
+        this.participants = participants;
+    }
+
+    /**
+     * Edit participants (with updateLastActivity)
+     * @param participants The participants
+     */
+    public void editParticipants(Collection<Participant> participants) {
         this.participants = participants;
         updateLastActivity();
     }
@@ -151,11 +162,19 @@ public class Event {
     }
 
     /**
-     * Setter method
+     * Setter method (for Jackson).
      *
      * @param eventName .
      */
     public void setEventName(String eventName) {
+        this.eventName = eventName;
+    }
+
+    /**
+     * Edit event name (with updateLastActivity)
+     * @param eventName The name of the event
+     */
+    public void editEventName(String eventName) {
         this.eventName = eventName;
         updateLastActivity();
     }
@@ -170,11 +189,19 @@ public class Event {
     }
 
     /**
-     * Setter for eventCreationDate
+     * Setter for eventCreationDate (for Jackson).
      *
      * @param eventCreationDate the date to set
      */
     public void setEventCreationDate(LocalDate eventCreationDate) {
+        this.eventCreationDate = eventCreationDate;
+    }
+
+    /**
+     * Edit event creation date (with updateLastActivity)
+     * @param eventCreationDate The date of the event
+     */
+    public void editEventCreationDate(LocalDate eventCreationDate) {
         this.eventCreationDate = eventCreationDate;
         updateLastActivity();
     }
@@ -189,11 +216,19 @@ public class Event {
     }
 
     /**
-     * Setter method.
+     * Setter method (for Jackson).
      *
      * @param inviteCode .
      */
     public void setInviteCode(String inviteCode) {
+        this.inviteCode = inviteCode;
+    }
+
+    /**
+     * Edit invite code (with updateLastActivity)
+     * @param inviteCode The invite code
+     */
+    public void editInviteCode(String inviteCode) {
         this.inviteCode = inviteCode;
         updateLastActivity();
     }
@@ -208,11 +243,19 @@ public class Event {
     }
 
     /**
-     * Setter method.
+     * Setter method (for Jackson).
      *
      * @param transactions .
      */
     public void setTransactions(Collection<Transaction> transactions) {
+        this.transactions = transactions;
+    }
+
+    /**
+     * Edit transactions (with updateLastActivity)
+     * @param transactions The transactions
+     */
+    public void editTransactions(Collection<Transaction> transactions) {
         this.transactions = transactions;
         updateLastActivity();
     }
@@ -250,13 +293,12 @@ public class Event {
     }
 
     /**
-     * Setter for lastActivity
+     * Setter for lastActivity (for Jackson)
      *
      * @param lastActivity the LocalDateTime to set it to
      */
     public void setLastActivity(LocalDateTime lastActivity) {
         this.lastActivity = lastActivity;
-        updateLastActivity();
     }
 
     /**
@@ -271,7 +313,7 @@ public class Event {
      *
      * @return lastActivity as a String
      */
-    public String getStringOfLastActivity() {
+    public String stringOfLastActivity() {
         return lastActivity.getDayOfMonth() + "/" +
                 lastActivity.getMonthValue() + '/' +
                 lastActivity.getYear() + ' ' +
@@ -290,13 +332,7 @@ public class Event {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Event event = (Event) o;
-        return Objects.equals(eventName, event.eventName)
-                && Objects.equals(eventCreationDate, event.eventCreationDate)
-                && Objects.equals(inviteCode, event.inviteCode)
-                && Objects.equals(transactions, event.transactions)
-                && Objects.equals(lastActivity, event.lastActivity)
-                && Objects.equals(tags, event.tags)
-                && Objects.equals(id, event.id);
+        return Objects.equals(id, event.id);
     }
 
     /**
@@ -306,8 +342,7 @@ public class Event {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(eventName, eventCreationDate, inviteCode,
-                transactions, lastActivity, id);
+        return Objects.hash(id);
     }
 
     /**
