@@ -6,9 +6,6 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
@@ -17,11 +14,7 @@
    <top>
       <MenuBar prefWidth="917.0" BorderPane.alignment="CENTER">
         <menus>
-          <Menu fx:id="languages" mnemonicParsing="false" text="Languages">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Close" />
-            </items>
-          </Menu>
+          <Menu fx:id="languages" mnemonicParsing="false" text="Languages" />
         </menus>
       </MenuBar>
    </top>
@@ -50,27 +43,23 @@
          </center>
          <top>
             <BorderPane prefHeight="74.0" prefWidth="331.0" BorderPane.alignment="CENTER">
-               <right>
-                  <AnchorPane prefHeight="48.0" prefWidth="0.0" style="-fx-background-color: #8e3edd;" BorderPane.alignment="CENTER">
-                     <children>
-                        <ImageView fx:id="addExpenseButton" fitHeight="19.0" fitWidth="97.0" layoutX="12.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true" styleClass="button">
-                           <image>
-                              <Image url="file:/C:/Users/super/oopp-pkhan/oopp-team-70/client/src/main/resources/client/scenes/plus.png" />
-                           </image>
-                        </ImageView>
-                     </children>
-                  </AnchorPane>
-               </right>
-               <bottom>
-                  <ChoiceBox fx:id="expensesDropDown" prefHeight="26.0" prefWidth="1600.0" style="-fx-background-color: #B89AE1;" BorderPane.alignment="CENTER" />
-               </bottom>
                <center>
-                  <Label fx:id="expensesLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="48.0" prefWidth="289.0" style="-fx-background-color: #8e3edd;" text="Expenses" textAlignment="CENTER" textFill="#fefdfd" BorderPane.alignment="CENTER">
+                  <Label fx:id="expensesLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="48.0" prefWidth="922.0" style="-fx-background-color: #8e3edd;" text="Expenses" textAlignment="CENTER" textFill="#fefdfd" BorderPane.alignment="CENTER">
                      <font>
                         <Font name="Garamond" size="23.0" />
                      </font>
                   </Label>
                </center>
+               <bottom>
+                  <BorderPane prefHeight="0.0" prefWidth="331.0" BorderPane.alignment="CENTER">
+                     <center>
+                        <ChoiceBox fx:id="expensesDropDown" prefHeight="26.0" prefWidth="1600.0" style="-fx-background-color: #B89AE1;" BorderPane.alignment="CENTER" />
+                     </center>
+                     <right>
+                        <Button mnemonicParsing="false" style="-fx-background-color: #B89AE1;" text="+" BorderPane.alignment="CENTER" />
+                     </right>
+                  </BorderPane>
+               </bottom>
             </BorderPane>
          </top>
       </BorderPane>
@@ -81,7 +70,7 @@
             <ListView fx:id="participantsListView" prefHeight="414.0" prefWidth="231.0" styleClass="bottom-BG" BorderPane.alignment="CENTER" />
          </center>
          <top>
-            <BorderPane prefHeight="74.0" prefWidth="231.0" BorderPane.alignment="CENTER">
+            <BorderPane prefHeight="74.0" prefWidth="231.0" style="-fx-background-color: #8e3edd;" BorderPane.alignment="CENTER">
                <center>
                   <Label fx:id="participantsLabel" alignment="CENTER" prefHeight="74.0" prefWidth="262.0" style="-fx-background-color: #8e3edd;" text="Participants" textFill="#fefdfd" BorderPane.alignment="CENTER">
                      <font>
@@ -89,17 +78,9 @@
                      </font>
                   </Label>
                </center>
-               <right>
-                  <AnchorPane prefHeight="142.0" prefWidth="46.0" style="-fx-background-color: #8e3edd;" BorderPane.alignment="CENTER">
-                     <children>
-                        <ImageView fx:id="addParticipantButton" fitHeight="19.0" fitWidth="23.0" layoutX="14.0" layoutY="28.0" onMouseClicked="#addParticipant" pickOnBounds="true" preserveRatio="true" styleClass="button">
-                           <image>
-                              <Image url="file:/C:/Users/super/oopp-pkhan/oopp-team-70/client/src/main/resources/client/scenes/plus.png" />
-                           </image>
-                        </ImageView>
-                     </children>
-                  </AnchorPane>
-               </right>
+               <bottom>
+                  <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="1600.0" style="-fx-background-color: #B89AE1;" text="+" BorderPane.alignment="CENTER" />
+               </bottom>
             </BorderPane>
          </top>
       </BorderPane>
