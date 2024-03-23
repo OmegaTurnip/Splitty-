@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="687.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddExpenseCtrl">
+    <children>
+        <MenuBar VBox.vgrow="NEVER">
+            <menus>
+                <Menu fx:id="languages" mnemonicParsing="false" text="Languages">
+<!--                    <items>-->
+<!--                        <CheckMenuItem fx:id="english" mnemonicParsing="false" onAction="#setEnglish" text="English" />-->
+<!--                        <CheckMenuItem fx:id="dutch" mnemonicParsing="false" onAction="#setDutch" text="Dutch" />-->
+<!--                        <CheckMenuItem fx:id="german" mnemonicParsing="false" onAction="#setGerman" text="German" />-->
+<!--                    </items>-->
+                </Menu>
+                <Menu fx:id="rto" mnemonicParsing="false" text="Return to Overview" />
+                <Menu fx:id="close" mnemonicParsing="false" text="Close" />
+            </menus>
+        </MenuBar>
+        <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="238.0" prefWidth="287.0" style="-fx-background-color: #8E3EDD;" VBox.vgrow="ALWAYS">
+            <children>
+                <TextField fx:id="usernameTextField" layoutX="86.0" layoutY="45.0" prefHeight="26.0" prefWidth="186.0" promptText="Enter name of the expense..." style="-fx-background-color: #8E3EDD; -fx-background-radius: 5pt; -fx-border-width: 1.5pt; -fx-border-color: #E0DDF2; -fx-border-radius: 5pt; -fx-prompt-text-fill: #fefdfd;" />
+                <Button fx:id="cancel" cancelButton="true" layoutX="151.0" layoutY="208.0" mnemonicParsing="false" onAction="#cancel" prefHeight="26.0" prefWidth="55.0" style="-fx-background-color: #0d0d0d;" text="Cancel" textFill="#fefdfd" />
+<!--                <Button fx:id="addExpense" cancelButton="true" layoutX="217.0" layoutY="208.0" mnemonicParsing="false" onAction="#addExpense" prefHeight="26.0" prefWidth="55.0" style="-fx-background-color: #0d0d0d;" text="Add" textFill="#fefdfd" />-->
+                <TextField fx:id="emailTextField" layoutX="85.0" layoutY="85.0" prefHeight="29.0" prefWidth="138.0" promptText="Enter price..." style="-fx-background-color: #8E3EDD; -fx-background-radius: 5pt; -fx-border-width: 1.5pt; -fx-border-color: #E0DDF2; -fx-border-radius: 5pt; -fx-prompt-text-fill: #fefdfd;" />
+                <TextField fx:id="ibanTextField" layoutX="85.0" layoutY="125.0" prefHeight="26.0" prefWidth="186.0" style="-fx-background-color: #8E3EDD; -fx-background-radius: 5pt; -fx-border-width: 1.5pt; -fx-border-color: #E0DDF2; -fx-border-radius: 5pt; -fx-prompt-text-fill: #fefdfd;" />
+                <TextField fx:id="bicTextField" layoutX="84.0" layoutY="165.0" prefHeight="26.0" prefWidth="186.0" style="-fx-background-color: #8E3EDD; -fx-background-radius: 5pt; -fx-border-width: 1.5pt; -fx-border-color: #E0DDF2; -fx-border-radius: 5pt; -fx-prompt-text-fill: #fefdfd;" />
+            <ChoiceBox layoutX="232.0" layoutY="87.0" prefHeight="25.0" prefWidth="38.0" style="-fx-background-color: #0d0d0d;">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </ChoiceBox>
+            </children></AnchorPane>
+    </children>
+</VBox>
