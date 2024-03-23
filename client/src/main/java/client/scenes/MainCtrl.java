@@ -50,7 +50,8 @@ public class MainCtrl {
         this.startUp = new Scene(startUp.getValue());
         this.startUp.getStylesheets().add(getClass()
                 .getResource("style.css").toExternalForm());
-
+        this.overview.getStylesheets().add(getClass()
+                .getResource("style.css").toExternalForm());
         this.addParticipantCtrl = add.getKey();
         this.add = new Scene(add.getValue());
 
@@ -82,7 +83,7 @@ public class MainCtrl {
      */
     public void showEventOverview(Event event) {
         overviewCtrl.setEvent(event);
-        this.overviewCtrl.refreshText();
+        overviewCtrl.refresh();
         primaryStage.setTitle("Event Overview");
         primaryStage.setScene(overview);
     }

@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="598.0" prefWidth="762.0" stylesheets="file:/C:/Users/super/oopp-pkhan/oopp-team-70/client/src/main/resources/client/scenes/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EventOverviewCtrl">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="598.0" prefWidth="762.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EventOverviewCtrl">
    <top>
       <MenuBar prefWidth="917.0" BorderPane.alignment="CENTER">
         <menus>
@@ -56,7 +56,7 @@
                         <ChoiceBox fx:id="expensesDropDown" prefHeight="26.0" prefWidth="1600.0" style="-fx-background-color: #B89AE1;" BorderPane.alignment="CENTER" />
                      </center>
                      <right>
-                        <Button fx:id="addExpenseButton" mnemonicParsing="false" style="-fx-background-color: #B89AE1;" text="+" BorderPane.alignment="CENTER" />
+                        <Button fx:id="addExpenseButton" mnemonicParsing="false" onAction="#addExpense" style="-fx-background-color: #B89AE1;" text="+" BorderPane.alignment="CENTER" />
                      </right>
                   </BorderPane>
                </bottom>
@@ -79,7 +79,7 @@
                   </Label>
                </center>
                <bottom>
-                  <Button fx:id="addParticipantButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="1600.0" style="-fx-background-color: #B89AE1;" text="+" BorderPane.alignment="CENTER" />
+                  <Button fx:id="addParticipantButton" mnemonicParsing="false" onAction="#addParticipant" prefHeight="26.0" prefWidth="1600.0" style="-fx-background-color: #B89AE1;" text="+" BorderPane.alignment="CENTER" />
                </bottom>
             </BorderPane>
          </top>

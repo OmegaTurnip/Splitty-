@@ -3,7 +3,10 @@ package client.scenes;
 
 
 import client.language.Language;
-import client.language.Text;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.layout.HBox;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
@@ -78,12 +81,21 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         fetchLanguages();
+        participantsListView.setCellFactory(param -> new ParticipantCellFactory());
+        refresh();
     }
 
     /**
      * Refreshes the page.
      */
     public void refresh() {
+        if (event != null && event.getParticipants().isEmpty()) {
+            event.addParticipant("test");
+            ObservableList<Participant> observableParticipants =
+                    FXCollections.observableArrayList(event.getParticipants());
+            participantsListView.setItems(observableParticipants);
+        }
+
         refreshText();
     }
     /**
@@ -91,22 +103,25 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      */
     public void refreshText() {
         participantsLabel.setText(Translator
-                .getTranslation(Text.EventOverview.participantsLabel));
+                .getTranslation(client.language
+                        .Text.EventOverview.participantsLabel));
         expensesLabel.setText(Translator
-                .getTranslation(Text.EventOverview.expensesLabel));
+                .getTranslation(client.language
+                        .Text.EventOverview.expensesLabel));
         settleDebtsButton.setText(Translator
-                .getTranslation(Text.EventOverview.Buttons.settleDebtsButton));
+                .getTranslation(client.language
+                        .Text.EventOverview.Buttons.settleDebtsButton));
         sendInviteButton.setText(Translator
-                .getTranslation(Text.EventOverview.Buttons.sendInviteButton));
+                .getTranslation(client.language
+                        .Text.EventOverview.Buttons.sendInviteButton));
 
-        eventNameLabel.setText(event.getEventName());
+        if (event != null ) eventNameLabel.setText(event.getEventName());
     }
     /**
      * Add participant to event
      */
     public void addParticipant(){
         mainCtrl.showAddParticipant(event);
-        refreshText();
     }
 
     /**
@@ -152,49 +167,34 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         }
     }
 
-//    /**
-//     * Still in construction (planning to add name to list of participants)
-//     * @param username name to be added to list
-//     */
-//    public void displayName(String username){
-//        this.participantsList.setText(username);
-//    }
-//
-//    /**
-//     * Sets language to Dutch
-//     */
-//    public void setDutch(){
-//        try {
-//            UserConfig.get().setUserLanguage("nld");
-//            refreshText();
-//        }catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    /**
-//     * Sets language to English
-//     */
-//    public void setEnglish(){
-//        try {
-//            UserConfig.get().setUserLanguage("eng");
-//            refreshText();
-//        }catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    /**
-//     * Sets language to German
-//     */
-//    public void setGerman(){
-//        try {
-//            UserConfig.get().setUserLanguage("deu");
-//            refreshText();
-//        }catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    private class ParticipantCellFactory extends ListCell<Participant> {
+
+        private FXMLLoader loader;
+        @Override
+        protected void updateItem(Participant item, boolean empty) {
+            super.updateItem(item, empty);
+
+            if (item == null || empty) {
+                setGraphic(null);
+                setText(null);
+            } else {
+                if (loader == null) {
+                    loader = new FXMLLoader(getClass().getResource("/client/scenes/ParticipantCell.fxml"));
+                    try {
+                        loader.load();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                ParticipantCellController controller = loader.getController();
+                controller.setParticipantCellLabelText(item.getName());
+                setText(null);
+                setGraphic(loader.getRoot());
+            }
+
+        }
+    }
+
 
 
     /**
