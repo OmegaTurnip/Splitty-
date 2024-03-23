@@ -2,6 +2,7 @@ package server.util;
 
 import commons.Money;
 import commons.Participant;
+import commons.Transaction;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -12,6 +13,7 @@ public class DebtSimplifier {
     private final ExchangeRateFactory exchangeRateFactory;
 
     private final HashMap<Participant, LinkedList<Debt>> participants;
+    private final HashMap<Participant, Integer> centsPayedExtra;
 
     // these are automatically min-heaps, yay!
     private final PriorityQueue<ParticipantMoneyPair> creditors =
@@ -66,13 +68,16 @@ public class DebtSimplifier {
             throw new IllegalArgumentException("participants is empty");
 
         this.participants = new HashMap<>();
+        this.centsPayedExtra = new HashMap<>();
         this.base = base;
         this.zeroMoneyInBaseCurrency = new ParticipantMoneyPair(null,
-                new Money(BigDecimal.ZERO, base));
+                new Money(BigDecimal.ZERO, base)
+        );
         this.cent =
                 BigDecimal.ONE.movePointLeft(base.getDefaultFractionDigits());
         for (Participant participant : participants) {
             this.participants.put(participant, new LinkedList<>());
+            this.centsPayedExtra.put(participant, 0);
         }
         this.exchangeRateFactory = exchangeRateFactory;
     }
@@ -106,10 +111,37 @@ public class DebtSimplifier {
     }
 
     /**
+     * Adds a transaction that should be taken into account in the calculation.
+     * Throws {@link NullPointerException} if the debt is {@code null} and
+     * {@link IllegalArgumentException} if the debt is between a participant not
+     * present in the calculation.
+     *
+     * @param   transaction
+     *          A transaction that should be taken into account in the
+     *          calculation.
+     */
+    public void addDebt(Transaction transaction) {
+        if (transaction == null)
+            throw new NullPointerException();
+
+        if (transaction.isPayoff())
+            addDebt(new Debt(
+                    // swap payer and receiver
+                    transaction.getParticipants().getFirst(),
+                    transaction.getPayer(),
+                    transaction.getAmount()
+            ));
+        else
+            divideDebts(
+                    transaction.getPayer(),
+                    transaction.getParticipants(),
+                    transaction.getAmount()
+            );
+    }
+
+    /**
      * Divides the specified amount over the debtors, paid by the creditor.
-     * Distributes remainder randomly (but deterministically) as distributing it
-     * properly is out of the scope of this project as it is too hard to
-     * implement in combination with multiple currencies.
+     * Distributes remainder evenly.
      *
      * @param   creditor
      *          The participant to which the debt should be paid.
@@ -124,8 +156,6 @@ public class DebtSimplifier {
         Set<Participant> uniqueDebtors =
                 validateParameters(creditor, debtors, amount);
 
-        LinkedList<Participant> debtorsShadow = new LinkedList<>(debtors);
-
         Money convertedAmount = convertToBase(amount);
         BigDecimal remainder = getRemainder(convertedAmount, uniqueDebtors);
         BigDecimal fraction = getFraction(convertedAmount, remainder,
@@ -134,19 +164,59 @@ public class DebtSimplifier {
         int cents = remainder.movePointRight(
                 base.getDefaultFractionDigits()).intValue();
 
-        Random random = new Random(42);
+        List<Participant> extraCentPayers =
+                getNextExtraCentPayers(cents, uniqueDebtors);
 
-        for (int i = 0; i < uniqueDebtors.size(); i++) {
-            Participant debtor =
-                    debtorsShadow.remove(random.nextInt(debtorsShadow.size()));
+        for (Participant debtor : uniqueDebtors) {
             if (!Objects.equals(creditor, debtor))  // the creditor already paid
                 addDebt(new Debt(debtor, creditor,
-                        new Money(i < cents ? fraction.add(cent) : fraction,
-                                base)
+                        new Money(
+                                extraCentPayers.contains(debtor) ?
+                                        fraction.add(cent) : fraction,
+                                base
+                        )
                 ));
         }
     }
 
+    private record ParticipantCentPair(Participant participant, int cents)
+            implements Comparable<ParticipantCentPair> {
+        @Override
+        public int compareTo(ParticipantCentPair other) {
+            return Integer.compare(this.cents, other.cents);
+        }
+    }
+
+    private List<Participant> getNextExtraCentPayers(int extraCents,
+                                                    Set<Participant> debtors) {
+        List<ParticipantCentPair> participantCentHistory =
+                debtors.stream()
+                        // quick and dirty hack to make result deterministic
+                        .sorted(Comparator.comparingLong(Participant::getId))
+                        .map(d -> new ParticipantCentPair(d,
+                                centsPayedExtra.get(d)))
+                        .toList();
+
+        PriorityQueue<ParticipantCentPair> cents =
+                new PriorityQueue<>(participantCentHistory);
+
+        List<Participant> result = new LinkedList<>();
+
+        for (int i = 0; i < extraCents; i++) {
+            ParticipantCentPair nextParticipant = cents.poll();
+
+            if (nextParticipant == null)
+                throw new NullPointerException("this shouldn't happen");
+
+            Participant participant = nextParticipant.participant;
+
+            centsPayedExtra.put(participant,
+                    centsPayedExtra.get(participant) + 1);
+            result.add(nextParticipant.participant);
+        }
+
+        return result;
+    }
 
     private static BigDecimal getFraction(Money convertedAmount,
                                           BigDecimal remainder,
@@ -389,7 +459,6 @@ public class DebtSimplifier {
             return this.money.compareTo(other.money());
         }
     }
-
 
     /**
      * This class is called {@code Debt} and not {@code Transaction} to prevent
