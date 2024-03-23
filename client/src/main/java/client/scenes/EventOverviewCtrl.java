@@ -134,6 +134,11 @@ public class EventOverviewCtrl implements TextPage {
         refreshText();
     }
 
+    public void addExpense(){
+        mainCtrl.showAddExpense(event);
+        refreshText();
+    }
+
     /**
      * Still in construction (planning to add name to list of participants)
      * @param username name to be added to list
@@ -185,5 +190,10 @@ public class EventOverviewCtrl implements TextPage {
      */
     public void setEvent(Event event) {
         this.event = event;
+    }
+
+    public void returnToOverview() {
+        mainCtrl.showStartUp();
+        refreshText();
     }
 }

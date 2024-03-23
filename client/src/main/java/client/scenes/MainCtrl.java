@@ -29,7 +29,9 @@ public class MainCtrl {
     private Scene overview;
 
     private AddParticipantCtrl addParticipantCtrl;
+    private AddExpenseCtrl addExpenseCtrl;
     private Scene add;
+    private Scene addExpense;
     private StartUpCtrl startUpCtrl;
     private Scene startUp;
 
@@ -42,7 +44,7 @@ public class MainCtrl {
     public void initialize(
             Stage primaryStage, Pair<EventOverviewCtrl, Parent> overview,
             Pair<AddParticipantCtrl, Parent> add,
-            Pair<StartUpCtrl, Parent> startUp) {
+            Pair<StartUpCtrl, Parent> startUp, Pair<AddExpenseCtrl, Parent> addExpense) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
@@ -53,7 +55,8 @@ public class MainCtrl {
 
         this.addParticipantCtrl = add.getKey();
         this.add = new Scene(add.getValue());
-
+        this.addExpenseCtrl = addExpense.getKey();
+        this.addExpense = new Scene(addExpense.getValue());
 
 
         showStartUp();
@@ -121,5 +124,12 @@ public class MainCtrl {
      */
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
+    }
+
+    public void showAddExpense(Event event) {
+        addExpenseCtrl.setEvent(event);
+        addExpenseCtrl.refreshText();
+        primaryStage.setTitle("Splitty!");
+        primaryStage.setScene(addExpense);
     }
 }
