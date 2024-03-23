@@ -54,6 +54,9 @@ public class Money implements java.io.Serializable, Comparable<Money> {
      *          BigDecimal} instance.
      */
     public void setAmount(BigDecimal amount) {
+        if (amount == null)
+            throw new NullPointerException("amount is null");
+
         this.amount = amount.setScale(currency.getDefaultFractionDigits(),
                                         RoundingMode.HALF_UP);
     }
@@ -77,6 +80,8 @@ public class Money implements java.io.Serializable, Comparable<Money> {
      * @return  The formatted representation of {@code this}.
      */
     public String format(Locale locale) {
+        if (locale == null)
+            throw new NullPointerException("locale is null");
         NumberFormat format = NumberFormat.getCurrencyInstance(locale);
         format.setCurrency(currency);
         format.setMaximumFractionDigits(currency.getDefaultFractionDigits());
@@ -97,6 +102,8 @@ public class Money implements java.io.Serializable, Comparable<Money> {
      * @return  A new {@code Money} object.
      */
     static Money fromLong(long amount, String currency) {
+        if (currency == null)throw new NullPointerException("currency is null");
+
         Currency currency1 = Currency.getInstance(currency);
         return new Money(
                 new BigDecimal(amount)
@@ -120,6 +127,9 @@ public class Money implements java.io.Serializable, Comparable<Money> {
      */
     @Override
     public int compareTo(Money other) {
+        if (other == null)
+            throw new NullPointerException("other is null");
+
         if (!currency.equals(other.currency))
             throw new IllegalArgumentException("incompatible currencies");
         return amount.compareTo(other.amount);

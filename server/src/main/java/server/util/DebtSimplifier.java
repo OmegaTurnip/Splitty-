@@ -19,7 +19,11 @@ public class DebtSimplifier {
     private final PriorityQueue<ParticipantMoneyPair> debtors =
             new PriorityQueue<>();
 
-    private ParticipantMoneyPair zeroMoneyInBaseCurrency;
+    private final Currency base;
+
+    private final ParticipantMoneyPair zeroMoneyInBaseCurrency;
+
+    private final BigDecimal cent;
 
     /**
      * Creates a new {@code DebtSimplifier} object.
@@ -27,9 +31,12 @@ public class DebtSimplifier {
      * @param   participants
      *          The participants to divide the debts over, duplicates are
      *          ignored.
+     * @param   base
+     *          The currency in which the debt structure should be expressed. A
+     *          base currency of sorts.
      */
-    public DebtSimplifier(Collection<Participant> participants) {
-        this(participants, ExchangeRateFactory.get());
+    public DebtSimplifier(Collection<Participant> participants, Currency base) {
+        this(participants, base, ExchangeRateFactory.get());
     }
 
     /**
@@ -38,12 +45,32 @@ public class DebtSimplifier {
      * @param   participants
      *          The participants to divide the debts over, duplicates are
      *          ignored.
+     * @param   base
+     *          The currency in which the debt structure should be expressed. A
+     *          base currency of sorts.
      * @param   exchangeRateFactory
      *          The {@link ExchangeRateFactory}s used by this simplifier.
      */
-    DebtSimplifier(Collection<Participant> participants,
+    DebtSimplifier(Collection<Participant> participants, Currency base,
                    ExchangeRateFactory exchangeRateFactory) {
+        if (base == null)
+            throw new NullPointerException("base is null");
+
+        if (participants == null)
+            throw new NullPointerException("participants is null");
+
+        if (exchangeRateFactory == null)
+            throw new NullPointerException("exchangeRateFactory is null");
+
+        if (participants.isEmpty())
+            throw new IllegalArgumentException("participants is empty");
+
         this.participants = new HashMap<>();
+        this.base = base;
+        this.zeroMoneyInBaseCurrency = new ParticipantMoneyPair(null,
+                new Money(BigDecimal.ZERO, base));
+        this.cent =
+                BigDecimal.ONE.movePointLeft(base.getDefaultFractionDigits());
         for (Participant participant : participants) {
             this.participants.put(participant, new LinkedList<>());
         }
@@ -71,8 +98,11 @@ public class DebtSimplifier {
             throw new IllegalArgumentException(
                     "Debt contains unknown participant (to): " + debt);
 
-        participants.get(debt.getTo()).add(debt);
-        participants.get(debt.getFrom()).add(debt);
+        Debt converted =
+                new Debt(debt.from, debt.to, convertToBase(debt.amount));
+
+        participants.get(converted.getTo()).add(converted);
+        participants.get(converted.getFrom()).add(converted);
     }
 
     /**
@@ -90,24 +120,20 @@ public class DebtSimplifier {
      *          The amount of money to divide.
      */
     public void divideDebts(Participant creditor,
-                            List<Participant> debtors, Money amount) {
-        final Currency currency = amount.getCurrency();
-
-        Set<Participant> uniqueDebtors = validateParameters(creditor, debtors,
-                amount);
+                            Collection<Participant> debtors, Money amount) {
+        Set<Participant> uniqueDebtors =
+                validateParameters(creditor, debtors, amount);
 
         LinkedList<Participant> debtorsShadow = new LinkedList<>(debtors);
 
-        BigDecimal remainder = amount.getAmount().remainder(
-                (new BigDecimal(uniqueDebtors.size())).movePointLeft(
-                        currency.getDefaultFractionDigits()));
-        BigDecimal fraction = amount.getAmount().subtract(remainder).divide(
-                new BigDecimal(uniqueDebtors.size()), RoundingMode.DOWN);
+        Money convertedAmount = convertToBase(amount);
+        BigDecimal remainder = getRemainder(convertedAmount, uniqueDebtors);
+        BigDecimal fraction = getFraction(convertedAmount, remainder,
+                uniqueDebtors);
 
-        BigDecimal cent = BigDecimal.ONE.movePointLeft(
-                currency.getDefaultFractionDigits());
         int cents = remainder.movePointRight(
-                currency.getDefaultFractionDigits()).intValue();
+                base.getDefaultFractionDigits()).intValue();
+
         Random random = new Random(42);
 
         for (int i = 0; i < uniqueDebtors.size(); i++) {
@@ -116,19 +142,41 @@ public class DebtSimplifier {
             if (!Objects.equals(creditor, debtor))  // the creditor already paid
                 addDebt(new Debt(debtor, creditor,
                         new Money(i < cents ? fraction.add(cent) : fraction,
-                                currency)
+                                base)
                 ));
         }
     }
 
-    private Set<Participant> validateParameters(Participant creditor,
-                                                List<Participant> debtors,
-                                                Money amount) {
-        if (debtors.isEmpty())
-            throw new IllegalArgumentException("No debtors");
 
-        if (amount.getAmount().compareTo(BigDecimal.ZERO) <= 0)
-            throw new IllegalArgumentException("Debt is not positive");
+    private static BigDecimal getFraction(Money convertedAmount,
+                                          BigDecimal remainder,
+                                          Set<Participant> uniqueDebtors) {
+        return convertedAmount.getAmount().subtract(remainder).divide(
+                new BigDecimal(uniqueDebtors.size()), RoundingMode.DOWN);
+    }
+
+    private BigDecimal getRemainder(Money convertedAmount,
+                                    Set<Participant> uniqueDebtors) {
+        return convertedAmount.getAmount().remainder(
+                (new BigDecimal(uniqueDebtors.size())).movePointLeft(
+                        base.getDefaultFractionDigits()));
+    }
+
+    private Money convertToBase(Money amount) {
+        // Will raise a NullPointerException if an exchange rate is unavailable,
+        // but that (throwing an exception) is expected behaviour
+        return new Money(
+                exchangeRateFactory.getMostRecent(amount.getCurrency(), base)
+                        .convert(amount)
+                        .getAmount(),
+                base
+        );
+    }
+
+    private Set<Participant> validateParameters(Participant creditor,
+                                                Collection<Participant> debtors,
+                                                Money amount) {
+        boundCheck(creditor, debtors, amount);
 
         if (!participants.containsKey(creditor))
             throw new IllegalArgumentException(
@@ -137,14 +185,30 @@ public class DebtSimplifier {
         Set<Participant> uniqueDebtors = Set.copyOf(debtors);
 
         if (!participants.keySet().containsAll(uniqueDebtors))
-            throw new IllegalArgumentException(
-                    "Debt contains unknown debtors: " + uniqueDebtors);
+            throw new IllegalArgumentException("Debt contains unknown debtors: "
+                    + uniqueDebtors);
 
         if (uniqueDebtors.size() != debtors.size())
-            throw new IllegalArgumentException("Debtors contain duplicates : "
+            throw new IllegalArgumentException("Debtors contain duplicates: "
                     + debtors);
 
         return uniqueDebtors;
+    }
+
+    private static void boundCheck(Participant creditor,
+                                   Collection<Participant> debtors,
+                                   Money amount) {
+        if (creditor == null)
+            throw new NullPointerException("creditor is null");
+
+        if (amount == null)
+            throw new NullPointerException("amount is null");
+
+        if (debtors == null)
+            throw new NullPointerException("debtors is null");
+
+        if (debtors.isEmpty())
+            throw new IllegalArgumentException("No debtors");
     }
 
     /**
@@ -163,13 +227,13 @@ public class DebtSimplifier {
      *     r := ∅
      *
      *     Foreach v in V(G):
-     *         Let m := Σw({u, v}) - Σw({v, u}).
+     *         Let m := Σw((u, v)) - Σw((v, u)).
      *         If m > 0:
      *             Enqueue m, paired with v, to c.
      *         If m < 0:
      *             Enqueue -m, paired with v, to d.
      *
-     *     While c ≠ ∅:
+     *     While c ≠ ∅ and d ≠ ∅:
      *         Poll c' from c.
      *         Poll d' from d.
      *         Let r' := c' - d'.
@@ -181,27 +245,21 @@ public class DebtSimplifier {
      *
      *     r = The simplified debt structure.</code></pre>
      *
-     * @param   base
-     *          The currency in which the debt structure should be expressed. A
-     *          base currency of sorts.
-     *
      * @return  The simplified version of the debts.
      *
      * @author  Maurits Sloof
      * @author  Paras Khan
      */
-    public Collection<Debt> simplify(Currency base) {
+    public Collection<Debt> simplify() {
         creditors.clear();
         debtors.clear();
-        setZeroMoneyInBaseCurrency(base);
 
         for (Participant participant : participants.keySet())
             enqueue(new ParticipantMoneyPair(
                     participant,
                     reduce(
                             participant,
-                            participants.get(participant),
-                            base
+                            participants.get(participant)
                     )
             ));
 
@@ -219,7 +277,7 @@ public class DebtSimplifier {
     private LinkedList<Debt> collapse(Currency base) {
         LinkedList<Debt> result = new LinkedList<>();
 
-        while (!creditors.isEmpty()) {
+        while (!creditors.isEmpty() && !debtors.isEmpty()) {
             ParticipantMoneyPair creditor = creditors.poll();
             ParticipantMoneyPair debtor = debtors.poll();
 
@@ -281,75 +339,24 @@ public class DebtSimplifier {
      *          The participant to reduce.
      * @param   transactions
      *          The transactions to and from the participant.
-     * @param   base
-     *          The {@link Currency} of the resulting monetary value.
      *
      * @return  The resulting monetary value as a {@link Money} object.
      */
-    private Money reduce(Participant participant, LinkedList<Debt> transactions,
-                         Currency base) {
-        return normalise(calculate(participant, transactions), base);
-    }
-
-    /**
-     * Calculates the netto debt/credit of a {@code Participant} as a {@code
-     * HashMap} of the {@link Currency Currencies}.
-     *
-     * @param   participant
-     *          The participant to consider.
-     * @param   transactions
-     *          The transactions linked to {@code participant} to consider.
-     *
-     * @return  The netto debt/credit.
-     */
-    private HashMap<Currency, Money> calculate(
-            Participant participant, LinkedList<Debt> transactions) {
-
-        // improve debts cancelling each other in non-base currencies
-        HashMap<Currency, Money> debtsInCurrencies = new HashMap<>();
+    private Money reduce(Participant participant,
+                         LinkedList<Debt> transactions) {
+        Money result = new Money(BigDecimal.ZERO, base);
 
         for (Debt transaction : transactions) {
-            Currency currency = transaction.amount.getCurrency();
-            Money current = debtsInCurrencies.getOrDefault(currency,
-                    new Money(BigDecimal.ZERO, currency));
-
-            if (transaction.from.equals(participant)) {
-                // subtract from (not yet) existing balance
-                current.setAmount(current.getAmount().subtract(
-                                    transaction.amount.getAmount()));
-            } else {
-                // add to (not yet) existing balance
-                current.setAmount(current.getAmount().add(
+            if (transaction.from.equals(participant))
+                // subtract from existing balance
+                result.setAmount(result.getAmount().subtract(
                         transaction.amount.getAmount()));
-            }
-            debtsInCurrencies.put(currency, current);
+            else
+                // add to existing balance
+                result.setAmount(result.getAmount().add(
+                        transaction.amount.getAmount()));
         }
-        return debtsInCurrencies;
-    }
 
-    /**
-     * Normalises a {@code HashMap} of {@link Money} in different {@link
-     * Currency Currencies} to a single {@code Money} object in a base {@code
-     * Currency}.
-     *
-     * @param   debt
-     *          The {@code HashMap} to consider.
-     * @param   base
-     *          The {@code Currency} of the result.
-     *
-     * @return  The resulting amount of {@code Money}.
-     */
-    private Money normalise(HashMap<Currency, Money> debt, Currency base) {
-        Money result = new Money(BigDecimal.ZERO, base);
-        for (Currency currency : debt.keySet())
-            // add all converted money values, will raise a NullPointerException
-            // if an exchange rate is unavailable, but that (throwing an
-            // exception) is expected behaviour
-            result.setAmount(result.getAmount().add(
-                    exchangeRateFactory.getMostRecent(currency, base)
-                            .convert(debt.get(currency))
-                            .getAmount()
-            ));
         return result;
     }
 
@@ -373,11 +380,6 @@ public class DebtSimplifier {
         }
         // else, remove the participant from the calculation (everything cancels
         // out)
-    }
-
-    private void setZeroMoneyInBaseCurrency(Currency base) {
-        this.zeroMoneyInBaseCurrency = new ParticipantMoneyPair(null,
-                new Money(BigDecimal.ZERO, base));
     }
 
     private record ParticipantMoneyPair(Participant participant, Money money)
@@ -417,6 +419,9 @@ public class DebtSimplifier {
             if (Objects.equals(from, to))
                 throw new IllegalArgumentException(
                         "someone cannot owe themselves a debt");
+
+            if (amount.getAmount().compareTo(BigDecimal.ZERO) <= 0)
+                throw new IllegalArgumentException("Debt is not positive");
 
             this.from = from;
             this.to = to;

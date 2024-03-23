@@ -25,7 +25,9 @@ class MoneyTest {
 
     @Test
     void constructor() {
-        assertThrows(NullPointerException.class, () -> new Money(null, null));
+        assertThrows(NullPointerException.class, () -> new Money(new BigDecimal(1), null));
+        assertThrows(NullPointerException.class, () -> new Money(null, EUR));
+
     }
 
     @Test
@@ -38,6 +40,7 @@ class MoneyTest {
     void setAmount() {
         money1.setAmount(BigDecimal.TWO);
         assertEquals(new BigDecimal(2).setScale(2), money1.getAmount());
+        assertThrows(NullPointerException.class, () -> money1.setAmount(null));
     }
 
     @Test
@@ -58,12 +61,15 @@ class MoneyTest {
         assertEquals("2\u00A0\u00A5", money3.format(Locale.forLanguageTag("de-DE")));
         // special Japanese yen symbol (￥)
         assertEquals("\uffe52", money3.format(Locale.forLanguageTag("ja-JP")));
+
+        assertThrows(NullPointerException.class, () -> money1.format(null));
     }
 
     @Test
     void compareTo() {
         assertTrue(money2.compareTo(Money.fromLong(100, "USD")) > 0);
         assertThrows(IllegalArgumentException.class, () -> money1.compareTo(money2));
+        assertThrows(NullPointerException.class, () -> money1.compareTo(null));
     }
 
     @Test

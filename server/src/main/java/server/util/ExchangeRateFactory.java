@@ -17,6 +17,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * Creates and stores {@link ExchangeRate ExchangeRates}.
+ */
 public class ExchangeRateFactory {
 
     private static final File DEFAULT_DIR = new File("rates");
@@ -184,21 +187,6 @@ public class ExchangeRateFactory {
         return exchangeRates.contains(exchangeRate);
     }
 
-    /**
-     * Adds an {@link ExchangeRate} object to this factory. Should only be used
-     * for testing. Use {@link
-     * ExchangeRateFactory#generateExchangeRates(Currency, HashMap)} for
-     * non-testing adding of exchange rates.
-     *
-     * @param   exchangeRate
-     *          The {@code ExchangeRate} to add.
-     */
-    void addExchangeRate(ExchangeRate exchangeRate) {
-        exchangeRates.add(exchangeRate);
-        knownCurrencies.add(exchangeRate.getFrom());
-        knownCurrencies.add(exchangeRate.getTo());
-    }
-
     private static final Pattern FILE_PATTERN =
             Pattern.compile("^(?<date>[0-9]{4}-(?>0[1-9]|1[012])-" +
                     "(?>0[1-9]|[12][0-9]|3[01]))\\." +
@@ -340,10 +328,50 @@ public class ExchangeRateFactory {
         }
     }
 
-    private ExchangeRate generate(Currency base,
+    /*====================================================================||
+    ||                                                                    ||
+    ||   These functions are only package private in order to test them   ||
+    ||                        (So don't call them)                        ||
+    ||                                                                    ||
+    ||====================================================================*/
+
+    /**
+     * Adds an {@link ExchangeRate} object to this factory. <em><strong>SHOULD
+     * ONLY BE USED FOR TESTING.</strong></em> Use {@link
+     * ExchangeRateFactory#generateExchangeRates(Currency, HashMap)} for
+     * non-testing adding of exchange rates.
+     *
+     * @param   exchangeRate
+     *          The {@code ExchangeRate} to add.
+     */
+    void addExchangeRate(ExchangeRate exchangeRate) {
+        exchangeRates.add(exchangeRate);
+        knownCurrencies.add(exchangeRate.getFrom());
+        knownCurrencies.add(exchangeRate.getTo());
+    }
+
+    /**
+     * Interpolates {@link ExchangeRate ExchangeRates} from the present data.
+     * <em><strong>SHOULD ONLY BE USED INTERNALLY AND IN UNIT TESTS!</strong>
+     * </em>
+     *
+     * @param   base
+     *          The base {@link Currency} of {@code rates}.
+     * @param   rates
+     *          Today's rates.
+     * @param   from
+     *          The base {@code Currency} of the requested {@code ExchangeRate}.
+     * @param   to
+     *          The converted {@code Currency} of the requested {@code
+     *          ExchangeRate}.
+     * @param   today
+     *          A {@link LocalDate} object storing the day.
+     *
+     * @return  The interpolated {@code ExchangeRate}.
+     */
+    ExchangeRate generate(Currency base,
                                   HashMap<Currency, Double> rates,
-                                  Currency from, Currency to, LocalDate today)
-            throws IOException {
+                                  Currency from, Currency to, LocalDate today) {
         if (rates.containsKey(from) && rates.containsKey(to))
             return new ExchangeRate(today, from, to,
                     rates.get(to) / rates.get(from));
@@ -366,15 +394,31 @@ public class ExchangeRateFactory {
         // problematic currencies can be found
         return new ExchangeRate(today, from, to,
                 getMostRecent(from, to).getRate());
-
     }
 
-    private static String generateFileName(ExchangeRate exchangeRate) {
+    /**
+     * Generates a file name based upon the provided {@link ExchangeRate}.
+     * <em><strong>SHOULD ONLY BE USED INTERNALLY AND IN UNIT TESTS!</strong>
+     * </em>
+     *
+     * @param   exchangeRate
+     *          The provided {@code ExchangeRate}.
+     *
+     * @return  The resulting file name.
+     */
+    static String generateFileName(ExchangeRate exchangeRate) {
         return generateFileName(exchangeRate.getDate(), exchangeRate.getFrom(),
                 exchangeRate.getTo());
     }
 
-    private static String generateFileName(LocalDate date, Currency from,
+    /**
+     * Generates a file name based upon the provided parameters.
+     * <em><strong>SHOULD ONLY BE USED INTERNALLY AND IN UNIT TESTS!</strong>
+     * </em>
+     *
+     * @return  The resulting file name.
+     */
+    static String generateFileName(LocalDate date, Currency from,
                                            Currency to) {
         return date + "." + from + "." + to + ".txt";
     }

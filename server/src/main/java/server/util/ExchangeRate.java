@@ -7,6 +7,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 
+/**
+ * Stores exchange rates. At most two exchange rates (to and from) between two
+ * currencies should exist for any day.
+ */
 public class ExchangeRate {
 
     /**
@@ -62,6 +66,9 @@ public class ExchangeRate {
 
         if (to == null)
             throw new NullPointerException("to is null");
+
+        if (rate < 0)
+            throw new IllegalArgumentException("rate is negative");
 
         // because this will break an assumption in the conversion function...
         if (Objects.equals(from, to) && rate != 1d)
