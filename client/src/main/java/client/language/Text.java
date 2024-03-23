@@ -1,5 +1,6 @@
 package client.language;
 
+
 /**
  * This class is a wrapper to make selecting certain sentences easier.
  * Every page/divider should have its own inner-class to separate different
@@ -37,11 +38,6 @@ public class Text {
             public static final String Yes = level + "Yes";
             public static final String No = level + "No";
             public static final String Help = level + "Help";
-
-
-
-
-
         }
     }
 
@@ -90,6 +86,51 @@ public class Text {
         public static final String Add = level + "Add";
         public static final String Title = level + "Title";
 
+    }
+
+    public static final class StartUp {
+        private static final String level = "StartUp.";
+
+        public static final String createNewEventLabel =
+                level + "createNewEventLabel";
+
+        public static final String joinEventLabel = level + "joinEventLabel";
+
+        public static final String yourEventsLabel = level + "yourEventsLabel";
+
+        public static final String languagesMenu = level + "languagesMenu";
+
+        public static final class Menu {
+            public static final String level = StartUp.level + "Menu.";
+            public static final String removeYourEvents =
+                    level + "removeYourEvents";
+        }
+        public static final class Buttons {
+            public static final String level = StartUp.level + "Buttons.";
+            public static final String NewEventButton =
+                    level + "NewEventButton";
+            public static final String JoinEventButton =
+                    level + "JoinEventButton";
+        }
+
+        public static final class Alert {
+            public static final String level = StartUp.level + "Alert.";
+            public static final String noEventWritten =
+                    level + "noEventWritten";
+            public static final String alreadyInEvent =
+                    level + "alreadyInEvent";
+            public static final String removeEventHeader =
+                    level + "removeEventHeader";
+            public static final String removeEventContent =
+                    level + "removeEventContent";
+        }
+    }
+
+    public static final class Alert {
+        private static final String level = "Alert.";
+        public static final String serverDownTitle = level + "serverDownTitle";
+        public static final String serverDownContent =
+                level + "serverDownContent";
     }
 
 }

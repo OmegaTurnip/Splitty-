@@ -1,7 +1,7 @@
 package commons;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -18,7 +18,7 @@ public class Transaction {
     @Id
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
-    @JsonIgnore
+    @JsonBackReference
     private Event event;
     @OneToOne
     private Participant payer;
@@ -282,11 +282,12 @@ public class Transaction {
      *
      * @return  Whether this {@code Transaction} is valid.
      */
-    public boolean isValid(){
+    public boolean isValid() {
         return event != null && name != null && !name.isEmpty() && payer != null
                 && amount != null && participants != null
                 && !participants.isEmpty();
     }
+
 
     /**
      * Checks if {@code this} is equal to {@code other}.
@@ -301,7 +302,8 @@ public class Transaction {
         if (this == other) return true;
         if (other == null || getClass() != other.getClass()) return false;
         Transaction that = (Transaction) other;
-        return Objects.equals(id, that.id);
+        return Objects.equals(id, that.id)
+                && Objects.equals(event, that.event);
     }
 
     /**
@@ -311,7 +313,7 @@ public class Transaction {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(event, id);
     }
 
     /**

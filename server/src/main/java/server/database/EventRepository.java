@@ -15,4 +15,11 @@ public interface EventRepository
      * @return The list of events
      */
     List<Event> findAllByInviteCodeIsIn(List<String> inviteCodes);
+
+    /**
+     * Finds an event by its invite code
+     * @param inviteCode The invite code
+     * @return The event
+     */
+    Event findByInviteCode(String inviteCode);
 }
