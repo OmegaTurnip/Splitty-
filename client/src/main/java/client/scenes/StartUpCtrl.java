@@ -108,24 +108,6 @@ public class StartUpCtrl implements Initializable, TextPage {
         newEvent1.setOnAction(event -> createEvent());
         joinEvent1.setOnAction(event -> joinEvent());
         yourEvents.setCellFactory(param -> new EventListCell());
-//        Stage primaryStage = mainCtrl.getPrimaryStage();
-//        primaryStage.sceneProperty().addListener((observable, oldValue, newValue) -> {
-//            if (oldValue != null && oldValue == mainCtrl.getStartUpScene()) {
-//                server.saveEvents(currentEvents);
-//                System.out.println("Events saved!");
-//
-//            }
-//        });
-//        primaryStage.setOnCloseRequest(event -> {
-//            if (primaryStage.getScene() == mainCtrl.getStartUpScene()) {
-//                try {
-//                    server.saveEvents(currentEvents);
-//                    System.out.println("Events saved!");
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
         yourEvents.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case DELETE -> {

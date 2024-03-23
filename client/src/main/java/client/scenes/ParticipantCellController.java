@@ -35,6 +35,9 @@ public class ParticipantCellController {
         participantCellLabel.setText(text);
     }
 
+    /**
+     * Initialize the controller.
+     */
     @FXML
     public void initialize() {
         editParticipantButton.setOnAction(event -> {
@@ -55,7 +58,8 @@ public class ParticipantCellController {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Delete participant");
             alert.setHeaderText(null);
-            alert.setContentText("Are you sure you want to delete this participant?");
+            alert.setContentText(
+                    "Are you sure you want to delete this participant?");
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 event.removeParticipant(participant);
