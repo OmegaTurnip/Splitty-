@@ -20,7 +20,7 @@
                <font>
                   <Font name="Arial" size="16.0" />
                </font></TextField>
-                <Button fx:id="cancel" cancelButton="true" layoutX="86.0" layoutY="427.0" mnemonicParsing="false" onAction="#cancel" prefHeight="40.0" prefWidth="109.0" style="-fx-background-color: #0d0d0d; -fx-background-radius: 5pt;" text="Cancel" textFill="#fefdfd">
+                <Button fx:id="cancel" cancelButton="true" layoutX="86.0" layoutY="342.0" mnemonicParsing="false" onAction="#cancel" prefHeight="40.0" prefWidth="109.0" style="-fx-background-color: #0d0d0d; -fx-background-radius: 5pt;" text="Cancel" textFill="#fefdfd">
                     <font>
                         <Font name="Arial" size="18.0" />
                     </font>
@@ -37,11 +37,12 @@
             </ChoiceBox>
             <ChoiceBox fx:id="payer" layoutX="86.0" layoutY="145.0" prefHeight="40.0" prefWidth="306.0" style="-fx-background-color: #8E3EDD; -fx-background-radius: 5pt; -fx-border-color: #E0DDF2; -fx-border-radius: 5pt; -fx-border-width: 1.5pt;" />
             <DatePicker fx:id="date" layoutX="86.0" layoutY="195.0" prefHeight="40.0" prefWidth="306.0" promptText="Date of the expense" style="-fx-background-color: #8E3EDD; -fx-control-inner-background: #8E3EDD; -fx-border-color: #E0DDF2; -fx-border-radius: 5pt; -fx-border-width: 1.5pt; -fx-prompt-text-fill: #fefdfd;" />
-            <Button fx:id="addExpense" layoutX="201.0" layoutY="427.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="187.0" style="-fx-background-color: #0d0d0d; -fx-prompt-text-fill: #fefdfd; -fx-background-radius: 5pt;" text="Add Expense" textFill="#fefdfd">
+            <Button fx:id="addExpense" layoutX="205.0" layoutY="342.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="187.0" style="-fx-background-color: #0d0d0d; -fx-prompt-text-fill: #fefdfd; -fx-background-radius: 5pt;" text="Add Expense" textFill="#fefdfd">
                <font>
                   <Font name="Arial" size="18.0" />
                </font></Button>
-            <ListView layoutX="86.0" layoutY="247.0" prefHeight="132.0" prefWidth="306.0" style="-fx-background-color: #8E3EDD; -fx-border-color: #e0ddf2; -fx-border-radius: 5pt; -fx-border-width: 1.5pt;" />
+            <ComboBox fx:id="participants" layoutX="86.0" layoutY="245.0" prefHeight="40.0" prefWidth="306.0" promptText="Select participants to split between" style="-fx-background-color: #8e3edd; -fx-border-color: #e0ddf2; -fx-border-radius: 5pt; -fx-border-width: 1.5pt; -fx-prompt-text-fill: #fefdfd;" />
+            <ComboBox fx:id="expenseType" layoutX="86.0" layoutY="295.0" prefHeight="40.0" prefWidth="306.0" promptText="Set expense type" style="-fx-background-color: #8e3edd; -fx-border-color: #e0ddf2; -fx-border-radius: 5pt; -fx-border-width: 1.5pt; -fx-prompt-text-fill: #fefdfd;" />
             </children></AnchorPane>
     </children>
 </VBox>

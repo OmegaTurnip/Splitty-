@@ -134,7 +134,11 @@ public class EventOverviewCtrl implements TextPage {
         refreshText();
     }
 
+    /**
+     * Adds the expense to the database
+     */
     public void addExpense(){
+        //TODO: Connect to back-end
         mainCtrl.showAddExpense(event);
         refreshText();
     }
@@ -192,6 +196,9 @@ public class EventOverviewCtrl implements TextPage {
         this.event = event;
     }
 
+    /**
+     * Changes the window to the startup
+     */
     public void returnToOverview() {
         mainCtrl.showStartUp();
         refreshText();
