@@ -112,9 +112,9 @@ public class DebtSimplifier {
 
     /**
      * Adds a transaction that should be taken into account in the calculation.
-     * Throws {@link NullPointerException} if the debt is {@code null} and
-     * {@link IllegalArgumentException} if the debt is between a participant not
-     * present in the calculation.
+     * Throws {@link NullPointerException} if the transaction is {@code null}
+     * and {@link IllegalArgumentException} if the transaction is between a
+     * participant not present in the calculation.
      *
      * @param   transaction
      *          A transaction that should be taken into account in the
@@ -146,8 +146,8 @@ public class DebtSimplifier {
      * @param   creditor
      *          The participant to which the debt should be paid.
      * @param   debtors
-     *          The participants that owe (part of) the debt, duplicates are
-     *          ignored. <strong>Can also include creditor.</strong>
+     *          The participants that owe (part of) the debt. <em>Can also
+     *          include creditor.</em>
      * @param   amount
      *          The amount of money to divide.
      */

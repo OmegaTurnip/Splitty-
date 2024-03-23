@@ -439,7 +439,7 @@ class DebtSimplifierTest {
                 participants.get(2),
                 money1
         ));
-        
+
         assertEquals(expected, debtSimplifier.simplify());
     }
 
