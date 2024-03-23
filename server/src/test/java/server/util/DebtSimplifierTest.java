@@ -385,13 +385,13 @@ class DebtSimplifierTest {
         LinkedList<DebtSimplifier.Debt> expected = new LinkedList<>();
 
         expected.add(new DebtSimplifier.Debt(
-                participants.get(2),
+                participants.get(0),
                 participants.get(3),
                 money1
         ));
 
         expected.add(new DebtSimplifier.Debt(
-                participants.get(0),
+                participants.get(2),
                 participants.get(5),
                 money1
         ));
@@ -429,17 +429,17 @@ class DebtSimplifierTest {
         LinkedList<DebtSimplifier.Debt> expected = new LinkedList<>();
 
         expected.add(new DebtSimplifier.Debt(
-                participants.get(1),
-                participants.get(2),
-                money1
-        ));
-
-        expected.add(new DebtSimplifier.Debt(
                 participants.get(0),
                 participants.get(2),
                 money1
         ));
 
+        expected.add(new DebtSimplifier.Debt(
+                participants.get(1),
+                participants.get(2),
+                money1
+        ));
+        
         assertEquals(expected, debtSimplifier.simplify());
     }
 
