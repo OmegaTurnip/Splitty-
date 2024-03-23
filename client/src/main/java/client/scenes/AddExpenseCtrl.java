@@ -131,7 +131,8 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         HashMap<String, Language> languages = Language.languages;
 
         for (String langKey : languages.keySet()) {
-            MenuItem item = new MenuItem(langKey);
+            MenuItem item = new MenuItem(languages.get(langKey)
+                    .getNativeName());
 
             item.setOnAction(event -> setLanguage(langKey));
 
