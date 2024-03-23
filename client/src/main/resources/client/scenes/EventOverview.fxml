@@ -56,7 +56,7 @@
                         <ChoiceBox fx:id="expensesDropDown" prefHeight="26.0" prefWidth="1600.0" style="-fx-background-color: #B89AE1;" BorderPane.alignment="CENTER" />
                      </center>
                      <right>
-                        <Button mnemonicParsing="false" style="-fx-background-color: #B89AE1;" text="+" BorderPane.alignment="CENTER" />
+                        <Button fx:id="addExpenseButton" mnemonicParsing="false" style="-fx-background-color: #B89AE1;" text="+" BorderPane.alignment="CENTER" />
                      </right>
                   </BorderPane>
                </bottom>
@@ -79,7 +79,7 @@
                   </Label>
                </center>
                <bottom>
-                  <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="1600.0" style="-fx-background-color: #B89AE1;" text="+" BorderPane.alignment="CENTER" />
+                  <Button fx:id="addParticipantButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="1600.0" style="-fx-background-color: #B89AE1;" text="+" BorderPane.alignment="CENTER" />
                </bottom>
             </BorderPane>
          </top>

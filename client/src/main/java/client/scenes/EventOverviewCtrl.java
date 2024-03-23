@@ -28,9 +28,9 @@ public class EventOverviewCtrl implements TextPage {
     @FXML
     private Menu languages;
     @FXML
-    private ImageView addParticipantButton;
+    private Button addParticipantButton;
     @FXML
-    private ImageView addExpenseButton;
+    private Button addExpenseButton;
     @FXML
     private ChoiceBox<String> expensesDropDown;
     @FXML
