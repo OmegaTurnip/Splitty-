@@ -24,7 +24,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import java.io.IOException;
 import java.net.URL;
@@ -109,14 +108,24 @@ public class StartUpCtrl implements Initializable, TextPage {
         newEvent1.setOnAction(event -> createEvent());
         joinEvent1.setOnAction(event -> joinEvent());
         yourEvents.setCellFactory(param -> new EventListCell());
-        Stage primaryStage = mainCtrl.getPrimaryStage();
-        primaryStage.setOnCloseRequest(event -> {
-            try {
-                server.saveEvents(currentEvents);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+//        Stage primaryStage = mainCtrl.getPrimaryStage();
+//        primaryStage.sceneProperty().addListener((observable, oldValue, newValue) -> {
+//            if (oldValue != null && oldValue == mainCtrl.getStartUpScene()) {
+//                server.saveEvents(currentEvents);
+//                System.out.println("Events saved!");
+//
+//            }
+//        });
+//        primaryStage.setOnCloseRequest(event -> {
+//            if (primaryStage.getScene() == mainCtrl.getStartUpScene()) {
+//                try {
+//                    server.saveEvents(currentEvents);
+//                    System.out.println("Events saved!");
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
         yourEvents.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case DELETE -> {
@@ -134,7 +143,7 @@ public class StartUpCtrl implements Initializable, TextPage {
                 }
             }
         });
-        refresh();
+
     }
 
     private void fetchLanguages() {
@@ -206,7 +215,7 @@ public class StartUpCtrl implements Initializable, TextPage {
                                 client.language.Text
                                         .StartUp.Alert.noEventWritten), 422);
             }
-            Event result = server.createEvent(e);
+            Event result = server.saveEvent(e);
             List<String> eventCodes = server.getUserSettings().getEventCodes();
             eventCodes.add(result.getInviteCode());
             server.getUserSettings().setEventCodes(eventCodes);

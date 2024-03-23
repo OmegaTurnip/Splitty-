@@ -6,6 +6,9 @@ import client.language.Language;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import client.language.TextPage;
 import client.language.Translator;
@@ -20,6 +23,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
@@ -89,8 +93,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      * Refreshes the page.
      */
     public void refresh() {
-        if (event != null && event.getParticipants().isEmpty()) {
-            event.addParticipant("test");
+        if (event != null) {
             ObservableList<Participant> observableParticipants =
                     FXCollections.observableArrayList(event.getParticipants());
             participantsListView.setItems(observableParticipants);
@@ -181,13 +184,19 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 if (loader == null) {
                     loader = new FXMLLoader(getClass().getResource("/client/scenes/ParticipantCell.fxml"));
                     try {
-                        loader.load();
+                        Parent root = loader.load();
+                        root.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+                        loader.setRoot(root);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
                 ParticipantCellController controller = loader.getController();
                 controller.setParticipantCellLabelText(item.getName());
+                controller.setEvent(event);
+                controller.setParticipant(item);
+                controller.setServer(server);
+                controller.setEventOverviewCtrl(EventOverviewCtrl.this);
                 setText(null);
                 setGraphic(loader.getRoot());
             }

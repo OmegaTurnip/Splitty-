@@ -127,11 +127,11 @@ public class ServerUtils {
     }
 
     /**
-     * Create Event REST API request.
-     * @param event The event to be created.
-     * @return The created event.
+     * Create/save Event REST API request.
+     * @param event The event to be created/saved.
+     * @return The created/saved event.
      */
-    public Event createEvent(Event event) {
+    public Event saveEvent(Event event) {
         return client //
                 .target(server).path("api/event") //
                 .request(APPLICATION_JSON) //
@@ -166,17 +166,21 @@ public class ServerUtils {
                 .get(Event.class);
     }
 
-    /**
-     * Save events
-     * @param events The events to save
-     * @return The saved events
-     */
-    public List<Event> saveEvents(List<Event> events) {
-        return client //
-                .target(server).path("api/event") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .put(Entity.entity(events, APPLICATION_JSON),
-                        new GenericType<List<Event>>() {});
-    }
+//    /**
+//     * Save events
+//     * @param events The events to save
+//     * @return The saved events
+//     */
+//    public List<Event> saveEvents(List<Event> events) {
+//        if (events == null) {
+//            throw new NullPointerException("Null events");
+//        }
+//        return client //
+//                .target(server).path("api/event") //
+//                .request(APPLICATION_JSON) //
+//                .accept(APPLICATION_JSON) //
+//                .put(Entity.entity(events, APPLICATION_JSON),
+//                        new GenericType<>() {
+//                        });
+//    }
 }
