@@ -62,7 +62,10 @@ public class Main extends Application {
                     "client", "scenes", "EventOverview.fxml");
             var add = FXML.load(AddParticipantCtrl.class, "client", "scenes",
                     "AddParticipant.fxml");
-            mainCtrl.initialize(primaryStage, overview, add, startUp);
+            var addExpense = FXML.load(AddExpenseCtrl.class, "client", "scenes",
+                    "AddExpense.fxml");
+            mainCtrl.initialize(primaryStage, overview, add,
+                    startUp, addExpense);
         } catch (RuntimeException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(Translator

@@ -135,6 +135,15 @@ public class EventOverviewCtrl implements TextPage {
     }
 
     /**
+     * Adds the expense to the database
+     */
+    public void addExpense(){
+        //TODO: Connect to back-end
+        mainCtrl.showAddExpense(event);
+        refreshText();
+    }
+
+    /**
      * Still in construction (planning to add name to list of participants)
      * @param username name to be added to list
      */
@@ -185,5 +194,13 @@ public class EventOverviewCtrl implements TextPage {
      */
     public void setEvent(Event event) {
         this.event = event;
+    }
+
+    /**
+     * Changes the window to the startup
+     */
+    public void returnToOverview() {
+        mainCtrl.showStartUp();
+        refreshText();
     }
 }

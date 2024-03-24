@@ -29,7 +29,9 @@ public class MainCtrl {
     private Scene overview;
 
     private AddParticipantCtrl addParticipantCtrl;
+    private AddExpenseCtrl addExpenseCtrl;
     private Scene add;
+    private Scene addExpense;
     private StartUpCtrl startUpCtrl;
     private Scene startUp;
 
@@ -38,11 +40,13 @@ public class MainCtrl {
      * @param overview the fx for the event overview page.
      * @param add the fx for the add participant page.
      * @param startUp The fx for the start-up page.
+     * @param addExpense The fx for the expense adding page.
      */
     public void initialize(
             Stage primaryStage, Pair<EventOverviewCtrl, Parent> overview,
             Pair<AddParticipantCtrl, Parent> add,
-            Pair<StartUpCtrl, Parent> startUp) {
+            Pair<StartUpCtrl, Parent> startUp,
+            Pair<AddExpenseCtrl, Parent> addExpense) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
@@ -53,7 +57,8 @@ public class MainCtrl {
 
         this.addParticipantCtrl = add.getKey();
         this.add = new Scene(add.getValue());
-
+        this.addExpenseCtrl = addExpense.getKey();
+        this.addExpense = new Scene(addExpense.getValue());
 
 
         showStartUp();
@@ -96,7 +101,7 @@ public class MainCtrl {
     }
 
     /**
-     * go to the add quote page (by changing the content of the window).
+     * go to the add participant page (by changing the content of the window).
      * @param event the event the participant is a part of.
      */
     public void showAddParticipant(Event event) {
@@ -121,5 +126,16 @@ public class MainCtrl {
      */
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
+    }
+
+    /**
+     * go to the add expense page (by changing the content of the window).
+     * @param event the event the expense is a part of.
+     */
+    public void showAddExpense(Event event) {
+        addExpenseCtrl.setEvent(event);
+        addExpenseCtrl.refreshText();
+        primaryStage.setTitle("Splitty!");
+        primaryStage.setScene(addExpense);
     }
 }
