@@ -100,6 +100,10 @@ public class Text {
             public static final String NoMail = level + "NoMail";
             public static final String NoIBAN = level + "NoIBAN";
             public static final String NoBIC = level + "NoBIC";
+
+            public static final String InvalidMail = level + "InvalidMail";
+            public static final String InvalidIBAN = level + "InvalidIBAN";
+            public static final String InvalidBIC = level + "InvalidBIC";
         }
 
 

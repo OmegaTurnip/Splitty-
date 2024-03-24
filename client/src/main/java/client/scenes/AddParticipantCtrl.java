@@ -175,8 +175,9 @@ public class AddParticipantCtrl{
     public boolean createParticipant() throws WebApplicationException{
         try{
             emptyCheck();
+            formatCheck();
             event.addParticipant(usernameTextField.getText());
-            server.createEvent(event);
+            server.saveEvent(event);
         } catch(WebApplicationException e){
             e.printStackTrace();
             var alert = new Alert(Alert.AlertType.ERROR);
@@ -217,5 +218,60 @@ public class AddParticipantCtrl{
                             Text.AddParticipant.Alert.NoBIC
                     ), 422);
         }
+    }
+
+    /**
+     * Checks whether the format of the fields is correct
+     */
+    public void formatCheck(){
+        if (isValidEmail(emailTextField.getText())) {
+            throw new WebApplicationException(
+                    Translator.getTranslation(
+                            Text.AddParticipant.Alert.InvalidMail
+                    ), 422);
+        }
+        if (!isValidIban(ibanTextField.getText())) {
+            throw new WebApplicationException(
+                    Translator.getTranslation(
+                            Text.AddParticipant.Alert.InvalidIBAN
+                    ), 422);
+        }
+        if (!isValidBic(bicTextField.getText())) {
+            throw new WebApplicationException(
+                    Translator.getTranslation(
+                            Text.AddParticipant.Alert.InvalidBIC
+                    ), 422);
+        }
+    }
+
+    /**
+     * Checks whether the email is valid
+     * @param email The email to be checked
+     * @return Boolean that states whether the email is valid
+     */
+    public boolean isValidEmail(String email) {
+        String regex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        return email.matches(regex);
+    }
+
+    /**
+     * Checks whether the IBAN is valid
+     * @param iban The IBAN to be checked
+     * @return Boolean that states whether the IBAN is valid
+     */
+    public boolean isValidIban(String iban) {
+        String regex = "^([A-Z]{2})([0-9]{2})([A-Z0-9]{4})" +
+                "([0-9]{7})([A-Z0-9]{1,16})$";
+        return iban.matches(regex);
+    }
+
+    /**
+     * Checks whether the BIC is valid
+     * @param bic The BIC to be checked
+     * @return Boolean that states whether the BIC is valid
+     */
+    public boolean isValidBic(String bic) {
+        String regex = "^[A-Za-z]{4}[A-Za-z]{2}\\w{2}(\\w{3})?$";
+        return bic.matches(regex);
     }
 }
