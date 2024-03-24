@@ -276,6 +276,7 @@ public class ExchangeRateFactory {
      *          If an IO error occurs.
      */
     public void write(ExchangeRate exchangeRate) throws IOException {
+        Objects.requireNonNull(exchangeRate, "exchangeRate is null");
         try (FileWriter writer = new FileWriter(
                 new File(directory, generateFileName(exchangeRate))
         )) {
@@ -301,6 +302,9 @@ public class ExchangeRateFactory {
      */
     public void generateExchangeRates(Currency base,
                                              HashMap<Currency, Double> rates) {
+        Objects.requireNonNull(base, "base is null");
+        Objects.requireNonNull(rates, "rates is null");
+
         knownCurrencies.add(base);
         knownCurrencies.addAll(rates.keySet());
 
@@ -345,6 +349,7 @@ public class ExchangeRateFactory {
      *          The {@code ExchangeRate} to add.
      */
     void addExchangeRate(ExchangeRate exchangeRate) {
+        Objects.requireNonNull(exchangeRate, "exchangeRate is null");
         exchangeRates.add(exchangeRate);
         knownCurrencies.add(exchangeRate.getFrom());
         knownCurrencies.add(exchangeRate.getTo());
@@ -372,6 +377,9 @@ public class ExchangeRateFactory {
     ExchangeRate generate(Currency base,
                                   HashMap<Currency, Double> rates,
                                   Currency from, Currency to, LocalDate today) {
+        Objects.requireNonNull(base, "base is null");
+        Objects.requireNonNull(rates, "rates is null");
+
         if (rates.containsKey(from) && rates.containsKey(to))
             return new ExchangeRate(today, from, to,
                     rates.get(to) / rates.get(from));
@@ -407,6 +415,7 @@ public class ExchangeRateFactory {
      * @return  The resulting file name.
      */
     static String generateFileName(ExchangeRate exchangeRate) {
+        Objects.requireNonNull(exchangeRate, "exchangeRate is null");
         return generateFileName(exchangeRate.getDate(), exchangeRate.getFrom(),
                 exchangeRate.getTo());
     }

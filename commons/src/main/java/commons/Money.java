@@ -27,8 +27,8 @@ public class Money implements java.io.Serializable, Comparable<Money> {
      *          form of a {@link Currency} instance.
      */
     public Money(BigDecimal amount, Currency currency) {
-        if (amount == null || currency == null)
-            throw new NullPointerException("argument is null");
+        Objects.requireNonNull(amount, "amount is null");
+        Objects.requireNonNull(currency, "currency is null");
 
         this.currency = currency;
         setAmount(amount);
@@ -54,8 +54,7 @@ public class Money implements java.io.Serializable, Comparable<Money> {
      *          BigDecimal} instance.
      */
     public void setAmount(BigDecimal amount) {
-        if (amount == null)
-            throw new NullPointerException("amount is null");
+        Objects.requireNonNull(amount, "amount is null");
 
         this.amount = amount.setScale(currency.getDefaultFractionDigits(),
                                         RoundingMode.HALF_UP);
@@ -80,8 +79,8 @@ public class Money implements java.io.Serializable, Comparable<Money> {
      * @return  The formatted representation of {@code this}.
      */
     public String format(Locale locale) {
-        if (locale == null)
-            throw new NullPointerException("locale is null");
+        Objects.requireNonNull(locale, "locale is null");
+
         NumberFormat format = NumberFormat.getCurrencyInstance(locale);
         format.setCurrency(currency);
         format.setMaximumFractionDigits(currency.getDefaultFractionDigits());
@@ -102,7 +101,7 @@ public class Money implements java.io.Serializable, Comparable<Money> {
      * @return  A new {@code Money} object.
      */
     static Money fromLong(long amount, String currency) {
-        if (currency == null)throw new NullPointerException("currency is null");
+        Objects.requireNonNull(currency, "currency is null");
 
         Currency currency1 = Currency.getInstance(currency);
         return new Money(
@@ -127,8 +126,7 @@ public class Money implements java.io.Serializable, Comparable<Money> {
      */
     @Override
     public int compareTo(Money other) {
-        if (other == null)
-            throw new NullPointerException("other is null");
+        Objects.requireNonNull(other, "other is null");
 
         if (!currency.equals(other.currency))
             throw new IllegalArgumentException("incompatible currencies");

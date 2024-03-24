@@ -55,14 +55,12 @@ public class DebtSimplifier {
      */
     DebtSimplifier(Collection<Participant> participants, Currency base,
                    ExchangeRateFactory exchangeRateFactory) {
-        if (base == null)
-            throw new NullPointerException("base is null");
 
-        if (participants == null)
-            throw new NullPointerException("participants is null");
+        Objects.requireNonNull(base, "base is null");
+        Objects.requireNonNull(participants, "participants is null");
+        Objects.requireNonNull(exchangeRateFactory,
+                "exchangeRateFactory is null");
 
-        if (exchangeRateFactory == null)
-            throw new NullPointerException("exchangeRateFactory is null");
 
         if (participants.isEmpty())
             throw new IllegalArgumentException("participants is empty");
@@ -92,8 +90,7 @@ public class DebtSimplifier {
      *          A debt that should be taken into account in the calculation.
      */
     public void addDebt(Debt debt) {
-        if (debt == null)
-            throw new NullPointerException();
+        Objects.requireNonNull(debt, "debt is null");
 
         if (!participants.containsKey(debt.from()))
             throw new IllegalArgumentException(
@@ -121,8 +118,7 @@ public class DebtSimplifier {
      *          calculation.
      */
     public void addDebt(Transaction transaction) {
-        if (transaction == null)
-            throw new NullPointerException();
+        Objects.requireNonNull(transaction, "transaction is null");
 
         if (transaction.isPayoff())
             addDebt(new Debt(
@@ -247,7 +243,12 @@ public class DebtSimplifier {
     private Set<Participant> validateParameters(Participant creditor,
                                                 Collection<Participant> debtors,
                                                 Money amount) {
-        boundCheck(creditor, debtors, amount);
+        Objects.requireNonNull(creditor, "creditor is null");
+        Objects.requireNonNull(amount, "amount is null");
+        Objects.requireNonNull(debtors, "debtors is null");
+
+        if (debtors.isEmpty())
+            throw new IllegalArgumentException("No debtors");
 
         if (!participants.containsKey(creditor))
             throw new IllegalArgumentException(
@@ -264,22 +265,6 @@ public class DebtSimplifier {
                     + debtors);
 
         return uniqueDebtors;
-    }
-
-    private static void boundCheck(Participant creditor,
-                                   Collection<Participant> debtors,
-                                   Money amount) {
-        if (creditor == null)
-            throw new NullPointerException("creditor is null");
-
-        if (amount == null)
-            throw new NullPointerException("amount is null");
-
-        if (debtors == null)
-            throw new NullPointerException("debtors is null");
-
-        if (debtors.isEmpty())
-            throw new IllegalArgumentException("No debtors");
     }
 
     /**
@@ -479,8 +464,9 @@ public class DebtSimplifier {
          * Creates an object storing the debt between two {@link Participant}s.
          */
         public Debt {
-            if (from == null || to == null || amount == null)
-                throw new NullPointerException("argument is null");
+            Objects.requireNonNull(from, "from is null");
+            Objects.requireNonNull(to, "to is null");
+            Objects.requireNonNull(amount, "amount is null");
 
             if (Objects.equals(from, to))
                 throw new IllegalArgumentException(

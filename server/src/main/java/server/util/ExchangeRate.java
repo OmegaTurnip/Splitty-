@@ -2,7 +2,6 @@ package server.util;
 
 import commons.Money;
 
-import java.io.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
@@ -58,14 +57,9 @@ public class ExchangeRate {
      *          The actual exchange rate.
      */
     ExchangeRate(LocalDate date, Currency from, Currency to, double rate) {
-        if (date == null)
-            throw new NullPointerException("date is null");
-
-        if (from == null)
-            throw new NullPointerException("from is null");
-
-        if (to == null)
-            throw new NullPointerException("to is null");
+        Objects.requireNonNull(date, "date is null");
+        Objects.requireNonNull(from, "from is null");
+        Objects.requireNonNull(to, "to is null");
 
         if (rate < 0)
             throw new IllegalArgumentException("rate is negative");
@@ -132,8 +126,7 @@ public class ExchangeRate {
      * @return  The {@code Money} object resulting from the conversion.
      */
     public Money convert(Money amount) {
-        if (amount == null)
-            throw new NullPointerException("amount is null!");
+        Objects.requireNonNull(amount, "amount is null");
 
         if (!amount.getCurrency().equals(from))
             throw new IllegalArgumentException("the currency of amount " +
