@@ -12,6 +12,7 @@ import commons.Participant;
 import commons.Tag;
 //import commons.Transaction;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -25,6 +26,7 @@ import org.controlsfx.control.CheckComboBox;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AddExpenseCtrl implements Initializable, TextPage {
 
@@ -85,6 +87,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     public void initialize(URL location, ResourceBundle resources) {
         fetchLanguages();
         payerSelection();
+        participantSelection();
         addExpense.setOnAction(event -> registerExpense());
         refresh();
     }
@@ -101,17 +104,70 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         });
     }
 
-    /**
-     * Changes the scene to startUp
-     */
-    private void backToStartup() {
-        //TODO: Set on-action to go back to start-up window
+    void participantSelection() {
+        AtomicBoolean isCheckingAll = new AtomicBoolean(false);
+        checkListener(isCheckingAll);
+        allUncheckedListener();
+        uncheckListener(isCheckingAll);
     }
 
+    private void uncheckListener(AtomicBoolean isCheckingAll) {
+        participants.getCheckModel().getCheckedItems()
+                .addListener((ListChangeListener<Object>) change -> {
+                    if (!isCheckingAll.get()) return;
+                    while (change.next()) {
+                        if (change.wasRemoved()
+                                && !change.getRemoved().contains("Everyone")) {
+                            isCheckingAll.set(false);
+                            participants.getCheckModel().clearCheck("Everyone");
+                        } else if (change.wasRemoved()
+                                && change.getRemoved().contains("Everyone")) {
+                            isCheckingAll.set(false);
+                            clearParticipants();
+                        }
+                    }
+                });
+    }
+
+    private void allUncheckedListener() {
+        participants.getCheckModel().getCheckedItems()
+                .addListener((ListChangeListener<Object>) change -> {
+                    while (change.next()) {
+                        if (participants.getCheckModel()
+                                .getCheckedItems().isEmpty())
+                            participants.setTitle("Select the " +
+                                    "people involved in the expense");
+                    }
+                });
+    }
+
+    private void checkListener(AtomicBoolean isCheckingAll) {
+        participants.getCheckModel().getCheckedItems()
+                .addListener((ListChangeListener<Object>) change -> {
+                    if (isCheckingAll.get()) return;
+                    while (change.next()) {
+                        boolean allSelected = participants.getCheckModel()
+                                .getCheckedItems().size()
+                                == participants.getItems().size() - 1;
+                        if (change.wasAdded()
+                                && (change.getAddedSubList()
+                                .contains("Everyone") || allSelected)) {
+                            isCheckingAll.set(true);
+                            checkAllParticipants();
+                        }
+                        if (change.wasAdded()) {
+                            participants.setTitle(null);
+                        }
+                    }
+                });
+    }
+
+
     /**
-     * Register the expense added
+     * Register the expense added.
      */
     private void registerExpense() {
+        getCheckedParticipants();
         //TODO: Connect to back-end
     }
 
@@ -145,9 +201,12 @@ public class AddExpenseCtrl implements Initializable, TextPage {
 
     private void loadParticipants() {
         List<Object> participantChoiceBoxList = new ArrayList<>();
-        participantChoiceBoxList
-                .add("Select the people who took part in the expense");
         participantChoiceBoxList.add("Everyone");
+        participantChoiceBoxList.add("Test1");
+        participantChoiceBoxList.add("Test2");
+        participantChoiceBoxList.add("Test3");
+        participantChoiceBoxList.add("Test4");
+        participantChoiceBoxList.add("Test5");
         if (event != null) {
             participantChoiceBoxList
                     .addAll(server.getParticipantsOfEvent(event));
@@ -155,18 +214,15 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         ObservableList<Object> participantObservableList =
                 FXCollections.observableArrayList(participantChoiceBoxList);
         participants.getItems().clear();
-            participants.getItems().addAll(participantObservableList);
+        participants.getItems().addAll(participantObservableList);
 
         if (participants.getCheckModel().getCheckedIndices().isEmpty()) {
-            participants.setTitle("Select the person " +
-                    "that paid for the expense");
+            participants.setTitle("Select the people involved in the expense");
         } else {
             participants.setTitle(null);
         }
 
     }
-
-
 
 
     /**
@@ -216,7 +272,14 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         for (int i = 0; i < participants.getItems().size(); i++) {
             participants.getCheckModel().clearCheck(i);
         }
-        participants.setTitle("Select the person that paid for the expense");
+        participants.setTitle("Select the people involved in the expense");
+    }
+
+    public void checkAllParticipants() {
+        for (int i = 0; i < participants.getItems().size(); i++) {
+            participants.getCheckModel().check(i);
+        }
+        participants.setTitle(null);
     }
 
     /**
@@ -242,9 +305,16 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         this.event = event;
     }
 
-//    Transaction getExpense() {
-//        Transaction expense = new Transaction(expensePayer,
-//        expenseName.getText(), );
-//
-//    }
+   public void getCheckedParticipants() {
+        for (Object o : participants.getCheckModel().getCheckedItems()) {
+            if (!Objects.equals(o, "Everyone")) {
+                participantList.add((Participant) o);
+            }
+        }
+    }
+////    Transaction getExpense() {
+////        Transaction expense = event.registerTransaction(expensePayer,
+////        expenseName.getText(), participantList, , );
+////        return null;
+////    }
 }
