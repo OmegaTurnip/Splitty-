@@ -35,6 +35,9 @@ public class MainCtrl {
     private StartUpCtrl startUpCtrl;
     private Scene startUp;
 
+    private AddExpenseCtrl addExpenseCtrl;
+    private Scene addExpense;
+
     /**
      * @param primaryStage the window.
      * @param overview the fx for the event overview page.
@@ -44,7 +47,8 @@ public class MainCtrl {
     public void initialize(
             Stage primaryStage, Pair<EventOverviewCtrl, Parent> overview,
             Pair<AddParticipantCtrl, Parent> add,
-            Pair<StartUpCtrl, Parent> startUp) {
+            Pair<StartUpCtrl, Parent> startUp,
+            Pair<AddExpenseCtrl, Parent> addExpense) {
         this.primaryStage = primaryStage;
 
         this.startUpCtrl = startUp.getKey();
@@ -59,6 +63,9 @@ public class MainCtrl {
 
         this.addParticipantCtrl = add.getKey();
         this.add = new Scene(add.getValue());
+
+        this.addExpenseCtrl = addExpense.getKey();
+        this.addExpense = new Scene(addExpense.getValue());
 
 
 
@@ -143,6 +150,17 @@ public class MainCtrl {
      */
     public Scene getOverviewScene() {
         return overview;
+    }
+
+    /**
+     * go to the add expense page (by changing the content of the window).
+     * @param event the event the expense is a part of.
+     */
+    public void showAddExpense(Event event) {
+        addExpenseCtrl.setEvent(event);
+        addExpenseCtrl.refresh();
+        primaryStage.setTitle("Splitty!");
+        primaryStage.setScene(addExpense);
     }
 
 }

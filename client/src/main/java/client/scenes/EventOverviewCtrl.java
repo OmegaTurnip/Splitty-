@@ -135,7 +135,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
             }
             ObservableList<Transaction> transactions =
                     FXCollections.observableArrayList(event.getTransactions());
-            showSelectedExspenses(choice, participant, transactions);
+            showSelectedExpenses(choice, participant, transactions);
         }
     }
 
@@ -145,9 +145,9 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      * @param participant The participant.
      * @param transactions The transactions.
      */
-    public void showSelectedExspenses(String choice,
-                                      Participant participant,
-                                      ObservableList<Transaction> transactions){
+    public void showSelectedExpenses(String choice,
+                                     Participant participant,
+                                     ObservableList<Transaction> transactions){
         switch (choice) {
             case "All":
                 System.out.println("all clicked");
@@ -216,7 +216,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      * Add expense to the event
      */
     public void addExpense() {
-
+        mainCtrl.showAddExpense(event);
     }
 
     /**
