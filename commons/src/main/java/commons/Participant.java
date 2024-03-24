@@ -104,6 +104,10 @@ public class Participant {
         return id;
     }
 
+    /**
+     * To string method.
+     * @return name of participant
+     */
     @Override
     public String toString() {
         return getName();

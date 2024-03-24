@@ -117,50 +117,64 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         getExpenses();
     }
 
+    /**
+     * Shows the list of expenses.
+     */
     public void getExpenses() {
         Participant participant = expensesDropDown.getValue();
-        ToggleButton selected = (ToggleButton) selectExpenses.getSelectedToggle();
+        ToggleButton selected =
+                (ToggleButton) selectExpenses.getSelectedToggle();
 
         if (selected != null) {
             String choice = selected.getText();
-            ObservableList<Transaction> transactions = FXCollections.observableArrayList(event.getTransactions());
+            if(choice != "all" && participant == null){
+                showAlert("Participant Not Selected",
+                        "Please select a participant " +
+                                "first within the expense menu.");
 
-            switch (choice) {
-                case "All":
-                    System.out.println("all clicked");
-                    expensesListView.setItems(transactions);
-                    break;
-                case "Including participant":
-                    System.out.println("Including participant clicked");
-                    if (participant != null) {
-                        ObservableList<Transaction> transactionsParticipant = FXCollections.observableArrayList();
-                        for (Transaction transaction : transactions) {
-                            if (transaction.getParticipants().contains(participant)) {
-                                transactionsParticipant.add(transaction);
-                            }
-                        }
-                        expensesListView.setItems(transactionsParticipant);
-                    } else {
-                        // Display alert
-                        showAlert("Participant Not Selected", "Please select a participant first within the expense menu.");
-                    }
-                    break;
-                case "Paid by participant":
-                    if (participant != null) {
-                        System.out.println("Paid by participant clicked");
-                        ObservableList<Transaction> transactionsPayer =  FXCollections.observableArrayList();
-                        for (Transaction transaction : transactions) {
-                            if (transaction.getPayer().equals(participant)) {
-                                transactionsPayer.add(transaction);
-                            }
-                        }
-                        expensesListView.setItems(transactionsPayer);
-                    } else {
-                        // Display alert
-                        showAlert("Participant Not Selected", "Please select a participant first within the expense menu.");
-                    }
-                    break;
             }
+            ObservableList<Transaction> transactions =
+                    FXCollections.observableArrayList(event.getTransactions());
+            showSelectedExspenses(choice, participant, transactions);
+        }
+    }
+
+    /**
+     * Shows the selected expenses.
+     * @param choice The choice of expenses.
+     * @param participant The participant.
+     * @param transactions The transactions.
+     */
+    public void showSelectedExspenses(String choice,
+                                      Participant participant,
+                                      ObservableList<Transaction> transactions){
+        switch (choice) {
+            case "All":
+                System.out.println("all clicked");
+                expensesListView.setItems(transactions);
+                break;
+            case "Including participant":
+                System.out.println("Including participant clicked");
+                ObservableList<Transaction> transactionsParticipant =
+                        FXCollections.observableArrayList();
+                for (Transaction transaction : transactions) {
+                    if (transaction.getParticipants().contains(participant)) {
+                        transactionsParticipant.add(transaction);
+                    }
+                }
+                expensesListView.setItems(transactionsParticipant);
+                break;
+            case "Paid by participant":
+                System.out.println("Paid by participant clicked");
+                ObservableList<Transaction> transactionsPayer =
+                        FXCollections.observableArrayList();
+                for (Transaction transaction : transactions) {
+                    if (transaction.getPayer().equals(participant)) {
+                        transactionsPayer.add(transaction);
+                    }
+                }
+                expensesListView.setItems(transactionsPayer);
+                break;
         }
     }
 

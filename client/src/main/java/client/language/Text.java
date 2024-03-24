@@ -1,10 +1,5 @@
 package client.language;
 
-
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ToggleButton;
-
 /**
  * This class is a wrapper to make selecting certain sentences easier.
  * Every page/divider should have its own inner-class to separate different
@@ -74,16 +69,12 @@ public class Text {
                     + "sendInviteButton";
             public static final String settleDebtsButton = level
                     + "settleDebtsButton";
-
-           public static final String addParticipantButton =
-                   level + "addParticipantButton";
-
-           public static final String addExpenseButton =
+            public static final String addParticipantButton =
+                    level + "addParticipantButton";
+            public static final String addExpenseButton =
                    level + "addExpenseButton";
-
             public static final String allExpensesButton =
                     level + "allExpensesButton";
-
             public static final String includingExpensesButton =
                     level + "includingExpensesButton";
 
