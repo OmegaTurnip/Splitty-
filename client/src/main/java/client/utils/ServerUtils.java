@@ -26,6 +26,7 @@ import java.util.List;
 
 
 import commons.Event;
+import commons.Participant;
 import jakarta.ws.rs.client.Client;
 import org.glassfish.jersey.client.ClientConfig;
 
@@ -178,5 +179,20 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON) //
                 .put(Entity.entity(events, APPLICATION_JSON),
                         new GenericType<List<Event>>() {});
+    }
+
+    /**
+     * Creates a participant
+     * @param participant participant to create
+     * @return created participant
+     */
+    public Participant createParticipant(Participant participant){
+        return client
+                .target(server).path("/api/event/"+ participant.getEvent()
+                        .getId() + "/participants")
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(participant, APPLICATION_JSON),
+                        Participant.class);
     }
 }

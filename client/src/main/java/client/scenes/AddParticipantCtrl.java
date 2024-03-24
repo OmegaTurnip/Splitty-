@@ -165,10 +165,19 @@ public class AddParticipantCtrl{
         this.event = event;
     }
 
+    /**
+     * Method that creates the participant in the database
+     * @return Boolean that states if the creation was successful such
+     * that the window can be closed
+     * @throws WebApplicationException Alert when something goes wrong
+     */
+
     public boolean createParticipant() throws WebApplicationException{
         try{
             emptyCheck();
-            event.addParticipant(usernameTextField.getText());
+            Participant participant = event.addParticipant
+                    (usernameTextField.getText());
+            server.createParticipant(participant);
         } catch(WebApplicationException e){
             e.printStackTrace();
             var alert = new Alert(Alert.AlertType.ERROR);
@@ -177,9 +186,13 @@ public class AddParticipantCtrl{
             alert.showAndWait();
             return false;
         }
+
         return true;
     }
 
+    /**
+     * Checks whether all fields are non-empty
+     */
     public void emptyCheck(){
         if (usernameTextField.getText().isEmpty()) {
             throw new WebApplicationException(
