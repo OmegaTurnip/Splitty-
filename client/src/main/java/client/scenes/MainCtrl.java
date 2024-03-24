@@ -134,7 +134,7 @@ public class MainCtrl {
      */
     public void showAddExpense(Event event) {
         addExpenseCtrl.setEvent(event);
-        addExpenseCtrl.refreshText();
+        addExpenseCtrl.refresh();
         primaryStage.setTitle("Splitty!");
         primaryStage.setScene(addExpense);
     }

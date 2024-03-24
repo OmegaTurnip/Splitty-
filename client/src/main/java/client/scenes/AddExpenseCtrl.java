@@ -10,11 +10,17 @@ import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
 import commons.Tag;
+//import commons.Transaction;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+//import javafx.util.Callback;
+import org.controlsfx.control.CheckComboBox;
+
 
 import java.io.IOException;
 import java.net.URL;
@@ -25,17 +31,13 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     @FXML
     private Menu languages;
     @FXML
-    private Menu rto;
-    @FXML
-    private Menu close;
-    @FXML
     private Button cancel;
     @FXML
     private ChoiceBox<Currency> currency;
     @FXML
-    private ChoiceBox<Participant> payer;
+    private ChoiceBox<Object> payer;
     @FXML
-    private ComboBox<Participant> participants;
+    private CheckComboBox<Object> participants;
     private Collection<Participant> participantList;
     @FXML
     private DatePicker date;
@@ -52,6 +54,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
     private final EventOverviewCtrl eventOverviewCtrl;
+    private Participant expensePayer;
 
     /**
      * Initializes the controller
@@ -70,20 +73,32 @@ public class AddExpenseCtrl implements Initializable, TextPage {
 
     /**
      * Initialise the expense adding window.
-     * @param location
-     * The location used to resolve relative paths for the root object, or
-     * {@code null} if the location is not known.
      *
-     * @param resources
-     * The resources used to localize the root object, or {@code null} if
-     * the root object was not localized.
+     * @param location  The location used to resolve relative paths for the
+     *                  root object, or
+     *                  {@code null} if the location is not known.
+     * @param resources The resources used to localize the root object,
+     *                  or {@code null} if
+     *                  the root object was not localized.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         fetchLanguages();
+        payerSelection();
         addExpense.setOnAction(event -> registerExpense());
-        rto.setOnAction(event -> mainCtrl.showStartUp());
         refresh();
+    }
+
+    void payerSelection() {
+        payer.setOnAction(event -> {
+            Object selectedValue = payer.getValue();
+            if ("Select the person that paid for the expense"
+                    .equals(selectedValue)) {
+                expensePayer = null;
+            } else {
+                expensePayer = (Participant) payer.getValue();
+            }
+        });
     }
 
     /**
@@ -105,21 +120,61 @@ public class AddExpenseCtrl implements Initializable, TextPage {
      */
     public void refresh() {
         refreshText();
+        loadPayers();
+        loadParticipants();
         //TODO: Connect to back-end
         System.out.println("Page has been refreshed!");
     }
+
+    /**
+     *
+     */
+    private void loadPayers() {
+        List<Object> payerChoiceBoxList = new ArrayList<>();
+        payerChoiceBoxList
+                .add("Select the person that paid for the expense");
+        if (event != null) {
+            payerChoiceBoxList.addAll(server.getParticipantsOfEvent(event));
+        }
+        ObservableList<Object> participantObservableList =
+                FXCollections.observableArrayList(payerChoiceBoxList);
+        payer.setItems(participantObservableList);
+        if (payer.getValue() == null) payer
+                .setValue("Select the person that paid for the expense");
+    }
+
+    private void loadParticipants() {
+        List<Object> participantChoiceBoxList = new ArrayList<>();
+        participantChoiceBoxList
+                .add("Select the people who took part in the expense");
+        participantChoiceBoxList.add("Everyone");
+        if (event != null) {
+            participantChoiceBoxList
+                    .addAll(server.getParticipantsOfEvent(event));
+        }
+        ObservableList<Object> participantObservableList =
+                FXCollections.observableArrayList(participantChoiceBoxList);
+        participants.getItems().clear();
+            participants.getItems().addAll(participantObservableList);
+
+        if (participants.getCheckModel().getCheckedIndices().isEmpty()) {
+            participants.setTitle("Select the person " +
+                    "that paid for the expense");
+        } else {
+            participants.setTitle(null);
+        }
+
+    }
+
+
+
+
     /**
      * Refreshes the text
      */
     public void refreshText() {
         languages.setText(
                 Translator.getTranslation(Text.Menu.Languages));
-        rto.setText(
-                Translator.getTranslation(Text.Menu.ReturnToOverview)
-        );
-        close.setText(
-                Translator.getTranslation(Text.Menu.Close)
-        );
         cancel.setText(
                 Translator.getTranslation(Text.AddParticipant.Cancel)
         );
@@ -145,6 +200,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
             this.languages.getItems().add(item);
         }
     }
+
     /**
      * Cancels the action in the addParticipant window
      */
@@ -154,7 +210,18 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     }
 
     /**
+     * Unselects all participants
+     */
+    public void clearParticipants() {
+        for (int i = 0; i < participants.getItems().size(); i++) {
+            participants.getCheckModel().clearCheck(i);
+        }
+        participants.setTitle("Select the person that paid for the expense");
+    }
+
+    /**
      * Sets language to German
+     *
      * @param language the language in three character String
      */
     public void setLanguage(String language) {
@@ -168,10 +235,16 @@ public class AddExpenseCtrl implements Initializable, TextPage {
 
     /**
      * Setter.
+     *
      * @param event The event to be set.
      */
     public void setEvent(Event event) {
         this.event = event;
     }
 
+//    Transaction getExpense() {
+//        Transaction expense = new Transaction(expensePayer,
+//        expenseName.getText(), );
+//
+//    }
 }
