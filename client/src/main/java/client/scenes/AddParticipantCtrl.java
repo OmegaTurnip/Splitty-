@@ -224,7 +224,7 @@ public class AddParticipantCtrl{
      * Checks whether the format of the fields is correct
      */
     public void formatCheck(){
-        if (isValidEmail(emailTextField.getText())) {
+        if (!isValidEmail(emailTextField.getText())) {
             throw new WebApplicationException(
                     Translator.getTranslation(
                             Text.AddParticipant.Alert.InvalidMail
