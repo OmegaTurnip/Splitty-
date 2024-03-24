@@ -43,6 +43,7 @@ public class MainCtrl {
      * @param overview the fx for the event overview page.
      * @param add the fx for the add participant page.
      * @param startUp The fx for the start-up page.
+     * @param addExpense The fx for the add expense page.
      */
     public void initialize(
             Stage primaryStage, Pair<EventOverviewCtrl, Parent> overview,
