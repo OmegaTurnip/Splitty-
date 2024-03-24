@@ -5,6 +5,7 @@ package client.scenes;
 import client.language.Language;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import client.language.TextPage;
@@ -93,7 +94,6 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 new ParticipantCellFactory());
         expensesListView.setCellFactory(param ->
                 new TransactionCellFactory());
-
         refresh();
     }
 
@@ -110,6 +110,11 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         }
 
         refreshText();
+    }
+
+    @FXML
+    private void groupOfExpenseSelected(ActionEvent event) {
+        getExpenses();
     }
 
     public void getExpenses() {
