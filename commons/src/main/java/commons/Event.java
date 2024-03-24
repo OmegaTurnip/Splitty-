@@ -381,7 +381,4 @@ public class Event {
         return transactions.remove(transaction);
     }
 
-    public Transaction getTransactionsParticipant(Participant participant) {
-
-    }
 }

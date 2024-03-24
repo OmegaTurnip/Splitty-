@@ -52,11 +52,11 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     @FXML
     private ToggleGroup selectExpenses;
     @FXML
-    private ToggleButton allExpenses;
+    private ToggleButton allExpensesButton;
     @FXML
-    private ToggleButton includingExpenses;
+    private ToggleButton includingExpensesButton;
     @FXML
-    private ToggleButton fromExpenses;
+    private ToggleButton fromExpensesButton;
     @FXML
     private ListView<Participant> participantsListView;
     @FXML
@@ -104,41 +104,62 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                     FXCollections.observableArrayList(event.getParticipants());
             participantsListView.setItems(observableParticipants);
             expensesDropDown.setItems(observableParticipants);
+            getExpenses();
         }
 
         refreshText();
     }
 
-    public void getExpenses(){
+    public void getExpenses() {
         Participant participant = expensesDropDown.getValue();
         ToggleButton selected = (ToggleButton) selectExpenses.getSelectedToggle();
-        if (selected != null && participant != null){
+
+        if (selected != null) {
             String choice = selected.getText();
             ObservableList<Transaction> transactions = FXCollections.observableArrayList(event.getTransactions());
-        switch (choice) {
-            case "All":
-                expensesListView.setItems(transactions);
-                break;
-            case "Including participant":
-                ObservableList<Transaction> transactionsParticipant = FXCollections.observableArrayList();
-                for(Transaction transaction : transactions){
-                    if(transaction.getParticipants().contains(participant)){
-                        transactionsParticipant.add(transaction);
+
+            switch (choice) {
+                case "All":
+                    expensesListView.setItems(transactions);
+                    break;
+                case "Including participant":
+                    if (participant != null) {
+                        ObservableList<Transaction> transactionsParticipant = FXCollections.observableArrayList();
+                        for (Transaction transaction : transactions) {
+                            if (transaction.getParticipants().contains(participant)) {
+                                transactionsParticipant.add(transaction);
+                            }
+                        }
+                        expensesListView.setItems(transactionsParticipant);
+                    } else {
+                        // Display alert
+                        showAlert("Participant Not Selected", "Please select a participant first within the expense menu.");
                     }
-                }
-                expensesListView.setItems(transactionsParticipant);
-                break;
-            case "Paid by participant":
-                ObservableList<Transaction> transactionsPayer =  FXCollections.observableArrayList();
-                for(Transaction transaction : transactions){
-                    if(transaction.getPayer().equals(participant)){
-                        transactionsPayer.add(transaction);
+                    break;
+                case "Paid by participant":
+                    if (participant != null) {
+                        ObservableList<Transaction> transactionsPayer =  FXCollections.observableArrayList();
+                        for (Transaction transaction : transactions) {
+                            if (transaction.getPayer().equals(participant)) {
+                                transactionsPayer.add(transaction);
+                            }
+                        }
+                        expensesListView.setItems(transactionsPayer);
+                    } else {
+                        // Display alert
+                        showAlert("Participant Not Selected", "Please select a participant first within the expense menu.");
                     }
-                }
-                expensesListView.setItems(transactionsPayer);
-                break;
+                    break;
+            }
         }
-        }
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
     /**
      * Refreshes the text of EventOverview

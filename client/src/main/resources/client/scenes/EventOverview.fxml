@@ -69,22 +69,22 @@
                         </ChoiceBox>
                      </center>
                      <right>
-                        <Button fx:id="addExpenseButton" mnemonicParsing="false" onAction="#addExpense" prefHeight="26.0" prefWidth="95.0" styleClass="button-add" text="ADD EXPENSE" BorderPane.alignment="CENTER" />
+                        <Button fx:id="addExpenseButton" mnemonicParsing="false" onAction="#addExpense" prefHeight="26.0" prefWidth="65.0" styleClass="button-add" text="ADD" BorderPane.alignment="CENTER" />
                      </right>
                      <bottom>
                         <HBox prefHeight="24.0" prefWidth="331.0" BorderPane.alignment="CENTER">
                            <children>
                               <ToggleButton id="AllExpenses" mnemonicParsing="false" prefHeight="26.0" prefWidth="80.0" selected="true" text="All">
                                  <toggleGroup>
-                                    <ToggleGroup fx:id="SelectExpenses" />
+                                    <ToggleGroup fx:id="selectExpenses" />
                                  </toggleGroup>
                               </ToggleButton>
-                              <ToggleButton id="ExspenseIncludingParticipant" mnemonicParsing="false" prefHeight="26.0" prefWidth="147.0" text="Including participant " toggleGroup="$SelectExpenses">
+                              <ToggleButton id="ExspenseIncludingParticipant" mnemonicParsing="false" prefHeight="26.0" prefWidth="147.0" text="Including participant" toggleGroup="$selectExpenses">
                                  <HBox.margin>
                                     <Insets />
                                  </HBox.margin>
                               </ToggleButton>
-                              <ToggleButton id="ExspensePaidParticipant" mnemonicParsing="false" prefHeight="26.0" prefWidth="152.0" text="Paid by participant " toggleGroup="$SelectExpenses" />
+                              <ToggleButton id="ExspensePaidParticipant" mnemonicParsing="false" prefHeight="26.0" prefWidth="152.0" text="Paid by participant" toggleGroup="$selectExpenses" />
                            </children>
                            <BorderPane.margin>
                               <Insets top="20.0" />
