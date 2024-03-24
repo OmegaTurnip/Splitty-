@@ -175,9 +175,8 @@ public class AddParticipantCtrl{
     public boolean createParticipant() throws WebApplicationException{
         try{
             emptyCheck();
-            Participant participant = event.addParticipant
-                    (usernameTextField.getText());
-            server.createParticipant(participant);
+            event.addParticipant(usernameTextField.getText());
+            server.createEvent(event);
         } catch(WebApplicationException e){
             e.printStackTrace();
             var alert = new Alert(Alert.AlertType.ERROR);
