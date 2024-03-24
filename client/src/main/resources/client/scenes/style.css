@@ -9,6 +9,7 @@
 
 .event-cell:hover {
     -fx-background-color: #8A2BE2;
+    -fx-cursor: hand;
 }
 
 .list-cell {
@@ -24,6 +25,57 @@
 }
 
 .button {
+    -fx-background-color: #9370DB;
     -fx-cursor: hand;
+}
+
+.button:hover, .button:focused {
+    -fx-background-color: #8A2BE2;
+}
+
+.button-add {
+    -fx-background-image: url('/client/scenes/plus.png');
+    -fx-background-size: contain;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-color: transparent;
+
+}
+
+.button-edit {
+    -fx-background-image: url('/client/scenes/editing.png');
+    -fx-background-size: contain;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-color: transparent;
+}
+
+.button-delete {
+    -fx-background-image: url('/client/scenes/delete.png');
+    -fx-background-size: contain;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-color: transparent;
+
+}
+
+.button-add:hover, .button-edit:hover, .button-delete:hover,
+.button-add:focused, .button-edit:focused, .button-delete:focused {
+    -fx-background-color: #9370DB;
+    -fx-cursor: hand;
+}
+
+.choice-box {
+    -fx-background-color: #B89AE1;
+    -fx-font-family: Garamond;
+    -fx-cursor: hand;
+}
+
+.choice-box:hover, .choice-box:focused {
+    -fx-background-color: #9370DB;
+}
+
+.list-view:focused {
+    -fx-background-color: radial-gradient(center 96.2% 89.9%, radius 100%,  rgb(184, 154, 225)  0%, rgb(51, 21, 117) 92%);
 }
 

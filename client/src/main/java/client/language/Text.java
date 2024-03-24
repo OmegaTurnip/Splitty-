@@ -57,23 +57,19 @@ public class Text {
     public static final class EventOverview {
 
         private static final String level = "EventOverview.";
+        public static final String expensesLabel = level
+                + "expensesLabel";
+        public static final String participantsLabel = level
+                + "participantsLabel";
 
         public static final class Buttons {
 
             private static final String level = EventOverview.level +
                     "Buttons.";
-            public static final String Edit = level + "Edit";
-            public static final String Add = level + "Add";
-            public static final String SendInvite = level + "SendInvite";
-            public static final String AddExpense = level + "AddExpense";
-            public static final String SettleDebts = level + "SettleDebts";
-
-        }
-
-        public static final class Labels {
-            private static final String level = EventOverview.level + "Labels.";
-            public static final String Expenses = level + "Expenses";
-            public static final String Participants = level + "Participants";
+            public static final String sendInviteButton = level
+                    + "sendInviteButton";
+            public static final String settleDebtsButton = level
+                    + "settleDebtsButton";
 
         }
     }

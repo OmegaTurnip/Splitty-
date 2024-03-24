@@ -2,31 +2,47 @@ package client.scenes;
 
 
 
-
+import client.language.Language;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import client.language.TextPage;
+import client.language.Translator;
 import client.utils.ServerUtils;
+import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
 import commons.Transaction;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.ResourceBundle;
 
 
-public class EventOverviewCtrl implements TextPage {
+public class EventOverviewCtrl implements TextPage, Initializable {
 
     private Event event;
 
     @FXML
     private Label eventNameLabel;
     @FXML
+    private Label participantsLabel;
+    @FXML
+    private Label expensesLabel;
+    @FXML
     private Menu languages;
     @FXML
-    private ImageView addParticipantButton;
+    private Button addParticipantButton;
     @FXML
-    private ImageView addExpenseButton;
+    private Button addExpenseButton;
     @FXML
     private ChoiceBox<String> expensesDropDown;
     @FXML
@@ -51,55 +67,62 @@ public class EventOverviewCtrl implements TextPage {
         this.server = server;
         this.mainCtrl = mainCtrl;
     }
+
     /**
-     * Refreshes all the text
+     * Initialise the page.
+     * @param location
+     * The location used to resolve relative paths for the root object, or
+     * {@code null} if the location is not known.
+     *
+     * @param resources
+     * The resources used to localize the root object, or {@code null} if
+     * the root object was not localized.
      */
-    public void refreshText(){
-        refreshMenu();
-        refreshTextEventOverview();
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        fetchLanguages();
+        participantsListView.setCellFactory(param ->
+                new ParticipantCellFactory());
+        refresh();
+    }
+
+    /**
+     * Refreshes the page.
+     */
+    public void refresh() {
+        if (event != null) {
+            ObservableList<Participant> observableParticipants =
+                    FXCollections.observableArrayList(event.getParticipants());
+            participantsListView.setItems(observableParticipants);
+        }
+
+        refreshText();
     }
     /**
      * Refreshes the text of EventOverview
      */
-    public void refreshTextEventOverview() {
-//        inviteCodeButton.setText(
-//                Translator.getTranslation(
-//                Text.EventOverview.Buttons.SendInvite)
 
-//        );
-//        participants.setText(
-//                Translator.getTranslation
-//                        (Text.EventOverview.Labels.Participants));
-//        editParticipant.setText(
-//                Translator.getTranslation(Text.EventOverview.Buttons.Edit));
-//        addParticipant.setText(
-//                Translator.getTranslation(Text.EventOverview.Buttons.Add));
-//        settleDebts.setText(
-//                Translator.getTranslation
-//                        (Text.EventOverview.Buttons.SettleDebts));
-//        addExpense.setText(
-//                Translator.getTranslation(
-//                Text.EventOverview.Buttons.AddExpense)
-//        );
-//
-//        expenses.setText(
-//                Translator.getTranslation(
-//                Text.EventOverview.Labels.Expenses));
+    public void refreshText() {
+        participantsLabel.setText(Translator
+                .getTranslation(client.language
+                        .Text.EventOverview.participantsLabel));
+        expensesLabel.setText(Translator
+                .getTranslation(client.language
+                        .Text.EventOverview.expensesLabel));
+        settleDebtsButton.setText(Translator
+                .getTranslation(client.language
+                        .Text.EventOverview.Buttons.settleDebtsButton));
+        sendInviteButton.setText(Translator
+                .getTranslation(client.language
+                        .Text.EventOverview.Buttons.sendInviteButton));
 
-        eventNameLabel.setText(event.getEventName());
-    }
-
-    /**
-     * Refreshes text of everything in the menu
-     */
-    public void refreshMenu(){
+        if (event != null ) eventNameLabel.setText(event.getEventName());
     }
     /**
      * Add participant to event
      */
     public void addParticipant(){
         mainCtrl.showAddParticipant(event);
-        refreshText();
     }
 
     /**
@@ -109,49 +132,81 @@ public class EventOverviewCtrl implements TextPage {
 
     }
 
-//    /**
-//     * Still in construction (planning to add name to list of participants)
-//     * @param username name to be added to list
-//     */
-//    public void displayName(String username){
-//        this.participantsList.setText(username);
-//    }
-//
-//    /**
-//     * Sets language to Dutch
-//     */
-//    public void setDutch(){
-//        try {
-//            UserConfig.get().setUserLanguage("nld");
-//            refreshText();
-//        }catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    /**
-//     * Sets language to English
-//     */
-//    public void setEnglish(){
-//        try {
-//            UserConfig.get().setUserLanguage("eng");
-//            refreshText();
-//        }catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    /**
-//     * Sets language to German
-//     */
-//    public void setGerman(){
-//        try {
-//            UserConfig.get().setUserLanguage("deu");
-//            refreshText();
-//        }catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    /**
+     * Fetch the languages and add to languages drop down menu.
+     */
+    private void fetchLanguages() {
+        HashMap<String, Language> languages = Language.languages;
+
+        for (String langKey : languages.keySet()) {
+            MenuItem item = new MenuItem(langKey);
+
+            item.setOnAction(event -> {
+                setLanguage(langKey);
+            });
+
+            Image image = new Image(languages
+                    .get(langKey).getIconFile().toURI().toString());
+            ImageView imageView = new ImageView(image);
+            imageView.setFitHeight(20);
+            imageView.setFitWidth(20);
+            item.setGraphic(imageView);
+            this.languages.getItems().add(item);
+        }
+    }
+
+    /**
+     * Set user language.
+     * @param langKey The language to set.
+     */
+    private void setLanguage(String langKey) {
+        try {
+            UserConfig.get().setUserLanguage(langKey);
+            refreshText();
+        }catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private class ParticipantCellFactory extends ListCell<Participant> {
+
+        private FXMLLoader loader;
+        @Override
+        protected void updateItem(Participant item, boolean empty) {
+            super.updateItem(item, empty);
+
+            if (item == null || empty) {
+                setGraphic(null);
+                setText(null);
+            } else {
+                if (loader == null) {
+                    loader = new FXMLLoader(getClass()
+                            .getResource(
+                                    "/client/scenes/ParticipantCell.fxml"));
+                    try {
+                        Parent root = loader.load();
+                        root.getStylesheets()
+                                .add(getClass()
+                                        .getResource("style.css")
+                                        .toExternalForm());
+                        loader.setRoot(root);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                ParticipantCellController controller = loader.getController();
+                controller.setParticipantCellLabelText(item.getName());
+                controller.setEvent(event);
+                controller.setParticipant(item);
+                controller.setServer(server);
+                controller.setEventOverviewCtrl(EventOverviewCtrl.this);
+                setText(null);
+                setGraphic(loader.getRoot());
+            }
+
+        }
+    }
+
 
 
     /**
@@ -161,4 +216,6 @@ public class EventOverviewCtrl implements TextPage {
     public void setEvent(Event event) {
         this.event = event;
     }
+
+
 }

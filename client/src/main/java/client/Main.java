@@ -64,6 +64,7 @@ public class Main extends Application {
                     "AddParticipant.fxml");
             mainCtrl.initialize(primaryStage, overview, add, startUp);
         } catch (RuntimeException e) {
+            e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(Translator
                     .getTranslation(client.language

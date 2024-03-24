@@ -21,11 +21,9 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import java.io.IOException;
 import java.net.URL;
@@ -45,9 +43,6 @@ public class StartUpCtrl implements Initializable, TextPage {
 
     @FXML
     private Label yourEventsLabel;
-
-    @FXML
-    private AnchorPane topBG;
 
     @FXML
     private TextField newEvent1;
@@ -73,14 +68,6 @@ public class StartUpCtrl implements Initializable, TextPage {
     public StartUpCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
-    }
-
-    /**
-     * Injector setter
-     * @param yourEvents yourEvents listview.
-     */
-    public void setYourEvents(ListView<Event> yourEvents) {
-        this.yourEvents = yourEvents;
     }
 
     /**
@@ -113,14 +100,6 @@ public class StartUpCtrl implements Initializable, TextPage {
         newEvent1.setOnAction(event -> createEvent());
         joinEvent1.setOnAction(event -> joinEvent());
         yourEvents.setCellFactory(param -> new EventListCell());
-        Stage primaryStage = mainCtrl.getPrimaryStage();
-        primaryStage.setOnCloseRequest(event -> {
-            try {
-                server.saveEvents(currentEvents);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
         yourEvents.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case DELETE -> {
@@ -138,7 +117,7 @@ public class StartUpCtrl implements Initializable, TextPage {
                 }
             }
         });
-        refresh();
+
     }
 
     private void fetchLanguages() {
@@ -210,7 +189,7 @@ public class StartUpCtrl implements Initializable, TextPage {
                                 client.language.Text
                                         .StartUp.Alert.noEventWritten), 422);
             }
-            Event result = server.createEvent(e);
+            Event result = server.saveEvent(e);
             List<String> eventCodes = server.getUserSettings().getEventCodes();
             eventCodes.add(result.getInviteCode());
             server.getUserSettings().setEventCodes(eventCodes);
@@ -338,6 +317,14 @@ public class StartUpCtrl implements Initializable, TextPage {
             }
         }
         refresh();
+    }
+
+    /**
+     * Getter for yourEvents (for testing)
+     * @return yourEvents listview
+     */
+    public ListView<Event> getYourEvents() {
+        return yourEvents;
     }
 
     private class EventListCell extends ListCell<Event> {
