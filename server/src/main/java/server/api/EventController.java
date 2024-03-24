@@ -58,19 +58,19 @@ public class EventController {
     @PutMapping(path = { "", "/" })
     @ResponseBody
     public ResponseEntity<List<Event>> saveEvents(
-            @RequestBody Iterable<Event> events) {
+            @RequestBody List<Event> events) {
         eventRepository.saveAll(events);
-        return ResponseEntity.ok((List<Event>) events);
+        return ResponseEntity.ok(events);
     }
 
     /**
-     * Add an event
-     * @param event The event to add
-     * @return  The event added
+     * Save an event
+     * @param event The event to save
+     * @return  The event saved
      */
     @PostMapping(path = { "", "/" })
     @ResponseBody
-    public ResponseEntity<Event> addEvent(@RequestBody Event event) {
+    public ResponseEntity<Event> saveEvent(@RequestBody Event event) {
 
         eventRepository.saveAndFlush(event);
 

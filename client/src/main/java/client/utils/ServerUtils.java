@@ -128,11 +128,11 @@ public class ServerUtils {
     }
 
     /**
-     * Create Event REST API request.
-     * @param event The event to be created.
-     * @return The created event.
+     * Create/save Event REST API request.
+     * @param event The event to be created/saved.
+     * @return The created/saved event.
      */
-    public Event createEvent(Event event) {
+    public Event saveEvent(Event event) {
         return client //
                 .target(server).path("api/event") //
                 .request(APPLICATION_JSON) //
