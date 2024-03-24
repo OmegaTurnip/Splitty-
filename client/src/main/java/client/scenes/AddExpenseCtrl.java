@@ -19,7 +19,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-//import javafx.util.Callback;
 import org.controlsfx.control.CheckComboBox;
 
 
@@ -35,28 +34,40 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     @FXML
     private Button cancel;
     @FXML
+    private Button addExpense;
+
+//    price of the expense
+    @FXML
     private ChoiceBox<Currency> currency;
     @FXML
+    private TextField price;
+
+//    Payer of the expense
+    @FXML
     private ChoiceBox<Object> payer;
+    private Participant expensePayer;
+
+//    Participants in the expense
     @FXML
     private CheckComboBox<Object> participants;
     private Collection<Participant> participantList;
+
+//    date of the expense
     @FXML
     private DatePicker date;
-    @FXML
-    private Button addExpense;
+
+//    expense name
     @FXML
     private TextField expenseName;
-    @FXML
-    private TextField price;
+//    tags
     @FXML
     private ComboBox<Tag> expenseType;
-    private Event event;
     private ArrayList<Tag> tags = new ArrayList<>();
+
+    private Event event;
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
     private final EventOverviewCtrl eventOverviewCtrl;
-    private Participant expensePayer;
 
     /**
      * Initializes the controller
@@ -92,6 +103,9 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         refresh();
     }
 
+    /**
+     * Updates expensePayer whenever a payer is selected in ChoiceBox payer
+     */
     void payerSelection() {
         payer.setOnAction(event -> {
             Object selectedValue = payer.getValue();
@@ -104,6 +118,10 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         });
     }
 
+    /**
+     * Handles which participants are selected at
+     * the same time in CheckComboBox participants
+     */
     void participantSelection() {
         AtomicBoolean isCheckingAll = new AtomicBoolean(false);
         checkListener(isCheckingAll);
@@ -111,6 +129,11 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         uncheckListener(isCheckingAll);
     }
 
+    /**
+     * Listens for boxes being unchecked and unchecks "Everyone" if anything is
+     * deselected and unchecks everything if "Everyone" is deselected
+     * @param isCheckingAll whether all fields are check as a boolean
+     */
     private void uncheckListener(AtomicBoolean isCheckingAll) {
         participants.getCheckModel().getCheckedItems()
                 .addListener((ListChangeListener<Object>) change -> {
@@ -129,6 +152,10 @@ public class AddExpenseCtrl implements Initializable, TextPage {
                 });
     }
 
+    /**
+     * Sets the title of CheckComboBox participants to default
+     * if everything is unchecked
+     */
     private void allUncheckedListener() {
         participants.getCheckModel().getCheckedItems()
                 .addListener((ListChangeListener<Object>) change -> {
@@ -141,6 +168,11 @@ public class AddExpenseCtrl implements Initializable, TextPage {
                 });
     }
 
+    /**
+     * Listens for boxes being checked and checks everything if "Everyone"
+     * is selected and checks "Everyone" if everything is selected
+     * @param isCheckingAll whether all fields are check as a boolean
+     */
     private void checkListener(AtomicBoolean isCheckingAll) {
         participants.getCheckModel().getCheckedItems()
                 .addListener((ListChangeListener<Object>) change -> {
@@ -199,6 +231,11 @@ public class AddExpenseCtrl implements Initializable, TextPage {
                 .setValue("Select the person that paid for the expense");
     }
 
+    /**
+     * Gets the participants in the event from the server and
+     * constructs the items for the CheckComboBox participants
+     * through an observable list
+     */
     private void loadParticipants() {
         List<Object> participantChoiceBoxList = new ArrayList<>();
         participantChoiceBoxList.add("Everyone");
@@ -237,7 +274,10 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         //TODO: Make labels for the other text
     }
 
-
+    /**
+     * Loads the languages from the config file and adds them
+     * with corresponding actions to the menu
+     */
     private void fetchLanguages() {
         HashMap<String, Language> languages = Language.languages;
 
@@ -275,6 +315,9 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         participants.setTitle("Select the people involved in the expense");
     }
 
+    /**
+     * Checks all participants in CheckComboBox participants
+     */
     public void checkAllParticipants() {
         for (int i = 0; i < participants.getItems().size(); i++) {
             participants.getCheckModel().check(i);
@@ -305,7 +348,10 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         this.event = event;
     }
 
-   public void getCheckedParticipants() {
+    /**
+     * Updates {@code participantList} to the checked participants
+     */
+    public void getCheckedParticipants() {
         for (Object o : participants.getCheckModel().getCheckedItems()) {
             if (!Objects.equals(o, "Everyone")) {
                 participantList.add((Participant) o);
