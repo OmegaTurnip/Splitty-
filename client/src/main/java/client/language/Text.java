@@ -82,6 +82,9 @@ public class Text {
         private static final String level = "AddParticipant.";
 
         public static final String Username = level + "Username";
+        public static final String Email = level + "Email";
+        public static final String IBAN = level + "IBAN";
+        public static final String BIC = level + "BIC";
         public static final String Cancel = level + "Cancel";
         public static final String Add = level + "Add";
         public static final String Title = level + "Title";
