@@ -64,7 +64,7 @@ class ServerUtilsTest {
         Event testEvent1 = new Event("testEvent1");
         when(builder.post(Entity.entity(testEvent1, MediaType.APPLICATION_JSON_TYPE), Event.class)).thenReturn(testEvent1);
 
-        Event event = sut.createEvent(testEvent1);
+        Event event = sut.saveEvent(testEvent1);
 
         assertEquals(event, testEvent1);
 

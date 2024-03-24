@@ -26,7 +26,6 @@ import java.util.List;
 
 
 import commons.Event;
-import commons.Participant;
 import jakarta.ws.rs.client.Client;
 import org.glassfish.jersey.client.ClientConfig;
 
@@ -128,11 +127,11 @@ public class ServerUtils {
     }
 
     /**
-     * Create Event REST API request.
-     * @param event The event to be created.
-     * @return The created event.
+     * Create/save Event REST API request.
+     * @param event The event to be created/saved.
+     * @return The created/saved event.
      */
-    public Event createEvent(Event event) {
+    public Event saveEvent(Event event) {
         return client //
                 .target(server).path("api/event") //
                 .request(APPLICATION_JSON) //
@@ -167,30 +166,21 @@ public class ServerUtils {
                 .get(Event.class);
     }
 
-    /**
-     * Save events
-     * @param events The events to save
-     * @return The saved events
-     */
-    public List<Event> saveEvents(List<Event> events) {
-        return client //
-                .target(server).path("api/event") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .put(Entity.entity(events, APPLICATION_JSON),
-                        new GenericType<List<Event>>() {});
-    }
-
-    /**
-     * Gets participants for event
-     * @param event the Event to get participants from
-     * @return a list of Participant
-     */
-    public List<Participant> getParticipantsOfEvent(Event event) {
-        return client.target(server)
-                .path("api/event/" + event.getId() + "/participants")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<>() {});
-    }
+//    /**
+//     * Save events
+//     * @param events The events to save
+//     * @return The saved events
+//     */
+//    public List<Event> saveEvents(List<Event> events) {
+//        if (events == null) {
+//            throw new NullPointerException("Null events");
+//        }
+//        return client //
+//                .target(server).path("api/event") //
+//                .request(APPLICATION_JSON) //
+//                .accept(APPLICATION_JSON) //
+//                .put(Entity.entity(events, APPLICATION_JSON),
+//                        new GenericType<>() {
+//                        });
+//    }
 }

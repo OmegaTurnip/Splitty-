@@ -67,6 +67,7 @@ public class Main extends Application {
             mainCtrl.initialize(primaryStage, overview, add,
                     startUp, addExpense);
         } catch (RuntimeException e) {
+            e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(Translator
                     .getTranslation(client.language

@@ -18,6 +18,8 @@ package client.scenes;
 import commons.Event;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -29,18 +31,19 @@ public class MainCtrl {
     private Scene overview;
 
     private AddParticipantCtrl addParticipantCtrl;
-    private AddExpenseCtrl addExpenseCtrl;
     private Scene add;
-    private Scene addExpense;
     private StartUpCtrl startUpCtrl;
     private Scene startUp;
+
+    private AddExpenseCtrl addExpenseCtrl;
+    private Scene addExpense;
 
     /**
      * @param primaryStage the window.
      * @param overview the fx for the event overview page.
      * @param add the fx for the add participant page.
      * @param startUp The fx for the start-up page.
-     * @param addExpense The fx for the expense adding page.
+     * @param addExpense The fx for the add expense page.
      */
     public void initialize(
             Stage primaryStage, Pair<EventOverviewCtrl, Parent> overview,
@@ -48,17 +51,23 @@ public class MainCtrl {
             Pair<StartUpCtrl, Parent> startUp,
             Pair<AddExpenseCtrl, Parent> addExpense) {
         this.primaryStage = primaryStage;
-        this.overviewCtrl = overview.getKey();
-        this.overview = new Scene(overview.getValue());
+
         this.startUpCtrl = startUp.getKey();
         this.startUp = new Scene(startUp.getValue());
         this.startUp.getStylesheets().add(getClass()
                 .getResource("style.css").toExternalForm());
 
+        this.overviewCtrl = overview.getKey();
+        this.overview = new Scene(overview.getValue());
+        this.overview.getStylesheets().add(getClass()
+                .getResource("style.css").toExternalForm());
+
         this.addParticipantCtrl = add.getKey();
         this.add = new Scene(add.getValue());
+
         this.addExpenseCtrl = addExpense.getKey();
         this.addExpense = new Scene(addExpense.getValue());
+
 
 
         showStartUp();
@@ -87,9 +96,16 @@ public class MainCtrl {
      */
     public void showEventOverview(Event event) {
         overviewCtrl.setEvent(event);
-        this.overviewCtrl.refreshText();
         primaryStage.setTitle("Event Overview");
         primaryStage.setScene(overview);
+        overview.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                showStartUp();
+                e.consume();
+            }
+        });
+        event.addParticipant("test"); // test line, remove later
+        overviewCtrl.refresh();
     }
 
     /**
@@ -98,10 +114,11 @@ public class MainCtrl {
     public void showStartUp() {
         primaryStage.setTitle("Splitty!");
         primaryStage.setScene(startUp);
+        startUpCtrl.refresh();
     }
 
     /**
-     * go to the add participant page (by changing the content of the window).
+     * go to the add quote page (by changing the content of the window).
      * @param event the event the participant is a part of.
      */
     public void showAddParticipant(Event event) {
@@ -129,6 +146,14 @@ public class MainCtrl {
     }
 
     /**
+     * Get the overview scene.
+     * @return the overview scene.
+     */
+    public Scene getOverviewScene() {
+        return overview;
+    }
+
+    /**
      * go to the add expense page (by changing the content of the window).
      * @param event the event the expense is a part of.
      */
@@ -138,4 +163,5 @@ public class MainCtrl {
         primaryStage.setTitle("Splitty!");
         primaryStage.setScene(addExpense);
     }
+
 }
