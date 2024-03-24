@@ -47,7 +47,7 @@ public class StartUpCtrl implements Initializable, TextPage {
     private Label yourEventsLabel;
 
     @FXML
-    private AnchorPane TopBG;
+    private AnchorPane topBG;
 
     @FXML
     private TextField newEvent1;

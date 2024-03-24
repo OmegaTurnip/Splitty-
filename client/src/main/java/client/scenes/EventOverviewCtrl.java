@@ -2,11 +2,9 @@ package client.scenes;
 
 
 
-import client.language.Text;
+
 import client.language.TextPage;
-import client.language.Translator;
 import client.utils.ServerUtils;
-import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
@@ -15,8 +13,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 
-import java.io.IOException;
-import java.util.List;
 
 
 public class EventOverviewCtrl implements TextPage {
@@ -67,7 +63,9 @@ public class EventOverviewCtrl implements TextPage {
      */
     public void refreshTextEventOverview() {
 //        inviteCodeButton.setText(
-//                Translator.getTranslation(Text.EventOverview.Buttons.SendInvite)
+//                Translator.getTranslation(
+//                Text.EventOverview.Buttons.SendInvite)
+
 //        );
 //        participants.setText(
 //                Translator.getTranslation
@@ -80,11 +78,13 @@ public class EventOverviewCtrl implements TextPage {
 //                Translator.getTranslation
 //                        (Text.EventOverview.Buttons.SettleDebts));
 //        addExpense.setText(
-//                Translator.getTranslation(Text.EventOverview.Buttons.AddExpense)
+//                Translator.getTranslation(
+//                Text.EventOverview.Buttons.AddExpense)
 //        );
 //
 //        expenses.setText(
-//                Translator.getTranslation(Text.EventOverview.Labels.Expenses));
+//                Translator.getTranslation(
+//                Text.EventOverview.Labels.Expenses));
 
         eventNameLabel.setText(event.getEventName());
     }
