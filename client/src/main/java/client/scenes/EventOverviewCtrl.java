@@ -44,11 +44,19 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     @FXML
     private Button addExpenseButton;
     @FXML
-    private ChoiceBox<String> expensesDropDown;
+    private ChoiceBox<Participant> expensesDropDown;
     @FXML
     private Button settleDebtsButton;
     @FXML
     private Button sendInviteButton;
+    @FXML
+    private ToggleGroup selectExpenses;
+    @FXML
+    private ToggleButton allExpenses;
+    @FXML
+    private ToggleButton includingExpenses;
+    @FXML
+    private ToggleButton fromExpenses;
     @FXML
     private ListView<Participant> participantsListView;
     @FXML
@@ -83,6 +91,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         fetchLanguages();
         participantsListView.setCellFactory(param ->
                 new ParticipantCellFactory());
+
         refresh();
     }
 
@@ -94,9 +103,42 @@ public class EventOverviewCtrl implements TextPage, Initializable {
             ObservableList<Participant> observableParticipants =
                     FXCollections.observableArrayList(event.getParticipants());
             participantsListView.setItems(observableParticipants);
+            expensesDropDown.setItems(observableParticipants);
         }
 
         refreshText();
+    }
+
+    public void getExpenses(){
+        Participant participant = expensesDropDown.getValue();
+        ToggleButton selected = (ToggleButton) selectExpenses.getSelectedToggle();
+        if (selected != null && participant != null){
+            String choice = selected.getText();
+            ObservableList<Transaction> transactions = FXCollections.observableArrayList(event.getTransactions());
+        switch (choice) {
+            case "All":
+                expensesListView.setItems(transactions);
+                break;
+            case "Including participant":
+                ObservableList<Transaction> transactionsParticipant = FXCollections.observableArrayList();
+                for(Transaction transaction : transactions){
+                    if(transaction.getParticipants().contains(participant)){
+                        transactionsParticipant.add(transaction);
+                    }
+                }
+                expensesListView.setItems(transactionsParticipant);
+                break;
+            case "Paid by participant":
+                ObservableList<Transaction> transactionsPayer =  FXCollections.observableArrayList();
+                for(Transaction transaction : transactions){
+                    if(transaction.getPayer().equals(participant)){
+                        transactionsPayer.add(transaction);
+                    }
+                }
+                expensesListView.setItems(transactionsPayer);
+                break;
+        }
+        }
     }
     /**
      * Refreshes the text of EventOverview
