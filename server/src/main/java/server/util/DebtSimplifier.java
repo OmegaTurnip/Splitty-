@@ -206,13 +206,14 @@ public class DebtSimplifier {
             ParticipantCentPair nextParticipant = cents.poll();
 
             if (nextParticipant == null)
-                throw new NullPointerException("this shouldn't happen");
+                throw new NullPointerException("An (in theory) impossible " +
+                        "mishap occurred in the simplification algorithm");
 
             Participant participant = nextParticipant.participant;
 
             centsPayedExtra.put(participant,
                     centsPayedExtra.get(participant) + 1);
-            result.add(nextParticipant.participant);
+            result.add(participant);
         }
 
         return result;

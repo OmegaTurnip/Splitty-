@@ -63,6 +63,12 @@ class TransactionTest {
         assertEquals(LocalDate.of(2003, 3, 21), testTransaction1.getDate());
     }
 
+    @Test
+    void setAmount() {
+        testTransaction1.setAmount(Money.fromLong(736574, "EUR"));
+        assertEquals(Money.fromLong(736574, "EUR"), testTransaction1.getAmount());
+    }
+
 
     @Test
     void getEvent() {

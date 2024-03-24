@@ -46,11 +46,13 @@ public class Transaction {
      *          The event the transactions belongs to.
      * @param   tag
      *          The tag of the transaction.
+     * @param   isPayoff
+     *          Whether this transaction is a payoff or a debt.
      */
     @SuppressWarnings("checkstyle:ParameterNumber") // no other option really
     private Transaction(Participant payer, String name, Money amount,
                         List<Participant> participants, Event event, Tag tag,
-                        Void distinguishFromOtherConstructors) {
+                        boolean isPayoff) {
         this.payer = payer;
         this.name = name;
         this.date = LocalDate.now();
@@ -58,54 +60,8 @@ public class Transaction {
         this.participants = participants;
         this.event = event;
         this.tag = tag;
+        this.isPayoff = isPayoff;
         event.updateLastActivity();
-    }
-
-    /**
-     * Creates a transaction that creates a debt. Note that the difference
-     * between payoff and not payoff is the participants list.
-     *
-     * @param   creditor
-     *          The person who paid for the transaction.
-     * @param   name
-     *          The name of the transaction.
-     * @param   amount
-     *          The amount of money transferred in the transaction.
-     * @param   debtors
-     *          The people who owe money.
-     * @param   event
-     *          The event the transactions belongs to.
-     * @param   tag
-     *          The tag of the transaction.
-     */
-    private Transaction(Participant creditor, String name, Money amount,
-                        List<Participant> debtors, Event event, Tag tag) {
-        this(creditor, name, amount, debtors, event, tag, null);
-        this.isPayoff = false;
-    }
-
-
-    /**
-     * Creates a transaction that creates a payoff. Note that the difference
-     * between payoff and not payoff is the (lack of) participants list.
-     *
-     * @param   payer
-     *          The person who paid for the transaction.
-     * @param   name
-     *          The name of the transaction.
-     * @param   amount
-     *          The amount of money transferred in the transaction.
-     * @param   receiver
-     *          The person who received money.
-     * @param   event
-     *          The event the transactions belongs to.
-     * @param   tag
-     *          The tag of the transaction.
-     */
-    private Transaction(Participant payer, String name, Money amount,
-                       Participant receiver, Event event, Tag tag) {
-        this(payer, name, amount, List.of(receiver), event, tag, null);
-        this.isPayoff = true;
     }
 
     /**
@@ -136,7 +92,8 @@ public class Transaction {
     public static Transaction createPayoff(Participant payer, String name,
                                             Money amount, Participant receiver,
                                             Event event, Tag tag) {
-        return new Transaction(payer, name, amount, receiver, event, tag);
+        return new Transaction(payer, name, amount, List.of(receiver), event,
+                tag, true);
     }
 
     /**
@@ -161,7 +118,8 @@ public class Transaction {
     public static Transaction createDebt(
             Participant creditor, String name, Money amount,
             List<Participant> debtors, Event event, Tag tag) {
-        return new Transaction(creditor, name, amount, debtors, event, tag);
+        return new Transaction(creditor, name, amount, debtors, event, tag,
+                false);
     }
 
 
