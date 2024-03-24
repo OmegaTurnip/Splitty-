@@ -7,8 +7,10 @@ import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
+import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.Modality;
 
 import java.io.IOException;
 
@@ -109,9 +111,9 @@ public class AddParticipantCtrl{
      * Method still in construction
      */
     public void addParticipant(){
-        String username = usernameTextField.getText();
-        this.eventOverviewCtrl.displayName(username);
-        this.mainCtrl.showEventOverview(event);
+        if(createParticipant()){
+            this.mainCtrl.showEventOverview(event);
+        }
     }
 
     private Participant getParticipant(){
@@ -161,5 +163,47 @@ public class AddParticipantCtrl{
      */
     public void setEvent(Event event) {
         this.event = event;
+    }
+
+    public boolean createParticipant() throws WebApplicationException{
+        try{
+            emptyCheck();
+            event.addParticipant(usernameTextField.getText());
+        } catch(WebApplicationException e){
+            e.printStackTrace();
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+            return false;
+        }
+        return true;
+    }
+
+    public void emptyCheck(){
+        if (usernameTextField.getText().isEmpty()) {
+            throw new WebApplicationException(
+                    Translator.getTranslation(
+                            Text.AddParticipant.Alert.NoName
+                                    ), 422);
+        }
+        if (emailTextField.getText().isEmpty()) {
+            throw new WebApplicationException(
+                    Translator.getTranslation(
+                            Text.AddParticipant.Alert.NoMail
+                    ), 422);
+        }
+        if (ibanTextField.getText().isEmpty()) {
+            throw new WebApplicationException(
+                    Translator.getTranslation(
+                            Text.AddParticipant.Alert.NoIBAN
+                    ), 422);
+        }
+        if (bicTextField.getText().isEmpty()) {
+            throw new WebApplicationException(
+                    Translator.getTranslation(
+                            Text.AddParticipant.Alert.NoBIC
+                    ), 422);
+        }
     }
 }
