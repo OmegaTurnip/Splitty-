@@ -75,9 +75,9 @@ class DebtSimplifierTest {
 
         assertThrows(IllegalArgumentException.class, () -> new DebtSimplifier.Debt(participants.get(2), participants.get(2), money1));
 
-        assertEquals(participants.get(0), debt1.getFrom());
-        assertEquals(participants.get(1), debt1.getTo());
-        assertEquals(money1, debt1.getAmount());
+        assertEquals(participants.get(0), debt1.from());
+        assertEquals(participants.get(1), debt1.to());
+        assertEquals(money1, debt1.amount());
 
         assertEquals(debt1, debt2);
         assertNotEquals(debt2, debt3);

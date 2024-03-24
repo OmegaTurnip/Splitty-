@@ -95,19 +95,19 @@ public class DebtSimplifier {
         if (debt == null)
             throw new NullPointerException();
 
-        if (!participants.containsKey(debt.getFrom()))
+        if (!participants.containsKey(debt.from()))
             throw new IllegalArgumentException(
                     "Debt contains unknown participant (from): " + debt);
 
-        if (!participants.containsKey(debt.getTo()))
+        if (!participants.containsKey(debt.to()))
             throw new IllegalArgumentException(
                     "Debt contains unknown participant (to): " + debt);
 
         Debt converted =
                 new Debt(debt.from, debt.to, convertToBase(debt.amount));
 
-        participants.get(converted.getTo()).add(converted);
-        participants.get(converted.getFrom()).add(converted);
+        participants.get(converted.to()).add(converted);
+        participants.get(converted.from()).add(converted);
     }
 
     /**
@@ -462,26 +462,22 @@ public class DebtSimplifier {
 
     /**
      * This class is called {@code Debt} and not {@code Transaction} to prevent
-     * name collisions with the {@link commons.Transaction} class all the time.
+     * name collisions with the {@link Transaction} class all the time.
      * A payoff should be represented as a debt in the reverse direction.
+     *
+     * @param   from
+     *          The {@code Participant} owing the debt.
+     * @param   to
+     *          The {@code Participant} that should receive the payment.
+     * @param   amount
+     *          The debt.
      */
-    public static class Debt {
-
-        private final Participant from;
-        private final Participant to;
-        private final Money amount;
+    public record Debt(Participant from, Participant to, Money amount) {
 
         /**
          * Creates an object storing the debt between two {@link Participant}s.
-         *
-         * @param   from
-         *          The {@code Participant} owing the debt.
-         * @param   to
-         *          The {@code Participant} that should receive the payment.
-         * @param   amount
-         *          The debt.
          */
-        public Debt(Participant from, Participant to, Money amount) {
+        public Debt {
             if (from == null || to == null || amount == null)
                 throw new NullPointerException("argument is null");
 
@@ -491,65 +487,6 @@ public class DebtSimplifier {
 
             if (amount.getAmount().compareTo(BigDecimal.ZERO) <= 0)
                 throw new IllegalArgumentException("Debt is not positive");
-
-            this.from = from;
-            this.to = to;
-            this.amount = amount;
-        }
-
-        /**
-         * Gets the {@code Participant} owing the debt.
-         *
-         * @return  The {@code Participant} owing the debt.
-         */
-        public Participant getFrom() {
-            return from;
-        }
-
-        /**
-         * Gets the {@code Participant} that should receive the payment.
-         *
-         * @return  The {@code Participant} that should receive the payment.
-         */
-        public Participant getTo() {
-            return to;
-        }
-
-        /**
-         * Gets the amount of debt.
-         *
-         * @return  The amount of debt.
-         */
-        public Money getAmount() {
-            return amount;
-        }
-
-        /**
-         * Checks if {@code this} is equal to {@code other}.
-         *
-         * @param   other
-         *          The object to check.
-         *
-         * @return  Whether {@code this} and {@code other} are equal.
-         */
-        @Override
-        public boolean equals(Object other) {
-            if (this == other) return true;
-            if (other == null || getClass() != other.getClass()) return false;
-            Debt debt = (Debt) other;
-            return Objects.equals(amount, debt.amount)
-                    && Objects.equals(from, debt.from)
-                    && Objects.equals(to, debt.to);
-        }
-
-        /**
-         * Generates a hash code corresponding to {@code this}.
-         *
-         * @return  A hash value.
-         */
-        @Override
-        public int hashCode() {
-            return Objects.hash(from, to, amount);
         }
 
         /**
