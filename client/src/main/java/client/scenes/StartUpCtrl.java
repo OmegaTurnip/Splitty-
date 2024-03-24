@@ -71,14 +71,6 @@ public class StartUpCtrl implements Initializable, TextPage {
     }
 
     /**
-     * Injector setter
-     * @param yourEvents yourEvents listview.
-     */
-    public void setYourEvents(ListView<Event> yourEvents) {
-        this.yourEvents = yourEvents;
-    }
-
-    /**
      * Fetches user events
      */
     private void fetchYourEvents() {
@@ -325,6 +317,14 @@ public class StartUpCtrl implements Initializable, TextPage {
             }
         }
         refresh();
+    }
+
+    /**
+     * Getter for yourEvents (for testing)
+     * @return yourEvents listview
+     */
+    public ListView<Event> getYourEvents() {
+        return yourEvents;
     }
 
     private class EventListCell extends ListCell<Event> {
