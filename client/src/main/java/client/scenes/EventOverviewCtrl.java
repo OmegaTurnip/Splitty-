@@ -91,6 +91,8 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         fetchLanguages();
         participantsListView.setCellFactory(param ->
                 new ParticipantCellFactory());
+        expensesListView.setCellFactory(param ->
+                new TransactionCellFactory());
 
         refresh();
     }
@@ -120,9 +122,11 @@ public class EventOverviewCtrl implements TextPage, Initializable {
 
             switch (choice) {
                 case "All":
+                    System.out.println("all clicked");
                     expensesListView.setItems(transactions);
                     break;
                 case "Including participant":
+                    System.out.println("Including participant clicked");
                     if (participant != null) {
                         ObservableList<Transaction> transactionsParticipant = FXCollections.observableArrayList();
                         for (Transaction transaction : transactions) {
@@ -138,6 +142,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                     break;
                 case "Paid by participant":
                     if (participant != null) {
+                        System.out.println("Paid by participant clicked");
                         ObservableList<Transaction> transactionsPayer =  FXCollections.observableArrayList();
                         for (Transaction transaction : transactions) {
                             if (transaction.getPayer().equals(participant)) {
@@ -267,6 +272,37 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 setGraphic(loader.getRoot());
             }
 
+        }
+    }
+
+    private class TransactionCellFactory extends ListCell<Transaction> {
+
+        private FXMLLoader loader;
+
+        @Override
+        protected void updateItem(Transaction transaction, boolean empty) {
+            super.updateItem(transaction, empty);
+
+            if (transaction == null || empty) {
+                setGraphic(null);
+                setText(null);
+            } else {
+                if (loader == null) {
+                    loader = new FXMLLoader(getClass()
+                            .getResource("client/scenes/TransactionCell.fxml"));
+                    try {
+                        Parent root = loader.load();
+                        loader.setRoot(root);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                TransactionCellController controller = loader.getController();
+                controller.setTransactionData(transaction);
+
+                setText(null);
+                setGraphic(loader.getRoot());
+            }
         }
     }
 
