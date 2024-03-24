@@ -78,4 +78,13 @@
 .list-view:focused {
     -fx-background-color: radial-gradient(center 96.2% 89.9%, radius 100%,  rgb(184, 154, 225)  0%, rgb(51, 21, 117) 92%);
 }
+.toggle-button {
+    -fx-background-color: #9370DB;;
+    -fx-font-size: 8px;
+}
+
+.toggle-button:hover, .toggle-button:focused {
+    -fx-background-color: #8A2BE2;
+    -fx-cursor: hand;
+}
 

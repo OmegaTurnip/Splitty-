@@ -5,6 +5,7 @@ package client.scenes;
 import client.language.Language;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import client.language.TextPage;
@@ -44,11 +45,19 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     @FXML
     private Button addExpenseButton;
     @FXML
-    private ChoiceBox<String> expensesDropDown;
+    private ChoiceBox<Participant> expensesDropDown;
     @FXML
     private Button settleDebtsButton;
     @FXML
     private Button sendInviteButton;
+    @FXML
+    private ToggleGroup selectExpenses;
+    @FXML
+    private ToggleButton allExpensesButton;
+    @FXML
+    private ToggleButton includingExpensesButton;
+    @FXML
+    private ToggleButton fromExpensesButton;
     @FXML
     private ListView<Participant> participantsListView;
     @FXML
@@ -83,6 +92,8 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         fetchLanguages();
         participantsListView.setCellFactory(param ->
                 new ParticipantCellFactory());
+        expensesListView.setCellFactory(param ->
+                new TransactionCellFactory());
         refresh();
     }
 
@@ -94,13 +105,90 @@ public class EventOverviewCtrl implements TextPage, Initializable {
             ObservableList<Participant> observableParticipants =
                     FXCollections.observableArrayList(event.getParticipants());
             participantsListView.setItems(observableParticipants);
+            expensesDropDown.setItems(observableParticipants);
+            getExpenses();
         }
 
         refreshText();
     }
+
+    @FXML
+    private void groupOfExpenseSelected(ActionEvent event) {
+        getExpenses();
+    }
+
+    /**
+     * Shows the list of expenses.
+     */
+    public void getExpenses() {
+        Participant participant = expensesDropDown.getValue();
+        ToggleButton selected =
+                (ToggleButton) selectExpenses.getSelectedToggle();
+
+        if (selected != null) {
+            String choice = selected.getText();
+            if(choice != "all" && participant == null){
+                showAlert("Participant Not Selected",
+                        "Please select a participant " +
+                                "first within the expense menu.");
+
+            }
+            ObservableList<Transaction> transactions =
+                    FXCollections.observableArrayList(event.getTransactions());
+            showSelectedExspenses(choice, participant, transactions);
+        }
+    }
+
+    /**
+     * Shows the selected expenses.
+     * @param choice The choice of expenses.
+     * @param participant The participant.
+     * @param transactions The transactions.
+     */
+    public void showSelectedExspenses(String choice,
+                                      Participant participant,
+                                      ObservableList<Transaction> transactions){
+        switch (choice) {
+            case "All":
+                System.out.println("all clicked");
+                expensesListView.setItems(transactions);
+                break;
+            case "Including participant":
+                System.out.println("Including participant clicked");
+                ObservableList<Transaction> transactionsParticipant =
+                        FXCollections.observableArrayList();
+                for (Transaction transaction : transactions) {
+                    if (transaction.getParticipants().contains(participant)) {
+                        transactionsParticipant.add(transaction);
+                    }
+                }
+                expensesListView.setItems(transactionsParticipant);
+                break;
+            case "Paid by participant":
+                System.out.println("Paid by participant clicked");
+                ObservableList<Transaction> transactionsPayer =
+                        FXCollections.observableArrayList();
+                for (Transaction transaction : transactions) {
+                    if (transaction.getPayer().equals(participant)) {
+                        transactionsPayer.add(transaction);
+                    }
+                }
+                expensesListView.setItems(transactionsPayer);
+                break;
+        }
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
     /**
      * Refreshes the text of EventOverview
      */
+
     public void refreshText() {
         participantsLabel.setText(Translator
                 .getTranslation(client.language
@@ -203,6 +291,37 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 setGraphic(loader.getRoot());
             }
 
+        }
+    }
+
+    private class TransactionCellFactory extends ListCell<Transaction> {
+
+        private FXMLLoader loader;
+
+        @Override
+        protected void updateItem(Transaction transaction, boolean empty) {
+            super.updateItem(transaction, empty);
+
+            if (transaction == null || empty) {
+                setGraphic(null);
+                setText(null);
+            } else {
+                if (loader == null) {
+                    loader = new FXMLLoader(getClass()
+                            .getResource("client/scenes/TransactionCell.fxml"));
+                    try {
+                        Parent root = loader.load();
+                        loader.setRoot(root);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                TransactionCellController controller = loader.getController();
+                controller.setTransactionData(transaction);
+
+                setText(null);
+                setGraphic(loader.getRoot());
+            }
         }
     }
 

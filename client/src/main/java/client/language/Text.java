@@ -1,6 +1,5 @@
 package client.language;
 
-
 /**
  * This class is a wrapper to make selecting certain sentences easier.
  * Every page/divider should have its own inner-class to separate different
@@ -70,7 +69,17 @@ public class Text {
                     + "sendInviteButton";
             public static final String settleDebtsButton = level
                     + "settleDebtsButton";
+            public static final String addParticipantButton =
+                    level + "addParticipantButton";
+            public static final String addExpenseButton =
+                   level + "addExpenseButton";
+            public static final String allExpensesButton =
+                    level + "allExpensesButton";
+            public static final String includingExpensesButton =
+                    level + "includingExpensesButton";
 
+            public static final String fromExpensesButton =
+                    level + "fromExpensesButton";
         }
     }
 
@@ -107,6 +116,7 @@ public class Text {
                     level + "NewEventButton";
             public static final String JoinEventButton =
                     level + "JoinEventButton";
+
         }
 
         public static final class Alert {
