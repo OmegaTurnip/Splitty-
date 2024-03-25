@@ -70,13 +70,13 @@ public class TransactionController {
         if(updateTransaction == null || event == null) {
             return ResponseEntity.notFound().build();
         }
-        if(transaction.hasNull(transaction)
+        if (!transaction.isValid()
                 || !(transaction.getEvent().getId().equals(eventId))) {
             return ResponseEntity.badRequest().build();
         }
 
-        updateTransaction.setTransactionName(transaction.getTransactionName());
-        updateTransaction.setPrice(transaction.getPrice());
+        updateTransaction.setName(transaction.getName());
+        updateTransaction.setAmount(transaction.getAmount());
         updateTransaction.setPayer(transaction.getPayer());
         updateTransaction.setParticipants(transaction.getParticipants());
         updateTransaction.setDate(transaction.getDate());
@@ -98,8 +98,9 @@ public class TransactionController {
     public ResponseEntity<Transaction>
         addTransaction(@PathVariable("eventId") Long eventId,
                        @RequestBody Transaction transaction) {
-        if (transaction.hasNull(transaction)
+        if (!transaction.isValid()
                 || !(transaction.getEvent().getId().equals(eventId))) {
+
             return ResponseEntity.notFound().build();
         }
 
