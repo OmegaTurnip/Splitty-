@@ -1,13 +1,15 @@
 package client.language;
 
 
+import java.util.Locale;
+
 public class Translator {
 
     private static Language currentLanguage;
 
     /**
      * Gets the language in which the {@code String}s will be provided as a
-     * {@code Language} object.
+     * {@link Language} object.
      *
      * @return  The {@code Language} in which the {@code String}s will be
      *          provided.
@@ -26,6 +28,18 @@ public class Translator {
      */
     public static void setCurrentLanguage(Language currentLanguage) {
         Translator.currentLanguage = currentLanguage;
+    }
+
+
+    /**
+     * Returns the {@link Locale} specified by the current {@link Language}.
+     * This is just a simple shorthand for {@code
+     * Translator.getCurrentLanguage().getLocale()}.
+     *
+     * @return  The {@code Locale} of the current {@code Language}.
+     */
+    public static Locale getLocale() {
+        return currentLanguage.getLocale();
     }
 
     /**

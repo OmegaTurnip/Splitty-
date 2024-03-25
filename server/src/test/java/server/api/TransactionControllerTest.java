@@ -1,12 +1,15 @@
 package server.api;
 
 import commons.Event;
+import commons.Money;
 import commons.Participant;
 import commons.Transaction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,9 +43,10 @@ public class TransactionControllerTest {
         testP1.setId(500L);
         group = new ArrayList<>();
         group.add(testP1);
-        transaction = testEvent1.registerTransaction(testP1, "testTransaction1", 100, group, testEvent1.getTags().get(0));
+        transaction = testEvent1.registerDebt(testP1, "testTransaction1", new Money(new BigDecimal(100), Currency.getInstance("EUR")),
+                group, testEvent1.getTags().get(0));
         transaction.setId(600L);
-        editTransaction = new Transaction(testP1, "editTransaction",  100, group, testEvent1,testEvent1.getTags().get(0));
+        editTransaction = Transaction.createDebt(testP1, "editTransaction",  new Money(new BigDecimal(100), Currency.getInstance("EUR")), group, testEvent1,testEvent1.getTags().get(0));
 
     }
 
@@ -65,8 +69,8 @@ public class TransactionControllerTest {
         eventRepo.save(testEvent1);
         sut.addTransaction(testEvent1.getId(), transaction);
         var retPart = sut.editTransaction(testEvent1.getId(), transaction.getId(), editTransaction);
-        assertEquals(retPart.getBody().getTransactionName(), editTransaction.getTransactionName());
-        assertEquals(retPart.getBody().getPrice(), editTransaction.getPrice());
+        assertEquals(retPart.getBody().getName(), editTransaction.getName());
+        assertEquals(retPart.getBody().getAmount(), editTransaction.getAmount());
         assertEquals(retPart.getBody().getPayer(), editTransaction.getPayer());
         assertEquals(retPart.getBody().getParticipants(), editTransaction.getParticipants());
         assertEquals(retPart.getBody().getDate(), editTransaction.getDate());
