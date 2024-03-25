@@ -49,7 +49,10 @@
                </font></Button>
 <!--            <ComboBox fx:id="participants" layoutX="86.0" layoutY="245.0" prefHeight="40.0" prefWidth="306.0" promptText="Select participants to split between" style="-fx-background-color: #8e3edd; -fx-border-color: #e0ddf2; -fx-border-radius: 5pt; -fx-border-width: 1.5pt; -fx-prompt-text-fill: #fefdfd;" />-->
             <ComboBox fx:id="expenseType" layoutX="86.0" layoutY="295.0" prefHeight="40.0" prefWidth="306.0" promptText="Set expense type" style="-fx-background-color: #8e3edd; -fx-border-color: #e0ddf2; -fx-border-radius: 5pt; -fx-border-width: 1.5pt; -fx-prompt-text-fill: #fefdfd;" />
-            <CheckComboBox fx:id="participants" layoutX="86.0" layoutY="245.0" prefHeight="40.0" prefWidth="306.0"  style="-fx-background-color: #8e3edd; -fx-border-color: #e0ddf2; -fx-border-radius: 5pt; -fx-border-width: 1.5pt;" />
+            <CheckComboBox fx:id="participants" layoutX="86.0" layoutY="245.0" prefHeight="40.0" prefWidth="306.0" style="-fx-background-color: #8e3edd; -fx-border-color: #e0ddf2; -fx-border-radius: 5pt; -fx-border-width: 1.5pt;">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor></CheckComboBox>
             </children></AnchorPane>
     </children>
 </VBox>

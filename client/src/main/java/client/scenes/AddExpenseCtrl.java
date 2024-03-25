@@ -7,22 +7,26 @@ import client.language.Translator;
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
 import com.google.inject.Inject;
-import commons.Event;
-import commons.Participant;
-import commons.Tag;
-//import commons.Transaction;
+import commons.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import org.controlsfx.control.CheckComboBox;
 
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -36,32 +40,32 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     @FXML
     private Button addExpense;
 
-//    price of the expense
+    //    price of the expense
     @FXML
-    private ChoiceBox<Currency> currency;
+    private ChoiceBox<String> currency;
     @FXML
     private TextField price;
 
-//    Payer of the expense
+    //    Payer of the expense
     @FXML
     private ChoiceBox<Object> payer;
     private Participant expensePayer;
 
-//    Participants in the expense
+    //    Participants in the expense
     @FXML
     private CheckComboBox<Object> participants;
-    private Collection<Participant> participantList;
+    private List<Participant> participantList;
 
-//    date of the expense
+    //    date of the expense
     @FXML
     private DatePicker date;
 
-//    expense name
+    //    expense name
     @FXML
     private TextField expenseName;
-//    tags
+    //    tags
     @FXML
-    private ComboBox<Tag> expenseType;
+    private ComboBox<Object> expenseType;
     private ArrayList<Tag> tags = new ArrayList<>();
 
     private Event event;
@@ -82,6 +86,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.eventOverviewCtrl = eventOverviewCtrl;
+        this.participantList = new ArrayList<>();
     }
 
     /**
@@ -100,6 +105,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         payerSelection();
         participantSelection();
         addExpense.setOnAction(event -> registerExpense());
+        price.setOnAction(event -> verifyPrice());
         refresh();
     }
 
@@ -127,11 +133,20 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         checkListener(isCheckingAll);
         allUncheckedListener();
         uncheckListener(isCheckingAll);
+//        participants.getCheckModel().getCheckedItems()
+//                .addListener((ListChangeListener<Object>) change -> {
+//                    while (change.next()) {
+//                          if (change.wasAdded() && participants.getCheckModel().getCheckedItems().size() == 1) {
+//                            participants.setTitle(null);
+//                        }
+//                    }
+//                });
     }
 
     /**
      * Listens for boxes being unchecked and unchecks "Everyone" if anything is
      * deselected and unchecks everything if "Everyone" is deselected
+     *
      * @param isCheckingAll whether all fields are check as a boolean
      */
     private void uncheckListener(AtomicBoolean isCheckingAll) {
@@ -146,7 +161,8 @@ public class AddExpenseCtrl implements Initializable, TextPage {
                         } else if (change.wasRemoved()
                                 && change.getRemoved().contains("Everyone")) {
                             isCheckingAll.set(false);
-                            clearParticipants();
+                            participants.getCheckModel().clearChecks();
+
                         }
                     }
                 });
@@ -171,6 +187,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     /**
      * Listens for boxes being checked and checks everything if "Everyone"
      * is selected and checks "Everyone" if everything is selected
+     *
      * @param isCheckingAll whether all fields are check as a boolean
      */
     private void checkListener(AtomicBoolean isCheckingAll) {
@@ -185,10 +202,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
                                 && (change.getAddedSubList()
                                 .contains("Everyone") || allSelected)) {
                             isCheckingAll.set(true);
-                            checkAllParticipants();
-                        }
-                        if (change.wasAdded()) {
-                            participants.setTitle(null);
+                            participants.getCheckModel().checkAll();
                         }
                     }
                 });
@@ -210,12 +224,15 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         refreshText();
         loadPayers();
         loadParticipants();
+        loadTags();
         //TODO: Connect to back-end
         System.out.println("Page has been refreshed!");
     }
 
     /**
-     *
+     * Gets the participants in the event from the server and
+     * constructs the items for the Choice payer
+     * through an observable list
      */
     private void loadPayers() {
         List<Object> payerChoiceBoxList = new ArrayList<>();
@@ -232,6 +249,73 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     }
 
     /**
+     * Gets the tags in the event from the server and
+     * constructs the items for the ChoiceBox expenseType
+     * through an observable list
+     */
+    private void loadTags() {
+        List<Object> tagChoiceboxList = new ArrayList<>();
+        tagChoiceboxList
+                .add("Select the expense type");
+        if (event != null) {
+            tagChoiceboxList.addAll(event.getTags());
+        }
+        ObservableList<Object> tagsObservableList =
+                FXCollections.observableArrayList(tagChoiceboxList);
+        expenseType.setItems(tagsObservableList);
+        if (expenseType.getValue() == null) expenseType
+                .setValue("Select the expense type");
+        expenseType.setCellFactory(lv -> new TagListCell());
+    }
+
+    public static class TagListCell extends ListCell<Object> {
+
+        @Override
+        protected void updateItem(Object item, boolean empty) {
+            super.updateItem(item, empty);
+            setFont(Font.font("Arial", 14));
+
+            if (empty || item == null) {
+                setBackground(Background.EMPTY);
+                setText("");
+            } else if (item.equals("Select the expense type")) {
+                setBackground(new Background(new BackgroundFill(Color.WHITE,
+                        CornerRadii.EMPTY, Insets.EMPTY)));
+            } else {
+                getTagStyle((Tag) item);
+            }
+        }
+
+        private void getTagStyle(Tag tag) {
+            setBackground(new Background(
+                    new BackgroundFill(Color.valueOf(tag.getColour()),
+                            CornerRadii.EMPTY, Insets.EMPTY)));
+
+            setText(tag.getName());
+            double red = Color.valueOf(tag.getColour()).getRed();
+            double green = Color.valueOf(tag.getColour()).getGreen();
+            double blue = Color.valueOf(tag.getColour()).getBlue();
+
+            // Formula for relative luminance specified in
+            // the Web Content Accessibility Guidelines (WCAG)
+            boolean useWhiteText = 0.2126 * red +
+                    0.7152 * green + 0.0722 * blue < 0.5;
+
+            if (useWhiteText) setTextFill(Color.WHITE);
+            setOnMouseEntered(event -> {
+                setStyle("-fx-background-color: " + tag.getColour() +
+                        ", rgba(255, 255, 255, 0.4);");
+                if (!useWhiteText) setTextFill(Color.BLACK);
+            });
+
+            setOnMouseExited(event -> {
+                setStyle("-fx-background-color: " +
+                        tag.getColour() + ";");
+            });
+        }
+    }
+
+    /**
      * Gets the participants in the event from the server and
      * constructs the items for the CheckComboBox participants
      * through an observable list
@@ -244,6 +328,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         participantChoiceBoxList.add("Test3");
         participantChoiceBoxList.add("Test4");
         participantChoiceBoxList.add("Test5");
+        participantChoiceBoxList.add("Test6");
         if (event != null) {
             participantChoiceBoxList
                     .addAll(server.getParticipantsOfEvent(event));
@@ -255,10 +340,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
 
         if (participants.getCheckModel().getCheckedIndices().isEmpty()) {
             participants.setTitle("Select the people involved in the expense");
-        } else {
-            participants.setTitle(null);
         }
-
     }
 
 
@@ -318,12 +400,12 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     /**
      * Checks all participants in CheckComboBox participants
      */
-    public void checkAllParticipants() {
-        for (int i = 0; i < participants.getItems().size(); i++) {
-            participants.getCheckModel().check(i);
-        }
-        participants.setTitle(null);
-    }
+//    public void checkAllParticipants() {
+//        for (int i = 0; i < participants.getItems().size(); i++) {
+//            participants.getCheckModel().check(i);
+//        }
+//        participants.setTitle(null);
+//    }
 
     /**
      * Sets language to German
@@ -358,9 +440,16 @@ public class AddExpenseCtrl implements Initializable, TextPage {
             }
         }
     }
-////    Transaction getExpense() {
-////        Transaction expense = event.registerTransaction(expensePayer,
-////        expenseName.getText(), participantList, , );
-////        return null;
-////    }
+
+    void verifyPrice() {
+
+    }
+
+    Transaction getExpense() {
+        return event.registerDebt(expensePayer,
+                expenseName.getText(),
+                new Money(new BigDecimal(price.getText()),
+                        Currency.getInstance(currency.getValue())),
+                participantList, null);
+    }
 }
