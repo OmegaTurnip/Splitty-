@@ -114,4 +114,13 @@ public class Participant {
     public Long getId() {
         return id;
     }
+
+    /**
+     * To string method.
+     * @return name of participant
+     */
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

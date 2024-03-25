@@ -1,6 +1,5 @@
 package client.language;
 
-
 /**
  * This class is a wrapper to make selecting certain sentences easier.
  * Every page/divider should have its own inner-class to separate different
@@ -57,24 +56,30 @@ public class Text {
     public static final class EventOverview {
 
         private static final String level = "EventOverview.";
+        public static final String expensesLabel = level
+                + "expensesLabel";
+        public static final String participantsLabel = level
+                + "participantsLabel";
 
         public static final class Buttons {
 
             private static final String level = EventOverview.level +
                     "Buttons.";
-            public static final String Edit = level + "Edit";
-            public static final String Add = level + "Add";
-            public static final String SendInvite = level + "SendInvite";
-            public static final String AddExpense = level + "AddExpense";
-            public static final String SettleDebts = level + "SettleDebts";
+            public static final String sendInviteButton = level
+                    + "sendInviteButton";
+            public static final String settleDebtsButton = level
+                    + "settleDebtsButton";
+            public static final String addParticipantButton =
+                    level + "addParticipantButton";
+            public static final String addExpenseButton =
+                   level + "addExpenseButton";
+            public static final String allExpensesButton =
+                    level + "allExpensesButton";
+            public static final String includingExpensesButton =
+                    level + "includingExpensesButton";
 
-        }
-
-        public static final class Labels {
-            private static final String level = EventOverview.level + "Labels.";
-            public static final String Expenses = level + "Expenses";
-            public static final String Participants = level + "Participants";
-
+            public static final String fromExpensesButton =
+                    level + "fromExpensesButton";
         }
     }
 
@@ -111,6 +116,7 @@ public class Text {
                     level + "NewEventButton";
             public static final String JoinEventButton =
                     level + "JoinEventButton";
+
         }
 
         public static final class Alert {

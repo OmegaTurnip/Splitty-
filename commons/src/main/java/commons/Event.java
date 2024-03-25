@@ -417,4 +417,5 @@ public class Event {
     public boolean deleteTransaction(Transaction transaction) {
         return transactions.remove(transaction);
     }
+
 }
