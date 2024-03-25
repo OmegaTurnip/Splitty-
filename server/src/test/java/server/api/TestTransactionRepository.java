@@ -22,7 +22,7 @@ public class TestTransactionRepository implements TransactionRepository {
      * @return
      */
     @Override
-    public Transaction findTransactionByTransactionName(
+    public Transaction findTransactionByName(
             String transactionName) {
 
         return null;
