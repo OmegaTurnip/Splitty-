@@ -23,7 +23,6 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.StringConverter;
-import javafx.util.converter.LocalDateStringConverter;
 import org.controlsfx.control.CheckComboBox;
 
 
@@ -143,7 +142,8 @@ public class AddExpenseCtrl implements Initializable, TextPage {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Invalid date format");
                     alert.setHeaderText(null);
-                    alert.setContentText("Try entering a date of the format dd/mm/yyyy! " +
+                    alert.setContentText("Try entering a date of the " +
+                            "format dd/mm/yyyy! " +
                             "You can also pick the date from the calendar.");
                     alert.showAndWait();
                     return null;
@@ -281,7 +281,9 @@ public class AddExpenseCtrl implements Initializable, TextPage {
 
     private boolean verifyInput() {
         if (!verifyPrice()) return false;
-        if (expensePayer == null || !expensePayer.getClass().equals(Participant.class)) return false;
+        if (expensePayer == null
+                || !expensePayer.getClass().equals(Participant.class))
+            return false;
         try {
             if (date.getValue() == null) return false;
         } catch (DateTimeParseException e) {
@@ -402,9 +404,14 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         if (event != null) {
             participantChoiceBoxList
                     .addAll(server.getParticipantsOfEvent(event));
-            participantChoiceBoxList.add(event.addParticipant("A")); //placeholder
-            participantChoiceBoxList.add(event.addParticipant("B")); //placeholder
-            participantChoiceBoxList.add(event.addParticipant("C")); //placeholder
+
+            //placeholder
+            participantChoiceBoxList.add(event.addParticipant("A"));
+            //placeholder
+            participantChoiceBoxList.add(event.addParticipant("B"));
+            //placeholder
+            participantChoiceBoxList.add(event.addParticipant("C"));
+
         }
         ObservableList<Object> participantObservableList =
                 FXCollections.observableArrayList(participantChoiceBoxList);
@@ -507,37 +514,38 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         Matcher matcher = pattern.matcher(input);
 
         if (!matcher.matches()) {
-            // Check what is wrong with the string
-            if (input.matches("^[0-9]+(?:[.,][0-9]+)?$")) {
-//                return "Invalid format: Contains invalid characters";
-            } else if (input.isEmpty()) {
-                showAlert("Invalid price format",
-                        "Please enter a price.");
-            } else if (!Character.isDigit(input.charAt(0))) {
-                showAlert("Invalid price format",
-                        "Your price must start with a digit!");
-            } else if (input.matches(".*[a-zA-Z].*")) {
-                showAlert("Invalid price format",
-                        "Your price may not contain letters!");
-            } else if (input.chars().filter(ch -> ch == ',').count() > 1
-                    || input.chars().filter(ch -> ch == '.').count() > 1
-                    || (input.chars().filter(ch -> ch == ',').count() > 0
-                    && input.chars().filter(ch -> ch == '.').count() > 0)) {
-                showAlert("Invalid price format",
-                        "Your price may not contain more" +
-                                " than one period or comma!");
-                // If none of the above, consider it as general invalid format
-            } else if (!Character.isDigit(input.charAt(0))
-                    || !Character.isDigit(input.charAt(input.length()-1))){
-                showAlert("Invalid price format",
-                        "Your price must start and end with a digit!");
-            } else {
-                showAlert("Invalid price format",
-                        "Your price is not of the correct format!");
-            }
+            choosePriceAlert(input);
             return false;
         } else return true;
 
+    }
+
+    private void choosePriceAlert(String input) {
+        if (input.isEmpty()) {
+            showAlert("Invalid price format",
+                    "Please enter a price.");
+        } else if (!Character.isDigit(input.charAt(0))) {
+            showAlert("Invalid price format",
+                    "Your price must start with a digit!");
+        } else if (input.matches(".*[a-zA-Z].*")) {
+            showAlert("Invalid price format",
+                    "Your price may not contain letters!");
+        } else if (input.chars().filter(ch -> ch == ',').count() > 1
+                || input.chars().filter(ch -> ch == '.').count() > 1
+                || (input.chars().filter(ch -> ch == ',').count() > 0
+                && input.chars().filter(ch -> ch == '.').count() > 0)) {
+            showAlert("Invalid price format",
+                    "Your price may not contain more" +
+                            " than one period or comma!");
+            // If none of the above, consider it as general invalid format
+        } else if (!Character.isDigit(input.charAt(0))
+                || !Character.isDigit(input.charAt(input.length()-1))){
+            showAlert("Invalid price format",
+                    "Your price must start and end with a digit!");
+        } else {
+            showAlert("Invalid price format",
+                    "Your price is not of the correct format!");
+        }
     }
 
 
