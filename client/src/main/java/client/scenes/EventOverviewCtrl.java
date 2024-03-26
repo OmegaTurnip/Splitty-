@@ -4,10 +4,12 @@ package client.scenes;
 
 import client.language.Language;
 import client.language.Text;
+import commons.Tag;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import client.language.TextPage;
 import client.language.Translator;
@@ -22,6 +24,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 import java.io.IOException;
 import java.net.URL;
@@ -46,7 +53,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     @FXML
     private Button addExpenseButton;
     @FXML
-    private ChoiceBox<Participant> expensesDropDown;
+    private ComboBox<Object> expensesDropDown;
     @FXML
     private Button settleDebtsButton;
     @FXML
@@ -106,11 +113,27 @@ public class EventOverviewCtrl implements TextPage, Initializable {
             ObservableList<Participant> observableParticipants =
                     FXCollections.observableArrayList(event.getParticipants());
             participantsListView.setItems(observableParticipants);
-            expensesDropDown.setItems(observableParticipants);
+            ObservableList<Object> participantsEvent = FXCollections.observableArrayList(event.getParticipants());
+            expensesDropDown.setItems(participantsEvent);
+            expensesDropDown.setCellFactory(lv -> new ParticipantListCell());
             getExpenses();
         }
-
         refreshText();
+    }
+
+    public static class ParticipantListCell extends ListCell<Object> {
+        @Override
+        protected void updateItem(Object item, boolean empty) {
+            super.updateItem(item, empty);
+            setFont(Font.font("Arial", 14));
+
+            if (empty || item == null) {
+                setText("");
+            } else {
+                Participant participant = (Participant) item;
+                setText(participant.getName());
+            }
+        }
     }
 
     @FXML
@@ -122,7 +145,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      * Shows the list of expenses.
      */
     public void getExpenses() {
-        Participant participant = expensesDropDown.getValue();
+        Participant participant = (Participant) expensesDropDown.getValue();
         ToggleButton selected =
                 (ToggleButton) selectExpenses.getSelectedToggle();
 
