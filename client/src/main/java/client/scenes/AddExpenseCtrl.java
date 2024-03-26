@@ -115,7 +115,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     void payerSelection() {
         payer.setOnAction(event -> {
             Object selectedValue = payer.getValue();
-            if ("Select the person that paid for the expense"
+            if (Translator.getTranslation(Text.AddExpense.expensePayerPrompt)
                     .equals(selectedValue)) {
                 expensePayer = null;
             } else {
@@ -131,16 +131,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     void participantSelection() {
         AtomicBoolean isCheckingAll = new AtomicBoolean(false);
         checkListener(isCheckingAll);
-        allUncheckedListener();
         uncheckListener(isCheckingAll);
-//        participants.getCheckModel().getCheckedItems()
-//                .addListener((ListChangeListener<Object>) change -> {
-//                    while (change.next()) {
-//                          if (change.wasAdded() && participants.getCheckModel().getCheckedItems().size() == 1) {
-//                            participants.setTitle(null);
-//                        }
-//                    }
-//                });
     }
 
     /**
@@ -168,21 +159,6 @@ public class AddExpenseCtrl implements Initializable, TextPage {
                 });
     }
 
-    /**
-     * Sets the title of CheckComboBox participants to default
-     * if everything is unchecked
-     */
-    private void allUncheckedListener() {
-        participants.getCheckModel().getCheckedItems()
-                .addListener((ListChangeListener<Object>) change -> {
-                    while (change.next()) {
-                        if (participants.getCheckModel()
-                                .getCheckedItems().isEmpty())
-                            participants.setTitle("Select the " +
-                                    "people involved in the expense");
-                    }
-                });
-    }
 
     /**
      * Listens for boxes being checked and checks everything if "Everyone"
@@ -223,8 +199,10 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     public void refresh() {
         refreshText();
         loadPayers();
+        payer.getSelectionModel().select(0);
         loadParticipants();
         loadTags();
+        expenseType.getSelectionModel().select(0);
         //TODO: Connect to back-end
         System.out.println("Page has been refreshed!");
     }
@@ -236,16 +214,14 @@ public class AddExpenseCtrl implements Initializable, TextPage {
      */
     private void loadPayers() {
         List<Object> payerChoiceBoxList = new ArrayList<>();
-        payerChoiceBoxList
-                .add("Select the person that paid for the expense");
+        payerChoiceBoxList.add(
+                Translator.getTranslation(Text.AddExpense.expensePayerPrompt));
         if (event != null) {
             payerChoiceBoxList.addAll(server.getParticipantsOfEvent(event));
         }
         ObservableList<Object> participantObservableList =
                 FXCollections.observableArrayList(payerChoiceBoxList);
         payer.setItems(participantObservableList);
-        if (payer.getValue() == null) payer
-                .setValue("Select the person that paid for the expense");
     }
 
     /**
@@ -255,16 +231,14 @@ public class AddExpenseCtrl implements Initializable, TextPage {
      */
     private void loadTags() {
         List<Object> tagChoiceboxList = new ArrayList<>();
-        tagChoiceboxList
-                .add("Select the expense type");
+        tagChoiceboxList.add(
+                Translator.getTranslation(Text.AddExpense.expenseTypePrompt));
         if (event != null) {
             tagChoiceboxList.addAll(event.getTags());
         }
         ObservableList<Object> tagsObservableList =
                 FXCollections.observableArrayList(tagChoiceboxList);
         expenseType.setItems(tagsObservableList);
-        if (expenseType.getValue() == null) expenseType
-                .setValue("Select the expense type");
         expenseType.setCellFactory(lv -> new TagListCell());
     }
 
@@ -278,18 +252,19 @@ public class AddExpenseCtrl implements Initializable, TextPage {
             if (empty || item == null) {
                 setBackground(Background.EMPTY);
                 setText("");
-            } else if (item.equals("Select the expense type")) {
-                setBackground(new Background(new BackgroundFill(Color.WHITE,
-                        CornerRadii.EMPTY, Insets.EMPTY)));
+            } else if (item.equals(
+                    Translator.getTranslation(
+                            Text.AddExpense.expenseTypePrompt))) {
+                setBackground(new Background(
+                        new BackgroundFill(Color.WHITE, null, null)));
             } else {
                 getTagStyle((Tag) item);
             }
         }
 
         private void getTagStyle(Tag tag) {
-            setBackground(new Background(
-                    new BackgroundFill(Color.valueOf(tag.getColour()),
-                            CornerRadii.EMPTY, Insets.EMPTY)));
+            setBackground(new Background(new BackgroundFill(
+                    Color.valueOf(tag.getColour()), null, null)));
 
             setText(tag.getName());
             double red = Color.valueOf(tag.getColour()).getRed();
@@ -337,10 +312,6 @@ public class AddExpenseCtrl implements Initializable, TextPage {
                 FXCollections.observableArrayList(participantChoiceBoxList);
         participants.getItems().clear();
         participants.getItems().addAll(participantObservableList);
-
-        if (participants.getCheckModel().getCheckedIndices().isEmpty()) {
-            participants.setTitle("Select the people involved in the expense");
-        }
     }
 
 
@@ -351,9 +322,25 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         languages.setText(
                 Translator.getTranslation(Text.Menu.Languages));
         cancel.setText(
-                Translator.getTranslation(Text.AddParticipant.Cancel)
-        );
-        //TODO: Make labels for the other text
+                Translator.getTranslation(Text.AddParticipant.Cancel));
+        addExpense.setText(
+                Translator.getTranslation((
+                        Text.AddExpense.Button.addExpenseButton)));
+        expenseName.setPromptText(
+                Translator.getTranslation(Text.AddExpense.expenseNamePrompt));
+        price.setPromptText(
+                Translator.getTranslation(Text.AddExpense.expensePricePrompt));
+        date.setPromptText(
+                Translator.getTranslation(Text.AddExpense.expenseDatePrompt));
+        participants.setTitle(
+                Translator.getTranslation(
+                        Text.AddExpense.expenseParticipantsPrompt));
+        int index = payer.getSelectionModel().getSelectedIndex();
+        loadPayers();
+        payer.getSelectionModel().select(index);
+        index = expenseType.getSelectionModel().getSelectedIndex();
+        loadTags();
+        expenseType.getSelectionModel().select(index);
     }
 
     /**
@@ -387,25 +374,6 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         mainCtrl.showEventOverview(event);
     }
 
-    /**
-     * Unselects all participants
-     */
-    public void clearParticipants() {
-        for (int i = 0; i < participants.getItems().size(); i++) {
-            participants.getCheckModel().clearCheck(i);
-        }
-        participants.setTitle("Select the people involved in the expense");
-    }
-
-    /**
-     * Checks all participants in CheckComboBox participants
-     */
-//    public void checkAllParticipants() {
-//        for (int i = 0; i < participants.getItems().size(); i++) {
-//            participants.getCheckModel().check(i);
-//        }
-//        participants.setTitle(null);
-//    }
 
     /**
      * Sets language to German
