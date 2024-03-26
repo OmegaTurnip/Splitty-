@@ -74,17 +74,17 @@
                      <bottom>
                         <HBox prefHeight="24.0" prefWidth="331.0" BorderPane.alignment="CENTER">
                            <children>
-                              <ToggleButton id="AllExpenses" mnemonicParsing="false" onAction="#groupOfExpenseSelected" prefHeight="26.0" prefWidth="80.0" selected="true" text="All">
+                              <ToggleButton id="AllExpenses" fx:id="allExpensesButton" mnemonicParsing="false" onAction="#groupOfExpenseSelected" prefHeight="26.0" prefWidth="80.0" selected="true" text="All">
                                  <toggleGroup>
                                     <ToggleGroup fx:id="selectExpenses" />
                                  </toggleGroup>
                               </ToggleButton>
-                              <ToggleButton id="ExspenseIncludingParticipant" mnemonicParsing="false" onAction="#groupOfExpenseSelected" prefHeight="26.0" prefWidth="147.0" text="Including participant" toggleGroup="$selectExpenses">
+                              <ToggleButton id="ExspenseIncludingParticipant" fx:id="includingExpensesButton" mnemonicParsing="false" onAction="#groupOfExpenseSelected" prefHeight="26.0" prefWidth="147.0" text="Including participant" toggleGroup="$selectExpenses">
                                  <HBox.margin>
                                     <Insets />
                                  </HBox.margin>
                               </ToggleButton>
-                              <ToggleButton id="ExspensePaidParticipant" mnemonicParsing="false" onAction="#groupOfExpenseSelected" prefHeight="26.0" prefWidth="152.0" text="Paid by participant" toggleGroup="$selectExpenses" />
+                              <ToggleButton id="ExspensePaidParticipant" fx:id="fromExpensesButton" mnemonicParsing="false" onAction="#groupOfExpenseSelected" prefHeight="26.0" prefWidth="152.0" text="Paid by participant" toggleGroup="$selectExpenses" />
                            </children>
                            <BorderPane.margin>
                               <Insets top="20.0" />

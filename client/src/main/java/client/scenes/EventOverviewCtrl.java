@@ -3,6 +3,7 @@ package client.scenes;
 
 
 import client.language.Language;
+import client.language.Text;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -127,7 +128,8 @@ public class EventOverviewCtrl implements TextPage, Initializable {
 
         if (selected != null) {
             String choice = selected.getText();
-            if(choice != "all" && participant == null){
+            if(choice != client.language
+                    .Text.EventOverview.Buttons.allExpensesButton && participant == null){
                 showAlert("Participant Not Selected",
                         "Please select a participant " +
                                 "first within the expense menu.");
@@ -135,7 +137,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
             }
             ObservableList<Transaction> transactions =
                     FXCollections.observableArrayList(event.getTransactions());
-            showSelectedExpenses(choice, participant, transactions);
+            showSelectedExpenses(selected, participant, transactions);
         }
     }
 
@@ -145,15 +147,16 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      * @param participant The participant.
      * @param transactions The transactions.
      */
-    public void showSelectedExpenses(String choice,
+    public void showSelectedExpenses(ToggleButton selected,
                                      Participant participant,
                                      ObservableList<Transaction> transactions){
+        String choice = selected.getId();
         switch (choice) {
-            case "All":
+            case "AllExpenses":
                 System.out.println("all clicked");
                 expensesListView.setItems(transactions);
                 break;
-            case "Including participant":
+            case "ExspenseIncludingParticipant":
                 System.out.println("Including participant clicked");
                 ObservableList<Transaction> transactionsParticipant =
                         FXCollections.observableArrayList();
@@ -164,7 +167,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 }
                 expensesListView.setItems(transactionsParticipant);
                 break;
-            case "Paid by participant":
+            case "ExspensePaidParticipant":
                 System.out.println("Paid by participant clicked");
                 ObservableList<Transaction> transactionsPayer =
                         FXCollections.observableArrayList();
@@ -202,6 +205,15 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         sendInviteButton.setText(Translator
                 .getTranslation(client.language
                         .Text.EventOverview.Buttons.sendInviteButton));
+        allExpensesButton.setText(Translator
+                .getTranslation(client.language
+                        .Text.EventOverview.Buttons.allExpensesButton));
+        includingExpensesButton.setText(Translator
+                .getTranslation(client.language
+                        .Text.EventOverview.Buttons.includingExpensesButton));
+        fromExpensesButton.setText(Translator
+                .getTranslation(client.language
+                        .Text.EventOverview.Buttons.fromExpensesButton));
 
         if (event != null ) eventNameLabel.setText(event.getEventName());
     }
