@@ -32,7 +32,8 @@ Talking points:
 	-Issue might possiblibly be the empty constructor or the weak entity mapping
 -Things that are currently missing are the admin page and the long-polling/websockets
 -Controllers are redundant due to the cascading 
--Switching tasks should be done more often and we should talk (online/in-person) more about the things we are stuck on.
+-Switching tasks should be done more often and we should talk (online/in-person) more 
+about the things we are stuck on.
 -Milestone next week:
 	-Main idea: Basiq requirements finished
 		-Bug needs to be fixed urgently
