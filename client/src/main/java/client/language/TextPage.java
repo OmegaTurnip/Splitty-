@@ -7,7 +7,4 @@ public interface TextPage {
      * used on initial start-up.
      */
     void refreshText();
-
-
-
 }
