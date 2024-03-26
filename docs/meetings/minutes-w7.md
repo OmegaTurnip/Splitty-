@@ -21,34 +21,34 @@ Questions for TA:
 
 
 -Maurits: Am I doing too much?
-	We can generate reports ourselves (GEIT), the discrepancy is getting out of hand
-	Big discrepancy between Lasse and Maurits.
+	-We can generate reports ourselves (GEIT), the discrepancy is getting out of hand
+	-Big discrepancy between Lasse and Maurits.
 -Paras: Buddycheck feedback, Is it possible to see your submission?
-	TA can send the screenshots personally
+	-TA can send the screenshots personally
 
 Talking points:
 -Currently bugs halt the progress massively
-	Multiple things were tried but nothing solved it yet.
-	Issue might possiblibly be the empty constructor or the weak entity mapping
+	-Multiple things were tried but nothing solved it yet.
+	-Issue might possiblibly be the empty constructor or the weak entity mapping
 -Things that are currently missing are the admin page and the long-polling/websockets
 -Controllers are redundant due to the cascading 
 -Switching tasks should be done more often and we should talk (online/in-person) more about the things we are stuck on.
 -Milestone next week:
-	Main idea: Basiq requirements finished
-		Bug needs to be fixed urgently
-		Admin page needs to be done
-		Take a look over the rubric
-	We already started a bit with the extended features
-	Websockets and long polling is needed
-	Sum all expenses 
+	-Main idea: Basiq requirements finished
+		-Bug needs to be fixed urgently
+		-Admin page needs to be done
+		-Take a look over the rubric
+	-We already started a bit with the extended features
+	-Websockets and long polling is needed
+	-Sum all expenses 
 
 Can we check automatically if we have 10 clients connected?
-	Good idea to just spawn the application 10 times
+	-Good idea to just spawn the application 10 times
 
-	Long polling: To check if someone else already updated the same page you are looking at.
-	Websockets: Admin page 
+	-Long polling: To check if someone else already updated the same page you are looking at.
+	-Websockets: Admin page 
 
 Productive meeting
 Additional question to TA:
-	Code distribution lines will get deleted from GEIT report when someone else alters/deletes them
+	-Code distribution lines will get deleted from GEIT report when someone else alters/deletes them
 Meeting ended at 15:24
