@@ -1,5 +1,7 @@
 package client.history;
 
+import java.util.Objects;
+
 public final class ActionFactory {
 
     /**
@@ -60,10 +62,9 @@ public final class ActionFactory {
         private final Runnable redo;
         private final String description;
 
-        private ActionImpl(Runnable undo, Runnable redo,
-                           String description) {
-            if (undo == null || redo == null)
-                throw new NullPointerException();
+        private ActionImpl(Runnable undo, Runnable redo, String description) {
+            Objects.requireNonNull(undo, "undo is null");
+            Objects.requireNonNull(redo, "redo is null");
 
             this.undo = undo;
             this.redo = redo;

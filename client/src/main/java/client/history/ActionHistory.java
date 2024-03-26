@@ -67,8 +67,7 @@ public class ActionHistory {
      *          If {@code action} is {@code null}.
      */
     public void addAction(Action action) throws NullPointerException {
-        if (action == null)
-            throw new NullPointerException();
+        Objects.requireNonNull(action, "action is null");
 
         addBetween(currentNode, tail, action);
         currentNode = currentNode.next;
