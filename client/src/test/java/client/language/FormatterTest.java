@@ -37,7 +37,7 @@ class FormatterTest {
         assertEquals("WoW! WoW!", Formatter.formatUnsafe("{{msg}} {{msg}}", hashMap));
 
 
-        assertThrows(IllegalArgumentException.class, () -> Formatter.formatUnsafe("test", null));
+        assertThrows(NullPointerException.class, () -> Formatter.formatUnsafe("test", null));
         assertThrows(IllegalArgumentException.class, () -> Formatter.formatUnsafe("{{", hashMap));
         hashMap.put("?", "value");
         assertThrows(IllegalArgumentException.class, () -> Formatter.formatUnsafe("test", hashMap));
