@@ -30,6 +30,9 @@
                <font>
                   <Font name="Garamond" size="23.0" />
                </font>
+               <graphic>
+                  <Button mnemonicParsing="false" onAction="#editName" styleClass="button-edit" />
+               </graphic>
             </Label>
          </top>
          <center>

@@ -219,6 +219,9 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         mainCtrl.showAddExpense(event);
     }
 
+
+    public void editName() {mainCtrl.showEditName(event);}
+
     /**
      * Fetch the languages and add to languages drop down menu.
      */

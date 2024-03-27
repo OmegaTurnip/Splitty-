@@ -30,6 +30,8 @@ public class MainCtrl {
     private EventOverviewCtrl overviewCtrl;
     private Scene overview;
 
+    private EditEventNameCtrl editEventNameCtrl;
+    private Scene editName;
     private AddParticipantCtrl addParticipantCtrl;
     private Scene add;
     private StartUpCtrl startUpCtrl;
@@ -44,12 +46,14 @@ public class MainCtrl {
      * @param add the fx for the add participant page.
      * @param startUp The fx for the start-up page.
      * @param addExpense The fx for the add expense page.
+     * @param editName The fx for the edit name page.
      */
     public void initialize(
             Stage primaryStage, Pair<EventOverviewCtrl, Parent> overview,
             Pair<AddParticipantCtrl, Parent> add,
             Pair<StartUpCtrl, Parent> startUp,
-            Pair<AddExpenseCtrl, Parent> addExpense) {
+            Pair<AddExpenseCtrl, Parent> addExpense,
+            Pair<EditEventNameCtrl, Parent> editName) {
         this.primaryStage = primaryStage;
 
         this.startUpCtrl = startUp.getKey();
@@ -67,6 +71,11 @@ public class MainCtrl {
 
         this.addExpenseCtrl = addExpense.getKey();
         this.addExpense = new Scene(addExpense.getValue());
+
+        this.editEventNameCtrl = editName.getKey();
+        this.editName = new Scene(editName.getValue());
+        this.editName.getStylesheets().add(getClass()
+                .getResource("style.css").toExternalForm());
 
 
 
@@ -126,6 +135,13 @@ public class MainCtrl {
         this.addParticipantCtrl.refreshText();
         primaryStage.setTitle("Event Overview: Adding participant");
         primaryStage.setScene(add);
+    }
+
+    public void showEditName(Event event) {
+        editEventNameCtrl.setEvent(event);
+        this.editEventNameCtrl.refreshText();
+        primaryStage.setTitle("Event Overview: Editing name");
+        primaryStage.setScene(editName);
     }
 
 
