@@ -26,6 +26,7 @@ import java.util.List;
 
 
 import commons.Event;
+import commons.Participant;
 import jakarta.ws.rs.client.Client;
 import org.glassfish.jersey.client.ClientConfig;
 
@@ -183,4 +184,16 @@ public class ServerUtils {
 //                        new GenericType<>() {
 //                        });
 //    }
+    /**
+     * Gets participants for event
+     * @param event the Event to get participants from
+     * @return a list of Participant
+     */
+    public List<Participant> getParticipantsOfEvent(Event event) {
+        return client.target(server)
+                .path("api/event/" + event.getId() + "/participants")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<>() {});
+    }
 }
