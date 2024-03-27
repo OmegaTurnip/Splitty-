@@ -137,6 +137,10 @@ public class MainCtrl {
         primaryStage.setScene(add);
     }
 
+    /**
+     * Sets the scene to the page where the name of the event can be edited
+     * @param event event for which the name needs to be changed
+     */
     public void showEditName(Event event) {
         editEventNameCtrl.setEvent(event);
         this.editEventNameCtrl.refreshText();

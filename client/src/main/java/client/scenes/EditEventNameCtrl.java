@@ -1,26 +1,20 @@
 package client.scenes;
 
-import client.language.Language;
+
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
 import commons.Event;
 import jakarta.inject.Inject;
 import javafx.fxml.FXML;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-
 import java.io.IOException;
-import java.util.HashMap;
+
 
 public class EditEventNameCtrl {
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
-//    @FXML
-//    private Menu languages;
+
 
     @FXML
     private TextField eventName;
@@ -43,14 +37,11 @@ public class EditEventNameCtrl {
 
 //    private void fetchLanguages() {
 //        HashMap<String, Language> languages = Language.languages;
-//
 //        for (String langKey : languages.keySet()) {
 //            MenuItem item = new MenuItem(langKey);
-//
 //            item.setOnAction(event -> {
 //                setLanguage(langKey);
 //            });
-//
 //            Image image = new Image(languages
 //                    .get(langKey).getIconFile().toURI().toString());
 //            ImageView imageView = new ImageView(image);
@@ -61,6 +52,10 @@ public class EditEventNameCtrl {
 //        }
 //    }
 
+    /**
+     * SSetst the language (not in use yet)
+     * @param langKey key of the language that needs to be activated
+     */
     private void setLanguage(String langKey) {
         try {
             UserConfig.get().setUserLanguage(langKey);
@@ -70,17 +65,26 @@ public class EditEventNameCtrl {
         }
     }
 
+    /**
+     * Refreshes the text
+     */
     public void refreshText(){
         if(event!= null){
             eventName.setText(event.getEventName());
         }
     }
 
+    /**
+     * Return to the eventoverview
+     */
     public void cancel(){
         refreshText();
         mainCtrl.showEventOverview(event);
     }
 
+    /**
+     * Changes the name and saves it to the database
+     */
     public void changeName(){
         event.setEventName(eventName.getText());
         server.saveEvent(event);
