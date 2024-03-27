@@ -21,6 +21,11 @@ public class EditEventNameCtrl {
 
     private Event event;
 
+    /**
+     * Constructer
+     * @param server serverUtils file
+     * @param mainCtrl mainCtrl file
+     */
     @Inject
     public EditEventNameCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
