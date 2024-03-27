@@ -167,25 +167,40 @@ public class ServerUtils {
                 .get(Event.class);
     }
 
-    /**
-     * Save events
-     * @param events The events to save
-     * @return The saved events
-     */
-    public List<Event> saveEvents(List<Event> events) {
-        return client //
-                .target(server).path("api/event") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .put(Entity.entity(events, APPLICATION_JSON),
-                        new GenericType<List<Event>>() {});
-    }
+//    /**
+//     * Save events
+//     * @param events The events to save
+//     * @return The saved events
+//     */
+//    public List<Event> saveEvents(List<Event> events) {
+//        return client //
+//                .target(server).path("api/event") //
+//                .request(APPLICATION_JSON) //
+//                .accept(APPLICATION_JSON) //
+//                .put(Entity.entity(events, APPLICATION_JSON),
+//                        new GenericType<List<Event>>() {});
+//    }
 
     /**
-     * Creates a participant
-     * @param participant participant to create
-     * @return created participant
+     * Gets participants for event
+     * @param event the Event to get participants from
+     * @return a list of Participant
      */
+
+    public List<Participant> getParticipantsOfEvent(Event event) {
+        return client.target(server)
+                .path("api/event/" + event.getId() + "/participants")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<>() {
+                });
+    }
+
+        /**
+         * Creates a participant
+         * @param participant participant to create
+         * @return created participant
+         */
     public Participant createParticipant(Participant participant){
         return client
                 .target(server).path("/api/event/"+ participant.getEvent()
