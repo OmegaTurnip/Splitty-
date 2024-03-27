@@ -38,6 +38,15 @@ public class Tag {
     }
 
     /**
+     * Turns the Tag into a human readable String
+     * @return the name of the string
+     */
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    /**
      * Equals method.
      * @param o Tag to test equality on.
      * @return True or false depending on equality.

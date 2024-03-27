@@ -230,11 +230,9 @@ public class Language {
         if (!isValidLanguageCode(languageCode))
             throw new IllegalArgumentException("Invalid languageCode");
 
-        if (file == null)
-            throw new IllegalArgumentException("file is null!");
+        Objects.requireNonNull(file, "file is null");
 
-        if (languageName == null)
-            throw new IllegalArgumentException("languageName is null");
+        Objects.requireNonNull(languageName, "languageName is null");
 
         Set<String> textIds = new HashSet<>();
         for (Language language : languages.values()) {

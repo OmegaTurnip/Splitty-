@@ -52,9 +52,9 @@ public class Event {
      * method for adding the three standard tags
      */
     public void basicTags() {
-        addTag(new Tag("food", "blue"));
-        addTag(new Tag("entrance fees", "green"));
-        addTag(new Tag("Travel", "yellow"));
+        addTag(new Tag("Food", "#A1D9D8"));
+        addTag(new Tag("Entrance fees", "#9FB433"));
+        addTag(new Tag("Travel", "#000000"));
     }
 
     /**
