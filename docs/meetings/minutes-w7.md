@@ -14,7 +14,6 @@ Schedule for the presentation was released
 	Frank is attending our presentation (will ask difficult questions)
 Need to hand in something as a draft for the presentation
 
-Started at 2:45
 When the app was presented and TA was generally impressed with certain things.
 
 Questions for TA:
