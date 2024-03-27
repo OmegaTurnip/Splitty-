@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.language.Translator;
 import client.utils.ServerUtils;
 import commons.Event;
 import commons.Transaction;
@@ -43,11 +44,11 @@ public class TransactionCellController {
      * @param transaction transaction
      */
     public void setTransactionData(Transaction transaction) {
-        String transactionInfo = String.format("%s %s paid %d for %s (%s)",
+        String transactionInfo = String.format("%s %s paid %s for %s (%s)",
                 transaction.getDate(),
                 transaction.getPayer().getName(),
-                transaction.getPrice(),
-                transaction.getTransactionName(),
+                transaction.getAmount().format(Translator.getLocale()),
+                transaction.getName(),
                 transaction.getParticipants().stream()
                         .map(Participant::getName)
                         .collect(Collectors.joining(", ")));

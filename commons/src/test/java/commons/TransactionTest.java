@@ -3,8 +3,10 @@ package commons;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,9 +30,12 @@ class TransactionTest {
         testParticipants.add(testParticipant1);
         testParticipants.add(testParticipant2);
 
-        testTransaction1 = new Transaction(testParticipant1, "Drinks", 400, testParticipants, testEvent, new Tag("food", "blue"));
-        testTransaction2 = new Transaction(testParticipant2, "Bowling", 200, testEvent.getParticipants(), testEvent, new Tag("activities", "red"));
-        testTransaction3 = new Transaction(testParticipant1, "Drinks", 400, testParticipants, testEvent, new Tag("food", "blue"));
+        testTransaction1 = Transaction.createDebt(testParticipant1, "Drinks", Money.fromLong(400, "EUR"),
+                testParticipants, testEvent, new Tag("food", "blue"));
+        testTransaction2 = Transaction.createDebt(testParticipant2, "Bowling", Money.fromLong(200, "EUR"),
+                testEvent.getParticipants(), testEvent, new Tag("activities", "red"));
+        testTransaction3 = Transaction.createDebt(testParticipant1, "Drinks", Money.fromLong(400, "EUR"),
+                testParticipants, testEvent, new Tag("food", "blue"));
     }
 
     @Test
@@ -48,8 +53,8 @@ class TransactionTest {
 
     @Test
     void setExpenseName() {
-        testTransaction1.setTransactionName("Food");
-        assertEquals("Food", testTransaction1.getTransactionName());
+        testTransaction1.setName("Food");
+        assertEquals("Food", testTransaction1.getName());
     }
 
     @Test
@@ -59,10 +64,11 @@ class TransactionTest {
     }
 
     @Test
-    void setPrice() {
-        testTransaction1.setPrice(90);
-        assertEquals(90, testTransaction1.getPrice());
+    void setAmount() {
+        testTransaction1.setAmount(Money.fromLong(736574, "EUR"));
+        assertEquals(Money.fromLong(736574, "EUR"), testTransaction1.getAmount());
     }
+
 
     @Test
     void getEvent() {

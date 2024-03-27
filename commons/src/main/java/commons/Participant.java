@@ -89,6 +89,17 @@ public class Participant {
     }
 
     /**
+     * Generates a {@code String} representing {@code this}.
+     *
+     * @return  A {@code String} representing {@code this}.
+     */
+    @Override
+    public String toString() {
+        return "Participant { '" + name +  "' (id: " + id + ") in the event '" +
+                event.getEventName() + "' }";
+    }
+
+    /**
      * Setter for id
      * @param id the id
      */
@@ -104,12 +115,4 @@ public class Participant {
         return id;
     }
 
-    /**
-     * To string method.
-     * @return name of participant
-     */
-    @Override
-    public String toString() {
-        return getName();
-    }
 }

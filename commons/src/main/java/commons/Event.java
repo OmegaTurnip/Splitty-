@@ -52,9 +52,9 @@ public class Event {
      * method for adding the three standard tags
      */
     public void basicTags() {
-        addTag(new Tag("food", "blue"));
-        addTag(new Tag("entrance fees", "green"));
-        addTag(new Tag("Travel", "yellow"));
+        addTag(new Tag("Food", "#A1D9D8"));
+        addTag(new Tag("Entrance fees", "#9FB433"));
+        addTag(new Tag("Travel", "#000000"));
     }
 
     /**
@@ -74,18 +74,21 @@ public class Event {
                 .replaceAll("-", "");
     }
 
-    /**
-     * Calculates the total sum of all the transactions in the event.
-     *
-     * @return The total sum.
-     */
-    public int totalSumOfExpenses() {
-        int result = 0;
-        for (Transaction transaction : transactions) {
-            result += transaction.getPrice();
-        }
-        return result;
-    }
+//    /**
+//     * Calculates the total sum of all the transactions in the event in euro
+//     * cents.
+//     *
+//     * @return The total sum.
+//     */
+//    public long totalSumOfExpenses() {
+//        throw new NotImplementedException("conversion to euros cents needs " +
+//                "to be implemented");
+//        long result = 0;
+//        for (Transaction transaction : transactions) {
+//            result += transaction.getAmount().getAmount();
+//        }
+//        return result;
+//    }
 
     /**
      * getter method
@@ -260,27 +263,61 @@ public class Event {
         updateLastActivity();
     }
 
+    /**
+     * Register a transaction carrying a debt with an event.
+     *
+     * @param   creditor
+     *          The {@link Participant} that paid.
+     * @param   name
+     *          The name of the {@link Transaction} to be registered.
+     * @param   price
+     *          The money spend.
+     * @param   participants
+     *          The {@code participant}s over which the {@code Transaction}
+     *          should be divided.
+     * @param   tag
+     *          The {@link Tag}.
+     *
+     * @return  The registered {@code Transaction}.
+     */
+    public Transaction registerDebt(Participant creditor, String name,
+                                    Money price, List<Participant> participants,
+                                    Tag tag) {
+        Transaction t =
+                Transaction.createDebt(
+                        creditor, name, price, participants, this, tag
+                );
+        transactions.add(t);
+        updateLastActivity();
+        return t;
+    }
 
     /**
-     * Register a transaction with an event
+     * Register a transaction carrying a payoff with an event.
      *
-     * @param payer       the Participant that paid
-     * @param transactionName the name of the Transaction to be registered
-     * @param price       the price of the Transaction
-     * @param participants the participants of the Transaction
-     * @param tag         the tag
-     * @return            the transaction registered
+     * @param   payer
+     *          The {@link Participant} that paid.
+     * @param   name
+     *          The name of the {@link Transaction} to be registered.
+     * @param   amount
+     *          The money paid.
+     * @param   receiver
+     *          The {@code participant} receiving the money.
+     * @param   tag
+     *          The {@link Tag}.
+     *
+     * @return  The registered {@code Transaction}.
      */
-    public Transaction registerTransaction(Participant payer,
-                                           String transactionName,
-                                           int price,
-                                           List<Participant> participants,
-                                           Tag tag) {
-        Transaction e = new Transaction(payer, transactionName, price,
-                participants, this, tag);
-        transactions.add(e);
+    public Transaction registerPayoff(Participant payer, String name,
+                                      Money amount, Participant receiver,
+                                      Tag tag) {
+        Transaction t =
+                Transaction.createPayoff(
+                        payer, name, amount, receiver, this, tag
+                );
+        transactions.add(t);
         updateLastActivity();
-        return e;
+        return t;
     }
 
     /**
