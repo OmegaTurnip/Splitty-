@@ -14,7 +14,6 @@ import java.io.IOException;
 
 public class AddParticipantCtrl{
 
-
     @FXML
     private Menu languages;
     @FXML
@@ -110,6 +109,13 @@ public class AddParticipantCtrl{
      */
     public void addParticipant(){
         String username = usernameTextField.getText();
+        event.addParticipant(username);
+        try {
+            server.saveEvent(event);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 //        this.eventOverviewCtrl.displayName(username);
         this.mainCtrl.showEventOverview(event);
     }

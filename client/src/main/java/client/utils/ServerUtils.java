@@ -39,7 +39,7 @@ public class ServerUtils {
 
     private final UserConfig userSettings;
 
-    private final String server;
+    private String server;
 
     private Client client;
 
@@ -60,6 +60,14 @@ public class ServerUtils {
     }
 
     /**
+     * Setter.
+     * @param server Set server URL.
+     */
+    public void setServer(String server) {
+        this.server = server;
+    }
+
+    /**
      * Server Utils constructed with UserConfig file.
      */
     public ServerUtils() {
@@ -75,6 +83,16 @@ public class ServerUtils {
     public ServerUtils(UserConfig userSettings) {
         this.userSettings = userSettings;
         this.server = userSettings.getServerUrl();
+    }
+
+    /**
+     * Injectable constructor
+     * @param userSettings Inject the userSettings.
+     * @param client Inject client.
+     */
+    public ServerUtils(UserConfig userSettings, Client client) {
+        this.userSettings = userSettings;
+        this.client = client;
     }
 
     /**
@@ -127,16 +145,29 @@ public class ServerUtils {
     }
 
     /**
-     * Create/save Event REST API request.
-     * @param event The event to be created/saved.
-     * @return The created/saved event.
+     * Create Event REST API request.
+     * @param event The event to be created
+     * @return The created
+     */
+    public Event createEvent(Event event) {
+        return client //
+                .target(server).path("api/event") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(event, APPLICATION_JSON), Event.class);
+    }
+
+    /**
+     * Save Event REST API request.
+     * @param event The event to be saved
+     * @return The saved event
      */
     public Event saveEvent(Event event) {
         return client //
                 .target(server).path("api/event") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
-                .post(Entity.entity(event, APPLICATION_JSON), Event.class);
+                .put(Entity.entity(event, APPLICATION_JSON), Event.class);
     }
 
     /**

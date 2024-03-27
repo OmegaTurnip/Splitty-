@@ -50,30 +50,42 @@ public class EventController {
         return ResponseEntity.ok(events);
     }
 
+//    /**
+//     * Save events
+//     * @param events The events to save
+//     * @return The events saved
+//     */
+//    @PutMapping(path = { "", "/" })
+//    @ResponseBody
+//    public ResponseEntity<List<Event>> saveEvents(
+//            @RequestBody List<Event> events) {
+//        eventRepository.saveAll(events);
+//        return ResponseEntity.ok(events);
+//    }
+
     /**
-     * Save events
-     * @param events The events to save
-     * @return The events saved
+     * Create an event
+     * @param event The event to create
+     * @return  The created event
      */
-    @PutMapping(path = { "", "/" })
+    @PostMapping(path = { "", "/" })
     @ResponseBody
-    public ResponseEntity<List<Event>> saveEvents(
-            @RequestBody List<Event> events) {
-        eventRepository.saveAll(events);
-        return ResponseEntity.ok(events);
+    public ResponseEntity<Event> createEvent(@RequestBody Event event) {
+
+        eventRepository.saveAndFlush(event);
+
+        return ResponseEntity.ok(event);
     }
 
     /**
      * Save an event
      * @param event The event to save
-     * @return  The event saved
+     * @return The saved event
      */
-    @PostMapping(path = { "", "/" })
+    @PutMapping(path = { "", "/" })
     @ResponseBody
     public ResponseEntity<Event> saveEvent(@RequestBody Event event) {
-
-        eventRepository.saveAndFlush(event);
-
+        eventRepository.save(event);
         return ResponseEntity.ok(event);
     }
 

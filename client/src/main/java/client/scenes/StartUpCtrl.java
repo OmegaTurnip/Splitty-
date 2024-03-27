@@ -36,7 +36,7 @@ public class StartUpCtrl implements Initializable, TextPage {
 
     private final MenuItem removeFromYourEvents =
             new MenuItem("Remove from your events");
-    private final ContextMenu contextMenu = new ContextMenu();
+    private ContextMenu contextMenu;
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
@@ -56,6 +56,46 @@ public class StartUpCtrl implements Initializable, TextPage {
     @FXML
     private ListView<Event> yourEvents;
 
+    /**
+     * Setter for newEvent1 (for testing w dependency injection)
+     * @param newEvent1 The new event text field
+     */
+    public void setNewEvent1(TextField newEvent1) {
+        this.newEvent1 = newEvent1;
+    }
+
+    /**
+     * Setter for joinEvent1 (for testing w dependency injection)
+     * @param joinEvent1 The join event text field
+     */
+    public void setJoinEvent1(TextField joinEvent1) {
+        this.joinEvent1 = joinEvent1;
+    }
+
+    /**
+     * Getter for newEvent1 (for testing)
+     * @return The new event text field
+     */
+    public TextField getNewEvent1() {
+        return newEvent1;
+    }
+
+    /**
+     * Getter for currentEvents
+     * @return The current events
+     */
+    public List<Event> getCurrentEvents() {
+        return currentEvents;
+    }
+
+    /**
+     * Getter for joinEvent1 (for testing)
+     * @return The join event text field
+     */
+    public TextField getJoinEvent1() {
+        return joinEvent1;
+    }
+
     @FXML
     private Menu languages;
 
@@ -68,6 +108,7 @@ public class StartUpCtrl implements Initializable, TextPage {
     public StartUpCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+        this.currentEvents = new ArrayList<>();
     }
 
     /**
@@ -95,6 +136,7 @@ public class StartUpCtrl implements Initializable, TextPage {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        contextMenu = new ContextMenu();
         fetchYourEvents();
         fetchLanguages();
         newEvent1.setOnAction(event -> createEvent());
@@ -141,6 +183,14 @@ public class StartUpCtrl implements Initializable, TextPage {
     }
 
     /**
+     * Getter for server
+     * @return The server
+     */
+    public ServerUtils getServer() {
+        return server;
+    }
+
+    /**
      * To add an event to the user's events using an invitation code.
      */
     public void joinEvent() {
@@ -153,6 +203,11 @@ public class StartUpCtrl implements Initializable, TextPage {
                                 .getTranslation(
                                         client.language.Text.StartUp
                                         .Alert.alreadyInEvent), 422);
+            } else if (code.isEmpty()) {
+                throw new WebApplicationException(
+                        Translator.getTranslation(
+                                client.language.Text
+                                        .StartUp.Alert.noEventWritten), 422);
             }
             Event result = server.joinEvent(code);
             currentEvents.add(result);
@@ -189,7 +244,7 @@ public class StartUpCtrl implements Initializable, TextPage {
                                 client.language.Text
                                         .StartUp.Alert.noEventWritten), 422);
             }
-            Event result = server.saveEvent(e);
+            Event result = server.createEvent(e);
             List<String> eventCodes = server.getUserSettings().getEventCodes();
             eventCodes.add(result.getInviteCode());
             server.getUserSettings().setEventCodes(eventCodes);
@@ -231,7 +286,8 @@ public class StartUpCtrl implements Initializable, TextPage {
      * @return The invitation code
      */
     public String getJoinInvCode() {
-        return joinEvent1.getText();
+        if (joinEvent1 != null) return joinEvent1.getText();
+        return null;
     }
 
     /**
