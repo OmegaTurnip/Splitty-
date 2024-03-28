@@ -41,6 +41,7 @@ public class AdminCtrl implements TextPage, Initializable {
     private ArrayList<Event> events;
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
+    private String password;
 
     /**
      * Constructor
@@ -74,7 +75,7 @@ public class AdminCtrl implements TextPage, Initializable {
      */
     public void refresh() {
         ObservableList<Event> eventObservableList =
-                FXCollections.observableList(server.getMyEvents());
+                FXCollections.observableList(server.getAllEvents(password));
         eventName.setCellValueFactory(
                 new PropertyValueFactory<Event, String>("eventName"));
         creationDate.setCellValueFactory(
@@ -92,5 +93,9 @@ public class AdminCtrl implements TextPage, Initializable {
     @Override
     public void refreshText() {
 
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

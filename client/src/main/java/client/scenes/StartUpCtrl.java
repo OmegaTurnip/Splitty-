@@ -62,6 +62,7 @@ public class StartUpCtrl implements Initializable, TextPage {
     private Menu adminLogin;
     @FXML
     private MenuItem loginButton;
+    private String password;
 
     /**
      * Constructor
@@ -121,7 +122,23 @@ public class StartUpCtrl implements Initializable, TextPage {
                 }
             }
         });
-        loginButton.setOnAction(event -> mainCtrl.showAdminPage());
+        loginButton.setOnAction(event -> {
+            Dialog<String> loginDialog = new Dialog<>();
+            loginDialog.setTitle("Login");
+            ButtonType loginButton = new ButtonType("Login", ButtonBar.ButtonData.APPLY);
+            loginDialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL, loginButton);
+            PasswordField passwordField = new PasswordField();
+            passwordField.setPromptText("Enter admin password");
+            loginDialog.getDialogPane().setContent(passwordField);
+            loginDialog.setResultConverter(button -> {
+                if (button ==loginButton) {
+                    mainCtrl.showAdminPage(passwordField.getText());
+                }
+                return null;
+            });
+            loginDialog.showAndWait();
+        });
+
 
     }
 

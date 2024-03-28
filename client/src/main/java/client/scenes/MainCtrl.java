@@ -15,9 +15,12 @@
  */
 package client.scenes;
 
+import client.language.Text;
 import commons.Event;
+import jakarta.ws.rs.NotAuthorizedException;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
@@ -172,10 +175,21 @@ public class MainCtrl {
 
     /**
      * Go to the admin page (by changing the contents of the window)
+     * @param password the admin password
      */
-    public void showAdminPage() {
-        adminCtrl.refresh();
-        primaryStage.setScene(admin);
+    public void showAdminPage(String password) {
+        try {
+            adminCtrl.setPassword(password);
+            adminCtrl.refresh();
+            primaryStage.setScene(admin);
+        } catch (NotAuthorizedException e) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Unauthorized");
+            alert.setHeaderText(null);
+            alert.setContentText("You entered the wrong admin password.");
+            alert.showAndWait();
+        }
+
     }
 
 }
