@@ -76,7 +76,7 @@ public class AdminCtrl implements TextPage, Initializable {
         ObservableList<Event> eventObservableList =
                 FXCollections.observableList(server.getMyEvents());
         eventName.setCellValueFactory(
-                new PropertyValueFactory<Event, String>("name"));
+                new PropertyValueFactory<Event, String>("eventName"));
         creationDate.setCellValueFactory(
                 new PropertyValueFactory<Event, LocalDate>(
                         "eventCreationDate"));
