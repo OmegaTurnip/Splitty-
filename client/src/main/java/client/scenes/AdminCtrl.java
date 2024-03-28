@@ -103,6 +103,7 @@ public class AdminCtrl implements TextPage, Initializable {
 
     /**
      * Saves the events to a JSON file (with Dependency Injection)
+     * @param writer the writer.
      */
     public void saveToJsonProper(Writer writer) {
         try {
@@ -124,6 +125,7 @@ public class AdminCtrl implements TextPage, Initializable {
 
     /**
      * Setter for events.
+     * @param events the events.
      */
     public void setEvents(List<Event> events) {
         this.events = events;
