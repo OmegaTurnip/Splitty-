@@ -15,7 +15,6 @@
  */
 package client.scenes;
 
-import client.language.Text;
 import commons.Event;
 import jakarta.ws.rs.NotAuthorizedException;
 import javafx.scene.Parent;

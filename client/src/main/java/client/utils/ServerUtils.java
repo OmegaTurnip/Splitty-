@@ -168,6 +168,11 @@ public class ServerUtils {
                 .get(Event.class);
     }
 
+    /**
+     * Get all events
+     * @param password the password for the admin
+     * @return a list of all events in the database
+     */
     public List<Event> getAllEvents(String password) {
         return client
                 .register(HttpAuthenticationFeature.basic("admin", password))
@@ -177,7 +182,13 @@ public class ServerUtils {
                 .get(new GenericType<>() {});
     }
 
-    public List<Event> deleteEvent(Event event, String password) {
+    /**
+     * Delete an event
+     * @param event the event to delete
+     * @param password the password for the admin
+     * @return the deleted event
+     */
+    public Event deleteEvent(Event event, String password) {
         return client
                 .register(HttpAuthenticationFeature.basic("admin", password))
                 .target(server).path("api/admin/events/" + event.getId())

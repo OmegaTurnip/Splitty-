@@ -95,6 +95,10 @@ public class AdminCtrl implements TextPage, Initializable {
 
     }
 
+    /**
+     * Getter for password
+     * @param password the password
+     */
     public void setPassword(String password) {
         this.password = password;
     }

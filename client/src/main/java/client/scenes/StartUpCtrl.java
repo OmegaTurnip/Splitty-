@@ -122,11 +122,22 @@ public class StartUpCtrl implements Initializable, TextPage {
                 }
             }
         });
+        createLogin();
+
+
+    }
+
+    /**
+     * Makes a dialog for the login to the admin page
+     */
+    private void createLogin() {
         loginButton.setOnAction(event -> {
             Dialog<String> loginDialog = new Dialog<>();
             loginDialog.setTitle("Login");
-            ButtonType loginButton = new ButtonType("Login", ButtonBar.ButtonData.APPLY);
-            loginDialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL, loginButton);
+            ButtonType loginButton = new ButtonType("Login",
+                    ButtonBar.ButtonData.APPLY);
+            loginDialog.getDialogPane().getButtonTypes()
+                    .addAll(ButtonType.CANCEL, loginButton);
             PasswordField passwordField = new PasswordField();
             passwordField.setPromptText("Enter admin password");
             loginDialog.getDialogPane().setContent(passwordField);
@@ -138,8 +149,6 @@ public class StartUpCtrl implements Initializable, TextPage {
             });
             loginDialog.showAndWait();
         });
-
-
     }
 
     private void fetchLanguages() {
