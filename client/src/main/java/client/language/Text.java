@@ -156,12 +156,18 @@ public class Text {
 
         public static final class Alert {
             public static final String level = Admin.level + "Alert.";
-            public static final String deleteEventAlertTitle = level + "deleteEventAlertTitle";
-            public static final String deleteEventAlertContent = level + "deleteEventAlertContent";
-            public static final String restoreEventAlertTitle = level + "restoreEventAlertTitle";
-            public static final String restoreEventAlertContent = level + "restoreEventAlertContent";
-            public static final String eventLoadedTitle = level + "eventLoadedTitle";
-            public static final String eventLoadedContent = level + "eventLoadedContent";
+            public static final String deleteEventAlertTitle = level
+                    + "deleteEventAlertTitle";
+            public static final String deleteEventAlertContent = level
+                    + "deleteEventAlertContent";
+            public static final String restoreEventAlertTitle = level
+                    + "restoreEventAlertTitle";
+            public static final String restoreEventAlertContent = level
+                    + "restoreEventAlertContent";
+            public static final String eventLoadedTitle = level
+                    + "eventLoadedTitle";
+            public static final String eventLoadedContent = level
+                    + "eventLoadedContent";
         }
 
         public static final class Buttons {

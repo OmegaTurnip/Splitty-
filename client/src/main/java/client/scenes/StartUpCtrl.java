@@ -1,10 +1,8 @@
 package client.scenes;
 
-import client.language.Language;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
-import client.utils.UserConfig;
 import commons.Event;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
@@ -19,12 +17,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
-import javafx.scene.image.Image;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;

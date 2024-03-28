@@ -1,11 +1,9 @@
 package client.scenes;
 
-import client.language.Language;
 import client.language.Text;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
-import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.*;
 import javafx.collections.FXCollections;
@@ -15,17 +13,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import org.controlsfx.control.CheckComboBox;
-
-
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.*;

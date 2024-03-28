@@ -99,7 +99,8 @@ public class AdminCtrl implements TextPage, Initializable {
     public void loadFromJson() {
         File file = new File("client/events.json");
         try {
-            restoredEvents = objectMapper.readValue(file, new TypeReference<List<Event>>() {});
+            restoredEvents = objectMapper
+                    .readValue(file, new TypeReference<List<Event>>() {});
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -108,9 +109,11 @@ public class AdminCtrl implements TextPage, Initializable {
         restoreEventBtn.setManaged(true);
         refresh();
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(Translator.getTranslation(Text.Admin.Alert.eventLoadedTitle));
+        alert.setTitle(Translator
+                .getTranslation(Text.Admin.Alert.eventLoadedTitle));
         alert.setHeaderText(null);
-        TextArea textArea = new TextArea(Translator.getTranslation(Text.Admin.Alert.eventLoadedContent));
+        TextArea textArea = new TextArea(Translator
+                .getTranslation(Text.Admin.Alert.eventLoadedContent));
         textArea.setEditable(false);
         textArea.setWrapText(true);
         ScrollPane scrollPane = new ScrollPane(textArea);
@@ -125,9 +128,11 @@ public class AdminCtrl implements TextPage, Initializable {
     public void restoreEvent() {
         String invCode = restoreEventTextField.getText();
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(Translator.getTranslation(Text.Admin.Alert.restoreEventAlertTitle));
+        alert.setTitle(Translator
+                .getTranslation(Text.Admin.Alert.restoreEventAlertTitle));
         alert.setHeaderText(null);
-        alert.setContentText(Translator.getTranslation(Text.Admin.Alert.restoreEventAlertContent));
+        alert.setContentText(Translator
+                .getTranslation(Text.Admin.Alert.restoreEventAlertContent));
         if (!invCode.isEmpty()) {
             restoreEventTextField.clear();
             Event restoredEvent = null;
@@ -160,9 +165,13 @@ public class AdminCtrl implements TextPage, Initializable {
                 Response response = server.deleteEvent(selectedEvent);
                 if (response.getStatus() == 404) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle(Translator.getTranslation(Text.Admin.Alert.deleteEventAlertTitle));
+                    alert.setTitle(Translator
+                            .getTranslation(Text
+                                    .Admin.Alert.deleteEventAlertTitle));
                     alert.setHeaderText(null);
-                    alert.setContentText(Translator.getTranslation(Text.Admin.Alert.deleteEventAlertContent));
+                    alert.setContentText(Translator
+                            .getTranslation(Text
+                                    .Admin.Alert.deleteEventAlertContent));
                     alert.showAndWait();
                 }
                 refresh();
@@ -262,27 +271,37 @@ public class AdminCtrl implements TextPage, Initializable {
      */
     @Override
     public void refreshText() {
-
         rto.setText(Translator.getTranslation(Text.Menu.ReturnToOverview));
-        rtoHeader.setText(Translator.getTranslation(Text.Menu.ReturnToOverview));
-        languages.setText(Translator.getTranslation(Text.Menu.Languages));
-
-        String titleTranslation = Translator.getTranslation(Text.Admin.title);
-        eventsLabel.setText(Translator.getTranslation(Text.Admin.eventsLabel));
-        String creationDateTranslation = Translator.getTranslation(Text.Admin.creationDate);
-        String lastActivityTranslation = Translator.getTranslation(Text.Admin.lastActivity);
+        rtoHeader.setText(Translator.getTranslation(Text
+                .Menu.ReturnToOverview));
+        languages.setText(Translator.getTranslation(Text
+                .Menu.Languages));
+        String titleTranslation = Translator
+                .getTranslation(Text.Admin.title);
+        eventsLabel.setText(Translator
+                .getTranslation(Text.Admin.eventsLabel));
+        String creationDateTranslation = Translator
+                .getTranslation(Text.Admin.creationDate);
+        String lastActivityTranslation = Translator
+                .getTranslation(Text.Admin.lastActivity);
 
         eventName.setText(titleTranslation);
         creationDate.setText(creationDateTranslation);
         lastActivity.setText(lastActivityTranslation);
-        saveToJSON.setText(Translator.getTranslation(Text.Admin.Buttons.saveToJSON));
-        loadFromJSON.setText(Translator.getTranslation(Text.Admin.Buttons.loadFromJSON));
-        deleteEvent.setText(Translator.getTranslation(Text.Admin.Buttons.deleteEvent));
-        restoreEventBtn.setText(Translator.getTranslation(Text.Admin.Buttons.restoreEvent));
+        saveToJSON.setText(Translator
+                .getTranslation(Text.Admin.Buttons.saveToJSON));
+        loadFromJSON.setText(Translator
+                .getTranslation(Text.Admin.Buttons.loadFromJSON));
+        deleteEvent.setText(Translator
+                .getTranslation(Text.Admin.Buttons.deleteEvent));
+        restoreEventBtn.setText(Translator
+                .getTranslation(Text.Admin.Buttons.restoreEvent));
 
-        sortByChoiceBox.setValue(Translator.getTranslation(Text.Admin.sortByChoiceBox));
+        sortByChoiceBox.setValue(Translator
+                .getTranslation(Text.Admin.sortByChoiceBox));
         ObservableList<String> sortOptions = FXCollections.observableArrayList(
-                titleTranslation, creationDateTranslation, lastActivityTranslation);
+                titleTranslation, creationDateTranslation,
+                lastActivityTranslation);
         sortByChoiceBox.setItems(sortOptions);
 
     }

@@ -18,10 +18,14 @@ public interface TextPage {
     void refreshText();
 
     /**
-     * Sets language.
-     * @param langKey The language which to set to.
+     * Set the language of the user.
+     * @param langKey the language key
+     * @param languagesMenu the menu to set the language icon
+     * @param languages the languages
      */
-    default void setLanguage(String langKey, Menu languagesMenu, HashMap<String, Language> languages) {
+    default void setLanguage(String langKey,
+                             Menu languagesMenu,
+                             HashMap<String, Language> languages) {
         try {
             UserConfig.get().setUserLanguage(langKey);
             refreshText();
@@ -37,13 +41,15 @@ public interface TextPage {
     }
 
     /**
-     * Fetch the languages and add to languages drop down menu.
+     * Fetches the languages from the app languages and sets the menu items.
+     * @param languagesMenu the menu to set the languages
      */
     default void fetchLanguages(Menu languagesMenu) {
         HashMap<String, Language> languages = Language.languages;
 
         for (String langKey : languages.keySet()) {
-            MenuItem item = new MenuItem(languages.get(langKey).getNativeName());
+            MenuItem item = new MenuItem(languages
+                    .get(langKey).getNativeName());
 
             item.setOnAction(event -> {
                 setLanguage(langKey, languagesMenu, languages);
