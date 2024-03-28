@@ -5,16 +5,16 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #8E3EDD;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AdminCtrl">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AdminCtrl">
    <children>
-      <VBox prefHeight="400.0" prefWidth="600.0">
+      <VBox prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #8E3EDD;">
          <children>
             <MenuBar maxWidth="1.7976931348623157E308" style="-fx-background-color: #fefdfd;">
               <menus>
                 <Menu fx:id="languages" mnemonicParsing="false" text="Languages" />
                   <Menu mnemonicParsing="false" text="Return to overview">
                     <items>
-                      <MenuItem mnemonicParsing="false" text="Return to overview" />
+                      <MenuItem fx:id="rto" mnemonicParsing="false" text="Return to overview" />
                     </items>
                   </Menu>
               </menus>

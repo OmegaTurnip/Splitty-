@@ -66,6 +66,7 @@ public class AdminCtrl implements TextPage, Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         rto.setOnAction(event -> mainCtrl.showStartUp());
+        refreshText();
     }
 
     /**
