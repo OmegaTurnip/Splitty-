@@ -63,5 +63,12 @@ public interface TextPage {
             item.setGraphic(imageView);
             languagesMenu.getItems().add(item);
         }
+        String langKey = UserConfig.get().getUserLanguage();
+        Image image = new Image(languages
+                .get(langKey).getIconFile().toURI().toString());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitHeight(20);
+        imageView.setFitWidth(20);
+        languagesMenu.setGraphic(imageView);
     }
 }
