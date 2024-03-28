@@ -23,10 +23,12 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.concurrent.TransferQueue;
 
 
 import commons.Event;
 import commons.Participant;
+import commons.Transaction;
 import jakarta.ws.rs.client.Client;
 import org.glassfish.jersey.client.ClientConfig;
 
@@ -195,5 +197,40 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<>() {});
+    }
+
+    /**
+     * Get all transactions of the event
+     * @param event Event of which needs to be returned
+     * @return list of transactions
+     */
+
+    public List<Transaction> getTransactionsOfEvent(Event event){
+        return client.target(server)
+                .path("api/event/" + event.getId() + "/transactions")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<Transaction>>() {});
+    }
+
+    /**
+     * Add a transaction to the event
+     * @param transaction transaction to be added
+     * @return the added transaction
+     */
+    public Transaction addTransaction(Event event, Transaction transaction) {
+        return client.target(server)
+                .path("api/event/" + event.getId() + "/transactions")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(transaction, APPLICATION_JSON), Transaction.class);
+    }
+
+    public Transaction editTransaction(Event event, Transaction transaction) {
+        return client.target(server)
+                .path("api/event/" + event.getId() + "/transactions")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(transaction, APPLICATION_JSON), Transaction.class);
     }
 }

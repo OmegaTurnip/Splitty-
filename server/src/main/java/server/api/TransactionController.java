@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
 import server.database.TransactionRepository;
 
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -24,6 +25,22 @@ public class TransactionController {
                                  EventRepository eventRepository) {
         this.eventRepository = eventRepository;
         this.repo = repo;
+    }
+
+    /**
+     * Method returns all the transactions of the event
+     * @param eventId eventId
+     * @return
+     */
+
+    @GetMapping("/")
+    @ResponseBody
+    public ResponseEntity<List<Transaction>> getAllTransactions(@PathVariable("eventId") Long eventId){
+        Event event = eventRepository.findById(eventId).orElse(null);
+        if (event == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(event.getTransactions());
     }
     /**
      * Get transaction
