@@ -20,6 +20,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -85,12 +86,47 @@ public class AdminCtrl implements TextPage, Initializable {
      */
     public void saveToJson() {
         try (PrintWriter writer = new PrintWriter("client/events.json")) {
+            saveToJsonProper(writer);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Getter for events.
+     * @return the events.
+     */
+    public List<Event> getEvents() {
+        return events;
+    }
+
+    /**
+     * Saves the events to a JSON file (with Dependency Injection)
+     */
+    public void saveToJsonProper(Writer writer) {
+        try {
             String json = objectMapper.writeValueAsString(events);
-            writer.println(json);
+            writer.write(json);
         } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println("Saved to JSON");
+    }
+
+    /**
+     * Setter for objectMapper.
+     * @param objectMapper the object mapper.
+     */
+    public void setObjectMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
+    /**
+     * Setter for events.
+     */
+    public void setEvents(List<Event> events) {
+        this.events = events;
     }
 
     /**
@@ -183,33 +219,32 @@ public class AdminCtrl implements TextPage, Initializable {
     }
 
     private void sortByEventName() {
-        ObservableList<Event> observableEvents =
-                FXCollections.observableArrayList(events);
-        SortedList<Event> sortedEvents = new SortedList<>(observableEvents);
-        sortedEvents.
-                setComparator(Comparator
-                        .comparing(Event::getEventName));
+        SortedList<Event> sortedEvents = sortEvents(Comparator
+                .comparing(Event::getEventName));
         eventsTable.setItems(sortedEvents);
     }
 
     private void sortByCreationDate() {
-        ObservableList<Event> observableEvents =
-                FXCollections.observableArrayList(events);
-        SortedList<Event> sortedEvents = new SortedList<>(observableEvents);
-        sortedEvents.
-                setComparator(Comparator
-                        .comparing(Event::getEventCreationDate));
+        SortedList<Event> sortedEvents = sortEvents(Comparator
+                .comparing(Event::getEventCreationDate).reversed());
         eventsTable.setItems(sortedEvents);
     }
 
     private void sortByLastActivity() {
+        SortedList<Event> sortedEvents = sortEvents(Comparator
+                .comparing(Event::getLastActivity).reversed());
+        eventsTable.setItems(sortedEvents);
+    }
+
+    /**
+     * Sorts the events using a comparator
+     * @param comparator the comparator to use
+     * @return  a sorted list of events
+     */
+    public SortedList<Event> sortEvents(Comparator<Event> comparator) {
         ObservableList<Event> observableEvents =
                 FXCollections.observableArrayList(events);
-        SortedList<Event> sortedEvents = new SortedList<>(observableEvents);
-        sortedEvents.
-                setComparator(Comparator
-                        .comparing(Event::getLastActivity).reversed());
-        eventsTable.setItems(sortedEvents);
+        return new SortedList<>(observableEvents, comparator);
     }
 
 
