@@ -28,6 +28,8 @@ import java.util.List;
 import commons.Event;
 import commons.Participant;
 import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.Response;
+import javafx.scene.control.Alert;
 import org.glassfish.jersey.client.ClientConfig;
 
 import commons.Quote;
@@ -240,5 +242,12 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(participant, APPLICATION_JSON),
                         Participant.class);
+    }
+
+    public Response deleteEvent(Event selectedEvent) {
+        return client.target(server)
+                .path("api/event/" + selectedEvent.getId())
+                .request()
+                .delete();
     }
 }

@@ -91,14 +91,17 @@ public class EventController {
 
     /**
      * Delete an event
-     * @param event The event to delete
-     * @return The event deleted
+     * @param id The id of the event to delete
+     * @return Confirmation of deletion.
      */
-    @DeleteMapping(path = { "", "/" })
+    @DeleteMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Event> deleteEvent(@RequestBody Event event) {
-        eventRepository.delete(event);
-        return ResponseEntity.ok(event);
+    public ResponseEntity<Void> deleteEvent(@PathVariable("id") Long id) {
+        if (!eventRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        eventRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     /**
