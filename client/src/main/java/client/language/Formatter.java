@@ -2,6 +2,7 @@ package client.language;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -81,8 +82,7 @@ public class Formatter {
         if (!isValidFormat(format))
             throw new IllegalArgumentException("Invalid format string!");
 
-        if (parameters == null)
-            throw new IllegalArgumentException("parameters is null!");
+        Objects.requireNonNull(parameters, "parameters is null!");
 
         String result = format;
         for (Map.Entry<String, String> parameter : parameters.entrySet()) {
