@@ -115,7 +115,8 @@ public class EventOverviewCtrl implements TextPage, Initializable {
             ObservableList<Participant> observableParticipants =
                     FXCollections.observableArrayList(event.getParticipants());
             participantsListView.setItems(observableParticipants);
-            ObservableList<Object> participantsEvent = FXCollections.observableArrayList(event.getParticipants());
+            ObservableList<Object> participantsEvent =
+                    FXCollections.observableArrayList(event.getParticipants());
             expensesDropDown.setItems(participantsEvent);
             expensesDropDown.setCellFactory(lv -> new ParticipantListCell());
             expensesDropDown.setPromptText("Select a participant");
@@ -126,37 +127,42 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     }
     public class ParticipantStringConverter extends StringConverter<Object> {
 
-        StringConverter<Object> participantStringConverter = new StringConverter<Object>() {
+        private StringConverter<Object> participantStringConverter =
+                new StringConverter<Object>() {
 
-            /**
-             * Converts the given object to its string representation.
-             * @param o The object to convert.
-             * @return The string representation of the object's name, or an empty string if the object is null.
-             */
-            @Override
-            public String toString(Object o) {
-                if (o == null) {
-                    return "";
-                } else {
-                    return ((Participant) o).getName();
+        /**
+         * Converts the given object to its string representation.
+         * @param o The object to convert.
+         * @return The string representation of the object's name,
+         * or an empty string if the object is null.
+         */
+                @Override
+                public String toString(Object o) {
+                    if (o == null) {
+                        return "";
+                    } else {
+                        return ((Participant) o).getName();
+                    }
                 }
-            }
 
             /**
              * Converts the given string to an object.
              * @param s The string to convert.
-             * @return Always returns null, as the conversion from string to object is not implemented.
+             * @return Always returns null,
+             * as the conversion from string to object is not implemented.
              */
-            @Override
-            public Object fromString(String s) {
-                return null;
-            }
-        };
+                @Override
+                public Object fromString(String s) {
+                    return null;
+                }
+            };
 
         /**
-         * Converts the given object to its string representation using the internal converter.
+         * Converts the given object to its string
+         * representation using the internal converter.
          * @param o The object to convert.
-         * @return The string representation of the object's name, or an empty string if the object is null.
+         * @return The string representation of the object's name,
+         * or an empty string if the object is null.
          */
         @Override
         public String toString(Object o) {
@@ -166,7 +172,8 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         /**
          * Converts the given string to an object using the internal converter.
          * @param s The string to convert.
-         * @return Always returns null, as the conversion from string to object is not implemented.
+         * @return Always returns null,
+         * as the conversion from string to object is not implemented.
          */
         @Override
         public Object fromString(String s) {
@@ -174,7 +181,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         }
     }
 
-        public static class ParticipantListCell extends ListCell<Object> {
+    public static class ParticipantListCell extends ListCell<Object> {
         @Override
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
@@ -218,7 +225,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
 
     /**
      * Shows the selected expenses.
-     * @param choice The choice of expenses.
+     * @param selected The selected toggle.
      * @param participant The participant.
      * @param transactions The transactions.
      */
