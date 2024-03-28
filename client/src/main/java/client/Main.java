@@ -64,8 +64,9 @@ public class Main extends Application {
                     "AddParticipant.fxml");
             var addExpense = FXML.load(AddExpenseCtrl.class, "client", "scenes",
                     "AddExpense.fxml");
+            var admin = FXML.load(AdminCtrl.class, "client", "scenes");
             mainCtrl.initialize(primaryStage, overview, add,
-                    startUp, addExpense);
+                    startUp, addExpense, admin);
         } catch (RuntimeException e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);

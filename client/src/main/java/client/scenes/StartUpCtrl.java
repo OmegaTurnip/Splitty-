@@ -58,6 +58,10 @@ public class StartUpCtrl implements Initializable, TextPage {
 
     @FXML
     private Menu languages;
+    @FXML
+    private Menu adminLogin;
+    @FXML
+    private MenuItem loginButton;
 
     /**
      * Constructor
@@ -117,6 +121,7 @@ public class StartUpCtrl implements Initializable, TextPage {
                 }
             }
         });
+        loginButton.setOnAction(event -> mainCtrl.showAdminPage());
 
     }
 
