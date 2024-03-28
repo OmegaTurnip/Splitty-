@@ -48,6 +48,7 @@ public class EventController {
     public ResponseEntity<List<Event>> allEvents() {
         List<Event> events = eventRepository.findAll();
         return ResponseEntity.ok(events);
+        //todo refactor to admin
     }
 
     /**
@@ -61,6 +62,7 @@ public class EventController {
             @RequestBody List<Event> events) {
         eventRepository.saveAll(events);
         return ResponseEntity.ok(events);
+        //todo refactor to admin
     }
 
     /**
