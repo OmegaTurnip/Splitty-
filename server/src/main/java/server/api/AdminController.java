@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
 
 import java.util.List;
+import java.util.Random;
 
 @Controller
 @RequestMapping("/api/admin")
@@ -24,8 +25,15 @@ public class AdminController {
     }
 
     private static String generatePassword() {
-        //ToDO generate password
-        return "hello";
+        char[] passwordCharacters = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+                "abcdefghijklmnopqrstuvwxyz0123456789!#$%&*()?/").toCharArray();
+        StringBuilder password = new StringBuilder();
+        int passwordLength = new Random().nextInt(5) + 8;
+        for (int i = 0; i < passwordLength; i++) {
+            int index = new Random().nextInt(passwordCharacters.length);
+            password.append(passwordCharacters[index]);
+        }
+        return password.toString();
     }
     /**
      * Get all events
