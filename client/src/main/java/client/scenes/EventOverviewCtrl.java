@@ -109,6 +109,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      * Refreshes the page.
      */
     public void refresh() {
+        refreshText();
         if (event != null) {
             ObservableList<Participant> observableParticipants =
                     FXCollections.observableArrayList(event.getParticipants());
@@ -118,7 +119,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
             expensesDropDown.setCellFactory(lv -> new ParticipantListCell());
             getExpenses();
         }
-        refreshText();
+
     }
 
     public static class ParticipantListCell extends ListCell<Object> {
@@ -150,9 +151,8 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 (ToggleButton) selectExpenses.getSelectedToggle();
 
         if (selected != null) {
-            String choice = selected.getText();
-            if(choice != client.language
-                    .Text.EventOverview.Buttons.allExpensesButton && participant == null){
+            String choice = selected.getId();
+            if(!choice.equals("AllExpenses") && participant == null){
                 showAlert("Participant Not Selected",
                         "Please select a participant " +
                                 "first within the expense menu.");
