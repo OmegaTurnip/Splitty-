@@ -34,6 +34,7 @@ import commons.Quote;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
 
 public class ServerUtils {
@@ -160,11 +161,29 @@ public class ServerUtils {
      * @return The event
      */
     public Event joinEvent(String code) {
-        return client //
-                .target(server).path("api/event/invite/" + code) //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
+        return client
+                .target(server).path("api/event/invite/" + code)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
                 .get(Event.class);
+    }
+
+    public List<Event> getAllEvents(String password) {
+        return client
+                .register(HttpAuthenticationFeature.basic("admin", password))
+                .target(server).path("api/admin/events")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<>() {});
+    }
+
+    public List<Event> deleteEvent(Event event, String password) {
+        return client
+                .register(HttpAuthenticationFeature.basic("admin", password))
+                .target(server).path("api/admin/events/" + event.getId())
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete(new GenericType<>() {});
     }
 
 //    /**

@@ -14,6 +14,7 @@ public class AdminController {
     private static final String password = generatePassword();
     private EventRepository eventRepo;
 
+
     /**
      * Constructor
      * @param eventRepo the event repository

@@ -36,6 +36,7 @@ public class AdminAuthConfig {
         return httpSecurity.build();
     }
 
+
     /**
      * Gives the ADMIN role and prints the username and password of a user
      * to the server terminal.
