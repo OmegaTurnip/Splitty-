@@ -29,6 +29,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.net.URL;
@@ -117,12 +118,63 @@ public class EventOverviewCtrl implements TextPage, Initializable {
             ObservableList<Object> participantsEvent = FXCollections.observableArrayList(event.getParticipants());
             expensesDropDown.setItems(participantsEvent);
             expensesDropDown.setCellFactory(lv -> new ParticipantListCell());
+            expensesDropDown.setPromptText("Select a participant");
+            expensesDropDown.setConverter(new ParticipantStringConverter());
             getExpenses();
         }
 
     }
+    public class ParticipantStringConverter extends StringConverter<Object> {
 
-    public static class ParticipantListCell extends ListCell<Object> {
+        StringConverter<Object> participantStringConverter = new StringConverter<Object>() {
+
+            /**
+             * Converts the given object to its string representation.
+             * @param o The object to convert.
+             * @return The string representation of the object's name, or an empty string if the object is null.
+             */
+            @Override
+            public String toString(Object o) {
+                if (o == null) {
+                    return "";
+                } else {
+                    return ((Participant) o).getName();
+                }
+            }
+
+            /**
+             * Converts the given string to an object.
+             * @param s The string to convert.
+             * @return Always returns null, as the conversion from string to object is not implemented.
+             */
+            @Override
+            public Object fromString(String s) {
+                return null;
+            }
+        };
+
+        /**
+         * Converts the given object to its string representation using the internal converter.
+         * @param o The object to convert.
+         * @return The string representation of the object's name, or an empty string if the object is null.
+         */
+        @Override
+        public String toString(Object o) {
+            return participantStringConverter.toString(o);
+        }
+
+        /**
+         * Converts the given string to an object using the internal converter.
+         * @param s The string to convert.
+         * @return Always returns null, as the conversion from string to object is not implemented.
+         */
+        @Override
+        public Object fromString(String s) {
+            return participantStringConverter.fromString(s);
+        }
+    }
+
+        public static class ParticipantListCell extends ListCell<Object> {
         @Override
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
@@ -237,7 +289,9 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         fromExpensesButton.setText(Translator
                 .getTranslation(client.language
                         .Text.EventOverview.Buttons.fromExpensesButton));
-
+        expensesDropDown.setPromptText(Translator
+                    .getTranslation(client.language
+                            .Text.EventOverview.expensesDropDown));
         if (event != null ) eventNameLabel.setText(event.getEventName());
     }
     /**
