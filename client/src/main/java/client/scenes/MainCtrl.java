@@ -129,7 +129,7 @@ public class MainCtrl {
      */
     public void showAddParticipant(Event event) {
         addParticipantCtrl.setEvent(event);
-        this.addParticipantCtrl.refreshText();
+        addParticipantCtrl.refresh();
         primaryStage.setTitle("Event Overview: Adding participant");
         primaryStage.setScene(add);
     }

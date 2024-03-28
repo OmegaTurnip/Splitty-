@@ -89,7 +89,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        fetchLanguages();
+        fetchLanguages(languages);
         participantsListView.setCellFactory(param ->
                 new ParticipantCellFactory());
         expensesListView.setCellFactory(param ->
@@ -127,7 +127,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
 
         if (selected != null) {
             String choice = selected.getText();
-            if(choice != "all" && participant == null){
+            if(!choice.equals("all") && participant == null){
                 showAlert("Participant Not Selected",
                         "Please select a participant " +
                                 "first within the expense menu.");
@@ -149,11 +149,11 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                                      Participant participant,
                                      ObservableList<Transaction> transactions){
         switch (choice) {
-            case "All":
+            case "All" -> {
                 System.out.println("all clicked");
                 expensesListView.setItems(transactions);
-                break;
-            case "Including participant":
+            }
+            case "Including participant" -> {
                 System.out.println("Including participant clicked");
                 ObservableList<Transaction> transactionsParticipant =
                         FXCollections.observableArrayList();
@@ -163,8 +163,8 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                     }
                 }
                 expensesListView.setItems(transactionsParticipant);
-                break;
-            case "Paid by participant":
+            }
+            case "Paid by participant" -> {
                 System.out.println("Paid by participant clicked");
                 ObservableList<Transaction> transactionsPayer =
                         FXCollections.observableArrayList();
@@ -174,7 +174,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                     }
                 }
                 expensesListView.setItems(transactionsPayer);
-                break;
+            }
         }
     }
 
@@ -202,6 +202,15 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         sendInviteButton.setText(Translator
                 .getTranslation(client.language
                         .Text.EventOverview.Buttons.sendInviteButton));
+        allExpensesButton.setText(Translator
+                .getTranslation(client.language
+                        .Text.EventOverview.Buttons.allExpensesButton));
+        includingExpensesButton.setText(Translator
+                .getTranslation(client.language
+                        .Text.EventOverview.Buttons.includingExpensesButton));
+        fromExpensesButton.setText(Translator
+                .getTranslation(client.language
+                        .Text.EventOverview.Buttons.fromExpensesButton));
 
         if (event != null ) eventNameLabel.setText(event.getEventName());
     }
@@ -219,41 +228,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         mainCtrl.showAddExpense(event);
     }
 
-    /**
-     * Fetch the languages and add to languages drop down menu.
-     */
-    private void fetchLanguages() {
-        HashMap<String, Language> languages = Language.languages;
 
-        for (String langKey : languages.keySet()) {
-            MenuItem item = new MenuItem(langKey);
-
-            item.setOnAction(event -> {
-                setLanguage(langKey);
-            });
-
-            Image image = new Image(languages
-                    .get(langKey).getIconFile().toURI().toString());
-            ImageView imageView = new ImageView(image);
-            imageView.setFitHeight(20);
-            imageView.setFitWidth(20);
-            item.setGraphic(imageView);
-            this.languages.getItems().add(item);
-        }
-    }
-
-    /**
-     * Set user language.
-     * @param langKey The language to set.
-     */
-    private void setLanguage(String langKey) {
-        try {
-            UserConfig.get().setUserLanguage(langKey);
-            refreshText();
-        }catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     private class ParticipantCellFactory extends ListCell<Participant> {
 

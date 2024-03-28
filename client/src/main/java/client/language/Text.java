@@ -69,10 +69,6 @@ public class Text {
                     + "sendInviteButton";
             public static final String settleDebtsButton = level
                     + "settleDebtsButton";
-            public static final String addParticipantButton =
-                    level + "addParticipantButton";
-            public static final String addExpenseButton =
-                   level + "addExpenseButton";
             public static final String allExpensesButton =
                     level + "allExpensesButton";
             public static final String includingExpensesButton =
@@ -146,6 +142,36 @@ public class Text {
             public static final String removeEventContent =
                     level + "removeEventContent";
         }
+    }
+
+    public static final class Admin {
+
+        private static final String level = "Admin.";
+
+        public static final String eventsLabel = level + "eventsLabel";
+        public static final String sortByChoiceBox = level + "sortByChoiceBox";
+        public static final String title = level + "title";
+        public static final String creationDate = level + "creationDate";
+        public static final String lastActivity = level + "lastActivity";
+
+        public static final class Alert {
+            public static final String level = Admin.level + "Alert.";
+            public static final String deleteEventAlertTitle = level + "deleteEventAlertTitle";
+            public static final String deleteEventAlertContent = level + "deleteEventAlertContent";
+            public static final String restoreEventAlertTitle = level + "restoreEventAlertTitle";
+            public static final String restoreEventAlertContent = level + "restoreEventAlertContent";
+            public static final String eventLoadedTitle = level + "eventLoadedTitle";
+            public static final String eventLoadedContent = level + "eventLoadedContent";
+        }
+
+        public static final class Buttons {
+            public static final String level = Admin.level + "Buttons.";
+            public static final String saveToJSON = level + "saveToJSON";
+            public static final String loadFromJSON = level + "loadFromJSON";
+            public static final String deleteEvent = level + "deleteEvent";
+            public static final String restoreEvent = level + "restoreEvent";
+        }
+
     }
 
     public static final class Alert {

@@ -101,7 +101,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        fetchLanguages();
+        fetchLanguages(languages);
         payerSelection();
         tagSelection();
         participantSelection();
@@ -372,49 +372,11 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     }
 
     /**
-     * Loads the languages from the config file and adds them
-     * with corresponding actions to the menu
-     */
-    private void fetchLanguages() {
-        HashMap<String, Language> languages = Language.languages;
-
-        for (String langKey : languages.keySet()) {
-            MenuItem item = new MenuItem(languages.get(langKey)
-                    .getNativeName());
-
-            item.setOnAction(event -> setLanguage(langKey));
-
-            Image image = new Image(languages
-                    .get(langKey).getIconFile().toURI().toString());
-            ImageView imageView = new ImageView(image);
-            imageView.setFitHeight(20);
-            imageView.setFitWidth(20);
-            item.setGraphic(imageView);
-            this.languages.getItems().add(item);
-        }
-    }
-
-    /**
      * Cancels the action in the addParticipant window
      */
     public void cancel() {
         refreshText();
         mainCtrl.showEventOverview(event);
-    }
-
-
-    /**
-     * Sets language to German
-     *
-     * @param language the language in three character String
-     */
-    public void setLanguage(String language) {
-        try {
-            UserConfig.get().setUserLanguage(language);
-            refreshText();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**

@@ -141,8 +141,7 @@ public class StartUpCtrl implements Initializable, TextPage {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         contextMenu = new ContextMenu();
-        fetchYourEvents();
-        fetchLanguages();
+        fetchLanguages(languages);
         newEvent1.setOnAction(event -> createEvent());
         joinEvent1.setOnAction(event -> joinEvent());
         yourEvents.setCellFactory(param -> new EventListCell());
@@ -165,26 +164,6 @@ public class StartUpCtrl implements Initializable, TextPage {
         });
         loginButton.setOnAction(event -> mainCtrl.showAdminPage());
 
-    }
-
-    private void fetchLanguages() {
-        HashMap<String, Language> languages = Language.languages;
-
-        for (String langKey : languages.keySet()) {
-            MenuItem item = new MenuItem(langKey);
-
-            item.setOnAction(event -> {
-                setLanguage(langKey);
-            });
-
-            Image image = new Image(languages
-                    .get(langKey).getIconFile().toURI().toString());
-            ImageView imageView = new ImageView(image);
-            imageView.setFitHeight(20);
-            imageView.setFitWidth(20);
-            item.setGraphic(imageView);
-            this.languages.getItems().add(item);
-        }
     }
 
     /**
@@ -299,6 +278,7 @@ public class StartUpCtrl implements Initializable, TextPage {
      * Refreshes the page and updates the list view.
      */
     public void refresh() {
+        fetchYourEvents();
         ObservableList<Event> observableEvents =
                 FXCollections.observableArrayList(currentEvents);
         SortedList<Event> sortedEvents = new SortedList<>(observableEvents);
@@ -332,19 +312,6 @@ public class StartUpCtrl implements Initializable, TextPage {
         removeFromYourEvents.setText(Translator.
                 getTranslation(client.language
                         .Text.StartUp.Menu.removeYourEvents));
-    }
-
-    /**
-     * Sets language.
-     * @param langKey The language which to set to.
-     */
-    public void setLanguage(String langKey) {
-        try {
-            UserConfig.get().setUserLanguage(langKey);
-            refreshText();
-        }catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**
