@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -146,13 +147,16 @@ public class ServerUtils {
      * @return List of Events
      */
     public List<Event> getMyEvents() {
-//        List<String> invCodes = userSettings.getEventCodes();
-        return client //
-                .target(server).path("api/event")
-//                .queryParam("invCodes", invCodes)
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<Event>>() {});
+        List<Event> myEvents = new ArrayList<>();
+        List<String> invCodes = userSettings.getEventCodes();
+        for (String invCode : userSettings.getEventCodes()) {
+            myEvents.add(client.target(server)
+                            .path("api/event/invite/" + invCode)
+                            .request(APPLICATION_JSON)
+                            .accept(APPLICATION_JSON)
+                            .get(new GenericType<>() {}));
+        }
+        return myEvents;
     }
 
     /**
@@ -195,6 +199,8 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .delete(new GenericType<>() {});
+//        TODO make sure events that don't exist are
+//         deleted from the user config for all users
     }
 
 //    /**

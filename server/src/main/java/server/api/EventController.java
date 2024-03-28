@@ -40,18 +40,6 @@ public class EventController {
 //    }
 
     /**
-     * Get all events
-     * @return  All events
-     */
-    @GetMapping(path = { "", "/" })
-    @ResponseBody
-    public ResponseEntity<List<Event>> allEvents() {
-        List<Event> events = eventRepository.findAll();
-        return ResponseEntity.ok(events);
-        //todo refactor to admin
-    }
-
-    /**
      * Save events
      * @param events The events to save
      * @return The events saved
@@ -76,18 +64,6 @@ public class EventController {
 
         eventRepository.saveAndFlush(event);
 
-        return ResponseEntity.ok(event);
-    }
-
-    /**
-     * Delete an event
-     * @param event The event to delete
-     * @return The event deleted
-     */
-    @DeleteMapping(path = { "", "/" })
-    @ResponseBody
-    public ResponseEntity<Event> deleteEvent(@RequestBody Event event) {
-        eventRepository.delete(event);
         return ResponseEntity.ok(event);
     }
 

@@ -7,6 +7,7 @@ import client.utils.ServerUtils;
 import client.utils.UserConfig;
 import commons.Event;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -81,10 +82,23 @@ public class StartUpCtrl implements Initializable, TextPage {
     private void fetchYourEvents() {
         this.currentEvents = new ArrayList<>();
         List<String> codes = server.getUserSettings().getEventCodes();
-        for (Event event : server.getMyEvents()) {
-            if (codes.contains(event.getInviteCode())) {
-                currentEvents.add(event);
+        try {
+            for (Event event : server.getMyEvents()) {
+                if (codes.contains(event.getInviteCode())) {
+                    currentEvents.add(event);
+                }
             }
+        } catch (NotFoundException e) {
+            // This alert will not be there in the end I think
+            // because this should not be allowed to happen,
+            // but it is good to have for now
+            var alert = new Alert(Alert.AlertType.WARNING);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText("You have invite codes " +
+                    "in your config file for events that " +
+                    "don't exist in the database! Therefore," +
+                    "your events could not be loaded.");
+            alert.showAndWait();
         }
     }
 

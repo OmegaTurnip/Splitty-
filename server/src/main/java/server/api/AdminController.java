@@ -24,6 +24,10 @@ public class AdminController {
         this.eventRepo = eventRepo;
     }
 
+    /**
+     * Generates a new password
+     * @return the password as a String
+     */
     private static String generatePassword() {
         char[] passwordCharacters = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
                 "abcdefghijklmnopqrstuvwxyz0123456789!#$%&*()?/").toCharArray();
