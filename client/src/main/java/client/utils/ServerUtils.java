@@ -173,27 +173,41 @@ public class ServerUtils {
 //     * @return The saved events
 //     */
 //    public List<Event> saveEvents(List<Event> events) {
-//        if (events == null) {
-//            throw new NullPointerException("Null events");
-//        }
 //        return client //
 //                .target(server).path("api/event") //
 //                .request(APPLICATION_JSON) //
 //                .accept(APPLICATION_JSON) //
 //                .put(Entity.entity(events, APPLICATION_JSON),
-//                        new GenericType<>() {
-//                        });
+//                        new GenericType<List<Event>>() {});
 //    }
+
     /**
      * Gets participants for event
      * @param event the Event to get participants from
      * @return a list of Participant
      */
+
     public List<Participant> getParticipantsOfEvent(Event event) {
         return client.target(server)
                 .path("api/event/" + event.getId() + "/participants")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<>() {});
+                .get(new GenericType<>() {
+                });
+    }
+
+        /**
+         * Creates a participant
+         * @param participant participant to create
+         * @return created participant
+         */
+    public Participant createParticipant(Participant participant){
+        return client
+                .target(server).path("/api/event/"+ participant.getEvent()
+                        .getId() + "/participants")
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(participant, APPLICATION_JSON),
+                        Participant.class);
     }
 }
