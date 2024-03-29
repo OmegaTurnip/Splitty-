@@ -77,6 +77,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     private Event event;
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
+    private final Pattern pricePattern;
 
     /**
      * Initializes the controller
@@ -89,6 +90,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.participantList = new ArrayList<>();
+        pricePattern = Pattern.compile("^[0-9]+(?:[.,][0-9]+)?$");
     }
 
     /**
@@ -505,8 +507,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         alert.showAndWait();
     }
     boolean verifyPrice(String input) {
-        Pattern pattern = Pattern.compile("^[0-9]+(?:[.,][0-9]+)?$");
-        Matcher matcher = pattern.matcher(input);
+        Matcher matcher = pricePattern.matcher(input);
 
         if (!matcher.matches()) {
             choosePriceAlert(input);
@@ -522,7 +523,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         } else if (!Character.isDigit(input.charAt(0))) {
             showAlert("Invalid price format",
                     "Your price must start with a digit!");
-        } else if (input.matches(".*[a-zA-Z].*")) {
+        } else if (input.matches("[a-zA-Z]")) {
             showAlert("Invalid price format",
                     "Your price may not contain letters!");
         } else if (input.chars().filter(ch -> ch == ',').count() > 1
