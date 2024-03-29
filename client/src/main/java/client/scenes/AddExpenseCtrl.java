@@ -64,7 +64,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     //    tags
     @FXML
     private ComboBox<Object> expenseType;
-    private ArrayList<Tag> tags = new ArrayList<>();
+    private Tag expenseTag;
 
     private Event event;
     private final ServerUtils server;
@@ -101,6 +101,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     public void initialize(URL location, ResourceBundle resources) {
         fetchLanguages();
         payerSelection();
+        tagSelection();
         participantSelection();
         addExpense.setOnAction(event -> registerExpense());
         price.setOnAction(event -> verifyPrice());
@@ -121,6 +122,16 @@ public class AddExpenseCtrl implements Initializable, TextPage {
             }
         });
     }
+    void tagSelection() {
+        expenseType.setOnAction(event -> {
+            Object selectedValue = expenseType.getValue();
+            if ("Select the expense type".equals(selectedValue)) {
+                expenseTag = null;
+            } else {
+                expenseTag = (Tag) expenseType.getValue();
+            }
+        });
+    }
 
     /**
      * Handles which participants are selected at
@@ -130,6 +141,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         AtomicBoolean isCheckingAll = new AtomicBoolean(false);
         checkListener(isCheckingAll);
         uncheckListener(isCheckingAll);
+
     }
 
     /**
@@ -188,6 +200,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
      */
     private void registerExpense() {
         getCheckedParticipants();
+        Transaction expense = getExpense();
         //TODO: Connect to back-end
     }
 
@@ -408,7 +421,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     }
 
     void verifyPrice() {
-
+        //TODO method to check if the price is valid
     }
 
     Transaction getExpense() {
@@ -416,6 +429,6 @@ public class AddExpenseCtrl implements Initializable, TextPage {
                 expenseName.getText(),
                 new Money(new BigDecimal(price.getText()),
                         Currency.getInstance(currency.getValue())),
-                participantList, null);
+                participantList, expenseTag);
     }
 }
