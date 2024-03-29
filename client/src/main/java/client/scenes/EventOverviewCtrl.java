@@ -112,13 +112,12 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                     FXCollections.observableArrayList(event.getParticipants());
             expensesDropDown.setItems(participantsEvent);
             expensesDropDown.setCellFactory(lv -> new ParticipantListCell());
-            expensesDropDown.setPromptText("Select a participant");
             expensesDropDown.setConverter(new ParticipantStringConverter());
             getExpenses();
         }
 
     }
-    public class ParticipantStringConverter extends StringConverter<Object> {
+    public static class ParticipantStringConverter extends StringConverter<Object> {
 
         private StringConverter<Object> participantStringConverter =
                 new StringConverter<Object>() {
@@ -231,7 +230,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 System.out.println("all clicked");
                 expensesListView.setItems(transactions);
                 break;
-            case "ExspenseIncludingParticipant":
+            case "ExpenseIncludingParticipant":
                 System.out.println("Including participant clicked");
                 ObservableList<Transaction> transactionsParticipant =
                         FXCollections.observableArrayList();
@@ -242,7 +241,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 }
                 expensesListView.setItems(transactionsParticipant);
                 break;
-            case "ExspensePaidParticipant":
+            case "ExpensePaidParticipant":
                 System.out.println("Paid by participant clicked");
                 ObservableList<Transaction> transactionsPayer =
                         FXCollections.observableArrayList();
