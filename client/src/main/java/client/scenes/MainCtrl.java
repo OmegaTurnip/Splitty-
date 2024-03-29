@@ -57,7 +57,7 @@ public class MainCtrl {
             Pair<StartUpCtrl, Parent> startUp,
             Pair<AddExpenseCtrl, Parent> addExpense,
             Pair<EditEventNameCtrl, Parent> editName,
-            Pair<AdminCtrl, Partent> adminPage) {
+            Pair<AdminCtrl, Parent> adminPage) {
         this.primaryStage = primaryStage;
 
         this.startUpCtrl = startUp.getKey();
