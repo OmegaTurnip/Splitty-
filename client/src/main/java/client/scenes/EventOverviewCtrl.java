@@ -117,7 +117,8 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         }
 
     }
-    public static class ParticipantStringConverter extends StringConverter<Object> {
+    public static class ParticipantStringConverter
+            extends StringConverter<Object> {
 
         private StringConverter<Object> participantStringConverter =
                 new StringConverter<Object>() {
