@@ -77,21 +77,17 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     private Event event;
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
-    private final EventOverviewCtrl eventOverviewCtrl;
 
     /**
      * Initializes the controller
      *
      * @param server            .
      * @param mainCtrl          .
-     * @param eventOverviewCtrl .
      */
     @Inject
-    public AddExpenseCtrl(ServerUtils server, MainCtrl mainCtrl,
-                          EventOverviewCtrl eventOverviewCtrl) {
+    public AddExpenseCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
-        this.eventOverviewCtrl = eventOverviewCtrl;
         this.participantList = new ArrayList<>();
     }
 
@@ -280,7 +276,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     }
 
     private boolean verifyInput() {
-        if (!verifyPrice()) return false;
+        if (!verifyPrice(price.getText())) return false;
         if (expensePayer == null
                 || !expensePayer.getClass().equals(Participant.class))
             return false;
@@ -501,16 +497,15 @@ public class AddExpenseCtrl implements Initializable, TextPage {
             }
         }
     }
-    private void showAlert(String title, String message) {
+    void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
     }
-    boolean verifyPrice() {
+    boolean verifyPrice(String input) {
         Pattern pattern = Pattern.compile("^[0-9]+(?:[.,][0-9]+)?$");
-        String input = price.getText();
         Matcher matcher = pattern.matcher(input);
 
         if (!matcher.matches()) {
