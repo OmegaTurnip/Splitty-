@@ -9,25 +9,30 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import commons.Event;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.core.Response;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
-import java.util.ResourceBundle;
 
 public class AdminCtrl implements TextPage, Initializable {
     @FXML
@@ -56,7 +61,7 @@ public class AdminCtrl implements TextPage, Initializable {
     @FXML
     private Button restoreEventBtn;
     @FXML
-    private TextField restoreEventTextField;
+    private ChoiceBox<Event> restoreEventChoiceBox;
     @FXML
     private ChoiceBox<String> sortByChoiceBox;
     private List<Event> events;
@@ -65,6 +70,8 @@ public class AdminCtrl implements TextPage, Initializable {
     private final MainCtrl mainCtrl;
 
     private ObjectMapper objectMapper;
+
+    private File file;
 
     /**
      * Constructor
@@ -79,15 +86,59 @@ public class AdminCtrl implements TextPage, Initializable {
         this.objectMapper.registerModule(new JavaTimeModule());
         restoredEvents = new ArrayList<>();
         events = new ArrayList<>();
+        file = new File("client/events.json");
+    }
+
+    /**
+     * Constructor
+     * @param server the server.
+     * @param mainCtrl the main controller.
+     * @param file the file.
+     */
+    public AdminCtrl(ServerUtils server, MainCtrl mainCtrl, File file) {
+        this.server = server;
+        this.mainCtrl = mainCtrl;
+        this.objectMapper = new ObjectMapper();
+        this.objectMapper.registerModule(new JavaTimeModule());
+        restoredEvents = new ArrayList<>();
+        events = new ArrayList<>();
+        this.file = file;
     }
 
     /**
      * Saves the events to a JSON file.
      */
     public void saveToJson() {
-        try (PrintWriter writer = new PrintWriter("client/events.json")) {
-            saveToJsonProper(writer);
-        } catch (Exception e) {
+        try {
+            List<Event> tempList;
+            Event selectedEvent = eventsTable
+                    .getSelectionModel().getSelectedItem();
+            if (file.length() == 0) {
+                tempList = new ArrayList<>();
+            } else {
+                tempList = objectMapper.readValue(file,
+                        new TypeReference<List<Event>>() {});
+            }
+            if (tempList.contains(selectedEvent)) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle(Translator
+                        .getTranslation(Text
+                                .Admin.Alert.saveToJSONDuplicateTitle));
+                alert.setHeaderText(null);
+                alert.setContentText(Translator
+                        .getTranslation(Text
+                                .Admin.Alert.saveToJSONDuplicateContent));
+                alert.showAndWait();
+                return;
+            }
+
+            try (PrintWriter writer = new PrintWriter(file)) {
+                saveToJsonProper(selectedEvent, writer, tempList);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -102,13 +153,38 @@ public class AdminCtrl implements TextPage, Initializable {
     }
 
     /**
-     * Saves the events to a JSON file (with Dependency Injection)
-     * @param writer the writer.
+     * Saves to JSON with dependency Injection
+     * @param selectedEvent the selected event
+     * @param writer the writer
+     * @param tempList The list of events from the JSON file
      */
-    public void saveToJsonProper(Writer writer) {
+    public void saveToJsonProper(Event selectedEvent,
+                                 Writer writer, List<Event> tempList) {
         try {
-            String json = objectMapper.writeValueAsString(events);
+            if (selectedEvent != null) {
+                tempList.add(selectedEvent);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle(Translator
+                        .getTranslation(Text
+                                .Admin.Alert.saveToJSONUnselectedTitle));
+                alert.setHeaderText(null);
+                alert.setContentText(Translator
+                        .getTranslation(Text
+                                .Admin.Alert.saveToJSONUnselectedContent));
+                alert.showAndWait();
+            }
+            String json = objectMapper.writeValueAsString(tempList);
             writer.write(json);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle(Translator
+                    .getTranslation(Text
+                            .Admin.Alert.saveToJSONSuccessTitle));
+            alert.setHeaderText(null);
+            alert.setContentText(Translator
+                    .getTranslation(Text
+                            .Admin.Alert.saveToJSONSuccessContent));
+            alert.showAndWait();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -135,16 +211,20 @@ public class AdminCtrl implements TextPage, Initializable {
      * Loads the events from a JSON file.
      */
     public void loadFromJson() {
-        File file = new File("client/events.json");
         try {
             restoredEvents = objectMapper
                     .readValue(file, new TypeReference<List<Event>>() {});
         } catch (Exception e) {
             e.printStackTrace();
         }
+        for (Event e : restoredEvents) {
+            restoreEventChoiceBox.getItems().add(e);
+        }
         System.out.println("Loaded from JSON");
         restoreEventBtn.setVisible(true);
         restoreEventBtn.setManaged(true);
+        restoreEventChoiceBox.setVisible(true);
+        restoreEventChoiceBox.setManaged(true);
         refresh();
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(Translator
@@ -164,29 +244,33 @@ public class AdminCtrl implements TextPage, Initializable {
      * and restores it to the database.
      */
     public void restoreEvent() {
-        String invCode = restoreEventTextField.getText();
+        Event eventToRestore = restoreEventChoiceBox.getValue();
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(Translator
                 .getTranslation(Text.Admin.Alert.restoreEventAlertTitle));
         alert.setHeaderText(null);
         alert.setContentText(Translator
                 .getTranslation(Text.Admin.Alert.restoreEventAlertContent));
-        if (!invCode.isEmpty()) {
-            restoreEventTextField.clear();
-            Event restoredEvent = null;
-            for (Event event : restoredEvents) {
-                if (event.getInviteCode().equals(invCode)) {
-                    restoredEvent = event;
-                    break;
-                }
-            }
-            if (restoredEvent != null) {
-                events.add(restoredEvent);
-                server.saveEvent(restoredEvent);
-                refresh();
+        if (eventToRestore != null) {
+//            restoreEventChoiceBox.getSelectionModel().clearSelection();
+            if (!events.contains(eventToRestore)) {
+                events.add(eventToRestore);
             } else {
-                alert.showAndWait();
+                events.remove(eventToRestore);
+                events.add(eventToRestore);
             }
+            server.send("/app/admin/save",
+                    eventToRestore);
+            Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
+            alert1.setTitle(Translator
+                    .getTranslation(Text
+                            .Admin.Alert.restoreEventAlertSuccessTitle));
+            alert1.setHeaderText(null);
+            alert1.setContentText(Translator
+                    .getTranslation(Text
+                            .Admin.Alert.restoreEventAlertSuccessContent));
+            alert1.showAndWait();
+            refresh();
         } else {
             alert.showAndWait();
         }
@@ -198,23 +282,23 @@ public class AdminCtrl implements TextPage, Initializable {
     public void deleteEvent() {
         Event selectedEvent = eventsTable.getSelectionModel().getSelectedItem();
         if (selectedEvent != null) {
-            try {
-                events.remove(selectedEvent);
-                Response response = server.deleteEvent(selectedEvent);
-                if (response.getStatus() == 404) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle(Translator
-                            .getTranslation(Text
-                                    .Admin.Alert.deleteEventAlertTitle));
-                    alert.setHeaderText(null);
-                    alert.setContentText(Translator
-                            .getTranslation(Text
-                                    .Admin.Alert.deleteEventAlertContent));
-                    alert.showAndWait();
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle(Translator
+                    .getTranslation(client.language
+                            .Text.StartUp.Alert.removeEventHeader));
+            alert.setHeaderText(null);
+            alert.setContentText(Translator
+                    .getTranslation(client.language
+                            .Text.StartUp.Alert.removeEventContent));
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                try {
+                    events.remove(selectedEvent);
+                    server.send("/app/admin/delete", selectedEvent);
+                    refresh();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                refresh();
-            } catch (Exception e) {
-                e.printStackTrace();
             }
 
         }
@@ -284,12 +368,22 @@ public class AdminCtrl implements TextPage, Initializable {
                 });
         restoreEventBtn.setVisible(false);
         restoreEventBtn.setManaged(false);
+        restoreEventChoiceBox.setVisible(false);
+        restoreEventChoiceBox.setManaged(false);
+
+        events = server.getMyEvents();
+
+        server.registerForMessages("/topic/admin", Event.class, e -> {
+            events.add(e);
+            System.out.println("Received event: " + e.getEventName());
+            refresh();
+        });
+
     }
     /**
      * Refreshes the contents of the admin page
      */
     public void refresh() {
-        events = server.getMyEvents();
         ObservableList<Event> eventObservableList =
                 FXCollections.observableList(events);
         eventName.setCellValueFactory(

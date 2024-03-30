@@ -2,6 +2,7 @@ package server.api;
 
 import commons.Event;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
 
@@ -13,13 +14,18 @@ import java.util.List;
 public class EventController {
 
     private final EventRepository eventRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     /**
      * Constructor for the EventController
-     * @param eventRepository The event repository
+     *
+     * @param eventRepository   The event repository
+     * @param messagingTemplate The messaging template
      */
-    public EventController(EventRepository eventRepository) {
+    public EventController(EventRepository eventRepository,
+                           SimpMessagingTemplate messagingTemplate) {
         this.eventRepository = eventRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
 //    /**
@@ -71,9 +77,8 @@ public class EventController {
     @PostMapping(path = { "", "/" })
     @ResponseBody
     public ResponseEntity<Event> createEvent(@RequestBody Event event) {
-
         eventRepository.saveAndFlush(event);
-
+        messagingTemplate.convertAndSend("/topic/admin", event);
         return ResponseEntity.ok(event);
     }
 
@@ -85,6 +90,9 @@ public class EventController {
     @PutMapping(path = { "", "/" })
     @ResponseBody
     public ResponseEntity<Event> saveEvent(@RequestBody Event event) {
+        if (event.getEventName().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
         eventRepository.save(event);
         return ResponseEntity.ok(event);
     }
