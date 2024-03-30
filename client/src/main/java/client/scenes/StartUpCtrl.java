@@ -159,7 +159,24 @@ public class StartUpCtrl implements Initializable, TextPage {
             }
         });
         loginButton.setOnAction(event -> mainCtrl.showAdminPage());
+        registerForDeleteMessages();
 
+    }
+
+    private void registerForDeleteMessages() {
+        server.registerForMessages("/topic/admin/delete", Event.class,
+                event -> {
+                    currentEvents.remove(event);
+                    List<String> codes = server
+                            .getUserSettings().getEventCodes();
+                    codes.remove(event.getInviteCode());
+                    try {
+                        server.getUserSettings().setEventCodes(codes);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    refresh();
+                });
     }
 
     /**
@@ -308,6 +325,12 @@ public class StartUpCtrl implements Initializable, TextPage {
         removeFromYourEvents.setText(Translator.
                 getTranslation(client.language
                         .Text.StartUp.Menu.removeYourEvents));
+        newEvent1.setPromptText(Translator
+                .getTranslation(client.language
+                        .Text.StartUp.createNewEventLabel));
+        joinEvent1.setPromptText(Translator
+                .getTranslation(client.language
+                        .Text.StartUp.joinEventLabel));
     }
 
     /**

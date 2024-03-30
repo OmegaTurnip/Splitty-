@@ -20,11 +20,16 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import commons.Event;
 import commons.Participant;
 import jakarta.ws.rs.client.Client;
@@ -35,6 +40,13 @@ import commons.Quote;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.simp.stomp.StompFrameHandler;
+import org.springframework.messaging.simp.stomp.StompHeaders;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 
 public class ServerUtils {
@@ -42,8 +54,11 @@ public class ServerUtils {
     private final UserConfig userSettings;
 
     private String server;
+    private String webSocketServer;
 
     private Client client;
+
+    private StompSession session;
 
     /**
      * Getter.
@@ -76,6 +91,13 @@ public class ServerUtils {
         this.userSettings = UserConfig.get();
         this.server = userSettings.getServerUrl();
         this.client = ClientBuilder.newClient(new ClientConfig());
+//        StringBuilder ws = new StringBuilder(userSettings.getServerUrl());
+//        ws.insert(0, "ws:");
+//        ws.append("websocket");
+        this.webSocketServer = "ws://localhost:8080/websocket";
+        //Make this configurable rather than hard coded.
+        session = connect(webSocketServer);
+        System.out.println("WebSocketServer: " + webSocketServer);
     }
 
     /**
@@ -253,5 +275,58 @@ public class ServerUtils {
                 .path("api/event/" + selectedEvent.getId())
                 .request()
                 .delete();
+    }
+
+    private StompSession connect(String url) {
+        var client = new StandardWebSocketClient();
+        var stomp = new WebSocketStompClient(client);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        MappingJackson2MessageConverter converter =
+                new MappingJackson2MessageConverter();
+        converter.setObjectMapper(mapper);
+        stomp.setMessageConverter(converter);
+        try {
+            return stomp.connect(url, new StompSessionHandlerAdapter() {
+            }).get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        throw new IllegalStateException();
+    }
+
+
+    /**
+     * Method for registering for messages from a websocket destination.
+     * @param dest The destination to listen to.
+     * @param type The type of the message.
+     * @param consumer The consumer to handle the message.
+     * @param <T> The type of the message.
+     */
+    public <T> void registerForMessages(String dest, Class<T> type,
+                                        Consumer<T> consumer) {
+        session.subscribe(dest, new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return type;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                consumer.accept((T) payload);
+            }
+        });
+    }
+
+    /**
+     * Send an object to this destination.
+     * @param dest The destination to send to.
+     * @param o The object to send.
+     */
+    public void send(String dest, Object o) {
+        session.send(dest, o);
     }
 }

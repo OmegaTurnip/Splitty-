@@ -50,12 +50,10 @@ public class Main extends Application {
      * @throws IOException no description was provided in the template.
      */
     @Override
-    public void start(Stage primaryStage) throws IOException {
+    public void start(Stage primaryStage) {
         try {
             var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
             mainCtrl.setPrimaryStage(primaryStage);
-            //I need to initialise this stage first before anything else,
-            // so that is why it is here.
             var startUp = FXML.load(StartUpCtrl.class,
                     "client", "scenes", "StartUp.fxml");
             var overview = FXML.load(EventOverviewCtrl.class,
@@ -71,16 +69,20 @@ public class Main extends Application {
         } catch (RuntimeException e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle(Translator
-                    .getTranslation(client.language
-                            .Text.Alert.serverDownTitle));
-            alert.setHeaderText(null);
-            alert.setContentText(Translator
-                    .getTranslation(client.language
-                            .Text.Alert.serverDownContent));
+            try {
+                alert.setTitle(Translator
+                        .getTranslation(client.language
+                                .Text.Alert.serverDownTitle));
+                alert.setHeaderText(null);
+                alert.setContentText(Translator
+                        .getTranslation(client.language
+                                .Text.Alert.serverDownContent));
+            } catch (NullPointerException nullPointerException) {
+                alert.setTitle("Server down");
+                alert.setContentText("The server is down," +
+                        " please try again later.");
+            }
             alert.showAndWait();
         }
-
-
     }
 }
