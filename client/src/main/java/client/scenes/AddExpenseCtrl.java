@@ -240,7 +240,8 @@ public class AddExpenseCtrl implements Initializable, TextPage {
                         if (change.wasAdded()
                                 && (change.getAddedSubList()
                                 .contains(Translator.getTranslation(
-                                        Text.AddExpense.participantsEveryone)) || allSelected)) {
+                                        Text.AddExpense.participantsEveryone))
+                                || allSelected)) {
                             isCheckingAll.set(true);
                             participants.getCheckModel().checkAll();
                         }
