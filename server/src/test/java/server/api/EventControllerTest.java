@@ -26,7 +26,7 @@ public class EventControllerTest {
         sut = new EventController(eventRepository);
         testEvent1 = new Event("testEvent1");
         testEvent1.setId(100L);
-        testEvent1.setInviteCode("hullo");
+        testEvent1.setInviteCode("43fabbfca0644e5db1d0c1e3cb0d5416");
         events = new ArrayList<>();
         events.add(testEvent1);
     }
