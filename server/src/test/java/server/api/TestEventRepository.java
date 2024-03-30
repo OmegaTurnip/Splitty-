@@ -380,8 +380,15 @@ public class TestEventRepository implements EventRepository {
      * @return .
      */
     @Override
-    public List<Event> findAllByInviteCodeIsIn(List<String> inviteCodes) {
-        return null;
+    public List<Event> findByInviteCodeIn(List<String> inviteCodes) {
+        List<Event> found = new ArrayList<>();
+        for (Event e : added) {
+            if (inviteCodes.contains(e.getInviteCode())) {
+                found.add(e);
+                break;
+            }
+        }
+        return found;
     }
 
     /**

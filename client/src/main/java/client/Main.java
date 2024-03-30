@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 
 import client.language.Translator;
 import client.scenes.*;
+import client.utils.ServerUtils;
 import com.google.inject.Injector;
 import javafx.application.Application;
 import javafx.scene.control.Alert;
@@ -52,20 +53,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-            mainCtrl.setPrimaryStage(primaryStage);
-            var startUp = FXML.load(StartUpCtrl.class,
-                    "client", "scenes", "StartUp.fxml");
-            var overview = FXML.load(EventOverviewCtrl.class,
-                    "client", "scenes", "EventOverview.fxml");
-            var add = FXML.load(AddParticipantCtrl.class, "client", "scenes",
-                    "AddParticipant.fxml");
-            var addExpense = FXML.load(AddExpenseCtrl.class, "client", "scenes",
-                    "AddExpense.fxml");
-            var admin = FXML.load(AdminCtrl.class, "client", "scenes",
-                    "Admin.fxml");
-            mainCtrl.initialize(primaryStage, overview, add,
-                    startUp, addExpense, admin);
+            injectScenesAndUtils(primaryStage);
         } catch (RuntimeException e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -84,5 +72,24 @@ public class Main extends Application {
             }
             alert.showAndWait();
         }
+    }
+
+    private static void injectScenesAndUtils(Stage primaryStage) {
+        var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+        mainCtrl.setPrimaryStage(primaryStage);
+        var startUp = FXML.load(StartUpCtrl.class,
+                "client", "scenes", "StartUp.fxml");
+        var overview = FXML.load(EventOverviewCtrl.class,
+                "client", "scenes", "EventOverview.fxml");
+        var add = FXML.load(AddParticipantCtrl.class, "client", "scenes",
+                "AddParticipant.fxml");
+        var addExpense = FXML.load(AddExpenseCtrl.class, "client", "scenes",
+                "AddExpense.fxml");
+        var admin = FXML.load(AdminCtrl.class, "client", "scenes",
+                "Admin.fxml");
+        var server = INJECTOR.getInstance(ServerUtils.class);
+        mainCtrl.initialize(overview, add,
+                startUp, addExpense, admin);
+        mainCtrl.setUtils(server, primaryStage);
     }
 }

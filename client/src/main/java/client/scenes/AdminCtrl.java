@@ -70,6 +70,8 @@ public class AdminCtrl implements TextPage, Initializable {
 
     private File file;
 
+    private String password;
+
     /**
      * Constructor
      * @param server the server.
@@ -100,6 +102,14 @@ public class AdminCtrl implements TextPage, Initializable {
         restoredEvents = new ArrayList<>();
         events = new ArrayList<>();
         this.file = file;
+    }
+
+    /**
+     * Setter for password
+     * @param password the password
+     */
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     /**
@@ -283,7 +293,7 @@ public class AdminCtrl implements TextPage, Initializable {
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
                     events.remove(selectedEvent);
-                    server.deleteEvent(selectedEvent);
+                    server.deleteEvent(selectedEvent, password);
                     refresh();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -361,7 +371,7 @@ public class AdminCtrl implements TextPage, Initializable {
             }
         });
 
-        events = server.getMyEvents();
+//        events = server.getAllEvents(password);
 
         server.registerForMessages("/topic/admin", Event.class, e -> {
             events.remove(e); //Overwriting the event if it exists

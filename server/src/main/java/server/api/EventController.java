@@ -6,6 +6,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -56,19 +57,6 @@ public class EventController {
         return ResponseEntity.ok(events);
     }
 
-//    /**
-//     * Save events
-//     * @param events The events to save
-//     * @return The events saved
-//     */
-//    @PutMapping(path = { "", "/" })
-//    @ResponseBody
-//    public ResponseEntity<List<Event>> saveEvents(
-//            @RequestBody List<Event> events) {
-//        eventRepository.saveAll(events);
-//        return ResponseEntity.ok(events);
-//    }
-
     /**
      * Create an event
      * @param event The event to create
@@ -102,23 +90,6 @@ public class EventController {
     }
 
     /**
-     * Delete an event
-     * @param id The id of the event to delete
-     * @return Confirmation of deletion.
-     */
-    @DeleteMapping("/{id}")
-    @ResponseBody
-    public ResponseEntity<Void> deleteEvent(@PathVariable("id") Long id) {
-        if (!eventRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        Event event = getEvent(id).getBody();
-        eventRepository.deleteById(id);
-        messagingTemplate.convertAndSend("/topic/admin/delete", event);
-        return ResponseEntity.noContent().build();
-    }
-
-    /**
      * Get an event by id
      * @param id The id of the event
      * @return The event
@@ -135,18 +106,25 @@ public class EventController {
 
     /**
      * Get an event by invite code.
-     * @param inviteCode The invite code
+     * @param inviteCodes The list of invite codes
      * @return The event
      */
-    @GetMapping("/invite/{inviteCode}")
+    @GetMapping("/invite/{inviteCodes}")
     @ResponseBody
-    public ResponseEntity<Event> getEventByInviteCode(
-            @PathVariable("inviteCode") String inviteCode) {
-        Event event = eventRepository.findByInviteCode(inviteCode);
-        if (event == null) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<List<Event>> getEventsByInviteCode(
+            @PathVariable String inviteCodes) {
+        if (inviteCodes.isEmpty())
+            return ResponseEntity.ok(new ArrayList<Event>());
+        List<String> inviteCodesList = List.of(inviteCodes.split(","));
+        List<Event> events = eventRepository
+                .findByInviteCodeIn(inviteCodesList);
+        if (events == null) {
+            return ResponseEntity.ok(new ArrayList<>());
+//            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(event);
+        return ResponseEntity.ok(events);
     }
+
+
 
 }

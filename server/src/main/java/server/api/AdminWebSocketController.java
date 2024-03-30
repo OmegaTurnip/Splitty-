@@ -11,14 +11,19 @@ import org.springframework.stereotype.Controller;
 public class AdminWebSocketController {
 
     private final EventController eventController;
+    private final AdminController adminController;
 
     /**
      * Constructor for the AdminWebSocketController
+     *
      * @param eventController The event controller
+     * @param adminController
      */
     @Autowired
-    public AdminWebSocketController(EventController eventController) {
+    public AdminWebSocketController(EventController eventController,
+                                    AdminController adminController) {
         this.eventController = eventController;
+        this.adminController = adminController;
     }
 
     /**
@@ -40,7 +45,7 @@ public class AdminWebSocketController {
     @MessageMapping("/admin/delete") // This is /app/admin/delete
     @SendTo("/topic/admin/delete")
     public Event deleteEvent(Event e) {
-        eventController.deleteEvent(e.getId());
+        adminController.deleteEvent(e.getId());
         return e;
     }
 
