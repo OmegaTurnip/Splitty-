@@ -41,7 +41,7 @@ public class ServerUtils {
 
     private final UserConfig userSettings;
 
-    private final String server;
+    private String server;
 
     private Client client;
 
@@ -239,12 +239,18 @@ public class ServerUtils {
     }
 
     /**
-     * Creates a participant
-     *
-     * @param participant participant to create
-     * @return created participant
+     * Setter for the server URL
+     * @param server the server url
      */
-    public Participant createParticipant(Participant participant) {
+    public void setServer(String server) {
+        this.server = server;
+    }
+        /**
+         * Creates a participant
+         * @param participant participant to create
+         * @return created participant
+         */
+    public Participant createParticipant(Participant participant){
         return client
                 .target(server).path("/api/event/" + participant.getEvent()
                         .getId() + "/participants")
