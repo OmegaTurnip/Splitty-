@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.language.Text;
+import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
@@ -9,23 +10,20 @@ import commons.Event;
 import commons.Participant;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
-public class AddParticipantCtrl{
+public class AddParticipantCtrl implements TextPage, Initializable {
 
 
     @FXML
     private Menu languages;
-    @FXML
-    private CheckMenuItem english;
-    @FXML
-    private CheckMenuItem dutch;
-    @FXML
-    private CheckMenuItem german;
     @FXML
     private Menu rto;
     @FXML
@@ -67,18 +65,33 @@ public class AddParticipantCtrl{
     }
 
     /**
+     * Initializes the controller
+     * @param location
+     * The location used to resolve relative paths for the root object, or
+     * {@code null} if the location is not known.
+     *
+     * @param resources
+     * The resources used to localize the root object, or {@code null} if
+     * the root object was not localized.
+     */
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        fetchLanguages(languages);
+    }
+
+    /**
+     * Refresh the page
+     */
+    public void refresh() {
+        refreshText();
+    }
+
+    /**
      * Refreshes the text
      */
     public void refreshText() {
         languages.setText(
                 Translator.getTranslation(Text.Menu.Languages));
-        english.setText(
-                Translator.getTranslation(Text.Menu.English));
-        dutch.setText(
-                Translator.getTranslation(Text.Menu.Dutch));
-        german.setText(
-                Translator.getTranslation(Text.Menu.German)
-        );
         rto.setText(
                 Translator.getTranslation(Text.Menu.ReturnToOverview)
         );
@@ -119,42 +132,6 @@ public class AddParticipantCtrl{
 
     private Participant getParticipant(){
         return null;
-    }
-
-    /**
-     * Sets language to Dutch
-     */
-    public void setDutch(){
-        try {
-            UserConfig.get().setUserLanguage("nld");
-            refreshText();
-        }catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Sets language to English
-     */
-    public void setEnglish(){
-        try {
-            UserConfig.get().setUserLanguage("eng");
-            refreshText();
-        }catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Sets language to German
-     */
-    public void setGerman(){
-        try {
-            UserConfig.get().setUserLanguage("deu");
-            refreshText();
-        }catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
