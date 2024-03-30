@@ -61,6 +61,10 @@ public class Text {
         public static final String participantsLabel = level
                 + "participantsLabel";
 
+        public static final String expensesDropDown = level
+                + "expensesDropDown";
+
+
         public static final class Buttons {
 
             private static final String level = EventOverview.level +
@@ -76,6 +80,7 @@ public class Text {
 
             public static final String fromExpensesButton =
                     level + "fromExpensesButton";
+
         }
     }
 

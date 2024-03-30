@@ -3,7 +3,7 @@
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
@@ -61,13 +61,6 @@
                </center>
                <bottom>
                   <BorderPane prefHeight="0.0" prefWidth="331.0" BorderPane.alignment="CENTER">
-                     <center>
-                        <ChoiceBox fx:id="expensesDropDown" prefHeight="26.0" prefWidth="1600.0" BorderPane.alignment="CENTER">
-                           <BorderPane.margin>
-                              <Insets />
-                           </BorderPane.margin>
-                        </ChoiceBox>
-                     </center>
                      <right>
                         <Button fx:id="addExpenseButton" mnemonicParsing="false" onAction="#addExpense" prefHeight="26.0" prefWidth="65.0" styleClass="button-add" BorderPane.alignment="CENTER" />
                      </right>
@@ -79,18 +72,21 @@
                                     <ToggleGroup fx:id="selectExpenses" />
                                  </toggleGroup>
                               </ToggleButton>
-                              <ToggleButton id="ExspenseIncludingParticipant" fx:id="includingExpensesButton" mnemonicParsing="false" onAction="#groupOfExpenseSelected" prefHeight="26.0" prefWidth="147.0" text="Including participant" toggleGroup="$selectExpenses">
+                              <ToggleButton id="ExpenseIncludingParticipant" fx:id="includingExpensesButton" mnemonicParsing="false" onAction="#groupOfExpenseSelected" prefHeight="26.0" prefWidth="147.0" text="Including participant" toggleGroup="$selectExpenses">
                                  <HBox.margin>
                                     <Insets />
                                  </HBox.margin>
                               </ToggleButton>
-                              <ToggleButton id="ExspensePaidParticipant" fx:id="fromExpensesButton" mnemonicParsing="false" onAction="#groupOfExpenseSelected" prefHeight="26.0" prefWidth="152.0" text="Paid by participant" toggleGroup="$selectExpenses" />
+                              <ToggleButton id="ExpensePaidParticipant" fx:id="fromExpensesButton" mnemonicParsing="false" onAction="#groupOfExpenseSelected" prefHeight="26.0" prefWidth="152.0" text="Paid by participant" toggleGroup="$selectExpenses" />
                            </children>
                            <BorderPane.margin>
                               <Insets top="20.0" />
                            </BorderPane.margin>
                         </HBox>
                      </bottom>
+                     <left>
+                        <ComboBox fx:id="expensesDropDown" prefHeight="26.0" prefWidth="254.0" BorderPane.alignment="CENTER" />
+                     </left>
                   </BorderPane>
                </bottom>
             </BorderPane>

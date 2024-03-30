@@ -17,6 +17,8 @@ import commons.Transaction;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.text.Font;
+import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.net.URL;
@@ -40,7 +42,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     @FXML
     private Button addExpenseButton;
     @FXML
-    private ChoiceBox<Participant> expensesDropDown;
+    private ComboBox<Object> expensesDropDown;
     @FXML
     private Button settleDebtsButton;
     @FXML
@@ -96,15 +98,90 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      * Refreshes the page.
      */
     public void refresh() {
+        refreshText();
         if (event != null) {
             ObservableList<Participant> observableParticipants =
                     FXCollections.observableArrayList(event.getParticipants());
             participantsListView.setItems(observableParticipants);
-            expensesDropDown.setItems(observableParticipants);
+            ObservableList<Object> participantsEvent =
+                    FXCollections.observableArrayList(event.getParticipants());
+            expensesDropDown.setItems(participantsEvent);
+            expensesDropDown.setCellFactory(lv -> new ParticipantListCell());
+            expensesDropDown.setConverter(new ParticipantStringConverter());
             getExpenses();
         }
 
-        refreshText();
+    }
+    public static class ParticipantStringConverter
+            extends StringConverter<Object> {
+
+        private StringConverter<Object> participantStringConverter =
+                new StringConverter<Object>() {
+
+        /**
+         * Converts the given object to its string representation.
+         * @param o The object to convert.
+         * @return The string representation of the object's name,
+         * or an empty string if the object is null.
+         */
+                @Override
+                public String toString(Object o) {
+                    if (o == null) {
+                        return "";
+                    } else {
+                        return ((Participant) o).getName();
+                    }
+                }
+
+            /**
+             * Converts the given string to an object.
+             * @param s The string to convert.
+             * @return Always returns null,
+             * as the conversion from string to object is not implemented.
+             */
+                @Override
+                public Object fromString(String s) {
+                    return null;
+                }
+            };
+
+        /**
+         * Converts the given object to its string
+         * representation using the internal converter.
+         * @param o The object to convert.
+         * @return The string representation of the object's name,
+         * or an empty string if the object is null.
+         */
+        @Override
+        public String toString(Object o) {
+            return participantStringConverter.toString(o);
+        }
+
+        /**
+         * Converts the given string to an object using the internal converter.
+         * @param s The string to convert.
+         * @return Always returns null,
+         * as the conversion from string to object is not implemented.
+         */
+        @Override
+        public Object fromString(String s) {
+            return participantStringConverter.fromString(s);
+        }
+    }
+
+    public static class ParticipantListCell extends ListCell<Object> {
+        @Override
+        protected void updateItem(Object item, boolean empty) {
+            super.updateItem(item, empty);
+            setFont(Font.font("Arial", 14));
+
+            if (empty || item == null) {
+                setText("");
+            } else {
+                Participant participant = (Participant) item;
+                setText(participant.getName());
+            }
+        }
     }
 
     @FXML
@@ -116,13 +193,13 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      * Shows the list of expenses.
      */
     public void getExpenses() {
-        Participant participant = expensesDropDown.getValue();
+        Participant participant = (Participant) expensesDropDown.getValue();
         ToggleButton selected =
                 (ToggleButton) selectExpenses.getSelectedToggle();
 
         if (selected != null) {
-            String choice = selected.getText();
-            if(!choice.equals("all") && participant == null){
+            String choice = selected.getId();
+            if(!choice.equals("AllExpenses") && participant == null){
                 showAlert("Participant Not Selected",
                         "Please select a participant " +
                                 "first within the expense menu.");
@@ -130,25 +207,26 @@ public class EventOverviewCtrl implements TextPage, Initializable {
             }
             ObservableList<Transaction> transactions =
                     FXCollections.observableArrayList(event.getTransactions());
-            showSelectedExpenses(choice, participant, transactions);
+            showSelectedExpenses(selected, participant, transactions);
         }
     }
 
     /**
      * Shows the selected expenses.
-     * @param choice The choice of expenses.
+     * @param selected The selected toggle.
      * @param participant The participant.
      * @param transactions The transactions.
      */
-    public void showSelectedExpenses(String choice,
+    public void showSelectedExpenses(ToggleButton selected,
                                      Participant participant,
                                      ObservableList<Transaction> transactions){
+        String choice = selected.getId();
         switch (choice) {
-            case "All" -> {
+            case "AllExpenses":
                 System.out.println("all clicked");
                 expensesListView.setItems(transactions);
-            }
-            case "Including participant" -> {
+                break;
+            case "ExpenseIncludingParticipant":
                 System.out.println("Including participant clicked");
                 ObservableList<Transaction> transactionsParticipant =
                         FXCollections.observableArrayList();
@@ -158,8 +236,8 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                     }
                 }
                 expensesListView.setItems(transactionsParticipant);
-            }
-            case "Paid by participant" -> {
+                break;
+            case "ExpensePaidParticipant":
                 System.out.println("Paid by participant clicked");
                 ObservableList<Transaction> transactionsPayer =
                         FXCollections.observableArrayList();
@@ -169,7 +247,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                     }
                 }
                 expensesListView.setItems(transactionsPayer);
-            }
+                break;
         }
     }
 
@@ -206,6 +284,9 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         fromExpensesButton.setText(Translator
                 .getTranslation(client.language
                         .Text.EventOverview.Buttons.fromExpensesButton));
+        expensesDropDown.setPromptText(Translator
+                    .getTranslation(client.language
+                            .Text.EventOverview.expensesDropDown));
 
         if (event != null ) eventNameLabel.setText(event.getEventName());
     }
@@ -222,8 +303,6 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     public void addExpense() {
         mainCtrl.showAddExpense(event);
     }
-
-
 
     private class ParticipantCellFactory extends ListCell<Participant> {
 
