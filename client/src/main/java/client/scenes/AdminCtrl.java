@@ -23,7 +23,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -62,8 +61,6 @@ public class AdminCtrl implements TextPage, Initializable {
     private Button restoreEventBtn;
     @FXML
     private ChoiceBox<Event> restoreEventChoiceBox;
-    @FXML
-    private ChoiceBox<String> sortByChoiceBox;
     private List<Event> events;
     private List<Event> restoredEvents;
     private final ServerUtils server;
@@ -120,16 +117,8 @@ public class AdminCtrl implements TextPage, Initializable {
                         new TypeReference<List<Event>>() {});
             }
             if (tempList.contains(selectedEvent)) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(Translator
-                        .getTranslation(Text
-                                .Admin.Alert.saveToJSONDuplicateTitle));
-                alert.setHeaderText(null);
-                alert.setContentText(Translator
-                        .getTranslation(Text
-                                .Admin.Alert.saveToJSONDuplicateContent));
-                alert.showAndWait();
-                return;
+                tempList.remove(selectedEvent);
+                //Overwriting the event if it exists
             }
 
             try (PrintWriter writer = new PrintWriter(file)) {
@@ -167,12 +156,13 @@ public class AdminCtrl implements TextPage, Initializable {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle(Translator
                         .getTranslation(Text
-                                .Admin.Alert.saveToJSONUnselectedTitle));
+                                .Admin.Alert.JSONUnselectedTitle));
                 alert.setHeaderText(null);
                 alert.setContentText(Translator
                         .getTranslation(Text
-                                .Admin.Alert.saveToJSONUnselectedContent));
+                                .Admin.Alert.JSONUnselectedContent));
                 alert.showAndWait();
+                return;
             }
             String json = objectMapper.writeValueAsString(tempList);
             writer.write(json);
@@ -218,7 +208,14 @@ public class AdminCtrl implements TextPage, Initializable {
             e.printStackTrace();
         }
         for (Event e : restoredEvents) {
-            restoreEventChoiceBox.getItems().add(e);
+            if (!restoreEventChoiceBox.getItems().contains(e)) {
+                restoreEventChoiceBox.getItems().add(e);
+            } else {
+                restoreEventChoiceBox.getItems()
+                        .remove(e);
+                restoreEventChoiceBox.getItems().add(e);
+                //Overwriting the event if it exists
+            }
         }
         System.out.println("Loaded from JSON");
         restoreEventBtn.setVisible(true);
@@ -252,15 +249,7 @@ public class AdminCtrl implements TextPage, Initializable {
         alert.setContentText(Translator
                 .getTranslation(Text.Admin.Alert.restoreEventAlertContent));
         if (eventToRestore != null) {
-//            restoreEventChoiceBox.getSelectionModel().clearSelection();
-            if (!events.contains(eventToRestore)) {
-                events.add(eventToRestore);
-            } else {
-                events.remove(eventToRestore);
-                events.add(eventToRestore);
-            }
-            server.send("/app/admin/save",
-                    eventToRestore);
+            server.saveEvent(eventToRestore);
             Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
             alert1.setTitle(Translator
                     .getTranslation(Text
@@ -294,13 +283,24 @@ public class AdminCtrl implements TextPage, Initializable {
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
                     events.remove(selectedEvent);
-                    server.send("/app/admin/delete", selectedEvent);
+                    server.deleteEvent(selectedEvent);
                     refresh();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(Translator
+                    .getTranslation(Text
+                            .Admin.Alert.JSONUnselectedTitle));
+            alert.setHeaderText(null);
+            alert.setContentText(Translator
+                    .getTranslation(Text
+                            .Admin.Alert.JSONUnselectedContent));
+            alert.showAndWait();
+            return;
         }
     }
 
@@ -348,32 +348,23 @@ public class AdminCtrl implements TextPage, Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         fetchLanguages(languages);
         rto.setOnAction(event -> mainCtrl.showStartUp());
-        ObservableList<String> sortOptions = FXCollections.observableArrayList(
-                "Title", "Creation Date", "Last Activity");
-        sortByChoiceBox.setItems(sortOptions);
-        sortByChoiceBox.setValue("Sort By");
-        sortByChoiceBox.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    switch (newValue) {
-                        case "Title":
-                            sortByEventName();
-                            break;
-                        case "Creation Date":
-                            sortByCreationDate();
-                            break;
-                        case "Last Activity":
-                            sortByLastActivity();
-                            break;
-                    }
-                });
         restoreEventBtn.setVisible(false);
         restoreEventBtn.setManaged(false);
         restoreEventChoiceBox.setVisible(false);
         restoreEventChoiceBox.setManaged(false);
 
+        eventsTable.setOnKeyPressed(event -> {
+            switch(event.getCode()) {
+                case DELETE:
+                    deleteEvent();
+                    break;
+            }
+        });
+
         events = server.getMyEvents();
 
         server.registerForMessages("/topic/admin", Event.class, e -> {
+            events.remove(e); //Overwriting the event if it exists
             events.add(e);
             System.out.println("Received event: " + e.getEventName());
             refresh();
@@ -427,13 +418,6 @@ public class AdminCtrl implements TextPage, Initializable {
                 .getTranslation(Text.Admin.Buttons.deleteEvent));
         restoreEventBtn.setText(Translator
                 .getTranslation(Text.Admin.Buttons.restoreEvent));
-
-        sortByChoiceBox.setValue(Translator
-                .getTranslation(Text.Admin.sortByChoiceBox));
-        ObservableList<String> sortOptions = FXCollections.observableArrayList(
-                titleTranslation, creationDateTranslation,
-                lastActivityTranslation);
-        sortByChoiceBox.setItems(sortOptions);
 
     }
 }

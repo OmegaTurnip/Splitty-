@@ -82,6 +82,21 @@ public class Text {
                     level + "fromExpensesButton";
 
         }
+
+        public static class ParticipantCellController {
+            public static final String level = EventOverview.level +
+                    "ParticipantCellController.";
+
+            public static final class Alert {
+                public static final String level = ParticipantCellController
+                        .level + "Alert.";
+                public static final String deleteParticipantTitle = level +
+                        "deleteParticipantTitle";
+                public static final String deleteParticipantContent = level +
+                        "deleteParticipantContent";
+
+            }
+        }
     }
 
     public static final class AddParticipant{
@@ -154,7 +169,6 @@ public class Text {
         private static final String level = "Admin.";
 
         public static final String eventsLabel = level + "eventsLabel";
-        public static final String sortByChoiceBox = level + "sortByChoiceBox";
         public static final String title = level + "title";
         public static final String creationDate = level + "creationDate";
         public static final String lastActivity = level + "lastActivity";
@@ -169,18 +183,14 @@ public class Text {
                     + "eventLoadedTitle";
             public static final String eventLoadedContent = level
                     + "eventLoadedContent";
-            public static final String saveToJSONUnselectedTitle = level
-                    + "saveToJSONUnselectedTitle";
-            public static final String saveToJSONUnselectedContent = level
-                    + "saveToJSONUnselectedContent";
+            public static final String JSONUnselectedTitle = level
+                    + "JSONUnselectedTitle";
+            public static final String JSONUnselectedContent = level
+                    + "JSONUnselectedContent";
             public static final String saveToJSONSuccessTitle = level
                     + "saveToJSONSuccessTitle";
             public static final String saveToJSONSuccessContent = level
                     + "saveToJSONSuccessContent";
-            public static final String saveToJSONDuplicateTitle = level
-                    + "saveToJSONDuplicateTitle";
-            public static final String saveToJSONDuplicateContent = level
-                    + "saveToJSONDuplicateContent";
             public static final String restoreEventAlertSuccessTitle = level
                     + "restoreEventAlertSuccessTitle";
             public static final String restoreEventAlertSuccessContent = level

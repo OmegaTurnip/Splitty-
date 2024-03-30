@@ -175,6 +175,12 @@ public class MainCtrl {
      */
     public void showAdminPage() {
         adminCtrl.refresh();
+        admin.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                showStartUp();
+                e.consume();
+            }
+        });
         primaryStage.setScene(admin);
     }
 

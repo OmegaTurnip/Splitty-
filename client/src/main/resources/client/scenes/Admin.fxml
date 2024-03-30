@@ -57,11 +57,6 @@
                         <Button fx:id="restoreEventBtn" layoutX="180.0" mnemonicParsing="false" onAction="#restoreEvent" style="-fx-background-color: #0d0d0d; -fx-background-radius: 5pt;" text="Restore Event" textFill="#fefdfd" />
                      </children>
                   </AnchorPane>
-                  <ChoiceBox fx:id="sortByChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
-                     <GridPane.margin>
-                        <Insets right="20.0" />
-                     </GridPane.margin>
-                  </ChoiceBox>
                </children>
             </GridPane>
             <TableView fx:id="eventsTable" prefWidth="600.0" style="-fx-background-color: #E0DDF2; -fx-background-radius: 5pt; -fx-alignment: center;">

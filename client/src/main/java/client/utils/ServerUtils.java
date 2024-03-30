@@ -320,12 +320,14 @@ public class ServerUtils {
         });
     }
 
-    /**
-     * Send an object to this destination.
-     * @param dest The destination to send to.
-     * @param o The object to send.
-     */
-    public void send(String dest, Object o) {
-        session.send(dest, o);
-    }
+//    /**
+//     * Send an object to this destination.
+//     * @param dest The destination to send to.
+//     * @param o The object to send.
+//     */
+//    public void send(String dest, Object o) {
+//        session.send(dest, o);
+//    }
+    //This isn't needed. We can just use REST requests to send messages,
+    //and the messages can be rerouted to the websocket.
 }

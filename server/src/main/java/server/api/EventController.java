@@ -94,7 +94,11 @@ public class EventController {
             return ResponseEntity.badRequest().build();
         }
         eventRepository.save(event);
+        messagingTemplate.convertAndSend("/topic/admin", event);
         return ResponseEntity.ok(event);
+        //tbf this might not be the proper way to do PUT.
+        // PUT methods should specify the URI exactly,
+        // so a proper pathing would be /{id}
     }
 
     /**
@@ -108,7 +112,9 @@ public class EventController {
         if (!eventRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
+        Event event = getEvent(id).getBody();
         eventRepository.deleteById(id);
+        messagingTemplate.convertAndSend("/topic/admin/delete", event);
         return ResponseEntity.noContent().build();
     }
 

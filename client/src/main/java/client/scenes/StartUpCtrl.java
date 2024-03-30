@@ -6,6 +6,7 @@ import client.utils.ServerUtils;
 import commons.Event;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -160,7 +161,14 @@ public class StartUpCtrl implements Initializable, TextPage {
         });
         loginButton.setOnAction(event -> mainCtrl.showAdminPage());
         registerForDeleteMessages();
+        registerForSaveEvents();
 
+    }
+
+    private void registerForSaveEvents() {
+        List<String> userEvents = server.getUserSettings().getEventCodes();
+        server.registerForMessages("/topic/admin", Event.class,
+                event -> refresh());
     }
 
     private void registerForDeleteMessages() {
@@ -245,7 +253,7 @@ public class StartUpCtrl implements Initializable, TextPage {
             List<String> eventCodes = server.getUserSettings().getEventCodes();
             eventCodes.add(result.getInviteCode());
             server.getUserSettings().setEventCodes(eventCodes);
-            currentEvents.add(result);
+//            currentEvents.add(result); //Might lead to bugs in the UI
             System.out.println("Event: "+ result.getEventName() + " created!" +
                     " Invite code: " + result.getInviteCode() + " added!" +
                     " Time of last edit: " + result.getLastActivity());
@@ -291,19 +299,21 @@ public class StartUpCtrl implements Initializable, TextPage {
      * Refreshes the page and updates the list view.
      */
     public void refresh() {
-        fetchYourEvents();
-        ObservableList<Event> observableEvents =
-                FXCollections.observableArrayList(currentEvents);
-        SortedList<Event> sortedEvents = new SortedList<>(observableEvents);
-        sortedEvents.
-                setComparator(Comparator
-                        .comparing(Event::getLastActivity).reversed());
+        Platform.runLater(() -> {
+            fetchYourEvents();
+            ObservableList<Event> observableEvents =
+                    FXCollections.observableArrayList(currentEvents);
+            SortedList<Event> sortedEvents = new SortedList<>(observableEvents);
+            sortedEvents.
+                    setComparator(Comparator
+                            .comparing(Event::getLastActivity).reversed());
 
-        yourEvents.setItems(sortedEvents);
+            yourEvents.setItems(sortedEvents);
 
-        refreshText();
+            refreshText();
 
-        System.out.println("Page has been refreshed!");
+            System.out.println("Page has been refreshed!");
+        });
     }
 
     /**
