@@ -7,6 +7,7 @@ import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
+import commons.ParticipantId;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -176,8 +177,8 @@ public class AddParticipantCtrl{
         try{
             emptyCheck();
             formatCheck();
-            event.addParticipant(usernameTextField.getText());
-            server.saveEvent(event);
+            Participant participant = event.addParticipant(usernameTextField.getText());
+            server.addParticipant(event, participant);
         } catch(WebApplicationException e){
             e.printStackTrace();
             var alert = new Alert(Alert.AlertType.ERROR);

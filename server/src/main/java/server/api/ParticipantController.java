@@ -41,12 +41,15 @@ public class ParticipantController {
     public ResponseEntity<Participant>
         add(@RequestBody Participant participant,
             @PathVariable("eventId") long eventId) {
-        if (participant.getEvent() == null ||
-                isNullOrEmpty(participant.getName()) ||
-                participant.getEvent().getId() != eventId) {
+
+        if (isNullOrEmpty(participant.getName())) {
             return ResponseEntity.badRequest().build();
         }
 
+        var event = eventRepo.findById(eventId);
+        if (event.isEmpty()) return ResponseEntity.badRequest().build();
+
+        participant.setEvent(event.get());
         Participant saved = repo.save(participant);
         return ResponseEntity.ok(saved);
     }
@@ -69,8 +72,12 @@ public class ParticipantController {
         if (id < 0 || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }
+        
+        var optionalParticipant = repo.findById(id);
+        if (optionalParticipant.isEmpty())
+            return ResponseEntity.badRequest().build();
+        Participant participant = optionalParticipant.get();
 
-        Participant participant = repo.findById(id).get();
         if (participant.getEvent().getId() != eventId)
             return ResponseEntity.badRequest().build();
 
@@ -85,7 +92,11 @@ public class ParticipantController {
     @GetMapping(path = { "", "/" })
     public ResponseEntity< List<Participant>>
         getAll(@PathVariable("eventId") long eventId) {
-        Event event = eventRepo.findById(eventId).get();
+
+        var optionalEvent = eventRepo.findById(eventId);
+        if (optionalEvent.isEmpty()) return ResponseEntity.badRequest().build();
+        Event event = optionalEvent.get();
+
         return ResponseEntity.ok(event.getParticipants());
     }
 
@@ -105,8 +116,10 @@ public class ParticipantController {
         if (id < 0 || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }
-
-        Participant participant = repo.findById(id).get();
+        var optionalParticipant = repo.findById(id);
+        if (optionalParticipant.isEmpty())
+            return ResponseEntity.badRequest().build();
+        Participant participant = optionalParticipant.get();
 
         if (participant.getEvent().getId() != eventId)
             return ResponseEntity.badRequest().build();
@@ -129,8 +142,14 @@ public class ParticipantController {
         if (id < 0 || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }
-        Participant participant = repo.findById(id).get();
-        Event event = eventRepo.findById(eventId).get();
+        var optionalParticipant = repo.findById(id);
+        if (optionalParticipant.isEmpty())
+            return ResponseEntity.badRequest().build();
+        Participant participant = optionalParticipant.get();
+
+        var optionalEvent = eventRepo.findById(eventId);
+        if (optionalEvent.isEmpty()) return ResponseEntity.badRequest().build();
+        Event event = optionalEvent.get();
 
         if (participant.getEvent().getId() != eventId)
             return ResponseEntity.badRequest().build();

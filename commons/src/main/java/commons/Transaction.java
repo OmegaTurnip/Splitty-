@@ -59,6 +59,7 @@ public class Transaction {
         this.amount = amount;
         this.participants = participants;
         this.event = event;
+//        event.updateLastActivity();
         this.tag = tag;
         this.isPayoff = isPayoff;
         event.updateLastActivity();
@@ -140,7 +141,7 @@ public class Transaction {
      */
     public void setPayer(Participant payer) {
         this.payer = payer;
-        event.updateLastActivity();
+//        event.updateLastActivity();
     }
 
     /**
@@ -148,9 +149,9 @@ public class Transaction {
      *
      * @param transactionName .
      */
+
     public void setName(String transactionName) {
         this.name = transactionName;
-        event.updateLastActivity();
     }
 
     /**
@@ -160,7 +161,7 @@ public class Transaction {
      */
     public void setDate(LocalDate date) {
         this.date = date;
-        event.updateLastActivity();
+//        event.updateLastActivity();
     }
 
     /**
@@ -170,7 +171,6 @@ public class Transaction {
      */
     public void setAmount(Money price) {
         this.amount = price;
-        event.updateLastActivity();
     }
 
     /**

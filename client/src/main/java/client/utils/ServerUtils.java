@@ -140,6 +140,16 @@ public class ServerUtils {
                 .post(Entity.entity(event, APPLICATION_JSON), Event.class);
     }
 
+    public Participant addParticipant(Event event, Participant participant) {
+        var path = "api/event/" + event.getId() + "/participants";
+        System.out.println("path " + path);
+        return client //
+                .target(server).path(path) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
+    }
+
     /**
      * Gets all events
      * @return List of Events

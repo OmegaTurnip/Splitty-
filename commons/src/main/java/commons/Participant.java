@@ -46,13 +46,12 @@ public class Participant {
     }
 
     /**
-     * Setter method. Also updates last activity in the corresponding Event.
+     * Setter method.
      *
      * @param name .
      */
     public void setName(String name) {
         this.name = name;
-        event.updateLastActivity();
     }
 
     /**
@@ -61,6 +60,10 @@ public class Participant {
      */
     public Event getEvent() {
         return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
     }
 
     /**
