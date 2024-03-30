@@ -200,7 +200,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      */
     public void updateTransactions(Transaction transaction) {
         transactions.add(transaction);
-        Participant participant = expensesDropDown.getValue();
+        Participant participant = (Participant) expensesDropDown.getValue();
         if (participant != null &&
                 transaction.getParticipants().contains(participant)) {
             transactionsParticipant.add(transaction);
