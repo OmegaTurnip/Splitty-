@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -40,17 +41,6 @@ public class EventController {
 //    }
 
     /**
-     * Get all events
-     * @return  All events
-     */
-    @GetMapping(path = { "", "/" })
-    @ResponseBody
-    public ResponseEntity<List<Event>> allEvents() {
-        List<Event> events = eventRepository.findAll();
-        return ResponseEntity.ok(events);
-    }
-
-    /**
      * Save events
      * @param events The events to save
      * @return The events saved
@@ -61,6 +51,7 @@ public class EventController {
             @RequestBody List<Event> events) {
         eventRepository.saveAll(events);
         return ResponseEntity.ok(events);
+        //todo refactor to admin
     }
 
     /**
@@ -78,18 +69,6 @@ public class EventController {
     }
 
     /**
-     * Delete an event
-     * @param event The event to delete
-     * @return The event deleted
-     */
-    @DeleteMapping(path = { "", "/" })
-    @ResponseBody
-    public ResponseEntity<Event> deleteEvent(@RequestBody Event event) {
-        eventRepository.delete(event);
-        return ResponseEntity.ok(event);
-    }
-
-    /**
      * Get an event by id
      * @param id The id of the event
      * @return The event
@@ -103,21 +82,40 @@ public class EventController {
         }
         return ResponseEntity.ok(event);
     }
+//    @GetMapping("/{id}")
+//    public ResponseEntity<Participant>
+//    getById(@PathVariable("id") long id,
+//            @PathVariable("eventId") long eventId) {
+//        if (id < 0 || !repo.existsById(id)) {
+//            return ResponseEntity.badRequest().build();
+//        }
+//
+//        Participant participant = repo.findById(id).get();
+//        if (participant.getEvent().getId() != eventId)
+//            return ResponseEntity.badRequest().build();
+//
+//        return ResponseEntity.ok(participant);
+//    }
 
     /**
      * Get an event by invite code.
-     * @param inviteCode The invite code
+     * @param inviteCodes The list of invite codes
      * @return The event
      */
-    @GetMapping("/invite/{inviteCode}")
+    @GetMapping("/invite/{inviteCodes}")
     @ResponseBody
-    public ResponseEntity<Event> getEventByInviteCode(
-            @PathVariable("inviteCode") String inviteCode) {
-        Event event = eventRepository.findByInviteCode(inviteCode);
-        if (event == null) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<List<Event>> getEventByInviteCode(
+            @PathVariable String inviteCodes) {
+        if (inviteCodes.isEmpty())
+            return ResponseEntity.ok(new ArrayList<Event>());
+        List<String> inviteCodesList = List.of(inviteCodes.split(","));
+        List<Event> events = eventRepository
+                .findByInviteCodeIn(inviteCodesList);
+        if (events == null) {
+            return ResponseEntity.ok(new ArrayList<>());
+//            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(event);
+        return ResponseEntity.ok(events);
     }
 
 }
