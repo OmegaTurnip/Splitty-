@@ -23,13 +23,18 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TransferQueue;
+import java.util.function.Consumer;
 
 
 import commons.Event;
 import commons.Participant;
 import commons.Transaction;
 import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
 import commons.Quote;
@@ -233,4 +238,30 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .put(Entity.entity(transaction, APPLICATION_JSON), Transaction.class);
     }
+    //problem: only 1 registers add the time
+    // set of listners, add all consumers to the set, iterate over all consumers
+    private static final ExecutorService EXEC = Executors.newSingleThreadExecutor();
+    public void registerForUpdates(Consumer<Transaction> consumer, Event event){
+
+        EXEC.submit(() -> {
+            while (!Thread.interrupted()) {
+                var res = client.target(server)
+                        .path("api/event/" + event.getId() + "/transactions/updates")
+                        .request(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON)
+                        .get(Response.class);
+
+                if(res.getStatus() == 204){
+                    continue;
+                };
+                var t = res.readEntity(Transaction.class);
+                consumer.accept(t);
+            }
+        });
+
+    }
+    public void stop() {
+        EXEC.shutdownNow();
+    }
+
 }

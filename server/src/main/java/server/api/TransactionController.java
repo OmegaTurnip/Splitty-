@@ -2,19 +2,26 @@ package server.api;
 
 import commons.Event;
 import commons.Transaction;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 import server.database.EventRepository;
 import server.database.TransactionRepository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 @RestController
 @RequestMapping("/api/event/{eventId}/transactions")
 public class TransactionController {
     private final TransactionRepository repo;
     private final EventRepository eventRepository;
+
+    private Map<Object, Consumer<Transaction>> listners;
 
     /**
      * Constructor for the EventController
@@ -25,6 +32,7 @@ public class TransactionController {
                                  EventRepository eventRepository) {
         this.eventRepository = eventRepository;
         this.repo = repo;
+        this.listners = new HashMap<>();
     }
 
     /**
@@ -41,6 +49,28 @@ public class TransactionController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(event.getTransactions());
+    }
+
+    /**
+     * Updates (edit/add) using long-polling
+     * Usage of deferred result makes it automatically in waiting stage (asynchronous)
+     * @param eventId eventId
+     * @return deferred result of response-entity transaction
+     */
+
+    @GetMapping("/updates")
+    @ResponseBody
+    public DeferredResult<ResponseEntity<Transaction>> getUpdates(@PathVariable("eventId") Long eventId){
+        Event event = eventRepository.findById(eventId).orElse(null);
+
+        var noContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        var res = new DeferredResult<ResponseEntity<Transaction>>(500L, noContent);
+
+        var key = new Object();
+        listners.put(key, t -> res.setResult(ResponseEntity.ok(t)));
+        res.onCompletion(() -> listners.remove(key));
+
+        return res;
     }
     /**
      * Get transaction
@@ -120,7 +150,7 @@ public class TransactionController {
 
             return ResponseEntity.notFound().build();
         }
-
+        listners.forEach((k,l) -> l.accept(transaction));
         return ResponseEntity.ok(repo.save(transaction));
     }
 

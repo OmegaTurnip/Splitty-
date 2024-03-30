@@ -51,6 +51,11 @@ public class EventController {
     }
 
     /**
+     * Get all events
+     * @return  All events
+     */
+
+    /**
      * Save events
      * @param events The events to save
      * @return The events saved

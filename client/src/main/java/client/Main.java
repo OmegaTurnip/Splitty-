@@ -66,6 +66,7 @@ public class Main extends Application {
                     "AddExpense.fxml");
             mainCtrl.initialize(primaryStage, overview, add,
                     startUp, addExpense);
+            primaryStage.setOnCloseRequest(e -> overview.getKey().stop());
         } catch (RuntimeException e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
