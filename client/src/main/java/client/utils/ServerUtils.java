@@ -249,14 +249,6 @@ public class ServerUtils {
                 .get(new GenericType<>() {
                 });
     }
-
-    /**
-     * Setter for the server URL
-     * @param server the server url
-     */
-    public void setServer(String server) {
-        this.server = server;
-    }
         /**
          * Creates a participant
          * @param participant participant to create
