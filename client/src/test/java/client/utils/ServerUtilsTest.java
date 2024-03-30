@@ -94,7 +94,8 @@ class ServerUtilsTest {
 
         // Mocking Response
         Event test1 = new Event("Test1");
-        when(builder.get(any(GenericType.class))).thenReturn(test1);
+        Event test2 = new Event("Test2");
+        when(builder.get(any(GenericType.class))).thenReturn(Arrays.asList(test1, test2));
 
         List<Event> events = sut.getMyEvents();
 
