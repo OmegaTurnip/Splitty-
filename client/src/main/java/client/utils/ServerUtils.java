@@ -40,7 +40,7 @@ public class ServerUtils {
 
     private final UserConfig userSettings;
 
-    private final String server;
+    private String server;
 
     private Client client;
 
@@ -196,6 +196,13 @@ public class ServerUtils {
                 });
     }
 
+    /**
+     * Setter for the server URL
+     * @param server the server url
+     */
+    public void setServer(String server) {
+        this.server = server;
+    }
         /**
          * Creates a participant
          * @param participant participant to create
