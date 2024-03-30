@@ -5,6 +5,8 @@ import commons.Event;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ public class EventControllerTest {
 
     @BeforeEach
     void setup() {
+        MockitoAnnotations.openMocks(this);
         eventRepository = new TestEventRepository();
         sut = new EventController(eventRepository, sim);
         testEvent1 = new Event("testEvent1");
@@ -44,6 +47,7 @@ public class EventControllerTest {
     @Test
     void saveEventTest() {
         var retEvent = sut.saveEvent(testEvent1);
+        Mockito.doNothing().when(sim).convertAndSend("/topic/event", testEvent1);
         assertEquals(retEvent.getBody(), testEvent1);
     }
 
