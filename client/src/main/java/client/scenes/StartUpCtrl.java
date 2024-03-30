@@ -92,6 +92,7 @@ public class StartUpCtrl implements Initializable, TextPage {
             // This alert will not be there in the end I think
             // because this should not be allowed to happen,
             // but it is good to have for now
+            e.printStackTrace();
             var alert = new Alert(Alert.AlertType.WARNING);
             alert.initModality(Modality.APPLICATION_MODAL);
             alert.setContentText("You have invite codes " +

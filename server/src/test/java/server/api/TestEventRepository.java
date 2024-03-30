@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.FluentQuery;
 import server.database.EventRepository;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -380,8 +381,15 @@ public class TestEventRepository implements EventRepository {
      * @return .
      */
     @Override
-    public List<Event> findAllByInviteCodeIsIn(List<String> inviteCodes) {
-        return null;
+    public List<Event> findByInviteCodeIn(List<String> inviteCodes) {
+        List<Event> found = new ArrayList<>();
+        for (Event e : added) {
+            if (inviteCodes.contains(e.getInviteCode())) {
+                found.add(e);
+                break;
+            }
+        }
+        return found;
     }
 
     /**

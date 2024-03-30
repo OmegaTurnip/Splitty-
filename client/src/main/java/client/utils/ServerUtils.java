@@ -48,6 +48,7 @@ public class ServerUtils {
 
     /**
      * Getter.
+     *
      * @return Get User Settings.
      */
     public UserConfig getUserSettings() {
@@ -56,6 +57,7 @@ public class ServerUtils {
 
     /**
      * Getter.
+     *
      * @return Get server URL.
      */
     public String getServer() {
@@ -73,6 +75,7 @@ public class ServerUtils {
 
     /**
      * Injectable constructor
+     *
      * @param userSettings Inject the userSettings.
      */
     public ServerUtils(UserConfig userSettings) {
@@ -82,9 +85,10 @@ public class ServerUtils {
 
     /**
      * Injectable constructor
+     *
      * @param userSettings Inject the userSettings.
-     * @param server Inject custom URL.
-     * @param client Inject client.
+     * @param server       Inject custom URL.
+     * @param client       Inject client.
      */
     public ServerUtils(UserConfig userSettings, String server, Client client) {
         this.userSettings = userSettings;
@@ -93,7 +97,7 @@ public class ServerUtils {
     }
 
     /**
-     * @throws IOException no description was provided in the template.
+     * @throws IOException        no description was provided in the template.
      * @throws URISyntaxException no description was provided in the template.
      */
     public void getQuotesTheHardWay() throws IOException, URISyntaxException {
@@ -114,7 +118,8 @@ public class ServerUtils {
                 .target(server).path("api/quotes") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<Quote>>() {});
+                .get(new GenericType<List<Quote>>() {
+                });
     }
 
     /**
@@ -131,6 +136,7 @@ public class ServerUtils {
 
     /**
      * Create/save Event REST API request.
+     *
      * @param event The event to be created/saved.
      * @return The created/saved event.
      */
@@ -144,23 +150,23 @@ public class ServerUtils {
 
     /**
      * Gets all events
+     *
      * @return List of Events
      */
     public List<Event> getMyEvents() {
-        List<Event> myEvents = new ArrayList<>();
         List<String> invCodes = userSettings.getEventCodes();
-        for (String invCode : userSettings.getEventCodes()) {
-            myEvents.add(client.target(server)
-                            .path("api/event/invite/" + invCode)
-                            .request(APPLICATION_JSON)
-                            .accept(APPLICATION_JSON)
-                            .get(new GenericType<>() {}));
-        }
-        return myEvents;
+        String commaSeparatedInvCodes = String.join(",", invCodes);
+        if (commaSeparatedInvCodes.isEmpty()) return new ArrayList<>();
+        return client.target(server)
+                .path("api/event/invite/" + commaSeparatedInvCodes)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<>() {});
     }
 
     /**
      * Join an event
+     *
      * @param code The event code
      * @return The event
      */
@@ -174,6 +180,7 @@ public class ServerUtils {
 
     /**
      * Get all events
+     *
      * @param password the password for the admin
      * @return a list of all events in the database
      */
@@ -188,7 +195,8 @@ public class ServerUtils {
 
     /**
      * Delete an event
-     * @param event the event to delete
+     *
+     * @param event    the event to delete
      * @param password the password for the admin
      * @return the deleted event
      */
@@ -219,6 +227,7 @@ public class ServerUtils {
 
     /**
      * Gets participants for event
+     *
      * @param event the Event to get participants from
      * @return a list of Participant
      */
@@ -228,18 +237,18 @@ public class ServerUtils {
                 .path("api/event/" + event.getId() + "/participants")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<>() {
-                });
+                .get(new GenericType<>() {});
     }
 
-        /**
-         * Creates a participant
-         * @param participant participant to create
-         * @return created participant
-         */
-    public Participant createParticipant(Participant participant){
+    /**
+     * Creates a participant
+     *
+     * @param participant participant to create
+     * @return created participant
+     */
+    public Participant createParticipant(Participant participant) {
         return client
-                .target(server).path("/api/event/"+ participant.getEvent()
+                .target(server).path("/api/event/" + participant.getEvent()
                         .getId() + "/participants")
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
