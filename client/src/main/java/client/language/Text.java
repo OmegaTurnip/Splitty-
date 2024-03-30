@@ -87,9 +87,25 @@ public class Text {
         private static final String level = "AddParticipant.";
 
         public static final String Username = level + "Username";
+        public static final String Email = level + "Email";
+        public static final String IBAN = level + "IBAN";
+        public static final String BIC = level + "BIC";
         public static final String Cancel = level + "Cancel";
         public static final String Add = level + "Add";
         public static final String Title = level + "Title";
+
+        public static final class Alert{
+            public static final String level = AddParticipant.level + "Alert.";
+            public static final String NoName = level + "NoName";
+            public static final String NoMail = level + "NoMail";
+            public static final String NoIBAN = level + "NoIBAN";
+            public static final String NoBIC = level + "NoBIC";
+
+            public static final String InvalidMail = level + "InvalidMail";
+            public static final String InvalidIBAN = level + "InvalidIBAN";
+            public static final String InvalidBIC = level + "InvalidBIC";
+        }
+
 
     }
 

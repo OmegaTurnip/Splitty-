@@ -37,6 +37,8 @@ public class MainCtrl {
 
     private AddExpenseCtrl addExpenseCtrl;
     private Scene addExpense;
+    private Scene admin;
+    private AdminCtrl adminCtrl;
 
     /**
      * @param primaryStage the window.
@@ -44,12 +46,14 @@ public class MainCtrl {
      * @param add the fx for the add participant page.
      * @param startUp The fx for the start-up page.
      * @param addExpense The fx for the add expense page.
+     * @param adminPage The fx for the admin page.
      */
     public void initialize(
             Stage primaryStage, Pair<EventOverviewCtrl, Parent> overview,
             Pair<AddParticipantCtrl, Parent> add,
             Pair<StartUpCtrl, Parent> startUp,
-            Pair<AddExpenseCtrl, Parent> addExpense) {
+            Pair<AddExpenseCtrl, Parent> addExpense,
+            Pair<AdminCtrl, Parent> adminPage) {
         this.primaryStage = primaryStage;
 
         this.startUpCtrl = startUp.getKey();
@@ -67,6 +71,10 @@ public class MainCtrl {
 
         this.addExpenseCtrl = addExpense.getKey();
         this.addExpense = new Scene(addExpense.getValue());
+        this.adminCtrl = adminPage.getKey();
+        this.admin = new Scene(adminPage.getValue());
+
+
 
         showStartUp();
         primaryStage.show();
@@ -160,6 +168,14 @@ public class MainCtrl {
         addExpenseCtrl.refresh();
         primaryStage.setTitle("Splitty!");
         primaryStage.setScene(addExpense);
+    }
+
+    /**
+     * Go to the admin page (by changing the contents of the window)
+     */
+    public void showAdminPage() {
+        adminCtrl.refresh();
+        primaryStage.setScene(admin);
     }
 
 }

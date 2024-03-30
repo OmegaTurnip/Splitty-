@@ -32,27 +32,23 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<?import java.lang.String?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.Cursor?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StartUpCtrl">
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StartUpCtrl">
   <children>
       <BorderPane prefHeight="687.0" prefWidth="640.0">
          <top>
           <MenuBar prefHeight="0.0" prefWidth="758.0" style="-fx-background-color: #fefdfd;" BorderPane.alignment="CENTER">
             <menus>
-              <Menu fx:id="languages" mnemonicParsing="false" text="Languages" />
+               <Menu fx:id="languages" mnemonicParsing="false" text="Languages" />
+               <Menu fx:id="adminLogin" mnemonicParsing="false" text="Admin">
+                  <MenuItem fx:id="loginButton" mnemonicParsing="false" text="Login"/>
+               </Menu>
             </menus>
           </MenuBar>
          </top>
