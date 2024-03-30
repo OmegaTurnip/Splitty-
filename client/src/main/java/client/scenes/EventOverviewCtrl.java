@@ -124,7 +124,8 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     public void updateTransactions(Transaction transaction) {
         transactions.add(transaction);
         Participant participant = expensesDropDown.getValue();
-        if (participant != null && transaction.getParticipants().contains(participant)) {
+        if (participant != null &&
+                transaction.getParticipants().contains(participant)) {
             transactionsParticipant.add(transaction);
         }
         if (transaction.getPayer().equals(participant)) {

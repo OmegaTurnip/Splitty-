@@ -23,10 +23,8 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TransferQueue;
 import java.util.function.Consumer;
 
 
@@ -238,36 +236,40 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Transaction>>() {});
     }
-
     /**
-     * Add a transaction to the event
-     * @param transaction transaction to be added
-     * @return the added transaction
+     * Edit transaction
+     * This still needs to be converted to long-polling
+     * @param event Event of which the transaction needs to be edited
+     * @param transaction The transaction to edit
+     * @return The edited transaction
      */
-    public Transaction addTransaction(Event event, Transaction transaction) {
-        return client.target(server)
-                .path("api/event/" + event.getId() + "/transactions")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .post(Entity.entity(transaction, APPLICATION_JSON), Transaction.class);
-    }
-
     public Transaction editTransaction(Event event, Transaction transaction) {
         return client.target(server)
                 .path("api/event/" + event.getId() + "/transactions")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .put(Entity.entity(transaction, APPLICATION_JSON), Transaction.class);
+                .put(Entity.entity(transaction, APPLICATION_JSON),
+                        Transaction.class);
     }
-    //problem: only 1 registers add the time
-    // set of listners, add all consumers to the set, iterate over all consumers
-    private static final ExecutorService EXEC = Executors.newSingleThreadExecutor();
+    private static final ExecutorService EXEC =
+            Executors.newSingleThreadExecutor();
+
+    /**
+     * Registers for updates (adding of transactions)
+     * In case of no content, the rest of the loop is skipped (continue)
+     * Still needs to be fixed: now only 1 EXEC at the time
+     * Needs to be solved by creating a set of listeners,
+     * add all consumers to the set, iterate over all consumers
+     * @param consumer consumer of the transaction
+     * @param event current event
+     */
     public void registerForUpdates(Consumer<Transaction> consumer, Event event){
 
         EXEC.submit(() -> {
             while (!Thread.interrupted()) {
                 var res = client.target(server)
-                        .path("api/event/" + event.getId() + "/transactions/updates")
+                        .path("api/event/" + event.getId()
+                                + "/transactions/updates")
                         .request(APPLICATION_JSON)
                         .accept(APPLICATION_JSON)
                         .get(Response.class);
@@ -281,6 +283,10 @@ public class ServerUtils {
         });
 
     }
+
+    /**
+     * Stops the executor thread
+     */
     public void stop() {
         EXEC.shutdownNow();
     }

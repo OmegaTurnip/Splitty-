@@ -38,12 +38,13 @@ public class TransactionController {
     /**
      * Method returns all the transactions of the event
      * @param eventId eventId
-     * @return
+     * @return List of transactions
      */
 
     @GetMapping("/")
     @ResponseBody
-    public ResponseEntity<List<Transaction>> getAllTransactions(@PathVariable("eventId") Long eventId){
+    public ResponseEntity<List<Transaction>> getAllTransactions(
+            @PathVariable("eventId") Long eventId){
         Event event = eventRepository.findById(eventId).orElse(null);
         if (event == null) {
             return ResponseEntity.notFound().build();
@@ -52,19 +53,22 @@ public class TransactionController {
     }
 
     /**
-     * Updates (edit/add) using long-polling
-     * Usage of deferred result makes it automatically in waiting stage (asynchronous)
+     * Updates of add expense using long-polling
+     * Usage of deferred result makes it
+     * automatically in waiting stage (asynchronous)
      * @param eventId eventId
      * @return deferred result of response-entity transaction
      */
 
     @GetMapping("/updates")
     @ResponseBody
-    public DeferredResult<ResponseEntity<Transaction>> getUpdates(@PathVariable("eventId") Long eventId){
+    public DeferredResult<ResponseEntity<Transaction>> getUpdates(
+            @PathVariable("eventId") Long eventId){
         Event event = eventRepository.findById(eventId).orElse(null);
 
         var noContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        var res = new DeferredResult<ResponseEntity<Transaction>>(500L, noContent);
+        var res = new DeferredResult<ResponseEntity<Transaction>>(
+                500L, noContent);
 
         var key = new Object();
         listners.put(key, t -> res.setResult(ResponseEntity.ok(t)));
