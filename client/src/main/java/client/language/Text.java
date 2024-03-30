@@ -164,6 +164,7 @@ public class Text {
         public static final String expenseParticipantsPrompt =
                 level + "participantsPrompt";
         public static final String expenseTypePrompt = level + "typePrompt";
+        public static final String participantsEveryone = level + "everyone";
         public static final class Button {
             public static final String level = AddExpense.level + "Buttons.";
             public static final String addExpenseButton = level + "addExpense";
