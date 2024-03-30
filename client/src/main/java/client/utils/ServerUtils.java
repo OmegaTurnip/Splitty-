@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -156,7 +155,6 @@ public class ServerUtils {
     public List<Event> getMyEvents() {
         List<String> invCodes = userSettings.getEventCodes();
         String commaSeparatedInvCodes = String.join(",", invCodes);
-        if (commaSeparatedInvCodes.isEmpty()) return new ArrayList<>();
         return client.target(server)
                 .path("api/event/invite/" + commaSeparatedInvCodes)
                 .request(APPLICATION_JSON)

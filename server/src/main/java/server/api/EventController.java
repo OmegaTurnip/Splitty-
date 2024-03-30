@@ -106,6 +106,8 @@ public class EventController {
     @ResponseBody
     public ResponseEntity<List<Event>> getEventByInviteCode(
             @PathVariable String inviteCodes) {
+        if (inviteCodes.isEmpty())
+            return ResponseEntity.ok(new ArrayList<Event>());
         List<String> inviteCodesList = List.of(inviteCodes.split(","));
         List<Event> events = eventRepository
                 .findByInviteCodeIn(inviteCodesList);
