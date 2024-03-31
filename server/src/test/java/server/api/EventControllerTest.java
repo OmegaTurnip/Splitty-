@@ -8,6 +8,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import server.financial.ExchangeRateFactory;
+import server.util.DebtSimplifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +32,7 @@ public class EventControllerTest {
     void setup() {
         MockitoAnnotations.openMocks(this);
         eventRepository = new TestEventRepository();
-        sut = new EventController(eventRepository, sim);
+        sut = new EventController(eventRepository, null, sim);
         testEvent1 = new Event("testEvent1");
         testEvent1.setId(100L);
         testEvent1.setInviteCode("43fabbfca0644e5db1d0c1e3cb0d5416");

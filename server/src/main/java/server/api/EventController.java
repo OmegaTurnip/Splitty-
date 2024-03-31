@@ -48,10 +48,12 @@ public class EventController {
         this.debtSimplifier = debtSimplifier;
         this.messagingTemplate = messagingTemplate;
 
-        try {
-            this.debtSimplifier.getExchangeRateFactory().loadAll();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to load exchange rates", e);
+        if (debtSimplifier != null) {
+            try {
+                this.debtSimplifier.getExchangeRateFactory().loadAll();
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to load exchange rates", e);
+            }
         }
     }
 
