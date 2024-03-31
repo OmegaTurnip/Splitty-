@@ -62,6 +62,7 @@ public class StartUpCtrl implements Initializable, TextPage {
     private Menu adminLogin;
     @FXML
     private MenuItem loginButton;
+    private String password;
 
     /**
      * Constructor
@@ -80,11 +81,7 @@ public class StartUpCtrl implements Initializable, TextPage {
     private void fetchYourEvents() {
         this.currentEvents = new ArrayList<>();
         List<String> codes = server.getUserSettings().getEventCodes();
-        for (Event event : server.getMyEvents()) {
-            if (codes.contains(event.getInviteCode())) {
-                currentEvents.add(event);
-            }
-        }
+        currentEvents.addAll(server.getMyEvents());
     }
 
     /**
@@ -121,8 +118,33 @@ public class StartUpCtrl implements Initializable, TextPage {
                 }
             }
         });
-        loginButton.setOnAction(event -> mainCtrl.showAdminPage());
+        createLogin();
 
+
+    }
+
+    /**
+     * Makes a dialog for the login to the admin page
+     */
+    private void createLogin() {
+        loginButton.setOnAction(event -> {
+            Dialog<String> loginDialog = new Dialog<>();
+            loginDialog.setTitle("Login");
+            ButtonType loginButton = new ButtonType("Login",
+                    ButtonBar.ButtonData.APPLY);
+            loginDialog.getDialogPane().getButtonTypes()
+                    .addAll(ButtonType.CANCEL, loginButton);
+            PasswordField passwordField = new PasswordField();
+            passwordField.setPromptText("Enter admin password");
+            loginDialog.getDialogPane().setContent(passwordField);
+            loginDialog.setResultConverter(button -> {
+                if (button ==loginButton) {
+                    mainCtrl.showAdminPage(passwordField.getText());
+                }
+                return null;
+            });
+            loginDialog.showAndWait();
+        });
     }
 
     private void fetchLanguages() {

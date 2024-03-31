@@ -39,6 +39,7 @@ import commons.Quote;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
 
 public class ServerUtils {
@@ -51,6 +52,7 @@ public class ServerUtils {
 
     /**
      * Getter.
+     *
      * @return Get User Settings.
      */
     public UserConfig getUserSettings() {
@@ -59,6 +61,7 @@ public class ServerUtils {
 
     /**
      * Getter.
+     *
      * @return Get server URL.
      */
     public String getServer() {
@@ -76,6 +79,7 @@ public class ServerUtils {
 
     /**
      * Injectable constructor
+     *
      * @param userSettings Inject the userSettings.
      */
     public ServerUtils(UserConfig userSettings) {
@@ -85,9 +89,10 @@ public class ServerUtils {
 
     /**
      * Injectable constructor
+     *
      * @param userSettings Inject the userSettings.
-     * @param server Inject custom URL.
-     * @param client Inject client.
+     * @param server       Inject custom URL.
+     * @param client       Inject client.
      */
     public ServerUtils(UserConfig userSettings, String server, Client client) {
         this.userSettings = userSettings;
@@ -96,7 +101,7 @@ public class ServerUtils {
     }
 
     /**
-     * @throws IOException no description was provided in the template.
+     * @throws IOException        no description was provided in the template.
      * @throws URISyntaxException no description was provided in the template.
      */
     public void getQuotesTheHardWay() throws IOException, URISyntaxException {
@@ -117,7 +122,8 @@ public class ServerUtils {
                 .target(server).path("api/quotes") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<Quote>>() {});
+                .get(new GenericType<List<Quote>>() {
+                });
     }
 
     /**
@@ -134,6 +140,7 @@ public class ServerUtils {
 
     /**
      * Create/save Event REST API request.
+     *
      * @param event The event to be created/saved.
      * @return The created/saved event.
      */
@@ -147,29 +154,64 @@ public class ServerUtils {
 
     /**
      * Gets all events
+     *
      * @return List of Events
      */
     public List<Event> getMyEvents() {
-//        List<String> invCodes = userSettings.getEventCodes();
-        return client //
-                .target(server).path("api/event")
-//                .queryParam("invCodes", invCodes)
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<Event>>() {});
+        List<String> invCodes = userSettings.getEventCodes();
+        String commaSeparatedInvCodes = String.join(",", invCodes);
+        return client.target(server)
+                .path("api/event/invite/" + commaSeparatedInvCodes)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<>() {});
     }
 
     /**
      * Join an event
+     *
      * @param code The event code
      * @return The event
      */
     public Event joinEvent(String code) {
-        return client //
-                .target(server).path("api/event/invite/" + code) //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
+        return client
+                .target(server).path("api/event/invite/" + code)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
                 .get(Event.class);
+    }
+
+    /**
+     * Get all events
+     *
+     * @param password the password for the admin
+     * @return a list of all events in the database
+     */
+    public List<Event> getAllEvents(String password) {
+        return client
+                .register(HttpAuthenticationFeature.basic("admin", password))
+                .target(server).path("api/admin/events")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<>() {});
+    }
+
+    /**
+     * Delete an event
+     *
+     * @param event    the event to delete
+     * @param password the password for the admin
+     * @return the deleted event
+     */
+    public Event deleteEvent(Event event, String password) {
+        return client
+                .register(HttpAuthenticationFeature.basic("admin", password))
+                .target(server).path("api/admin/events/" + event.getId())
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete(new GenericType<>() {});
+//        TODO make sure events that don't exist are
+//         deleted from the user config for all users
     }
 
 //    /**
@@ -188,6 +230,7 @@ public class ServerUtils {
 
     /**
      * Gets participants for event
+     *
      * @param event the Event to get participants from
      * @return a list of Participant
      */
@@ -197,8 +240,7 @@ public class ServerUtils {
                 .path("api/event/" + event.getId() + "/participants")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<>() {
-                });
+                .get(new GenericType<>() {});
     }
 
     /**
@@ -215,7 +257,7 @@ public class ServerUtils {
          */
     public Participant createParticipant(Participant participant){
         return client
-                .target(server).path("/api/event/"+ participant.getEvent()
+                .target(server).path("/api/event/" + participant.getEvent()
                         .getId() + "/participants")
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
