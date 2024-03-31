@@ -1,5 +1,7 @@
 package client.scenes;
 
+import client.language.Text;
+import client.language.Translator;
 import client.utils.ServerUtils;
 import commons.Event;
 import commons.Participant;
@@ -56,10 +58,15 @@ public class ParticipantCellController {
     private void deleteParticipant(Participant participant) {
         if (participant != null) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Delete participant");
+            alert.setTitle(Translator.getTranslation(Text
+                    .EventOverview
+                    .ParticipantCellController
+                    .Alert.deleteParticipantTitle));
             alert.setHeaderText(null);
-            alert.setContentText(
-                    "Are you sure you want to delete this participant?");
+            alert.setContentText(Translator.getTranslation(Text
+                    .EventOverview
+                    .ParticipantCellController
+                    .Alert.deleteParticipantContent));
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 event.removeParticipant(participant);

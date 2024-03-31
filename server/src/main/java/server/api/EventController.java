@@ -2,6 +2,7 @@ package server.api;
 
 import commons.Event;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
 
@@ -14,13 +15,18 @@ import java.util.List;
 public class EventController {
 
     private final EventRepository eventRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     /**
      * Constructor for the EventController
-     * @param eventRepository The event repository
+     *
+     * @param eventRepository   The event repository
+     * @param messagingTemplate The messaging template
      */
-    public EventController(EventRepository eventRepository) {
+    public EventController(EventRepository eventRepository,
+                           SimpMessagingTemplate messagingTemplate) {
         this.eventRepository = eventRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
 //    /**
@@ -41,31 +47,46 @@ public class EventController {
 //    }
 
     /**
-     * Save events
-     * @param events The events to save
-     * @return The events saved
+     * Get all events
+     * @return  All events
      */
-    @PutMapping(path = { "", "/" })
+    @GetMapping(path = { "", "/" })
     @ResponseBody
-    public ResponseEntity<List<Event>> saveEvents(
-            @RequestBody List<Event> events) {
-        eventRepository.saveAll(events);
+    public ResponseEntity<List<Event>> allEvents() {
+        List<Event> events = eventRepository.findAll();
         return ResponseEntity.ok(events);
-        //todo refactor to admin
+    }
+
+    /**
+     * Create an event
+     * @param event The event to create
+     * @return  The created event
+     */
+    @PostMapping(path = { "", "/" })
+    @ResponseBody
+    public ResponseEntity<Event> createEvent(@RequestBody Event event) {
+        eventRepository.saveAndFlush(event);
+        messagingTemplate.convertAndSend("/topic/admin", event);
+        return ResponseEntity.ok(event);
     }
 
     /**
      * Save an event
      * @param event The event to save
-     * @return  The event saved
+     * @return The saved event
      */
-    @PostMapping(path = { "", "/" })
+    @PutMapping(path = { "", "/" })
     @ResponseBody
     public ResponseEntity<Event> saveEvent(@RequestBody Event event) {
-
-        eventRepository.saveAndFlush(event);
-
+        if (event.getEventName().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        eventRepository.save(event);
+        messagingTemplate.convertAndSend("/topic/admin", event);
         return ResponseEntity.ok(event);
+        //tbf this might not be the proper way to do PUT.
+        // PUT methods should specify the URI exactly,
+        // so a proper pathing would be /{id}
     }
 
     /**
@@ -82,20 +103,6 @@ public class EventController {
         }
         return ResponseEntity.ok(event);
     }
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Participant>
-//    getById(@PathVariable("id") long id,
-//            @PathVariable("eventId") long eventId) {
-//        if (id < 0 || !repo.existsById(id)) {
-//            return ResponseEntity.badRequest().build();
-//        }
-//
-//        Participant participant = repo.findById(id).get();
-//        if (participant.getEvent().getId() != eventId)
-//            return ResponseEntity.badRequest().build();
-//
-//        return ResponseEntity.ok(participant);
-//    }
 
     /**
      * Get an event by invite code.
@@ -104,7 +111,7 @@ public class EventController {
      */
     @GetMapping("/invite/{inviteCodes}")
     @ResponseBody
-    public ResponseEntity<List<Event>> getEventByInviteCode(
+    public ResponseEntity<List<Event>> getEventsByInviteCode(
             @PathVariable String inviteCodes) {
         if (inviteCodes.isEmpty())
             return ResponseEntity.ok(new ArrayList<Event>());
@@ -117,5 +124,7 @@ public class EventController {
         }
         return ResponseEntity.ok(events);
     }
+
+
 
 }
