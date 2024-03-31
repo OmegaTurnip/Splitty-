@@ -76,6 +76,7 @@ public class TransactionController {
 
         return res;
     }
+
     /**
      * Get transaction
      * @param eventId id of the event
@@ -190,9 +191,4 @@ public class TransactionController {
 
         return ResponseEntity.ok(transaction);
     }
-
-    private static boolean isNullOrEmpty(String s) {
-        return s == null || s.isEmpty();
-    }
-
 }

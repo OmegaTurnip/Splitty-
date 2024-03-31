@@ -30,7 +30,6 @@ public class Translator {
         Translator.currentLanguage = currentLanguage;
     }
 
-
     /**
      * Returns the {@link Locale} specified by the current {@link Language}.
      * This is just a simple shorthand for {@code
