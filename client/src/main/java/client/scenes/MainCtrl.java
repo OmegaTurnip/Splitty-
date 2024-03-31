@@ -74,9 +74,9 @@ public class MainCtrl {
 
         this.addExpenseCtrl = addExpense.getKey();
         this.addExpense = new Scene(addExpense.getValue());
-
         this.adminCtrl = adminPage.getKey();
         this.admin = new Scene(adminPage.getValue());
+
 
 
         showStartUp();

@@ -91,5 +91,6 @@ public class Main extends Application {
         mainCtrl.initialize(overview, add,
                 startUp, addExpense, admin);
         mainCtrl.setUtils(server, primaryStage);
+        primaryStage.setOnCloseRequest(e -> overview.getKey().stop());
     }
 }
