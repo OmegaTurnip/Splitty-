@@ -187,8 +187,6 @@ public class DebtSimplifier {
                             Collection<Participant> debtors, Money amount) {
         if (!isInitialized)
             throw new IllegalStateException("DebtSimplifier not initialized");
-        // reinitialize before any new calls
-        isInitialized = false;
 
         Set<Participant> uniqueDebtors =
                 validateParameters(creditor, debtors, amount);
@@ -350,6 +348,8 @@ public class DebtSimplifier {
     public Set<Debt> simplify() {
         if (!isInitialized)
             throw new IllegalStateException("DebtSimplifier not initialized");
+        // reinitialize before any new calls
+        isInitialized = false;
 
         creditors.clear();
         debtors.clear();
