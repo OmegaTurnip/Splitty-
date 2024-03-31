@@ -26,13 +26,18 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import commons.Event;
 import commons.Participant;
+import commons.Transaction;
 import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
 import commons.Quote;
@@ -373,4 +378,73 @@ public class ServerUtils {
 //    }
     //This isn't needed. We can just use REST requests to send messages,
     //and the messages can be rerouted to the websocket.
+
+    /**
+     * Get all transactions of the event
+     * @param event Event of which needs to be returned
+     * @return list of transactions
+     */
+
+    public List<Transaction> getTransactionsOfEvent(Event event){
+        return client.target(server)
+                .path("api/event/" + event.getId() + "/transactions")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<Transaction>>() {});
+    }
+    /**
+     * Edit transaction
+     * This still needs to be converted to long-polling
+     * @param event Event of which the transaction needs to be edited
+     * @param transaction The transaction to edit
+     * @return The edited transaction
+     */
+    public Transaction editTransaction(Event event, Transaction transaction) {
+        return client.target(server)
+                .path("api/event/" + event.getId() + "/transactions")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(transaction, APPLICATION_JSON),
+                        Transaction.class);
+    }
+    private static final ExecutorService EXEC =
+            Executors.newSingleThreadExecutor();
+
+    /**
+     * Registers for updates (adding of transactions)
+     * In case of no content, the rest of the loop is skipped (continue)
+     * Still needs to be fixed: now only 1 EXEC at the time
+     * Needs to be solved by creating a set of listeners,
+     * add all consumers to the set, iterate over all consumers
+     * @param consumer consumer of the transaction
+     * @param event current event
+     */
+    public void registerForUpdates(Consumer<Transaction> consumer, Event event){
+
+        EXEC.submit(() -> {
+            while (!Thread.interrupted()) {
+                var res = client.target(server)
+                        .path("api/event/" + event.getId()
+                                + "/transactions/updates")
+                        .request(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON)
+                        .get(Response.class);
+
+                if(res.getStatus() == 204){
+                    continue;
+                };
+                var t = res.readEntity(Transaction.class);
+                consumer.accept(t);
+            }
+        });
+
+    }
+
+    /**
+     * Stops the executor thread
+     */
+    public void stop() {
+        EXEC.shutdownNow();
+    }
+
 }

@@ -29,6 +29,10 @@ public class EventOverviewCtrl implements TextPage, Initializable {
 
     private Event event;
 
+    private ObservableList<Transaction> transactions;
+    private ObservableList<Transaction> transactionsParticipant;
+    private ObservableList<Transaction> transactionsPayer;
+
     @FXML
     private Label eventNameLabel;
     @FXML
@@ -91,6 +95,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 new ParticipantCellFactory());
         expensesListView.setCellFactory(param ->
                 new TransactionCellFactory());
+        server.registerForUpdates(t -> updateTransactions(t), event);
         refresh();
     }
 
@@ -184,6 +189,30 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         }
     }
 
+    /**
+     * This method adds the transaction to the correct list.
+     * @param transaction The transaction that was added.
+     */
+    public void updateTransactions(Transaction transaction) {
+        transactions.add(transaction);
+        Participant participant = (Participant) expensesDropDown.getValue();
+        if (participant != null &&
+                transaction.getParticipants().contains(participant)) {
+            transactionsParticipant.add(transaction);
+        }
+        if (transaction.getPayer().equals(participant)) {
+            transactionsPayer.add(transaction);
+        }
+    }
+
+    /**
+     * Makes sure that the all threads stop
+     */
+
+    public void stop(){
+        server.stop();
+    }
+
     @FXML
     private void groupOfExpenseSelected(ActionEvent event) {
         getExpenses();
@@ -205,7 +234,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                                 "first within the expense menu.");
 
             }
-            ObservableList<Transaction> transactions =
+            transactions =
                     FXCollections.observableArrayList(event.getTransactions());
             showSelectedExpenses(selected, participant, transactions);
         }
@@ -228,7 +257,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 break;
             case "ExpenseIncludingParticipant":
                 System.out.println("Including participant clicked");
-                ObservableList<Transaction> transactionsParticipant =
+                transactionsParticipant =
                         FXCollections.observableArrayList();
                 for (Transaction transaction : transactions) {
                     if (transaction.getParticipants().contains(participant)) {
@@ -239,7 +268,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 break;
             case "ExpensePaidParticipant":
                 System.out.println("Paid by participant clicked");
-                ObservableList<Transaction> transactionsPayer =
+                transactionsPayer =
                         FXCollections.observableArrayList();
                 for (Transaction transaction : transactions) {
                     if (transaction.getPayer().equals(participant)) {
