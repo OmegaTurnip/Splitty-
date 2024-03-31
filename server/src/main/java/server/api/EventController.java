@@ -1,13 +1,21 @@
 package server.api;
 
+import commons.Debt;
 import commons.Event;
+import commons.Money;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
+import server.financial.ExchangeRateAPI;
+import server.financial.FrankfurterExchangeRateAPI;
+import server.util.DebtSimplifier;
 
+import java.time.LocalDate;
+import java.util.Currency;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 @RestController
@@ -15,19 +23,40 @@ import java.util.List;
 public class EventController {
 
     private final EventRepository eventRepository;
+    private final DebtSimplifier debtSimplifier;
+    private final Currency baseCurrency = Currency.getInstance("EUR");
+    private final ExchangeRateAPI exchangeRateAPI =
+            new FrankfurterExchangeRateAPI(baseCurrency);
+
     private final SimpMessagingTemplate messagingTemplate;
 
+
     /**
-     * Constructor for the EventController
+     * Constructor for the EventController.
      *
-     * @param eventRepository   The event repository
-     * @param messagingTemplate The messaging template
+     * @param   eventRepository
+     *          The event repository.
+     * @param   debtSimplifier
+     *          The debt simplifier.
+     * @param   messagingTemplate
+     *          The messaging template
      */
     public EventController(EventRepository eventRepository,
+                           DebtSimplifier debtSimplifier,
                            SimpMessagingTemplate messagingTemplate) {
         this.eventRepository = eventRepository;
+        this.debtSimplifier = debtSimplifier;
         this.messagingTemplate = messagingTemplate;
+
+        if (debtSimplifier != null) {
+            try {
+                this.debtSimplifier.getExchangeRateFactory().loadAll();
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to load exchange rates", e);
+            }
+        }
     }
+
 
 //    /**
 //     * Gets all the events matching the list of invite codes
@@ -125,6 +154,58 @@ public class EventController {
         return ResponseEntity.ok(events);
     }
 
+    /**
+     * Get the simplified version of the debts of an event.
+     *
+     * @param   id
+     *          The id of the event.
+     * @param   currency
+     *          The currency of the result.
+     *
+     * @return  The simplified version of the debts of the event.
+     */
+    @GetMapping("/{id}/simplify/{currency}")
+    @ResponseBody
+    public ResponseEntity<Set<Debt>> getSimplification(
+            @PathVariable("id") Long id,
+            @PathVariable("currency") String currency) {
+
+        if (!Money.isValidCurrencyCode(currency)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Event event = eventRepository.findById(id).orElse(null);
+
+        if (event == null || event.getParticipants().isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Currency base = Currency.getInstance(currency);
+
+        debtSimplifier.setup(base, event.getParticipants());
+
+        refreshExchangeRates();
+
+        debtSimplifier.addDebts(event);
+
+        Set<Debt> result = debtSimplifier.simplify();
+
+        return ResponseEntity.ok(result);
+    }
 
 
+    private void refreshExchangeRates() {
+        boolean ratesAreUpToDate = exchangeRateAPI.lastRequestDate().isPresent()
+                && !exchangeRateAPI.lastRequestDate().get()
+                .isBefore(LocalDate.now());
+
+        if (!ratesAreUpToDate) {
+            exchangeRateAPI.getExchangeRates().ifPresent(exchangeRates ->
+                    debtSimplifier.getExchangeRateFactory()
+                            .generateExchangeRates(
+                                    baseCurrency, exchangeRates
+                            )
+            );
+        }
+    }
 }

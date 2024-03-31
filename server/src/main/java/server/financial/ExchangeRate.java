@@ -1,4 +1,4 @@
-package server.util;
+package server.financial;
 
 import commons.Money;
 
@@ -56,7 +56,8 @@ public class ExchangeRate {
      * @param   rate
      *          The actual exchange rate.
      */
-    ExchangeRate(LocalDate date, Currency from, Currency to, double rate) {
+    public ExchangeRate(LocalDate date, Currency from, Currency to,
+                        double rate) {
         Objects.requireNonNull(date, "date is null");
         Objects.requireNonNull(from, "from is null");
         Objects.requireNonNull(to, "to is null");

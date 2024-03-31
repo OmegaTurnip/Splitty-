@@ -1,4 +1,7 @@
-package server.util;
+package server.financial;
+
+
+import server.Config;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,9 +25,7 @@ import java.util.stream.Collectors;
  */
 public class ExchangeRateFactory {
 
-    private static final File DEFAULT_DIR = new File("rates");
-    private static final ExchangeRateFactory global =
-            new ExchangeRateFactory(DEFAULT_DIR);
+    public static final File DEFAULT_DIR = new File("rates");
 
     /**
      * A set containing all known {@code ExchangeRates}.
@@ -35,24 +36,14 @@ public class ExchangeRateFactory {
 
     /**
      * Constructs an {@code ExchangeRateFactory}. Direct calls are only for
-     * testing purposes. Use {@link ExchangeRateFactory#get()} to get the global
-     * non-testing {@code ExchangeRateFactory}.
+     * testing purposes. Use {@link Config#getExchangeRateFactory()} to get
+     * the global non-testing {@code ExchangeRateFactory}.
      *
      * @param   directory
      *          The directory in which file should be saved.
      */
-    ExchangeRateFactory(File directory) {
+    public ExchangeRateFactory(File directory) {
         this.directory = directory;
-    }
-
-    /**
-     * Gets the default global {@code ExchangeRateFactory} object to be used in
-     * this program.
-     *
-     * @return  The default global {@code ExchangeRateFactory} object.
-     */
-    public static ExchangeRateFactory get() {
-        return global;
     }
 
     /**
@@ -212,11 +203,14 @@ public class ExchangeRateFactory {
                 );
                 if (matcher.matches()) {
                     try {
-                        read(
+                        ExchangeRate result = read(
                                 LocalDate.parse(matcher.group("date")),
                                 Currency.getInstance(matcher.group("from")),
                                 Currency.getInstance(matcher.group("to"))
                         );
+                        // remove to update any old exchange rates
+                        exchangeRates.remove(result);
+                        exchangeRates.add(result);
                     } catch (Exception e) {
                         // do nothing, as invalid files are invalid and you cant
                         // make them be any more valid than that :)
@@ -256,12 +250,8 @@ public class ExchangeRateFactory {
         try (Scanner reader = new Scanner(
                 new File(directory, generateFileName(date, to, from))
         )) {
-            ExchangeRate result =
-                    new ExchangeRate(date, to, from, reader.nextDouble());
-            // remove to update any old exchange rates
-            exchangeRates.remove(result);
-            exchangeRates.add(result);
-            return result;
+            return new ExchangeRate(date, to, from,
+                    Double.parseDouble(reader.nextLine()));
         }
     }
 
@@ -301,7 +291,7 @@ public class ExchangeRateFactory {
      *          currency.
      */
     public void generateExchangeRates(Currency base,
-                                             HashMap<Currency, Double> rates) {
+                                             Map<Currency, Double> rates) {
         Objects.requireNonNull(base, "base is null");
         Objects.requireNonNull(rates, "rates is null");
 
@@ -322,6 +312,7 @@ public class ExchangeRateFactory {
                     // remove to update any old exchange rates
                     exchangeRates.remove(result);
                     exchangeRates.add(result);
+                    write(result);
                 } catch (Exception e) {
                     // let errors pass silently to not obstruct the rest of the
                     // program (they're probably fine if ignored, but print them
@@ -342,13 +333,13 @@ public class ExchangeRateFactory {
     /**
      * Adds an {@link ExchangeRate} object to this factory. <em><strong>SHOULD
      * ONLY BE USED FOR TESTING.</strong></em> Use {@link
-     * ExchangeRateFactory#generateExchangeRates(Currency, HashMap)} for
+     * ExchangeRateFactory#generateExchangeRates(Currency, Map)} for
      * non-testing adding of exchange rates.
      *
      * @param   exchangeRate
      *          The {@code ExchangeRate} to add.
      */
-    void addExchangeRate(ExchangeRate exchangeRate) {
+    public void addExchangeRate(ExchangeRate exchangeRate) {
         Objects.requireNonNull(exchangeRate, "exchangeRate is null");
         exchangeRates.add(exchangeRate);
         knownCurrencies.add(exchangeRate.getFrom());
@@ -375,7 +366,7 @@ public class ExchangeRateFactory {
      * @return  The interpolated {@code ExchangeRate}.
      */
     ExchangeRate generate(Currency base,
-                                  HashMap<Currency, Double> rates,
+                                  Map<Currency, Double> rates,
                                   Currency from, Currency to, LocalDate today) {
         Objects.requireNonNull(base, "base is null");
         Objects.requireNonNull(rates, "rates is null");
