@@ -14,7 +14,7 @@ public interface EventRepository
      * @param inviteCodes The list of invite codes
      * @return The list of events
      */
-    List<Event> findAllByInviteCodeIsIn(List<String> inviteCodes);
+    List<Event> findByInviteCodeIn(List<String> inviteCodes);
 
     /**
      * Finds an event by its invite code

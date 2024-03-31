@@ -14,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.stage.Modality;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 public class AddParticipantCtrl{
 
@@ -245,34 +246,43 @@ public class AddParticipantCtrl{
         }
     }
 
+    private static final Pattern EMAIL_PATTERN = Pattern.compile(
+            "^[A-Za-z0-9+_.-]+@.+$"
+    );
+    private static final Pattern IBAN_PATTERN = Pattern.compile(
+            "^[A-Z]{2}[0-9]{2}(?: ?[0-9]{4}){4}(?: ?[0-9]{1,2})?$"
+    );
+    private static final Pattern BIC_PATTERN = Pattern.compile(
+            "^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}(?>[A-Z0-9]{3})?$"
+    );
+
     /**
-     * Checks whether the email is valid
-     * @param email The email to be checked
-     * @return Boolean that states whether the email is valid
+     * Checks whether the supplied email is valid.
+     * @param   email
+     *          The email to be checked.
+     * @return  Whether the supplied email is valid.
      */
-    public boolean isValidEmail(String email) {
-        String regex = "^[A-Za-z0-9+_.-]+@(.+)$";
-        return email.matches(regex);
+    static boolean isValidEmail(String email) {
+        return email != null && EMAIL_PATTERN.matcher(email).matches();
     }
 
     /**
-     * Checks whether the IBAN is valid
-     * @param iban The IBAN to be checked
-     * @return Boolean that states whether the IBAN is valid
+     * Checks whether the supplied IBAN is valid.
+     * @param   iban
+     *          The IBAN to be checked.
+     * @return  Whether the supplied IBAN is valid.
      */
-    public boolean isValidIban(String iban) {
-        String regex = "^([A-Z]{2})([0-9]{2})([A-Z0-9]{4})" +
-                "([0-9]{7})([A-Z0-9]{1,16})$";
-        return iban.matches(regex);
+    static boolean isValidIban(String iban) {
+        return iban != null && IBAN_PATTERN.matcher(iban).matches();
     }
 
     /**
-     * Checks whether the BIC is valid
-     * @param bic The BIC to be checked
-     * @return Boolean that states whether the BIC is valid
+     * Checks whether the supplied BIC is valid.
+     * @param   bic
+     *          The BIC to be checked.
+     * @return  Whether the supplied BIC is valid.
      */
-    public boolean isValidBic(String bic) {
-        String regex = "^[A-Za-z]{4}[A-Za-z]{2}\\w{2}(\\w{3})?$";
-        return bic.matches(regex);
+    static boolean isValidBic(String bic) {
+        return bic != null && BIC_PATTERN.matcher(bic).matches();
     }
 }

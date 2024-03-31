@@ -22,14 +22,20 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.util.StringConverter;
 import org.controlsfx.control.CheckComboBox;
 
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AddExpenseCtrl implements Initializable, TextPage {
 
@@ -71,22 +77,20 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     private Event event;
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
-    private final EventOverviewCtrl eventOverviewCtrl;
+    private final Pattern pricePattern;
 
     /**
      * Initializes the controller
      *
      * @param server            .
      * @param mainCtrl          .
-     * @param eventOverviewCtrl .
      */
     @Inject
-    public AddExpenseCtrl(ServerUtils server, MainCtrl mainCtrl,
-                          EventOverviewCtrl eventOverviewCtrl) {
+    public AddExpenseCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
-        this.eventOverviewCtrl = eventOverviewCtrl;
         this.participantList = new ArrayList<>();
+        pricePattern = Pattern.compile("^[0-9]+(?:[.,][0-9]+)?$");
     }
 
     /**
@@ -106,8 +110,46 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         tagSelection();
         participantSelection();
         addExpense.setOnAction(event -> registerExpense());
-        price.setOnAction(event -> verifyPrice());
+        date.setValue(LocalDate.now());
+        date.setConverter(new MyLocalDateStringConverter("dd/MM/yyyy"));
         refresh();
+    }
+    static class MyLocalDateStringConverter extends StringConverter<LocalDate> {
+
+        private final DateTimeFormatter dateFormatter;
+
+        public MyLocalDateStringConverter(String pattern) {
+            this.dateFormatter = DateTimeFormatter.ofPattern(pattern);
+        }
+
+        @Override
+        public String toString(LocalDate date) {
+            if (date != null) {
+                return dateFormatter.format(date);
+            } else {
+                return "";
+            }
+        }
+
+        @Override
+        public LocalDate fromString(String string) {
+            if (string != null && !string.isEmpty()) {
+                try {
+                    return LocalDate.parse(string, dateFormatter);
+                } catch (DateTimeParseException e) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Invalid date format");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Try entering a date of the " +
+                            "format dd/mm/yyyy! " +
+                            "You can also pick the date from the calendar.");
+                    alert.showAndWait();
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        }
     }
 
     /**
@@ -124,6 +166,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
             }
         });
     }
+
     void tagSelection() {
         expenseType.setOnAction(event -> {
             Object selectedValue = expenseType.getValue();
@@ -228,8 +271,25 @@ public class AddExpenseCtrl implements Initializable, TextPage {
      */
     private void registerExpense() {
         getCheckedParticipants();
-        Transaction expense = getExpense();
+        if (verifyInput()) {
+            Transaction expense = getExpense();
+        }
         //TODO: Connect to back-end
+    }
+
+    private boolean verifyInput() {
+        if (!verifyPrice(price.getText())) return false;
+        if (expensePayer == null
+                || !expensePayer.getClass().equals(Participant.class))
+            return false;
+        try {
+            if (date.getValue() == null) return false;
+        } catch (DateTimeParseException e) {
+            showAlert("Invalid date format",
+                    "Try entering a date of the format dd/mm/yyyy! " +
+                            "You can also pick the date from the calendar.");
+        }
+        return !participantList.isEmpty();
     }
 
     /**
@@ -255,6 +315,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
                 .add("Select the person that paid for the expense");
         if (event != null) {
             payerChoiceBoxList.addAll(server.getParticipantsOfEvent(event));
+            payerChoiceBoxList.add(event.addParticipant("A")); //placeholder
         }
         ObservableList<Object> participantObservableList =
                 FXCollections.observableArrayList(payerChoiceBoxList);
@@ -338,15 +399,17 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     private void loadParticipants() {
         List<Object> participantChoiceBoxList = new ArrayList<>();
         participantChoiceBoxList.add("Everyone");
-        participantChoiceBoxList.add("Test1");
-        participantChoiceBoxList.add("Test2");
-        participantChoiceBoxList.add("Test3");
-        participantChoiceBoxList.add("Test4");
-        participantChoiceBoxList.add("Test5");
-        participantChoiceBoxList.add("Test6");
         if (event != null) {
             participantChoiceBoxList
                     .addAll(server.getParticipantsOfEvent(event));
+
+            //placeholder
+            participantChoiceBoxList.add(event.addParticipant("A"));
+            //placeholder
+            participantChoiceBoxList.add(event.addParticipant("B"));
+            //placeholder
+            participantChoiceBoxList.add(event.addParticipant("C"));
+
         }
         ObservableList<Object> participantObservableList =
                 FXCollections.observableArrayList(participantChoiceBoxList);
@@ -436,16 +499,58 @@ public class AddExpenseCtrl implements Initializable, TextPage {
             }
         }
     }
-
-    void verifyPrice() {
-        //TODO method to check if the price is valid
+    void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
+    boolean verifyPrice(String input) {
+        Matcher matcher = pricePattern.matcher(input);
+
+        if (!matcher.matches()) {
+            choosePriceAlert(input);
+            return false;
+        } else return true;
+
+    }
+
+    private void choosePriceAlert(String input) {
+        if (input.isEmpty()) {
+            showAlert("Invalid price format",
+                    "Please enter a price.");
+        } else if (!Character.isDigit(input.charAt(0))) {
+            showAlert("Invalid price format",
+                    "Your price must start with a digit!");
+        } else if (input.matches("[a-zA-Z]")) {
+            showAlert("Invalid price format",
+                    "Your price may not contain letters!");
+        } else if (input.chars().filter(ch -> ch == ',').count() > 1
+                || input.chars().filter(ch -> ch == '.').count() > 1
+                || (input.chars().filter(ch -> ch == ',').count() > 0
+                && input.chars().filter(ch -> ch == '.').count() > 0)) {
+            showAlert("Invalid price format",
+                    "Your price may not contain more" +
+                            " than one period or comma!");
+            // If none of the above, consider it as general invalid format
+        } else if (!Character.isDigit(input.charAt(0))
+                || !Character.isDigit(input.charAt(input.length()-1))){
+            showAlert("Invalid price format",
+                    "Your price must start and end with a digit!");
+        } else {
+            showAlert("Invalid price format",
+                    "Your price is not of the correct format!");
+        }
+    }
+
 
     Transaction getExpense() {
         return event.registerDebt(expensePayer,
                 expenseName.getText(),
                 new Money(new BigDecimal(price.getText()),
-                        Currency.getInstance(currency.getValue())),
+                        Currency.getInstance("EUR")), //placeholder
+//                        Currency.getInstance(currency.getValue())),
                 participantList, expenseTag);
     }
 }
