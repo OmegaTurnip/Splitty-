@@ -2,6 +2,7 @@ package server.api;
 
 import commons.Event;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
@@ -14,14 +15,18 @@ import java.util.Random;
 public class AdminController {
     private static final String password = generatePassword();
     private EventRepository eventRepo;
+    private SimpMessagingTemplate messagingTemplate;
 
 
     /**
      * Constructor
      * @param eventRepo the event repository
+     * @param messagingTemplate the messaging template
      */
-    public AdminController(EventRepository eventRepo) {
+    public AdminController(EventRepository eventRepo,
+                           SimpMessagingTemplate messagingTemplate) {
         this.eventRepo = eventRepo;
+        this.messagingTemplate = messagingTemplate;
     }
 
     /**
@@ -63,6 +68,7 @@ public class AdminController {
             return ResponseEntity.notFound().build();
         }
         eventRepo.delete(event);
+        messagingTemplate.convertAndSend("/topic/admin/delete", event);
         return ResponseEntity.ok(event);
     }
 }

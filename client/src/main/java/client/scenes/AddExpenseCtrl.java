@@ -1,11 +1,9 @@
 package client.scenes;
 
-import client.language.Language;
 import client.language.Text;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
-import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.*;
 import javafx.collections.FXCollections;
@@ -15,8 +13,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -24,9 +20,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.StringConverter;
 import org.controlsfx.control.CheckComboBox;
-
-
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
@@ -105,7 +98,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        fetchLanguages();
+        fetchLanguages(languages);
         payerSelection();
         tagSelection();
         participantSelection();
@@ -435,49 +428,11 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     }
 
     /**
-     * Loads the languages from the config file and adds them
-     * with corresponding actions to the menu
-     */
-    private void fetchLanguages() {
-        HashMap<String, Language> languages = Language.languages;
-
-        for (String langKey : languages.keySet()) {
-            MenuItem item = new MenuItem(languages.get(langKey)
-                    .getNativeName());
-
-            item.setOnAction(event -> setLanguage(langKey));
-
-            Image image = new Image(languages
-                    .get(langKey).getIconFile().toURI().toString());
-            ImageView imageView = new ImageView(image);
-            imageView.setFitHeight(20);
-            imageView.setFitWidth(20);
-            item.setGraphic(imageView);
-            this.languages.getItems().add(item);
-        }
-    }
-
-    /**
      * Cancels the action in the addParticipant window
      */
     public void cancel() {
         refreshText();
         mainCtrl.showEventOverview(event);
-    }
-
-
-    /**
-     * Sets language to German
-     *
-     * @param language the language in three character String
-     */
-    public void setLanguage(String language) {
-        try {
-            UserConfig.get().setUserLanguage(language);
-            refreshText();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**

@@ -2,7 +2,6 @@ package client.scenes;
 
 
 
-import client.language.Language;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,7 +10,6 @@ import javafx.scene.Parent;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
-import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
@@ -19,14 +17,11 @@ import commons.Transaction;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.text.Font;
 import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.ResourceBundle;
 
 
@@ -91,7 +86,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        fetchLanguages();
+        fetchLanguages(languages);
         participantsListView.setCellFactory(param ->
                 new ParticipantCellFactory());
         expensesListView.setCellFactory(param ->
@@ -292,6 +287,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         expensesDropDown.setPromptText(Translator
                     .getTranslation(client.language
                             .Text.EventOverview.expensesDropDown));
+
         if (event != null ) eventNameLabel.setText(event.getEventName());
     }
     /**
@@ -306,42 +302,6 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      */
     public void addExpense() {
         mainCtrl.showAddExpense(event);
-    }
-
-    /**
-     * Fetch the languages and add to languages drop down menu.
-     */
-    private void fetchLanguages() {
-        HashMap<String, Language> languages = Language.languages;
-
-        for (String langKey : languages.keySet()) {
-            MenuItem item = new MenuItem(langKey);
-
-            item.setOnAction(event -> {
-                setLanguage(langKey);
-            });
-
-            Image image = new Image(languages
-                    .get(langKey).getIconFile().toURI().toString());
-            ImageView imageView = new ImageView(image);
-            imageView.setFitHeight(20);
-            imageView.setFitWidth(20);
-            item.setGraphic(imageView);
-            this.languages.getItems().add(item);
-        }
-    }
-
-    /**
-     * Set user language.
-     * @param langKey The language to set.
-     */
-    private void setLanguage(String langKey) {
-        try {
-            UserConfig.get().setUserLanguage(langKey);
-            refreshText();
-        }catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private class ParticipantCellFactory extends ListCell<Participant> {

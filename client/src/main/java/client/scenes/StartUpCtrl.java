@@ -1,13 +1,12 @@
 package client.scenes;
 
-import client.language.Language;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
-import client.utils.UserConfig;
 import commons.Event;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -19,12 +18,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
-import javafx.scene.image.Image;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
@@ -36,7 +33,7 @@ public class StartUpCtrl implements Initializable, TextPage {
 
     private final MenuItem removeFromYourEvents =
             new MenuItem("Remove from your events");
-    private final ContextMenu contextMenu = new ContextMenu();
+    private ContextMenu contextMenu;
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
@@ -56,6 +53,46 @@ public class StartUpCtrl implements Initializable, TextPage {
     @FXML
     private ListView<Event> yourEvents;
 
+    /**
+     * Setter for newEvent1 (for testing w dependency injection)
+     * @param newEvent1 The new event text field
+     */
+    public void setNewEvent1(TextField newEvent1) {
+        this.newEvent1 = newEvent1;
+    }
+
+    /**
+     * Setter for joinEvent1 (for testing w dependency injection)
+     * @param joinEvent1 The join event text field
+     */
+    public void setJoinEvent1(TextField joinEvent1) {
+        this.joinEvent1 = joinEvent1;
+    }
+
+    /**
+     * Getter for newEvent1 (for testing)
+     * @return The new event text field
+     */
+    public TextField getNewEvent1() {
+        return newEvent1;
+    }
+
+    /**
+     * Getter for currentEvents
+     * @return The current events
+     */
+    public List<Event> getCurrentEvents() {
+        return currentEvents;
+    }
+
+    /**
+     * Getter for joinEvent1 (for testing)
+     * @return The join event text field
+     */
+    public TextField getJoinEvent1() {
+        return joinEvent1;
+    }
+
     @FXML
     private Menu languages;
     @FXML
@@ -73,6 +110,7 @@ public class StartUpCtrl implements Initializable, TextPage {
     public StartUpCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+        this.currentEvents = new ArrayList<>();
     }
 
     /**
@@ -96,8 +134,9 @@ public class StartUpCtrl implements Initializable, TextPage {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        contextMenu = new ContextMenu();
         fetchYourEvents();
-        fetchLanguages();
+        fetchLanguages(languages);
         newEvent1.setOnAction(event -> createEvent());
         joinEvent1.setOnAction(event -> joinEvent());
         yourEvents.setCellFactory(param -> new EventListCell());
@@ -119,8 +158,8 @@ public class StartUpCtrl implements Initializable, TextPage {
             }
         });
         createLogin();
-
-
+        registerForDeleteMessages();
+        registerForSaveEvents();
     }
 
     /**
@@ -138,7 +177,7 @@ public class StartUpCtrl implements Initializable, TextPage {
             passwordField.setPromptText("Enter admin password");
             loginDialog.getDialogPane().setContent(passwordField);
             loginDialog.setResultConverter(button -> {
-                if (button ==loginButton) {
+                if (button == loginButton) {
                     mainCtrl.showAdminPage(passwordField.getText());
                 }
                 return null;
@@ -146,27 +185,34 @@ public class StartUpCtrl implements Initializable, TextPage {
             loginDialog.showAndWait();
         });
     }
-
-    private void fetchLanguages() {
-        HashMap<String, Language> languages = Language.languages;
-
-        for (String langKey : languages.keySet()) {
-            MenuItem item = new MenuItem(langKey);
-
-            item.setOnAction(event -> {
-                setLanguage(langKey);
-            });
-
-            Image image = new Image(languages
-                    .get(langKey).getIconFile().toURI().toString());
-            ImageView imageView = new ImageView(image);
-            imageView.setFitHeight(20);
-            imageView.setFitWidth(20);
-            item.setGraphic(imageView);
-            this.languages.getItems().add(item);
-        }
+    private void registerForSaveEvents() {
+        List<String> userEvents = server.getUserSettings().getEventCodes();
+        server.registerForMessages("/topic/admin", Event.class,
+                event -> refresh());
+    }
+    private void registerForDeleteMessages() {
+        server.registerForMessages("/topic/admin/delete", Event.class,
+                event -> {
+                    currentEvents.remove(event);
+                    List<String> codes = server
+                            .getUserSettings().getEventCodes();
+                    codes.remove(event.getInviteCode());
+                    try {
+                        server.getUserSettings().setEventCodes(codes);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    refresh();
+                });
     }
 
+    /**
+     * Getter for server
+     * @return The server
+     */
+    public ServerUtils getServer() {
+        return server;
+    }
     /**
      * To add an event to the user's events using an invitation code.
      */
@@ -180,6 +226,11 @@ public class StartUpCtrl implements Initializable, TextPage {
                                 .getTranslation(
                                         client.language.Text.StartUp
                                         .Alert.alreadyInEvent), 422);
+            } else if (code.isEmpty()) {
+                throw new WebApplicationException(
+                        Translator.getTranslation(
+                                client.language.Text
+                                        .StartUp.Alert.noEventWritten), 422);
             }
             Event result = server.joinEvent(code);
             currentEvents.add(result);
@@ -216,11 +267,11 @@ public class StartUpCtrl implements Initializable, TextPage {
                                 client.language.Text
                                         .StartUp.Alert.noEventWritten), 422);
             }
-            Event result = server.saveEvent(e);
+            Event result = server.createEvent(e);
             List<String> eventCodes = server.getUserSettings().getEventCodes();
             eventCodes.add(result.getInviteCode());
             server.getUserSettings().setEventCodes(eventCodes);
-            currentEvents.add(result);
+//            currentEvents.add(result); //Might lead to bugs in the UI
             System.out.println("Event: "+ result.getEventName() + " created!" +
                     " Invite code: " + result.getInviteCode() + " added!" +
                     " Time of last edit: " + result.getLastActivity());
@@ -258,25 +309,29 @@ public class StartUpCtrl implements Initializable, TextPage {
      * @return The invitation code
      */
     public String getJoinInvCode() {
-        return joinEvent1.getText();
+        if (joinEvent1 != null) return joinEvent1.getText();
+        return null;
     }
 
     /**
      * Refreshes the page and updates the list view.
      */
     public void refresh() {
-        ObservableList<Event> observableEvents =
-                FXCollections.observableArrayList(currentEvents);
-        SortedList<Event> sortedEvents = new SortedList<>(observableEvents);
-        sortedEvents.
-                setComparator(Comparator
-                        .comparing(Event::getLastActivity).reversed());
+        Platform.runLater(() -> {
+            fetchYourEvents();
+            ObservableList<Event> observableEvents =
+                    FXCollections.observableArrayList(currentEvents);
+            SortedList<Event> sortedEvents = new SortedList<>(observableEvents);
+            sortedEvents.
+                    setComparator(Comparator
+                            .comparing(Event::getLastActivity).reversed());
 
-        yourEvents.setItems(sortedEvents);
+            yourEvents.setItems(sortedEvents);
 
-        refreshText();
+            refreshText();
 
-        System.out.println("Page has been refreshed!");
+            System.out.println("Page has been refreshed!");
+        });
     }
 
     /**
@@ -298,19 +353,12 @@ public class StartUpCtrl implements Initializable, TextPage {
         removeFromYourEvents.setText(Translator.
                 getTranslation(client.language
                         .Text.StartUp.Menu.removeYourEvents));
-    }
-
-    /**
-     * Sets language.
-     * @param langKey The language which to set to.
-     */
-    public void setLanguage(String langKey) {
-        try {
-            UserConfig.get().setUserLanguage(langKey);
-            refreshText();
-        }catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        newEvent1.setPromptText(Translator
+                .getTranslation(client.language
+                        .Text.StartUp.createNewEventLabel));
+        joinEvent1.setPromptText(Translator
+                .getTranslation(client.language
+                        .Text.StartUp.joinEventLabel));
     }
 
     /**

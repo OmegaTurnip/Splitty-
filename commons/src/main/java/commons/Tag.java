@@ -10,7 +10,7 @@ import java.util.Objects;
 public class Tag {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
     @Id
     @ManyToOne

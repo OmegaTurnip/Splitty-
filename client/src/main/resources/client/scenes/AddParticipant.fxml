@@ -33,7 +33,6 @@
 -->
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -46,13 +45,7 @@
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
-            <Menu fx:id="languages" mnemonicParsing="false" text="Languages">
-              <items>
-                  <CheckMenuItem fx:id="english" mnemonicParsing="false" onAction="#setEnglish" text="English" />
-                  <CheckMenuItem fx:id="dutch" mnemonicParsing="false" onAction="#setDutch" text="Dutch" />
-                  <CheckMenuItem fx:id="german" mnemonicParsing="false" onAction="#setGerman" text="German" />
-              </items>
-            </Menu>
+            <Menu fx:id="languages" mnemonicParsing="false" text="Languages" />
             <Menu fx:id="rto" mnemonicParsing="false" text="Return to Overview" />
             <Menu fx:id="close" mnemonicParsing="false" text="Close" />
       </menus>

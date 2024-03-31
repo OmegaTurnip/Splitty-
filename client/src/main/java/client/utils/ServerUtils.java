@@ -20,11 +20,16 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import commons.Event;
 import commons.Participant;
 import jakarta.ws.rs.client.Client;
@@ -35,6 +40,13 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.simp.stomp.StompFrameHandler;
+import org.springframework.messaging.simp.stomp.StompHeaders;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 
 public class ServerUtils {
@@ -42,12 +54,14 @@ public class ServerUtils {
     private final UserConfig userSettings;
 
     private String server;
+    private String webSocketServer;
 
     private Client client;
 
+    private StompSession session;
+
     /**
      * Getter.
-     *
      * @return Get User Settings.
      */
     public UserConfig getUserSettings() {
@@ -56,13 +70,11 @@ public class ServerUtils {
 
     /**
      * Getter.
-     *
      * @return Get server URL.
      */
     public String getServer() {
         return server;
     }
-
     /**
      * Server Utils constructed with UserConfig file.
      */
@@ -70,11 +82,17 @@ public class ServerUtils {
         this.userSettings = UserConfig.get();
         this.server = userSettings.getServerUrl();
         this.client = ClientBuilder.newClient(new ClientConfig());
+//        StringBuilder ws = new StringBuilder(userSettings.getServerUrl());
+//        ws.insert(0, "ws:");
+//        ws.append("websocket");
+        this.webSocketServer = "ws://localhost:8080/websocket";
+        //Make this configurable rather than hard coded.
+        session = connect(webSocketServer);
+        System.out.println("WebSocketServer: " + webSocketServer);
     }
 
     /**
      * Injectable constructor
-     *
      * @param userSettings Inject the userSettings.
      */
     public ServerUtils(UserConfig userSettings) {
@@ -84,10 +102,19 @@ public class ServerUtils {
 
     /**
      * Injectable constructor
-     *
      * @param userSettings Inject the userSettings.
-     * @param server       Inject custom URL.
-     * @param client       Inject client.
+     * @param client Inject client.
+     */
+    public ServerUtils(UserConfig userSettings, Client client) {
+        this.userSettings = userSettings;
+        this.client = client;
+    }
+
+    /**
+     * Injectable constructor
+     * @param userSettings Inject the userSettings.
+     * @param server Inject custom URL.
+     * @param client Inject client.
      */
     public ServerUtils(UserConfig userSettings, String server, Client client) {
         this.userSettings = userSettings;
@@ -96,7 +123,7 @@ public class ServerUtils {
     }
 
     /**
-     * @throws IOException        no description was provided in the template.
+     * @throws IOException no description was provided in the template.
      * @throws URISyntaxException no description was provided in the template.
      */
     public void getQuotesTheHardWay() throws IOException, URISyntaxException {
@@ -134,12 +161,11 @@ public class ServerUtils {
     }
 
     /**
-     * Create/save Event REST API request.
-     *
-     * @param event The event to be created/saved.
-     * @return The created/saved event.
+     * Create Event REST API request.
+     * @param event The event to be created
+     * @return The created
      */
-    public Event saveEvent(Event event) {
+    public Event createEvent(Event event) {
         return client //
                 .target(server).path("api/event") //
                 .request(APPLICATION_JSON) //
@@ -158,8 +184,20 @@ public class ServerUtils {
     }
 
     /**
+     * Save Event REST API request.
+     * @param event The event to be saved
+     * @return The saved event
+     */
+    public Event saveEvent(Event event) {
+        return client //
+                .target(server).path("api/event") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .put(Entity.entity(event, APPLICATION_JSON), Event.class);
+    }
+
+    /**
      * Gets all events
-     *
      * @return List of Events
      */
     public List<Event> getMyEvents() {
@@ -174,7 +212,6 @@ public class ServerUtils {
 
     /**
      * Join an event
-     *
      * @param code The event code
      * @return The event
      */
@@ -217,6 +254,7 @@ public class ServerUtils {
                 .delete(new GenericType<>() {});
 //        TODO make sure events that don't exist are
 //         deleted from the user config for all users
+        //Paras: I have taken care of this with my websockets implementation.
     }
 
 //    /**
@@ -235,7 +273,6 @@ public class ServerUtils {
 
     /**
      * Gets participants for event
-     *
      * @param event the Event to get participants from
      * @return a list of Participant
      */
@@ -269,4 +306,71 @@ public class ServerUtils {
                 .post(Entity.entity(participant, APPLICATION_JSON),
                         Participant.class);
     }
+
+//    /**
+//     * Deletes an Event
+//     * @param selectedEvent the event to delete
+//     * @return Response with status code
+//     */
+//    public Response deleteEvent(Event selectedEvent) {
+//        return client.target(server)
+//                .path("api/event/" + selectedEvent.getId())
+//                .request()
+//                .delete();
+//    }
+
+    private StompSession connect(String url) {
+        var client = new StandardWebSocketClient();
+        var stomp = new WebSocketStompClient(client);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        MappingJackson2MessageConverter converter =
+                new MappingJackson2MessageConverter();
+        converter.setObjectMapper(mapper);
+        stomp.setMessageConverter(converter);
+        try {
+            return stomp.connect(url, new StompSessionHandlerAdapter() {
+            }).get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        throw new IllegalStateException();
+    }
+
+
+    /**
+     * Method for registering for messages from a websocket destination.
+     * @param dest The destination to listen to.
+     * @param type The type of the message.
+     * @param consumer The consumer to handle the message.
+     * @param <T> The type of the message.
+     */
+    public <T> void registerForMessages(String dest, Class<T> type,
+                                        Consumer<T> consumer) {
+        session.subscribe(dest, new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return type;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                consumer.accept((T) payload);
+            }
+        });
+    }
+
+//    /**
+//     * Send an object to this destination.
+//     * @param dest The destination to send to.
+//     * @param o The object to send.
+//     */
+//    public void send(String dest, Object o) {
+//        session.send(dest, o);
+//    }
+    //This isn't needed. We can just use REST requests to send messages,
+    //and the messages can be rerouted to the websocket.
 }
