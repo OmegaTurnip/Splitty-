@@ -379,6 +379,13 @@ public class AdminCtrl implements TextPage, Initializable {
             System.out.println("Received event: " + e.getEventName());
             refresh();
         });
+        eventName.setCellValueFactory(
+                new PropertyValueFactory<Event, String>("eventName"));
+        creationDate.setCellValueFactory(
+                new PropertyValueFactory<Event, LocalDate>(
+                        "eventCreationDate"));
+        lastActivity.setCellValueFactory(
+                new PropertyValueFactory<Event, LocalDateTime>("lastActivity"));
 
     }
     /**
@@ -387,13 +394,6 @@ public class AdminCtrl implements TextPage, Initializable {
     public void refresh() {
         ObservableList<Event> eventObservableList =
                 FXCollections.observableList(events);
-        eventName.setCellValueFactory(
-                new PropertyValueFactory<Event, String>("eventName"));
-        creationDate.setCellValueFactory(
-                new PropertyValueFactory<Event, LocalDate>(
-                        "eventCreationDate"));
-        lastActivity.setCellValueFactory(
-                new PropertyValueFactory<Event, LocalDateTime>("lastActivity"));
         eventsTable.setItems(eventObservableList);
         refreshText();
     }
