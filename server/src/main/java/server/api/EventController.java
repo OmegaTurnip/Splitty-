@@ -40,7 +40,7 @@ public class EventController {
 //        return ResponseEntity.ok(myE);
 //    }
 
-    /*
+    /**
      * Save events
      * @param events The events to save
      * @return The events saved
