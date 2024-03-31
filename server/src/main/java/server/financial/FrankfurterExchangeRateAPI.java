@@ -90,8 +90,6 @@ public class FrankfurterExchangeRateAPI implements ExchangeRateAPI {
             con.setConnectTimeout(5_000);
             con.setReadTimeout(5_000);
 
-
-
             // idc
             String result = new String(con.getInputStream().readAllBytes());
 
