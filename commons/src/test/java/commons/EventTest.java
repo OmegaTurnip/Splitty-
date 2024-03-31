@@ -93,7 +93,7 @@ class EventTest {
     }
 
     @Test
-    void addAditionalTag(){
+    void addAdditionalTag(){
         ArrayList<Tag> tags = new ArrayList<>();
         tags.add(new Tag("food", "blue"));
         tags.add(new Tag("entrance fees", "green"));

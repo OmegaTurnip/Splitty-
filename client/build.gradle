@@ -19,6 +19,8 @@ java {
 
 dependencies {
 	implementation project(":commons")
+
+	implementation 'org.springframework.boot:spring-boot-starter-websocket:3.2.2'
 	
 	implementation group: 'org.glassfish.jersey.core', name: 'jersey-client', version: '3.0.3'
 	implementation group: 'org.glassfish.jersey.inject', name: 'jersey-hk2', version: '3.0.3'
@@ -29,6 +31,8 @@ dependencies {
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.1'
 
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.1'
+	implementation group: 'org.controlsfx', name: 'controlsfx', version: '11.2.1'
+
 
 	implementation 'com.google.inject:guice:7.0.0'
 	implementation 'org.openjfx:javafx-controls:21.0.2'

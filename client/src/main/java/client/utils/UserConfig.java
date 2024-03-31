@@ -254,7 +254,8 @@ public class UserConfig {
 
     private void readEventCodes(Properties properties) throws IOException {
         String events = properties.getProperty("events");
-        setEventCodes(events != null ? toArray(events) : new String[0]);
+        setEventCodes((events == null || events.isEmpty())
+                ?  new String[0] : toArray(events));
     }
 
 

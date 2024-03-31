@@ -10,7 +10,7 @@ import java.util.Objects;
 public class Tag {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
     @Id
     @ManyToOne
@@ -35,6 +35,15 @@ public class Tag {
      */
     public Tag() {
 
+    }
+
+    /**
+     * Turns the Tag into a human readable String
+     * @return the name of the string
+     */
+    @Override
+    public String toString() {
+        return name;
     }
 
     /**
