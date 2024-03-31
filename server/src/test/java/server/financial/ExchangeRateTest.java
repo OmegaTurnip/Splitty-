@@ -1,8 +1,9 @@
-package server.util;
+package server.financial;
 
 import commons.Money;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.financial.ExchangeRate;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
