@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class ParticipantId implements Serializable {
-    private Long id;
+    private Long participantId;
     private Long event;
 
     /**
@@ -14,11 +14,11 @@ public class ParticipantId implements Serializable {
 
     /**
      * Constructor
-     * @param id the id of the Participant
+     * @param participantId the id of the Participant
      * @param event the id of the Event
      */
-    public ParticipantId(Long id, Long event) {
-        this.id = id;
+    public ParticipantId(Long participantId, Long event) {
+        this.participantId = participantId;
         this.event = event;
     }
 
@@ -26,8 +26,8 @@ public class ParticipantId implements Serializable {
      * Getter for id
      * @return the id
      */
-    public Long getId() {
-        return id;
+    public Long getParticipantId() {
+        return participantId;
     }
 
     /**
@@ -42,8 +42,8 @@ public class ParticipantId implements Serializable {
      * Setter for id
      * @param id the new id
      */
-    public void setId(Long id) {
-        this.id = id;
+    public void setParticipantId(Long id) {
+        this.participantId = id;
     }
 
     /**
@@ -64,7 +64,7 @@ public class ParticipantId implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ParticipantId that = (ParticipantId) o;
-        return Objects.equals(id, that.id) && Objects.equals(event, that.event);
+        return Objects.equals(participantId, that.participantId) && Objects.equals(event, that.event);
     }
 
     /**
@@ -73,6 +73,6 @@ public class ParticipantId implements Serializable {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(id, event);
+        return Objects.hash(participantId, event);
     }
 }

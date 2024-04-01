@@ -153,8 +153,13 @@ public class AddParticipantCtrl implements TextPage, Initializable {
         try{
             emptyCheck();
             formatCheck();
-            Participant participant = event.addParticipant(usernameTextField.getText());
-            server.addParticipant(event, participant);
+            Participant participant =
+                    event.addParticipant(usernameTextField.getText());
+            participant = server.addParticipant(participant);
+            event.getParticipants().getLast()
+                    .setParticipantId(participant.getParticipantId());
+            System.out.println("Created " + participant);
+            server.saveEvent(event);
         } catch(WebApplicationException e){
             e.printStackTrace();
             var alert = new Alert(Alert.AlertType.ERROR);

@@ -37,7 +37,7 @@ class DebtSimplifierTest {
     void setup() {
         event = new Event("test event");
         for (int i = 0; i < 7; i++) {
-            event.addParticipant(new String[]{"Anna", "Bram", "Carin", "Deborah", "Esha", "Filip", "Greet"}[i]).setId((long) i);
+            event.addParticipant(new String[]{"Anna", "Bram", "Carin", "Deborah", "Esha", "Filip", "Greet"}[i]).setParticipantId((long) i);
         }
 
         participants = new LinkedList<>(event.getParticipants());

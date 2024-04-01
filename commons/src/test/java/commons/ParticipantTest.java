@@ -28,9 +28,9 @@ class ParticipantTest{
             testParticipant2 = participantIterator.next();
             testParticipant3 = participantIterator.next();
 
-            testParticipant1.setId(1L);
-            testParticipant2.setId(2L);
-            testParticipant3.setId(3L);
+            testParticipant1.setParticipantId(1L);
+            testParticipant2.setParticipantId(2L);
+            testParticipant3.setParticipantId(3L);
 
 //            testParticipant1.setId((long) 2);
 //            testParticipant3.setId((long) 2);

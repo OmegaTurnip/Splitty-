@@ -71,6 +71,8 @@ public class ParticipantCellController {
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 event.removeParticipant(participant);
                 try {
+                    server.removeParticipant(participant);
+                    var test = server.getMyEvents();
                     server.saveEvent(event);
                 } catch (Exception e) {
                     e.printStackTrace();

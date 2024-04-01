@@ -11,8 +11,6 @@ import commons.Event;
 import server.database.EventRepository;
 import server.database.ParticipantRepository;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/event/{eventId}/participants")
 public class ParticipantController {
@@ -21,7 +19,8 @@ public class ParticipantController {
 
     /**
      * Constructor
-     * @param repo the repository
+     *
+     * @param repo      the repository
      * @param eventRepo the event repository
      */
     public ParticipantController(ParticipantRepository repo,
@@ -32,15 +31,16 @@ public class ParticipantController {
 
     /**
      * Mapping for adding a participant
+     *
      * @param participant the participant to add
-     * @param eventId the event that the participant belongs to
+     * @param eventId     the event that the participant belongs to
      * @return the participant response entity
      */
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Participant>
-        add(@RequestBody Participant participant,
-            @PathVariable("eventId") long eventId) {
+    add(@RequestBody Participant participant,
+        @PathVariable("eventId") long eventId) {
 
         if (isNullOrEmpty(participant.getName())) {
             return ResponseEntity.badRequest().build();
@@ -59,90 +59,22 @@ public class ParticipantController {
     }
 
     /**
-     * Mapping for getting a participant by id
-     * @param id the id of the participant to get
-     * @return the participant found or a bad request if no participant
-     * @param eventId the event that the participant belongs to
-     * can be found
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<Participant>
-        getById(@PathVariable("id") long id,
-                @PathVariable("eventId") long eventId) {
-        if (id < 0 || !repo.existsById(id)) {
-            return ResponseEntity.badRequest().build();
-        }
-        
-        var optionalParticipant = repo.findById(id);
-        if (optionalParticipant.isEmpty())
-            return ResponseEntity.badRequest().build();
-        Participant participant = optionalParticipant.get();
-
-        if (participant.getEvent().getId() != eventId)
-            return ResponseEntity.badRequest().build();
-
-        return ResponseEntity.ok(participant);
-    }
-
-    /**
-     * Mapping for getting all participants
-     * @return a list of all participants
-     * @param eventId the event that the participant belongs to
-     */
-    @GetMapping(path = { "", "/" })
-    public ResponseEntity< List<Participant>>
-        getAll(@PathVariable("eventId") long eventId) {
-
-        var optionalEvent = eventRepo.findById(eventId);
-        if (optionalEvent.isEmpty()) return ResponseEntity.badRequest().build();
-        Event event = optionalEvent.get();
-
-        return ResponseEntity.ok(event.getParticipants());
-    }
-
-    /**
-     * Mapping for changing a Participant
-     * @param name the name to change to
-     * @param id the id of the participant to change
-     * @param eventId the event that the participant belongs to
-     * @return the participant changed or a bad request if no
-     * participant can be found
-     */
-    @PutMapping("/{id}")
-    public ResponseEntity<Participant>
-        changeName(@RequestBody String name,
-              @PathVariable long id,
-              @PathVariable("eventId") long eventId) {
-        if (id < 0 || !repo.existsById(id)) {
-            return ResponseEntity.badRequest().build();
-        }
-        var optionalParticipant = repo.findById(id);
-        if (optionalParticipant.isEmpty())
-            return ResponseEntity.badRequest().build();
-        Participant participant = optionalParticipant.get();
-
-        if (participant.getEvent().getId() != eventId)
-            return ResponseEntity.badRequest().build();
-
-        participant.setName(name);
-        return ResponseEntity.ok(repo.save(participant));
-    }
-
-    /**
      * Mapping for deleting a participant
-     * @param id the id of the participant to remove
+     *
+     * @param id      the id of the participant to remove
      * @param eventId the event that the participant belongs to
      * @return the participant that was removed or bad
      * request if no participant was found
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Participant>
-        removeParticipant(@PathVariable long id,
-                          @PathVariable("eventId") long eventId) {
-        if (id < 0 || !repo.existsById(id)) {
-            return ResponseEntity.badRequest().build();
-        }
-        var optionalParticipant = repo.findById(id);
+    removeParticipant(@PathVariable Long id,
+                      @PathVariable Long eventId) {
+        System.out.println("Bye");
+//        if (id < 0 || !repo.existsById(id)) {
+//            return ResponseEntity.badRequest().build();
+//        }
+        var optionalParticipant = repo.findByParticipantId(id);
         if (optionalParticipant.isEmpty())
             return ResponseEntity.badRequest().build();
         Participant participant = optionalParticipant.get();
@@ -151,10 +83,38 @@ public class ParticipantController {
         if (optionalEvent.isEmpty()) return ResponseEntity.badRequest().build();
         Event event = optionalEvent.get();
 
-        if (participant.getEvent().getId() != eventId)
-            return ResponseEntity.badRequest().build();
-        repo.deleteById(id);
+        repo.delete(participant);
         event.removeParticipant(participant);
+        eventRepo.save(event);
         return ResponseEntity.ok(participant);
     }
+
+//    /**
+//     * Mapping for changing a Participant
+//     *
+//     * @param name    the name to change to
+//     * @param id      the id of the participant to change
+//     * @param eventId the event that the participant belongs to
+//     * @return the participant changed or a bad request if no
+//     * participant can be found
+//     */
+//    @PutMapping("/{id}")
+//    public ResponseEntity<Participant>
+//    changeName(@RequestBody String name,
+//               @PathVariable long id,
+//               @PathVariable("eventId") long eventId) {
+//        if (id < 0 || !repo.existsById(id)) {
+//            return ResponseEntity.badRequest().build();
+//        }
+//        var optionalParticipant = repo.findById(id);
+//        if (optionalParticipant.isEmpty())
+//            return ResponseEntity.badRequest().build();
+//        Participant participant = optionalParticipant.get();
+//
+//        if (participant.getEvent().getId() != eventId)
+//            return ResponseEntity.badRequest().build();
+//
+//        participant.setName(name);
+//        return ResponseEntity.ok(repo.save(participant));
+//    }
 }

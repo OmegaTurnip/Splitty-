@@ -28,7 +28,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Consumer;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -178,14 +177,29 @@ public class ServerUtils {
                 .post(Entity.entity(event, APPLICATION_JSON), Event.class);
     }
 
-    public Participant addParticipant(Event event, Participant participant) {
-        var path = "api/event/" + event.getId() + "/participants";
-        System.out.println("path " + path);
+    /**
+     * Adds a participant to the db
+     * @param participant the participant to add
+     * @return the participant added
+     */
+    public Participant addParticipant(Participant participant) {
+        var path = "api/event/" + participant.getEvent().getId()
+                + "/participants";
         return client //
                 .target(server).path(path) //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
+    }
+
+    public Participant removeParticipant(Participant participant) {
+        var path = "api/event/" + participant.getEvent().getId() +
+                "/participants/" + participant.getParticipantId();
+        return client
+                .target(server).path(path)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete(new GenericType<>() {});
     }
 
     /**
@@ -195,10 +209,11 @@ public class ServerUtils {
      */
     public Event saveEvent(Event event) {
         return client //
-                .target(server).path("api/event") //
+                .target(server).path("api/event/") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
-                .put(Entity.entity(event, APPLICATION_JSON), Event.class);
+                .put(Entity.entity(event, APPLICATION_JSON),
+                        Event.class);
     }
 
     /**
