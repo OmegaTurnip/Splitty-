@@ -15,9 +15,12 @@
  */
 package client.scenes;
 
+import client.utils.ServerUtils;
 import commons.Event;
+import jakarta.ws.rs.NotAuthorizedException;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
@@ -40,8 +43,9 @@ public class MainCtrl {
     private Scene admin;
     private AdminCtrl adminCtrl;
 
+    private ServerUtils server;
+
     /**
-     * @param primaryStage the window.
      * @param overview the fx for the event overview page.
      * @param add the fx for the add participant page.
      * @param startUp The fx for the start-up page.
@@ -49,12 +53,11 @@ public class MainCtrl {
      * @param adminPage The fx for the admin page.
      */
     public void initialize(
-            Stage primaryStage, Pair<EventOverviewCtrl, Parent> overview,
+            Pair<EventOverviewCtrl, Parent> overview,
             Pair<AddParticipantCtrl, Parent> add,
             Pair<StartUpCtrl, Parent> startUp,
             Pair<AddExpenseCtrl, Parent> addExpense,
             Pair<AdminCtrl, Parent> adminPage) {
-        this.primaryStage = primaryStage;
 
         this.startUpCtrl = startUp.getKey();
         this.startUp = new Scene(startUp.getValue());
@@ -71,13 +74,22 @@ public class MainCtrl {
 
         this.addExpenseCtrl = addExpense.getKey();
         this.addExpense = new Scene(addExpense.getValue());
-
         this.adminCtrl = adminPage.getKey();
         this.admin = new Scene(adminPage.getValue());
 
 
+
         showStartUp();
         primaryStage.show();
+    }
+
+    /**
+     * Set the server utils.
+     * @param server the server utils.
+     * @param primaryStage the primary stage.
+     */
+    public void setUtils(ServerUtils server, Stage primaryStage) {
+        this.server = server;
     }
 
     /**
@@ -110,7 +122,7 @@ public class MainCtrl {
                 e.consume();
             }
         });
-        event.addParticipant("test"); // test line, remove later
+//        event.addParticipant("test"); // test line, remove later
         overviewCtrl.refresh();
     }
 
@@ -129,7 +141,7 @@ public class MainCtrl {
      */
     public void showAddParticipant(Event event) {
         addParticipantCtrl.setEvent(event);
-        this.addParticipantCtrl.refreshText();
+        addParticipantCtrl.refresh();
         primaryStage.setTitle("Event Overview: Adding participant");
         primaryStage.setScene(add);
     }
@@ -172,10 +184,27 @@ public class MainCtrl {
 
     /**
      * Go to the admin page (by changing the contents of the window)
+     * @param password the admin password
      */
-    public void showAdminPage() {
-        adminCtrl.refresh();
-        primaryStage.setScene(admin);
+    public void showAdminPage(String password) {
+        try {
+            adminCtrl.setPassword(password);
+            adminCtrl.refresh();
+            adminCtrl.setEvents(server.getAllEvents(password));
+            primaryStage.setScene(admin);
+            admin.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+                if (e.getCode() == KeyCode.ESCAPE) {
+                    showStartUp();
+                    e.consume();
+                }
+            });
+        } catch (NotAuthorizedException e) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Unauthorized");
+            alert.setHeaderText(null);
+            alert.setContentText("You entered the wrong admin password.");
+            alert.showAndWait();
+        }
     }
 
 }

@@ -64,7 +64,7 @@ class ServerUtilsTest {
         Event testEvent1 = new Event("testEvent1");
         when(builder.post(Entity.entity(testEvent1, MediaType.APPLICATION_JSON_TYPE), Event.class)).thenReturn(testEvent1);
 
-        Event event = sut.saveEvent(testEvent1);
+        Event event = sut.createEvent(testEvent1);
 
         assertEquals(event, testEvent1);
 
@@ -95,8 +95,7 @@ class ServerUtilsTest {
         // Mocking Response
         Event test1 = new Event("Test1");
         Event test2 = new Event("Test2");
-        List<Event> mockEvents = Arrays.asList(test1, test2);
-        when(builder.get(any(GenericType.class))).thenReturn(mockEvents);
+        when(builder.get(any(GenericType.class))).thenReturn(Arrays.asList(test1, test2));
 
         List<Event> events = sut.getMyEvents();
 

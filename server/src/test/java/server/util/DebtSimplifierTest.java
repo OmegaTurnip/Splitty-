@@ -1,16 +1,17 @@
 package server.util;
 
+import commons.Debt;
 import commons.Event;
 import commons.Money;
 import commons.Participant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.financial.ExchangeRate;
+import server.financial.ExchangeRateFactory;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Currency;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,9 +30,9 @@ class DebtSimplifierTest {
     private Money money1;
     private Money money2;
 
-    private DebtSimplifier.Debt debt1;
-    private DebtSimplifier.Debt debt2;
-    private DebtSimplifier.Debt debt3;
+    private Debt debt1;
+    private Debt debt2;
+    private Debt debt3;
 
     @BeforeEach
     void setup() {
@@ -46,34 +47,36 @@ class DebtSimplifierTest {
         exchangeRateFactory.addExchangeRate(new ExchangeRate(LocalDate.now(), EUR, EUR, 1d));
         exchangeRateFactory.addExchangeRate(new ExchangeRate(LocalDate.now(), USD, USD, 1d));
 
-        debtSimplifier = new DebtSimplifier(event.getParticipants(), EUR,  exchangeRateFactory);
+        debtSimplifier = new DebtSimplifier(exchangeRateFactory);
+        debtSimplifier.setup(EUR, participants);
 
         invalidParticipant = event.addParticipant("Hannah");
 
         money1 = new Money(new BigDecimal(10), EUR);
         money2 = new Money(new BigDecimal(20), EUR);
 
-        debt1 = new DebtSimplifier.Debt(participants.get(0), participants.get(1), money1);
-        debt2 = new DebtSimplifier.Debt(participants.get(0), participants.get(1), money1); // == debt1
-        debt3 = new DebtSimplifier.Debt(participants.get(1), participants.get(2), money2);
+        debt1 = new Debt(participants.get(0), participants.get(1), money1);
+        debt2 = new Debt(participants.get(0), participants.get(1), money1); // == debt1
+        debt3 = new Debt(participants.get(1), participants.get(2), money2);
     }
 
     @Test
     void constructor() {
-        assertThrows(NullPointerException.class, () -> new DebtSimplifier(null, EUR));
-        assertThrows(NullPointerException.class, () -> new DebtSimplifier(new LinkedList<>(), null));
-        assertThrows(IllegalArgumentException.class, () -> new DebtSimplifier(new LinkedList<>(), EUR));
+        assertThrows(NullPointerException.class, () -> new DebtSimplifier(null));
+        assertThrows(NullPointerException.class, () -> debtSimplifier.setup(null, participants));
+        assertThrows(NullPointerException.class, () -> debtSimplifier.setup(EUR, null));
+        assertThrows(IllegalArgumentException.class, () ->debtSimplifier.setup(EUR, new LinkedList<>()));
     }
 
     @Test
     void debtClass() {
-        assertThrows(NullPointerException.class, () -> new DebtSimplifier.Debt(null, participants.get(1), money1));
-        assertThrows(NullPointerException.class, () -> new DebtSimplifier.Debt(participants.get(2), null, money1));
-        assertThrows(NullPointerException.class, () -> new DebtSimplifier.Debt(participants.get(2), participants.get(1), null));
+        assertThrows(NullPointerException.class, () -> new Debt(null, participants.get(1), money1));
+        assertThrows(NullPointerException.class, () -> new Debt(participants.get(2), null, money1));
+        assertThrows(NullPointerException.class, () -> new Debt(participants.get(2), participants.get(1), null));
 
-        assertThrows(IllegalArgumentException.class, () -> new DebtSimplifier.Debt(participants.get(2), participants.get(1), new Money(new BigDecimal(-3), EUR)));
+        assertThrows(IllegalArgumentException.class, () -> new Debt(participants.get(2), participants.get(1), new Money(new BigDecimal(-3), EUR)));
 
-        assertThrows(IllegalArgumentException.class, () -> new DebtSimplifier.Debt(participants.get(2), participants.get(2), money1));
+        assertThrows(IllegalArgumentException.class, () -> new Debt(participants.get(2), participants.get(2), money1));
 
         assertEquals(participants.get(0), debt1.from());
         assertEquals(participants.get(1), debt1.to());
@@ -93,10 +96,10 @@ class DebtSimplifierTest {
         assertDoesNotThrow(() -> debtSimplifier.addDebt(debt2));
         assertDoesNotThrow(() -> debtSimplifier.addDebt(debt3));
 
-        assertThrows(NullPointerException.class, () -> debtSimplifier.addDebt((DebtSimplifier.Debt) null));
+        assertThrows(NullPointerException.class, () -> debtSimplifier.addDebt((Debt) null));
 
-        assertThrows(IllegalArgumentException.class, () -> debtSimplifier.addDebt(new DebtSimplifier.Debt(invalidParticipant, participants.get(4), money2)));
-        assertThrows(IllegalArgumentException.class, () -> debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(4), invalidParticipant, money2)));
+        assertThrows(IllegalArgumentException.class, () -> debtSimplifier.addDebt(new Debt(invalidParticipant, participants.get(4), money2)));
+        assertThrows(IllegalArgumentException.class, () -> debtSimplifier.addDebt(new Debt(participants.get(4), invalidParticipant, money2)));
     }
 
     @Test
@@ -140,62 +143,62 @@ class DebtSimplifierTest {
     @Test
     void divideDebtsResult1() {
         List<Participant> debtors = new LinkedList<>();
-        List<DebtSimplifier.Debt> excepted = new LinkedList<>();
+        Set<Debt> expected = new HashSet<>();
 
         debtors.add(participants.get(1));
-        excepted.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(1),
                 participants.get(0),
                 new Money(new BigDecimal(10), EUR)
         ));
 
         debtSimplifier.divideDebts(participants.getFirst(), debtors, new Money(new BigDecimal(10), EUR));
-        assertEquals(excepted, debtSimplifier.simplify());
+        assertEquals(expected, debtSimplifier.simplify());
     }
 
     @Test
     void divideDebtsResult2() {
         List<Participant> debtors = new LinkedList<>();
-        List<DebtSimplifier.Debt> excepted = new LinkedList<>();
+        Set<Debt> expected = new HashSet<>();
 
         debtors.add(participants.get(1));
         debtors.add(participants.get(2));
 
-        excepted.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(1),
                 participants.get(0),
                 new Money(new BigDecimal(5), EUR)
         ));
-        excepted.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(2),
                 participants.get(0),
                 new Money(new BigDecimal(5), EUR)
         ));
 
         debtSimplifier.divideDebts(participants.getFirst(), debtors, new Money(new BigDecimal(10), EUR));
-        assertEquals(excepted, debtSimplifier.simplify());
+        assertEquals(expected, debtSimplifier.simplify());
     }
 
     @Test
     void divideDebtsResult3() {
         List<Participant> debtors = new LinkedList<>();
-        List<DebtSimplifier.Debt> excepted = new LinkedList<>();
+        Set<Debt> expected = new HashSet<>();
 
         debtors.add(participants.get(1));
         debtors.add(participants.get(2));
         debtors.add(participants.get(3));
 
-        excepted.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(2),
                 participants.get(0),
                 new Money(new BigDecimal(3.33), EUR)
         ));
-        excepted.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(3),
                 participants.get(0),
                 new Money(new BigDecimal(3.33), EUR)
         ));
-        excepted.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(1),
                 participants.get(0),
                 new Money(new BigDecimal(3.34), EUR)
@@ -203,13 +206,13 @@ class DebtSimplifierTest {
 
 
         debtSimplifier.divideDebts(participants.getFirst(), debtors, new Money(new BigDecimal(10), EUR));
-        assertEquals(excepted, debtSimplifier.simplify());
+        assertEquals(expected, debtSimplifier.simplify());
     }
 
     @Test
     void divideDebtsResult4() {
         List<Participant> debtors = new LinkedList<>();
-        List<DebtSimplifier.Debt> excepted = new LinkedList<>();
+        Set<Debt> expected = new HashSet<>();
 
         debtors.add(participants.get(1));
         debtors.add(participants.get(2));
@@ -217,30 +220,30 @@ class DebtSimplifierTest {
 
         exchangeRateFactory.addExchangeRate(new ExchangeRate(LocalDate.now(), USD, EUR, 1.1));
 
-        excepted.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(2),
                 participants.get(0),
                 new Money(new BigDecimal(3.66), EUR)
         ));
-        excepted.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(3),
                 participants.get(0),
                 new Money(new BigDecimal(3.67), EUR)
         ));
-        excepted.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(1),
                 participants.get(0),
                 new Money(new BigDecimal(3.67), EUR)
         ));
 
         debtSimplifier.divideDebts(participants.getFirst(), debtors, new Money(new BigDecimal(10), USD));
-        assertEquals(excepted, debtSimplifier.simplify());
+        assertEquals(expected, debtSimplifier.simplify());
     }
 
     @Test
     void divideDebtsResult5() {
         List<Participant> debtors = new LinkedList<>();
-        List<DebtSimplifier.Debt> excepted = new LinkedList<>();
+        Set<Debt> expected = new HashSet<>();
 
         debtors.add(participants.get(1));
         debtors.add(participants.get(2));
@@ -248,17 +251,17 @@ class DebtSimplifierTest {
 
         exchangeRateFactory.addExchangeRate(new ExchangeRate(LocalDate.now(), USD, EUR, 1.1));
 
-        excepted.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(1),
                 participants.get(0),
                 new Money(new BigDecimal(7d), EUR)
         ));
-        excepted.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(3),
                 participants.get(0),
                 new Money(new BigDecimal(7d), EUR)
         ));
-        excepted.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(2),
                 participants.get(0),
                 new Money(new BigDecimal(7d), EUR)
@@ -266,12 +269,12 @@ class DebtSimplifierTest {
 
         debtSimplifier.divideDebts(participants.getFirst(), debtors, new Money(new BigDecimal(10), EUR));
         debtSimplifier.divideDebts(participants.getFirst(), debtors, new Money(new BigDecimal(10), USD));
-        assertEquals(excepted, debtSimplifier.simplify());
+        assertEquals(expected, debtSimplifier.simplify());
     }
 
     @Test
     void simplify0() {
-        LinkedList<DebtSimplifier.Debt> expected = new LinkedList<>();
+        Set<Debt> expected = new HashSet<>();
 
         assertEquals(expected, debtSimplifier.simplify());
     }
@@ -280,7 +283,7 @@ class DebtSimplifierTest {
     void simplify1() {
         debtSimplifier.addDebt(debt1);
 
-        LinkedList<DebtSimplifier.Debt> expected = new LinkedList<>();
+        Set<Debt> expected = new HashSet<>();
 
         expected.add(debt1);
 
@@ -293,9 +296,9 @@ class DebtSimplifierTest {
         debtSimplifier.addDebt(debt2);
         debtSimplifier.addDebt(debt3);
 
-        LinkedList<DebtSimplifier.Debt> expected = new LinkedList<>();
+        Set<Debt> expected = new HashSet<>();
 
-        expected.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(0),
                 participants.get(2),
                 money2
@@ -309,14 +312,16 @@ class DebtSimplifierTest {
         final int eur_to_usd = 2;
         exchangeRateFactory.addExchangeRate(new ExchangeRate(LocalDate.now(), EUR, USD, eur_to_usd));
 
-        debtSimplifier = new DebtSimplifier(event.getParticipants(), USD,  exchangeRateFactory);
+        debtSimplifier = new DebtSimplifier(exchangeRateFactory);
+        debtSimplifier.setup(USD, event.getParticipants());
+
         debtSimplifier.addDebt(debt1);
         debtSimplifier.addDebt(debt2);
         debtSimplifier.addDebt(debt3);
 
-        LinkedList<DebtSimplifier.Debt> expected = new LinkedList<>();
+        Set<Debt> expected = new HashSet<>();
 
-        expected.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(0),
                 participants.get(2),
                 exchangeRateFactory.getMostRecent(EUR, USD).convert(money2)
@@ -327,15 +332,15 @@ class DebtSimplifierTest {
 
     @Test
     void simplify4() {
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(0), participants.get(1), money1));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(1), participants.get(2), money1));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(2), participants.get(3), money1));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(3), participants.get(4), money1));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(4), participants.get(5), money1));
+        debtSimplifier.addDebt(new Debt(participants.get(0), participants.get(1), money1));
+        debtSimplifier.addDebt(new Debt(participants.get(1), participants.get(2), money1));
+        debtSimplifier.addDebt(new Debt(participants.get(2), participants.get(3), money1));
+        debtSimplifier.addDebt(new Debt(participants.get(3), participants.get(4), money1));
+        debtSimplifier.addDebt(new Debt(participants.get(4), participants.get(5), money1));
 
-        LinkedList<DebtSimplifier.Debt> expected = new LinkedList<>();
+        Set<Debt> expected = new HashSet<>();
 
-        expected.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(0),
                 participants.get(5),
                 money1
@@ -346,23 +351,23 @@ class DebtSimplifierTest {
 
     @Test
     void simplify5() {
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(0), participants.get(1), money1));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(1), participants.get(2), money1));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(2), participants.get(3), money1));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(3), participants.get(4), money1));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(4), participants.get(5), money1));
+        debtSimplifier.addDebt(new Debt(participants.get(0), participants.get(1), money1));
+        debtSimplifier.addDebt(new Debt(participants.get(1), participants.get(2), money1));
+        debtSimplifier.addDebt(new Debt(participants.get(2), participants.get(3), money1));
+        debtSimplifier.addDebt(new Debt(participants.get(3), participants.get(4), money1));
+        debtSimplifier.addDebt(new Debt(participants.get(4), participants.get(5), money1));
 
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(1), participants.get(4), money2));
+        debtSimplifier.addDebt(new Debt(participants.get(1), participants.get(4), money2));
 
-        LinkedList<DebtSimplifier.Debt> expected = new LinkedList<>();
+        Set<Debt> expected = new HashSet<>();
 
-        expected.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(0),
                 participants.get(5),
                 money1
         ));
 
-        expected.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(1),
                 participants.get(4),
                 money2
@@ -373,24 +378,24 @@ class DebtSimplifierTest {
 
     @Test
     void simplify6() {
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(0), participants.get(1), money1));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(1), participants.get(2), money1));
+        debtSimplifier.addDebt(new Debt(participants.get(0), participants.get(1), money1));
+        debtSimplifier.addDebt(new Debt(participants.get(1), participants.get(2), money1));
 
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(2), participants.get(3), money2));
+        debtSimplifier.addDebt(new Debt(participants.get(2), participants.get(3), money2));
 
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(3), participants.get(4), money1));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(4), participants.get(5), money1));
+        debtSimplifier.addDebt(new Debt(participants.get(3), participants.get(4), money1));
+        debtSimplifier.addDebt(new Debt(participants.get(4), participants.get(5), money1));
 
 
-        LinkedList<DebtSimplifier.Debt> expected = new LinkedList<>();
+        Set<Debt> expected = new HashSet<>();
 
-        expected.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(0),
                 participants.get(3),
                 money1
         ));
 
-        expected.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(2),
                 participants.get(5),
                 money1
@@ -401,18 +406,18 @@ class DebtSimplifierTest {
 
     @Test
     void simplify7() {
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(0), participants.get(1), money2));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(1), participants.get(2), money1));
+        debtSimplifier.addDebt(new Debt(participants.get(0), participants.get(1), money2));
+        debtSimplifier.addDebt(new Debt(participants.get(1), participants.get(2), money1));
 
-        LinkedList<DebtSimplifier.Debt> expected = new LinkedList<>();
+        Set<Debt> expected = new HashSet<>();
 
-        expected.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(0),
                 participants.get(1),
                 money1
         ));
 
-        expected.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(0),
                 participants.get(2),
                 money1
@@ -423,18 +428,18 @@ class DebtSimplifierTest {
 
     @Test
     void simplify8() {
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(0), participants.get(1), money1));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(1), participants.get(2), money2));
+        debtSimplifier.addDebt(new Debt(participants.get(0), participants.get(1), money1));
+        debtSimplifier.addDebt(new Debt(participants.get(1), participants.get(2), money2));
 
-        LinkedList<DebtSimplifier.Debt> expected = new LinkedList<>();
+        Set<Debt> expected = new HashSet<>();
 
-        expected.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(0),
                 participants.get(2),
                 money1
         ));
 
-        expected.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(1),
                 participants.get(2),
                 money1
@@ -445,34 +450,34 @@ class DebtSimplifierTest {
 
     @Test
     void simplify9() {
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(0), participants.get(1), new Money(new BigDecimal(10), EUR)));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(1), participants.get(2), new Money(new BigDecimal(20), EUR)));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(3), participants.get(2), new Money(new BigDecimal(30), EUR)));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(1), participants.get(0), new Money(new BigDecimal(20), EUR)));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(6), participants.get(3), new Money(new BigDecimal(15), EUR)));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(0), participants.get(6), new Money(new BigDecimal( 5), EUR)));
+        debtSimplifier.addDebt(new Debt(participants.get(0), participants.get(1), new Money(new BigDecimal(10), EUR)));
+        debtSimplifier.addDebt(new Debt(participants.get(1), participants.get(2), new Money(new BigDecimal(20), EUR)));
+        debtSimplifier.addDebt(new Debt(participants.get(3), participants.get(2), new Money(new BigDecimal(30), EUR)));
+        debtSimplifier.addDebt(new Debt(participants.get(1), participants.get(0), new Money(new BigDecimal(20), EUR)));
+        debtSimplifier.addDebt(new Debt(participants.get(6), participants.get(3), new Money(new BigDecimal(15), EUR)));
+        debtSimplifier.addDebt(new Debt(participants.get(0), participants.get(6), new Money(new BigDecimal( 5), EUR)));
 
-        LinkedList<DebtSimplifier.Debt> expected = new LinkedList<>();
+        Set<Debt> expected = new HashSet<>();
 
-        expected.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(6),
                 participants.get(0),
                 new Money(new BigDecimal(5), EUR)
         ));
 
-        expected.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(6),
                 participants.get(2),
                 new Money(new BigDecimal(5), EUR)
         ));
 
-        expected.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(3),
                 participants.get(2),
                 new Money(new BigDecimal(15), EUR)
         ));
 
-        expected.add(new DebtSimplifier.Debt(
+        expected.add(new Debt(
                 participants.get(1),
                 participants.get(2),
                 new Money(new BigDecimal(30), EUR)
@@ -483,17 +488,17 @@ class DebtSimplifierTest {
 
     @Test
     void simplifyCycle0() {
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(0), participants.get(1), money1));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(1), participants.get(0), money1));
-        assertEquals(new LinkedList<>(), debtSimplifier.simplify());
+        debtSimplifier.addDebt(new Debt(participants.get(0), participants.get(1), money1));
+        debtSimplifier.addDebt(new Debt(participants.get(1), participants.get(0), money1));
+        assertEquals(new HashSet<>(), debtSimplifier.simplify());
     }
 
     @Test
     void simplifyCycle1() {
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(0), participants.get(1), money1));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(1), participants.get(2), money1));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(2), participants.get(0), money1));
-        assertEquals(new LinkedList<>(), debtSimplifier.simplify());
+        debtSimplifier.addDebt(new Debt(participants.get(0), participants.get(1), money1));
+        debtSimplifier.addDebt(new Debt(participants.get(1), participants.get(2), money1));
+        debtSimplifier.addDebt(new Debt(participants.get(2), participants.get(0), money1));
+        assertEquals(new HashSet<>(), debtSimplifier.simplify());
     }
 
     @Test
@@ -503,39 +508,42 @@ class DebtSimplifierTest {
         exchangeRateFactory.addExchangeRate(new ExchangeRate(LocalDate.now(), EUR, USD, eur_to_usd));
         exchangeRateFactory.addExchangeRate(new ExchangeRate(LocalDate.now(), USD, EUR, 1/eur_to_usd));
 
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(0), participants.get(1), new Money(new BigDecimal(2), EUR)));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(1), participants.get(2), new Money(new BigDecimal(3), USD)));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(2), participants.get(0), new Money(new BigDecimal(2), EUR)));
+        debtSimplifier.addDebt(new Debt(participants.get(0), participants.get(1), new Money(new BigDecimal(2), EUR)));
+        debtSimplifier.addDebt(new Debt(participants.get(1), participants.get(2), new Money(new BigDecimal(3), USD)));
+        debtSimplifier.addDebt(new Debt(participants.get(2), participants.get(0), new Money(new BigDecimal(2), EUR)));
 
-        assertEquals(new LinkedList<>(), debtSimplifier.simplify());
+        assertEquals(new HashSet<>(), debtSimplifier.simplify());
     }
 
     @Test
     void simplifyCycle2_1() {
-        debtSimplifier = new DebtSimplifier(event.getParticipants(), USD,  exchangeRateFactory);
+        debtSimplifier = new DebtSimplifier(exchangeRateFactory);
+        debtSimplifier.setup(USD, event.getParticipants());
+
 
         final double eur_to_usd = 1.5;
 
         exchangeRateFactory.addExchangeRate(new ExchangeRate(LocalDate.now(), EUR, USD, eur_to_usd));
         exchangeRateFactory.addExchangeRate(new ExchangeRate(LocalDate.now(), USD, EUR, 1/eur_to_usd));
 
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(0), participants.get(1), new Money(new BigDecimal(2), EUR)));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(1), participants.get(2), new Money(new BigDecimal(3), USD)));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(2), participants.get(0), new Money(new BigDecimal(2), EUR)));
+        debtSimplifier.addDebt(new Debt(participants.get(0), participants.get(1), new Money(new BigDecimal(2), EUR)));
+        debtSimplifier.addDebt(new Debt(participants.get(1), participants.get(2), new Money(new BigDecimal(3), USD)));
+        debtSimplifier.addDebt(new Debt(participants.get(2), participants.get(0), new Money(new BigDecimal(2), EUR)));
 
-        assertEquals(new LinkedList<>(), debtSimplifier.simplify());
+        assertEquals(new HashSet<>(), debtSimplifier.simplify());
     }
 
 
     @Test
     void simplifyCycle3() {
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(0), participants.get(1), new Money(new BigDecimal(30), EUR)));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(1), participants.get(2), new Money(new BigDecimal(20), EUR)));
-        debtSimplifier.addDebt(new DebtSimplifier.Debt(participants.get(2), participants.get(0), new Money(new BigDecimal(30), EUR)));
+        debtSimplifier.addDebt(new Debt(participants.get(0), participants.get(1), new Money(new BigDecimal(30), EUR)));
+        debtSimplifier.addDebt(new Debt(participants.get(1), participants.get(2), new Money(new BigDecimal(20), EUR)));
+        debtSimplifier.addDebt(new Debt(participants.get(2), participants.get(0), new Money(new BigDecimal(30), EUR)));
 
-        LinkedList<DebtSimplifier.Debt> expected = new LinkedList<>();
 
-        expected.add(new DebtSimplifier.Debt(
+        Set<Debt> expected = new HashSet<>();
+
+        expected.add(new Debt(
                 participants.get(2),
                 participants.get(1),
                 new Money(new BigDecimal(10), EUR)

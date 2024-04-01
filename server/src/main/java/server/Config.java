@@ -19,6 +19,9 @@ import java.util.Random;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import server.util.DebtSimplifier;
+import server.financial.ExchangeRateFactory;
+
 
 @Configuration
 public class Config {
@@ -29,5 +32,25 @@ public class Config {
     @Bean
     public Random getRandom() {
         return new Random();
+    }
+
+    /**
+     * Gets the global {@link ExchangeRateFactory} instance.
+     *
+     * @return  The global {@code ExchangeRateFactory} instance.
+     */
+    @Bean
+    public ExchangeRateFactory getExchangeRateFactory() {
+        return new ExchangeRateFactory(ExchangeRateFactory.DEFAULT_DIR);
+    }
+
+    /**
+     * Gets the global {@link DebtSimplifier} instance.
+     *
+     * @return  The global {@code DebtSimplifier} instance.
+     */
+    @Bean
+    public DebtSimplifier getDebtSimplifier() {
+        return new DebtSimplifier(getExchangeRateFactory());
     }
 }
