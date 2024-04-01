@@ -110,9 +110,9 @@ public class EventController {
         if (event.getEventName().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        eventRepository.save(event);
-        messagingTemplate.convertAndSend("/topic/admin", event);
-        return ResponseEntity.ok(event);
+        Event dbEvent = eventRepository.save(event);
+        messagingTemplate.convertAndSend("/topic/admin", dbEvent);
+        return ResponseEntity.ok(dbEvent);
         //tbf this might not be the proper way to do PUT.
         // PUT methods should specify the URI exactly,
         // so a proper pathing would be /{id}

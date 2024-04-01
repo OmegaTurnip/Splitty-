@@ -157,6 +157,7 @@ public class AddParticipantCtrl implements TextPage, Initializable {
                     event.addParticipant(usernameTextField.getText());
             System.out.println("Created " + participant);
             server.saveEvent(event);
+            event = server.getMyEvents().get(0);
         } catch(WebApplicationException e){
             e.printStackTrace();
             var alert = new Alert(Alert.AlertType.ERROR);

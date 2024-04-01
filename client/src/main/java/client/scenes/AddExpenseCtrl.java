@@ -6,6 +6,7 @@ import client.language.Translator;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.*;
+import jakarta.ws.rs.WebApplicationException;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -18,6 +19,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.util.StringConverter;
 import org.controlsfx.control.CheckComboBox;
 import java.math.BigDecimal;
@@ -262,12 +264,25 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     /**
      * Register the expense added.
      */
-    private void registerExpense() {
+    private boolean registerExpense() {
         getCheckedParticipants();
-        if (verifyInput()) {
-            Transaction expense = getExpense();
+        try {
+            if (verifyInput()) {
+                Transaction expense = getExpense();
+                server.saveEvent(event);
+                System.out.println("Added expense " + expense);
+            }
+        } catch (WebApplicationException e) {
+            e.printStackTrace();
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+            return false;
         }
-        //TODO: Connect to back-end
+
+        return true;
+
     }
 
     private boolean verifyInput() {
@@ -521,9 +536,10 @@ public class AddExpenseCtrl implements Initializable, TextPage {
 
 
     Transaction getExpense() {
+        BigDecimal b = new BigDecimal(price.getText());
         return event.registerDebt(expensePayer,
                 expenseName.getText(),
-                new Money(new BigDecimal(price.getText()),
+                new Money(b,
                         Currency.getInstance("EUR")), //placeholder
 //                        Currency.getInstance(currency.getValue())),
                 participantList, expenseTag);
