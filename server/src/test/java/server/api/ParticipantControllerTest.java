@@ -4,7 +4,6 @@ import commons.Event;
 import commons.Participant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-//import server.database.EventRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -54,11 +53,4 @@ class ParticipantControllerTest {
         assertEquals(retDelete.getBody(), testP1);
 //        assertEquals(0, eventRepo.getAll(testEvent1.getId()).getBody().size());
     }
-
-//    @Test
-//    void changeName() {
-//        sut.add(testP1, testEvent1.getId());
-//        sut.changeName("changeTest1", 500L, 100L);
-//        assertEquals(testP1.getName(), sut.getById(testP1.getId(), testEvent1.getId()).getBody().getName());
-//    }
 }
