@@ -391,6 +391,11 @@ public class TestParticipantRepository implements ParticipantRepository {
 
     @Override
     public Optional<Participant> findByParticipantId(Long id) {
-        return null;
+        for (Participant participant : added) {
+            if (participant.getParticipantId().equals(id)) {
+                return Optional.of(participant);
+            }
+        }
+        return Optional.empty();
     }
 }

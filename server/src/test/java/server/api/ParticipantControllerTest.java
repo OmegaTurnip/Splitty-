@@ -32,6 +32,7 @@ class ParticipantControllerTest {
 
     @Test
     void addParticipantTest() {
+        eventRepo.save(testEvent1);
         var retPart = sut.add(testP1, testEvent1.getId());
         assertEquals(retPart.getBody(), testP1);
 
