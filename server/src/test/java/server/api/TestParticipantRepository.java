@@ -389,6 +389,11 @@ public class TestParticipantRepository implements ParticipantRepository {
         return null;
     }
 
+    /**
+     * .
+     * @param id The id
+     * @return .
+     */
     @Override
     public Optional<Participant> findByParticipantId(Long id) {
         for (Participant participant : added) {
