@@ -8,7 +8,6 @@ import java.net.*;
 import java.time.LocalDate;
 import java.util.Currency;
 import java.util.Map;
-import java.util.HashMap;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,7 +18,7 @@ public class FrankfurterExchangeRateAPI implements ExchangeRateAPI {
 
     private final Currency base;
 
-    private LocalDate lastRequest;
+    private LocalDate lastRequestDate;
 
 
     /**
@@ -63,14 +62,14 @@ public class FrankfurterExchangeRateAPI implements ExchangeRateAPI {
      * @return  The date of the last api request.
      */
     public Optional<LocalDate> lastRequestDate() {
-        return Optional.ofNullable(lastRequest);
+        return Optional.ofNullable(lastRequestDate);
     }
 
     /**
      * Requests and returns the new exchange rates from the API. Should use
      * {@link ExchangeRateAPI#getBase()} as the base currency. Should be used in
      * combination with the {@link
-     * ExchangeRateFactory#generateExchangeRates(Currency, HashMap)} method (and
+     * ExchangeRateFactory#generateExchangeRates(Currency, Map)} method (and
      * thus return the result in the format required by that function). Returns
      * an empty {@link Optional} if the request fails.
      *
@@ -82,7 +81,7 @@ public class FrankfurterExchangeRateAPI implements ExchangeRateAPI {
     public Optional<Map<Currency, Double>> getExchangeRates() {
         // let's not do failed requests over and even record failed requests as
         // a request made
-        lastRequest = LocalDate.now();
+        lastRequestDate = LocalDate.now();
 
         // this might be the most horrendous code I've ever written
         // I hate it with every fiber of my being

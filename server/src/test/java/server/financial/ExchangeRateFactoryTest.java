@@ -1,4 +1,4 @@
-package server.util;
+package server.financial;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
