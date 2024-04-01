@@ -62,6 +62,10 @@ public class Participant {
         return event;
     }
 
+    /**
+     * Sets the event for a participant
+     * @param event the event to set
+     */
     public void setEvent(Event event) {
         this.event = event;
     }
@@ -100,8 +104,8 @@ public class Participant {
     public String toString() {
         System.out.println(name);
         System.out.println(event);
-        return "Participant { '" + name +  "' (id: " + participantId + ") in the event '" +
-                event.getEventName() + "' }";
+        return "Participant { '" + name +  "' (id: " + participantId +
+                ") in the event '" + event.getEventName() + "' }";
     }
 
     /**

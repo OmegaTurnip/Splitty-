@@ -72,7 +72,6 @@ public class ParticipantCellController {
                 event.removeParticipant(participant);
                 try {
                     server.removeParticipant(participant);
-                    var test = server.getMyEvents();
                     server.saveEvent(event);
                 } catch (Exception e) {
                     e.printStackTrace();

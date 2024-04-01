@@ -317,6 +317,12 @@ public class AddExpenseCtrl implements Initializable, TextPage {
                 .setValue("Select the person that paid for the expense");
     }
     public class ParticipantStringConverter extends StringConverter<Object> {
+        /**
+         * ToString for participant in converter
+         * @param o the object of type {@code T} to convert
+         * @return the normal toString for non-participant
+         * objects, the name of the Participant for Participant objects
+         */
         @Override
         public String toString(Object o) {
             if (!o.getClass().equals(Participant.class))
@@ -325,6 +331,11 @@ public class AddExpenseCtrl implements Initializable, TextPage {
             return participant.getName();
         }
 
+        /**
+         * FromString for participants
+         * @param string the {@code String} to convert
+         * @return a participant if the name exists for the event, else null
+         */
         @Override
         public Participant fromString(String string) {
             for (Participant participant : event.getParticipants()) {

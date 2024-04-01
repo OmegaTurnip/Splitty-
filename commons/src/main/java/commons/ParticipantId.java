@@ -64,7 +64,8 @@ public class ParticipantId implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ParticipantId that = (ParticipantId) o;
-        return Objects.equals(participantId, that.participantId) && Objects.equals(event, that.event);
+        return Objects.equals(participantId, that.participantId)
+                && Objects.equals(event, that.event);
     }
 
     /**

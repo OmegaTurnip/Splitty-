@@ -39,7 +39,7 @@ public class ParticipantController {
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Participant>
-    add(@RequestBody Participant participant,
+        add(@RequestBody Participant participant,
         @PathVariable("eventId") long eventId) {
 
         if (isNullOrEmpty(participant.getName())) {
@@ -68,12 +68,9 @@ public class ParticipantController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Participant>
-    removeParticipant(@PathVariable Long id,
+        removeParticipant(@PathVariable Long id,
                       @PathVariable Long eventId) {
-        System.out.println("Bye");
-//        if (id < 0 || !repo.existsById(id)) {
-//            return ResponseEntity.badRequest().build();
-//        }
+
         var optionalParticipant = repo.findByParticipantId(id);
         if (optionalParticipant.isEmpty())
             return ResponseEntity.badRequest().build();

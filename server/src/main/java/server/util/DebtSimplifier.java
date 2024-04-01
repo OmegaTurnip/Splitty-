@@ -188,7 +188,8 @@ public class DebtSimplifier {
         List<ParticipantCentPair> participantCentHistory =
                 debtors.stream()
                         // quick and dirty hack to make result deterministic
-                        .sorted(Comparator.comparingLong(Participant::getParticipantId))
+                        .sorted(Comparator
+                                .comparingLong(Participant::getParticipantId))
                         .map(d -> new ParticipantCentPair(d,
                                 centsPayedExtra.get(d)))
                         .toList();

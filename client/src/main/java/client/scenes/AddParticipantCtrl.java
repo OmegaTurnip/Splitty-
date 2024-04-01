@@ -7,7 +7,7 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
-import commons.ParticipantId;
+
 import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -155,9 +155,6 @@ public class AddParticipantCtrl implements TextPage, Initializable {
             formatCheck();
             Participant participant =
                     event.addParticipant(usernameTextField.getText());
-            Long participantId = server.addParticipant(participant).getParticipantId();
-            participant = event.getParticipants().getLast();
-            participant.setParticipantId(participantId);
             System.out.println("Created " + participant);
             server.saveEvent(event);
         } catch(WebApplicationException e){

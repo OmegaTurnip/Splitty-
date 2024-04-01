@@ -183,15 +183,28 @@ public class ServerUtils {
      * @return the participant added
      */
     public Participant addParticipant(Participant participant) {
+//        Long participantId = server.addParticipant(participant)
+//                .getParticipantId();
+//        participant = event.getParticipants().getLast();
+//        participant.setParticipantId(participantId);
+//        System.out.println("Created " + participant);
         var path = "api/event/" + participant.getEvent().getId()
                 + "/participants";
-        return client //
+        Participant dbParticipant = client //
                 .target(server).path(path) //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
-                .post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
+                .post(Entity.entity(participant, APPLICATION_JSON),
+                        Participant.class);
+        participant.setParticipantId(dbParticipant.getParticipantId());
+        return dbParticipant;
     }
 
+    /**
+     * Removes a participant from the database
+     * @param participant the participant to remove
+     * @return removed participant
+     */
     public Participant removeParticipant(Participant participant) {
         var path = "api/event/" + participant.getEvent().getId() +
                 "/participants/" + participant.getParticipantId();
