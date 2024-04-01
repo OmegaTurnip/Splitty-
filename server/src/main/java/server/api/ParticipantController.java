@@ -86,32 +86,4 @@ public class ParticipantController {
         return ResponseEntity.ok(participant);
     }
 
-//    /**
-//     * Mapping for changing a Participant
-//     *
-//     * @param name    the name to change to
-//     * @param id      the id of the participant to change
-//     * @param eventId the event that the participant belongs to
-//     * @return the participant changed or a bad request if no
-//     * participant can be found
-//     */
-//    @PutMapping("/{id}")
-//    public ResponseEntity<Participant>
-//    changeName(@RequestBody String name,
-//               @PathVariable long id,
-//               @PathVariable("eventId") long eventId) {
-//        if (id < 0 || !repo.existsById(id)) {
-//            return ResponseEntity.badRequest().build();
-//        }
-//        var optionalParticipant = repo.findById(id);
-//        if (optionalParticipant.isEmpty())
-//            return ResponseEntity.badRequest().build();
-//        Participant participant = optionalParticipant.get();
-//
-//        if (participant.getEvent().getId() != eventId)
-//            return ResponseEntity.badRequest().build();
-//
-//        participant.setName(name);
-//        return ResponseEntity.ok(repo.save(participant));
-//    }
 }

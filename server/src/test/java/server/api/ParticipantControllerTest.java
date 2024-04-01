@@ -39,18 +39,13 @@ class ParticipantControllerTest {
     }
 
 
-//    @Test
-//    void changeName() {
-//        sut.add(testP1, testEvent1.getId());
-//        sut.changeName("changeTest1", 500L, 100L);
-//        assertEquals(testP1.getName(), sut.getById(testP1.getId(), testEvent1.getId()).getBody().getName());
-//    }
 
     @Test
     void removeParticipant() {
         eventRepo.save(testEvent1);
         sut.add(testP1, testEvent1.getId());
-        var retDelete = sut.removeParticipant(testP1.getParticipantId(), testEvent1.getId());
+        var retDelete = sut.removeParticipant(testP1.getParticipantId(),
+                testEvent1.getId());
         assertEquals(retDelete.getBody(), testP1);
 //        assertEquals(0, eventRepo.getAll(testEvent1.getId()).getBody().size());
     }
