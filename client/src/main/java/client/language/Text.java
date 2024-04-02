@@ -229,6 +229,19 @@ public class Text {
             public static final String addExpenseButton = level + "addExpense";
         }
 
+        public static final class Alert {
+            public static final String level = AddExpense.level + "Alert.";
+            public static final String invalidPrice = level + "invalidPrice";
+            public static final String emptyString = level + "emptyString";
+            public static final String startWithDigit = level +
+                    "mustStartWithDigit";
+            public static final String noLetters = level + "noLettersAllowed";
+            public static final String onlyOnePeriodOrComma = level +
+                    "onlyOnePeriodOrCommaAllowed";
+            public static final String generallyInvalid = level +
+                    "generallyInvalid";
+        }
+
     }
 
 }

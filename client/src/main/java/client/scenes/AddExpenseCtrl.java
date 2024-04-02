@@ -309,7 +309,8 @@ public class AddExpenseCtrl implements Initializable, TextPage {
          */
         @Override
         public String toString(Object o) {
-            if (o == null || !o.getClass().equals(Participant.class))
+            if (o == null) return null;
+            if (!o.getClass().equals(Participant.class))
                 return o.toString();
             Participant participant = (Participant) o;
             return participant.getName();
@@ -502,29 +503,34 @@ public class AddExpenseCtrl implements Initializable, TextPage {
 
     private void choosePriceAlert(String input) {
         if (input.isEmpty()) {
-            showAlert("Invalid price format",
-                    "Please enter a price.");
-        } else if (!Character.isDigit(input.charAt(0))) {
-            showAlert("Invalid price format",
-                    "Your price must start with a digit!");
+            showAlert(Translator.getTranslation(
+                    Text.AddExpense.Alert.invalidPrice),
+                    Translator.getTranslation(
+                            Text.AddExpense.Alert.emptyString));
         } else if (input.matches("[a-zA-Z]")) {
-            showAlert("Invalid price format",
-                    "Your price may not contain letters!");
+            showAlert(Translator.getTranslation(
+                            Text.AddExpense.Alert.invalidPrice),
+                    Translator.getTranslation(Text.AddExpense.Alert.noLetters));
         } else if (input.chars().filter(ch -> ch == ',').count() > 1
                 || input.chars().filter(ch -> ch == '.').count() > 1
                 || (input.chars().filter(ch -> ch == ',').count() > 0
                 && input.chars().filter(ch -> ch == '.').count() > 0)) {
-            showAlert("Invalid price format",
-                    "Your price may not contain more" +
-                            " than one period or comma!");
-            // If none of the above, consider it as general invalid format
+            showAlert(Translator.getTranslation(
+                            Text.AddExpense.Alert.invalidPrice),
+                    Translator.getTranslation(
+                            Text.AddExpense.Alert.onlyOnePeriodOrComma));
         } else if (!Character.isDigit(input.charAt(0))
                 || !Character.isDigit(input.charAt(input.length()-1))){
-            showAlert("Invalid price format",
-                    "Your price must start and end with a digit!");
+            showAlert(Translator.getTranslation(
+                            Text.AddExpense.Alert.invalidPrice),
+                    Translator.getTranslation(
+                            Text.AddExpense.Alert.startWithDigit));
+            // If none of the above, consider it as general invalid format
         } else {
-            showAlert("Invalid price format",
-                    "Your price is not of the correct format!");
+            showAlert(Translator.getTranslation(
+                            Text.AddExpense.Alert.invalidPrice),
+                    Translator.getTranslation(
+                            Text.AddExpense.Alert.generallyInvalid));
         }
     }
 
