@@ -1,12 +1,11 @@
 package server.api;
 
-import commons.Debt;
-import commons.Event;
-import commons.Money;
+import commons.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
+
 import server.financial.ExchangeRateAPI;
 import server.financial.FrankfurterExchangeRateAPI;
 import server.util.DebtSimplifier;
@@ -110,6 +109,27 @@ public class EventController {
         if (event.getEventName().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
+
+//        the following code makes sure that the participants
+//        that are equal become the same instance
+        for (Participant participant : event.getParticipants()) {
+            participant.setEvent(event);
+        }
+
+        for (Transaction transaction : event.getTransactions()) {
+            transaction.setEvent(event);
+            transaction.setPayer(event.getParticipantById(
+                    transaction.getPayer().getParticipantId()
+            ));
+            List<Participant> participants = new ArrayList<>();
+            for (Participant participant : transaction.getParticipants()) {
+                participants.add(event.getParticipantById(
+                        participant.getParticipantId()
+                ));
+            }
+            transaction.setParticipants(participants);
+        }
+
         Event dbEvent = eventRepository.save(event);
         messagingTemplate.convertAndSend("/topic/admin", dbEvent);
         return ResponseEntity.ok(dbEvent);

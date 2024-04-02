@@ -22,6 +22,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.util.StringConverter;
 import org.controlsfx.control.CheckComboBox;
+
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
@@ -77,8 +78,8 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     /**
      * Initializes the controller
      *
-     * @param server            .
-     * @param mainCtrl          .
+     * @param server   .
+     * @param mainCtrl .
      */
     @Inject
     public AddExpenseCtrl(ServerUtils server, MainCtrl mainCtrl) {
@@ -104,11 +105,16 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         payerSelection();
         tagSelection();
         participantSelection();
-        addExpense.setOnAction(event -> registerExpense());
+        addExpense.setOnAction(event -> {
+            if (registerExpense()) {
+                this.mainCtrl.showEventOverview(this.event);
+            }
+        });
         date.setValue(LocalDate.now());
         date.setConverter(new MyLocalDateStringConverter("dd/MM/yyyy"));
         refresh();
     }
+
     static class MyLocalDateStringConverter extends StringConverter<LocalDate> {
 
         private final DateTimeFormatter dateFormatter;
@@ -331,9 +337,11 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         if (payer.getValue() == null) payer
                 .setValue("Select the person that paid for the expense");
     }
+
     public class ParticipantStringConverter extends StringConverter<Object> {
         /**
          * ToString for participant in converter
+         *
          * @param o the object of type {@code T} to convert
          * @return the normal toString for non-participant
          * objects, the name of the Participant for Participant objects
@@ -348,6 +356,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
 
         /**
          * FromString for participants
+         *
          * @param string the {@code String} to convert
          * @return a participant if the name exists for the event, else null
          */
@@ -359,6 +368,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
             return null;
         }
     }
+
     /**
      * Gets the tags in the event from the server and
      * constructs the items for the ChoiceBox expenseType
@@ -489,6 +499,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
             }
         }
     }
+
     void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -496,6 +507,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
     boolean verifyPrice(String input) {
         Matcher matcher = pricePattern.matcher(input);
 
@@ -525,7 +537,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
                             " than one period or comma!");
             // If none of the above, consider it as general invalid format
         } else if (!Character.isDigit(input.charAt(0))
-                || !Character.isDigit(input.charAt(input.length()-1))){
+                || !Character.isDigit(input.charAt(input.length() - 1))) {
             showAlert("Invalid price format",
                     "Your price must start and end with a digit!");
         } else {

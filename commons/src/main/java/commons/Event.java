@@ -418,4 +418,17 @@ public class Event {
         return transactions.remove(transaction);
     }
 
+    /**
+     * Gets the participant from participants that has the same id, used for
+     * making sure the same participant instance is used across an event
+     * @param id the id
+     * @return the participant of the same id
+     */
+    public Participant getParticipantById(Long id) {
+        for (Participant participant : participants) {
+            if (id != null && id.equals(participant.getParticipantId()))
+                return participant;
+        }
+        return null;
+    }
 }

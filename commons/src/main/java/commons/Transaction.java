@@ -2,6 +2,7 @@ package commons;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -11,6 +12,7 @@ import java.util.*;
 
 @Entity
 @IdClass(TransactionId.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Transaction {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -24,6 +26,7 @@ public class Transaction {
     private Participant payer;
     private String name;
     private LocalDate date;
+    @Column(name = "amount", length = 1024)
     private Money amount;
     private boolean isPayoff;
     @OneToMany(cascade = CascadeType.ALL)
@@ -304,5 +307,13 @@ public class Transaction {
      */
     public void setParticipants(List<Participant> participants) {
         this.participants = participants;
+    }
+
+    /**
+     * Setter for event
+     * @param event the event to set
+     */
+    public void setEvent(Event event) {
+        this.event = event;
     }
 }
