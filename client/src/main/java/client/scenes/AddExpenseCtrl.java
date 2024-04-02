@@ -325,7 +325,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
          */
         @Override
         public String toString(Object o) {
-            if (!o.getClass().equals(Participant.class))
+            if (o == null || !o.getClass().equals(Participant.class))
                 return o.toString();
             Participant participant = (Participant) o;
             return participant.getName();
