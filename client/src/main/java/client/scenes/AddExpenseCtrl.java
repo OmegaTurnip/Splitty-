@@ -148,9 +148,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
      */
     void payerSelection() {
         payer.setOnAction(event -> {
-            Object selectedValue = payer.getValue();
-            if (Translator.getTranslation(Text.AddExpense.expensePayerPrompt)
-                    .equals(selectedValue)) {
+            if (payer.getSelectionModel().isSelected(0)) {
                 expensePayer = null;
             } else {
                 expensePayer = (Participant) payer.getValue();
@@ -160,9 +158,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
 
     void tagSelection() {
         expenseType.setOnAction(event -> {
-            Object selectedValue = expenseType.getValue();
-            if (Translator.getTranslation(Text.AddExpense.expenseTypePrompt)
-                    .equals(selectedValue)) {
+            if (payer.getSelectionModel().isSelected(0)) {
                 expenseTag = null;
             } else {
                 expenseTag = (Tag) expenseType.getValue();
@@ -446,14 +442,14 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         loadTags();
         expenseType.getSelectionModel().select(index);
 
-//        ArrayList<Integer> indices = new ArrayList<>(
-//                participants.getCheckModel().getCheckedIndices());
-//        List<Object> list = participants.getCheckModel().getCheckedItems();
-        loadParticipants();
-//        for (Integer i : indices) {
-//            participants.getCheckModel().check(i);
-//        }
-
+//        the following lines don't work as expected,
+//        but I don't think it is worth fixing
+        ArrayList<Integer> indices = new ArrayList<>(
+                participants.getCheckModel().getCheckedIndices());
+        loadParticipants(); // this works
+        for (Integer i : indices) {
+            participants.getCheckModel().check(i);
+        }
     }
 
     /**
@@ -478,8 +474,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
      */
     public void getCheckedParticipants() {
         for (Object o : participants.getCheckModel().getCheckedItems()) {
-            if (!Objects.equals(o, Translator.getTranslation(
-                    Text.AddExpense.participantsEveryone))) {
+            if (!participants.getCheckModel().isChecked(0)) {
                 participantList.add((Participant) o);
             }
         }
