@@ -112,8 +112,7 @@ public class EventController {
         for(Tag tag : event.getTags()){
             tag.setEvent(event);
         }
-//        the following code makes sure that the participants
-//        that are equal become the same instance
+// checks that the participants that are equal become the same instance
         for (Participant participant : event.getParticipants()) {
             participant.setEvent(event);
         }
@@ -130,7 +129,8 @@ public class EventController {
                 ));
             }
             transaction.setParticipants(participants);
-            transaction.setTag(event.getTagbyId(transaction.getTag().getTagId()));
+            transaction.setTag(event.getTagbyId(
+                    transaction.getTag().getTagId()));
         }
 
         Event dbEvent = eventRepository.save(event);

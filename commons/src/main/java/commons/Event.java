@@ -432,6 +432,11 @@ public class Event {
         return null;
     }
 
+    /**
+     * Get the Tag by its id
+     * @param id Tag id
+     * @return the tag
+     */
     public Tag getTagbyId(Long id) {
         for (Tag tag : tags) {
             if (id != null && id.equals(tag.getTagId())) {

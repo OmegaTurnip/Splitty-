@@ -64,9 +64,14 @@ public class TagId implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TagId that = (TagId) o;
-        return Objects.equals(tagId, that.tagId) && Objects.equals(event, that.event);
+        return Objects.equals(tagId, that.tagId)
+                && Objects.equals(event, that.event);
     }
 
+    /**
+     * To string method of Tagid
+     * @return String
+     */
     @Override
     public String toString() {
         return "TagId{" +

@@ -108,6 +108,10 @@ public class Tag {
         this.tagId = id;
     }
 
+    /**
+     * Sets the tag of the event
+     * @param event Event of the tag
+     */
     public void setEvent(Event event) {
         this.event = event;
     }
