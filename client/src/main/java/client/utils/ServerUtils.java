@@ -28,7 +28,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Consumer;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -179,16 +178,55 @@ public class ServerUtils {
     }
 
     /**
+     * Adds a participant to the db
+     * @param participant the participant to add
+     * @return the participant added
+     */
+    public Participant addParticipant(Participant participant) {
+//        Long participantId = server.addParticipant(participant)
+//                .getParticipantId();
+//        participant = event.getParticipants().getLast();
+//        participant.setParticipantId(participantId);
+//        System.out.println("Created " + participant);
+        var path = "api/event/" + participant.getEvent().getId()
+                + "/participants";
+        Participant dbParticipant = client //
+                .target(server).path(path) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(participant, APPLICATION_JSON),
+                        Participant.class);
+        participant.setParticipantId(dbParticipant.getParticipantId());
+        return dbParticipant;
+    }
+
+    /**
+     * Removes a participant from the database
+     * @param participant the participant to remove
+     * @return removed participant
+     */
+    public Participant removeParticipant(Participant participant) {
+        var path = "api/event/" + participant.getEvent().getId() +
+                "/participants/" + participant.getParticipantId();
+        return client
+                .target(server).path(path)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete(new GenericType<>() {});
+    }
+
+    /**
      * Save Event REST API request.
      * @param event The event to be saved
      * @return The saved event
      */
     public Event saveEvent(Event event) {
         return client //
-                .target(server).path("api/event") //
+                .target(server).path("api/event/") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
-                .put(Entity.entity(event, APPLICATION_JSON), Event.class);
+                .put(Entity.entity(event, APPLICATION_JSON),
+                        Event.class);
     }
 
     /**

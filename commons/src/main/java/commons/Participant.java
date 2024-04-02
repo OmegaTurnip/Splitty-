@@ -10,7 +10,7 @@ public class Participant {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
+    private Long participantId;
     @Id
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
@@ -46,13 +46,12 @@ public class Participant {
     }
 
     /**
-     * Setter method. Also updates last activity in the corresponding Event.
+     * Setter method.
      *
      * @param name .
      */
     public void setName(String name) {
         this.name = name;
-        event.updateLastActivity();
     }
 
     /**
@@ -61,6 +60,14 @@ public class Participant {
      */
     public Event getEvent() {
         return event;
+    }
+
+    /**
+     * Sets the event for a participant
+     * @param event the event to set
+     */
+    public void setEvent(Event event) {
+        this.event = event;
     }
 
     /**
@@ -75,7 +82,7 @@ public class Participant {
         if (o == null || getClass() != o.getClass()) return false;
         Participant that = (Participant) o;
         return Objects.equals(event, that.event)
-                && Objects.equals(id, that.id);
+                && Objects.equals(participantId, that.participantId);
     }
 
     /**
@@ -85,7 +92,7 @@ public class Participant {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(event, id);
+        return Objects.hash(event, participantId);
     }
 
     /**
@@ -95,24 +102,26 @@ public class Participant {
      */
     @Override
     public String toString() {
-        return "Participant { '" + name +  "' (id: " + id + ") in the event '" +
-                event.getEventName() + "' }";
+        System.out.println(name);
+        System.out.println(event);
+        return "Participant { '" + name +  "' (id: " + participantId +
+                ") in the event '" + event.getEventName() + "' }";
     }
 
     /**
      * Setter for id
      * @param id the id
      */
-    public void setId(Long id) {
-        this.id = id;
+    public void setParticipantId(Long id) {
+        this.participantId = id;
     }
 
     /**
      * Getter for id
      * @return the id
      */
-    public Long getId() {
-        return id;
+    public Long getParticipantId() {
+        return participantId;
     }
 
 }

@@ -293,14 +293,41 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         payerChoiceBoxList.add(
                 Translator.getTranslation(Text.AddExpense.expensePayerPrompt));
         if (event != null) {
-            payerChoiceBoxList.addAll(server.getParticipantsOfEvent(event));
-            payerChoiceBoxList.add(event.addParticipant("A")); //placeholder
+            payerChoiceBoxList.addAll(event.getParticipants());
         }
         ObservableList<Object> participantObservableList =
                 FXCollections.observableArrayList(payerChoiceBoxList);
+        payer.setConverter(new ParticipantStringConverter());
         payer.setItems(participantObservableList);
     }
+    public class ParticipantStringConverter extends StringConverter<Object> {
+        /**
+         * ToString for participant in converter
+         * @param o the object of type {@code T} to convert
+         * @return the normal toString for non-participant
+         * objects, the name of the Participant for Participant objects
+         */
+        @Override
+        public String toString(Object o) {
+            if (o == null || !o.getClass().equals(Participant.class))
+                return o.toString();
+            Participant participant = (Participant) o;
+            return participant.getName();
+        }
 
+        /**
+         * FromString for participants
+         * @param string the {@code String} to convert
+         * @return a participant if the name exists for the event, else null
+         */
+        @Override
+        public Participant fromString(String string) {
+            for (Participant participant : event.getParticipants()) {
+                if (participant.getName().equals(string)) return participant;
+            }
+            return null;
+        }
+    }
     /**
      * Gets the tags in the event from the server and
      * constructs the items for the ChoiceBox expenseType
@@ -374,25 +401,13 @@ public class AddExpenseCtrl implements Initializable, TextPage {
      */
     private void loadParticipants() {
         List<Object> participantChoiceBoxList = new ArrayList<>();
+        participants.setConverter(new ParticipantStringConverter());
         participantChoiceBoxList.add(Translator.getTranslation(
                 Text.AddExpense.participantsEveryone));
-        participantChoiceBoxList.add("Test1"); //placeholder
-        participantChoiceBoxList.add("Test2"); //placeholder
-        participantChoiceBoxList.add("Test3"); //placeholder
-        participantChoiceBoxList.add("Test4"); //placeholder
-        participantChoiceBoxList.add("Test5"); //placeholder
-        participantChoiceBoxList.add("Test6"); //placeholder
+
         if (event != null) {
             participantChoiceBoxList
-                    .addAll(server.getParticipantsOfEvent(event));
-
-            //placeholder
-            participantChoiceBoxList.add(event.addParticipant("A"));
-            //placeholder
-            participantChoiceBoxList.add(event.addParticipant("B"));
-            //placeholder
-            participantChoiceBoxList.add(event.addParticipant("C"));
-
+                    .addAll(event.getParticipants());
         }
         ObservableList<Object> participantObservableList =
                 FXCollections.observableArrayList(participantChoiceBoxList);
