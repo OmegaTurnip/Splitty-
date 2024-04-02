@@ -4,7 +4,7 @@
 | Time:        | 14.45-15.30                                                      |
 | Location:    | Flux Hall B                                                      |
 | Chair        | Billy                                                           |
-| Minute Taker | TBD                                                          |
+| Minute Taker | Esther                                                        |
 | Attendees:   | Paras Khan, Esther Wit, Billy Runne, Maurits Sloof |
 
 Agenda Items:
@@ -14,6 +14,7 @@ Formalities
 - Opening by chair (1 min)
 - Check -in: How is everyone doing? (1 min)
 - Announcements by the team (1 min)
+    - Lasse is sick so we are switching the roles around
 - Approval of the agenda - Does anyone have any additions? (1 min)
 - Approval of last minutes - Did everyone read the minutes from the previous meeting? (2 min)
     - Have the tasks from last week been done? What have you worked on in the last week (1 min)
