@@ -2,7 +2,7 @@ package client.scenes;
 
 
 
-import client.language.Language;
+
 import client.utils.UserConfig;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
