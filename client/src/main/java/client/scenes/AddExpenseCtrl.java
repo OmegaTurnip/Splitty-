@@ -275,7 +275,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         try {
             if (verifyInput()) {
                 Transaction expense = getExpense();
-                server.saveEvent(event);
+                saveEvent(event);
                 System.out.println("Added expense " + expense);
             }
         } catch (WebApplicationException e) {
@@ -289,6 +289,10 @@ public class AddExpenseCtrl implements Initializable, TextPage {
 
         return true;
 
+    }
+
+    private void saveEvent(Event event){
+        server.saveEvent(event);
     }
 
     private boolean verifyInput() {

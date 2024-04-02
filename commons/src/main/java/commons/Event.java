@@ -431,4 +431,13 @@ public class Event {
         }
         return null;
     }
+
+    public Tag getTagbyId(Long id) {
+        for (Tag tag : tags) {
+            if (id != null && id.equals(tag.getTagId())) {
+                return tag;
+            }
+        }
+        return null;
+    }
 }
