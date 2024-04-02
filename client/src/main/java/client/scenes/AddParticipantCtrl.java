@@ -209,12 +209,6 @@ public class AddParticipantCtrl implements TextPage, Initializable {
                             Text.AddParticipant.Alert.InvalidMail
                     ), 422);
         }
-        if (!isValidIban(ibanTextField.getText())) {
-            throw new WebApplicationException(
-                    Translator.getTranslation(
-                            Text.AddParticipant.Alert.InvalidIBAN
-                    ), 422);
-        }
         if (!isValidBic(bicTextField.getText())) {
             throw new WebApplicationException(
                     Translator.getTranslation(

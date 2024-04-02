@@ -1,23 +1,40 @@
 package client.scenes;
 
 
+import client.language.Text;
+import client.language.TextPage;
+import client.language.Translator;
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
 import commons.Event;
 import jakarta.inject.Inject;
 import javafx.fxml.FXML;
-import javafx.scene.control.TextField;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
+
 import java.io.IOException;
+import java.net.URL;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
 
-public class EditEventNameCtrl {
+public class EditEventNameCtrl implements TextPage, Initializable {
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
+    private final EventOverviewCtrl eventOverviewCtrl;
 
 
     @FXML
     private TextField eventName;
+    @FXML
+    private Label eventInput;
+    @FXML
+    private Button cancelButton;
+    @FXML
+    private Button confirmButton;
+    @FXML
+    private Menu languages;
 
     private Event event;
 
@@ -25,11 +42,30 @@ public class EditEventNameCtrl {
      * Constructer
      * @param server serverUtils file
      * @param mainCtrl mainCtrl file
+     * @param eventOverviewCtrl eventOverviewCtrl file
      */
     @Inject
-    public EditEventNameCtrl(ServerUtils server, MainCtrl mainCtrl) {
+    public EditEventNameCtrl(ServerUtils server, MainCtrl mainCtrl,
+                             EventOverviewCtrl eventOverviewCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
+        this.eventOverviewCtrl = eventOverviewCtrl;
+    }
+
+    /**
+     * Initializes the controller
+     * @param location
+     * The location used to resolve relative paths for the root object, or
+     * {@code null} if the location is not known.
+     *
+     * @param resources
+     * The resources used to localize the root object, or {@code null} if
+     * the root object was not localized.
+     */
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        fetchLanguages(languages);
+
     }
 
     /**
@@ -58,7 +94,7 @@ public class EditEventNameCtrl {
 //    }
 
     /**
-     * SSetst the language (not in use yet)
+     * Sets the language (not in use yet)
      * @param langKey key of the language that needs to be activated
      */
     private void setLanguage(String langKey) {
@@ -77,22 +113,44 @@ public class EditEventNameCtrl {
         if(event!= null){
             eventName.setText(event.getEventName());
         }
+        eventInput.setText(
+                Translator.getTranslation(Text.EditName.inputName)
+        );
+        cancelButton.setText(
+                Translator.getTranslation(Text.MessageBox.Options.Cancel)
+        );
+        confirmButton.setText(
+                Translator.getTranslation(Text.EditName.confirm)
+        );
     }
 
     /**
      * Return to the eventoverview
      */
     public void cancel(){
-        refreshText();
+        eventOverviewCtrl.refreshText();
         mainCtrl.showEventOverview(event);
     }
+
+
 
     /**
      * Changes the name and saves it to the database
      */
     public void changeName(){
-        event.setEventName(eventName.getText());
-        server.saveEvent(event);
+        if (!event.getEventName().equals(eventName.getText())){
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Name change confirmation");
+            alert.setContentText("Are you sure you want to change the name of "+
+                    "the event '" + event.getEventName()+ "' to the following: "
+                    + eventName.getText() + ".");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK){
+                event.setEventName(eventName.getText());
+                server.saveEvent(event);
+                mainCtrl.showEventOverview(event);
+            }
+        }
         mainCtrl.showEventOverview(event);
     }
 

@@ -2,6 +2,8 @@ package client.scenes;
 
 
 
+import client.language.Language;
+import client.utils.UserConfig;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -336,28 +338,6 @@ public class EventOverviewCtrl implements TextPage, Initializable {
 
     public void editName() {mainCtrl.showEditName(event);}
 
-    /**
-     * Fetch the languages and add to languages drop down menu.
-     */
-    private void fetchLanguages() {
-        HashMap<String, Language> languages = Language.languages;
-
-        for (String langKey : languages.keySet()) {
-            MenuItem item = new MenuItem(langKey);
-
-            item.setOnAction(event -> {
-                setLanguage(langKey);
-            });
-
-            Image image = new Image(languages
-                    .get(langKey).getIconFile().toURI().toString());
-            ImageView imageView = new ImageView(image);
-            imageView.setFitHeight(20);
-            imageView.setFitWidth(20);
-            item.setGraphic(imageView);
-            this.languages.getItems().add(item);
-        }
-    }
 
     /**
      * Set user language.
