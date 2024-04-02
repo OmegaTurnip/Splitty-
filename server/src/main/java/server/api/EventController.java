@@ -193,6 +193,18 @@ public class EventController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * Returns all available currencies.
+     *
+     * @return  All available currencies.
+     */
+    @GetMapping("/currencies")
+    @ResponseBody
+    public ResponseEntity<Set<Currency>> getCurrencies() {
+        return ResponseEntity.ok(debtSimplifier.getExchangeRateFactory()
+                .getKnownCurrencies());
+    }
+
 
     private void refreshExchangeRates() {
         boolean ratesAreUpToDate = exchangeRateAPI.lastRequestDate().isPresent()

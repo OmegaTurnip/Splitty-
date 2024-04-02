@@ -3,7 +3,6 @@ package server.financial;
 import commons.Money;
 import org.springframework.boot.json.JacksonJsonParser;
 
-import java.io.IOException;
 import java.net.*;
 import java.time.LocalDate;
 import java.util.Currency;
@@ -76,8 +75,9 @@ public class FrankfurterExchangeRateAPI implements ExchangeRateAPI {
      * @return The new exchange rates.
      */
     @Override
-    // make the compiler shut up about the unchecked cast:
-    @SuppressWarnings("unchecked")
+    // make the compiler ignore about the unchecked cast:
+    // (also ignore method length as it's mostly comments and a stream)
+    @SuppressWarnings({"unchecked", "checkstyle:MethodLength"})
     public Optional<Map<Currency, Double>> getExchangeRates() {
         // let's not do failed requests over and even record failed requests as
         // a request made
@@ -96,7 +96,7 @@ public class FrankfurterExchangeRateAPI implements ExchangeRateAPI {
             JacksonJsonParser mapper = new JacksonJsonParser();
             return Optional.of(
                     // idc, I hate this, but idc
-                    ((Map<String, Double>) mapper.parseMap(result)
+                    (((Map<String, Object>) mapper.parseMap(result)
                             .get("rates"))
                             .entrySet()
                             .stream()
@@ -105,11 +105,17 @@ public class FrankfurterExchangeRateAPI implements ExchangeRateAPI {
                                     Collectors.toMap(
                                             e -> Currency
                                                     .getInstance(e.getKey()),
-                                            Map.Entry::getValue
+                                            // this is incredibly stupid, but
+                                            // otherwise the integer (?!)
+                                            // exchange rate of IDR will break
+                                            // the exchange rate factory...
+                                            // (╯°□°）╯︵ ┻━┻
+                                            e -> Double.parseDouble(
+                                                    e.getValue().toString())
                                     )
-                            )
+                            ))
             );
-        } catch (IOException e) {
+        } catch (Exception e) {
             return Optional.empty();
         }
     }
