@@ -201,6 +201,7 @@ public class EventController {
     @GetMapping("/currencies")
     @ResponseBody
     public ResponseEntity<Set<Currency>> getCurrencies() {
+        refreshExchangeRates();
         return ResponseEntity.ok(debtSimplifier.getExchangeRateFactory()
                 .getKnownCurrencies());
     }
