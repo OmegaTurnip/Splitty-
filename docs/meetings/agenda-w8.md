@@ -27,6 +27,7 @@ TA-points
     - Is there a possibility of still getting some HCI-Feedback if we ask questions about it?
     - What counts as a high contrast theme?
     - I (Billy) could not get geit to work, as it says all our work is not committed, do you know what goes wrong?
+    - Maurits managed to connect to the currency api with excplicit jackson calls, is that a problem?
 
 Main talking Points: (Inform/ brainstorm/ decision-making/ discuss)
 -
