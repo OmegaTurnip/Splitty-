@@ -1,5 +1,8 @@
 package client.scenes;
 
+import client.language.Language;
+import client.language.Text;
+import client.language.Translator;
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
 import com.sun.javafx.application.PlatformImpl;
@@ -11,6 +14,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.io.File;
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -28,11 +34,15 @@ public class AddExpenseCtrlTest {
     private ServerUtils server;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws IOException {
         MockitoAnnotations.openMocks(this);
         server.setServer("http://localhost:8080");
         sut = new AddExpenseCtrl(server, mainCtrl);
 
+        Language.fromLanguageFile(
+                "eng", new File("../includedLanguages/eng.properties")
+        );
+        Translator.setCurrentLanguage(Language.languages.get("eng"));
     }
 
     @Test
@@ -46,13 +56,20 @@ public class AddExpenseCtrlTest {
 
         AddExpenseCtrl addExpenseCtrl = spy(sut);
 
-        doNothing().when(addExpenseCtrl).showAlert("Invalid price format", "Your price must start with a digit!");
+        doNothing().when(addExpenseCtrl).showAlert(
+                Translator.getTranslation(Text.AddExpense.Alert.invalidPrice),
+                Translator.getTranslation(Text.AddExpense.Alert.startWithDigit));
         addExpenseCtrl.verifyPrice(testPrice3);
-        verify(addExpenseCtrl, times(1)).showAlert("Invalid price format", "Your price must start with a digit!");
+        verify(addExpenseCtrl, times(1)).showAlert(
+                Translator.getTranslation(Text.AddExpense.Alert.invalidPrice),
+                Translator.getTranslation(Text.AddExpense.Alert.startWithDigit));
 
-        doNothing().when(addExpenseCtrl).showAlert("Invalid price format", "Your price may not contain more than one period or comma!");
+        doNothing().when(addExpenseCtrl).showAlert(
+                Translator.getTranslation(Text.AddExpense.Alert.invalidPrice),
+                Translator.getTranslation(Text.AddExpense.Alert.onlyOnePeriodOrComma));
         addExpenseCtrl.verifyPrice(testPrice4);
-        verify(addExpenseCtrl, times(1)).showAlert("Invalid price format", "Your price may not contain more than one period or comma!");
-
+        verify(addExpenseCtrl, times(1)).showAlert(
+                Translator.getTranslation(Text.AddExpense.Alert.invalidPrice),
+                Translator.getTranslation(Text.AddExpense.Alert.onlyOnePeriodOrComma));
     }
 }
