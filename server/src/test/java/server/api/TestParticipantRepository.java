@@ -250,7 +250,7 @@ public class TestParticipantRepository implements ParticipantRepository {
     public Optional<Participant> findById(Long aLong) {
         Optional<Participant> found = Optional.empty();
         for (Participant p : added) {
-            if (p.getId().equals(aLong)) {
+            if (p.getParticipantId().equals(aLong)) {
                 found = Optional.of(p);
                 break;
             }
@@ -267,7 +267,7 @@ public class TestParticipantRepository implements ParticipantRepository {
     public boolean existsById(Long aLong) {
         boolean condition = false;
         for (Participant p : added) {
-            if (p.getId().equals(aLong)) {
+            if (p.getParticipantId().equals(aLong)) {
                 condition = true;
                 return condition;
             }
@@ -314,7 +314,7 @@ public class TestParticipantRepository implements ParticipantRepository {
     @Override
     public void deleteById(Long aLong) {
         for (Participant p : added) {
-            if (p.getId().equals(aLong)) {
+            if (p.getParticipantId().equals(aLong)) {
                 added.remove(p);
                 return;
             }
@@ -387,5 +387,20 @@ public class TestParticipantRepository implements ParticipantRepository {
     public Page<Participant> findAll(Pageable pageable) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    /**
+     * .
+     * @param id The id
+     * @return .
+     */
+    @Override
+    public Optional<Participant> findByParticipantId(Long id) {
+        for (Participant participant : added) {
+            if (participant.getParticipantId().equals(id)) {
+                return Optional.of(participant);
+            }
+        }
+        return Optional.empty();
     }
 }

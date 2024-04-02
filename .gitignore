@@ -52,3 +52,6 @@ client/client_settings.properties
 
 ##database trace 
 h2-database.trace.db
+
+#JSONDump
+client/events.json

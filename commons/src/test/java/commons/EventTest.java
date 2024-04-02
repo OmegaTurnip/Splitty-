@@ -27,11 +27,11 @@ class EventTest {
     testEvent.setEventCreationDate(testDate1);
 
     testParticipant1 = new Participant("Josh", testEvent);
-    testParticipant1.setId(1L);
+    testParticipant1.setParticipantId(1L);
     testParticipant2 = new Participant("Amy", testEvent);
-    testParticipant2.setId(2L);
+    testParticipant2.setParticipantId(2L);
     testParticipant3 = new Participant("Rizwan", testEvent);
-    testParticipant3.setId(3L);
+    testParticipant3.setParticipantId(3L);
 
     List<Participant> testParticipants1 = new ArrayList<>();
     List<Participant> testParticipants2 = new ArrayList<>();
@@ -93,7 +93,7 @@ class EventTest {
     }
 
     @Test
-    void addAditionalTag(){
+    void addAdditionalTag(){
         ArrayList<Tag> tags = new ArrayList<>();
         tags.add(new Tag("food", "blue"));
         tags.add(new Tag("entrance fees", "green"));

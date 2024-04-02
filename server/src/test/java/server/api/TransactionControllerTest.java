@@ -40,7 +40,7 @@ public class TransactionControllerTest {
         testEvent1.setId(100L);
         testEvent1.addParticipant("testP1");
         testP1 = testEvent1.getParticipants().getFirst();
-        testP1.setId(500L);
+        testP1.setParticipantId(500L);
         group = new ArrayList<>();
         group.add(testP1);
         transaction = testEvent1.registerDebt(testP1, "testTransaction1", new Money(new BigDecimal(100), Currency.getInstance("EUR")),
