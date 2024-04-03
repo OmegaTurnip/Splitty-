@@ -28,6 +28,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -86,13 +87,25 @@ public class ServerUtils {
         this.userSettings = UserConfig.get();
         this.server = userSettings.getServerUrl();
         this.client = ClientBuilder.newClient(new ClientConfig());
-//        StringBuilder ws = new StringBuilder(userSettings.getServerUrl());
-//        ws.insert(0, "ws:");
-//        ws.append("websocket");
-        this.webSocketServer = "ws://localhost:8080/websocket";
+//        this.webSocketServer = "ws://localhost:8080/websocket";
+        this.webSocketServer = generateWsURL(server);
         //Make this configurable rather than hard coded.
         session = connect(webSocketServer);
         System.out.println("WebSocketServer: " + webSocketServer);
+    }
+
+    /**
+     * Generate WebSocket URL.
+     * @param url The URL.
+     * @return The web socket URL.
+     */
+    public String generateWsURL(String url) {
+        String[] split = url.split(":", 2);
+        StringBuilder ws = new StringBuilder();
+        ws.append("ws:");
+        ws.append(split[1]);
+        ws.append("websocket");
+        return ws.toString();
     }
 
     /**

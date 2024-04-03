@@ -4,6 +4,7 @@ import commons.Event;
 import commons.Participant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.database.EventRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,6 +16,7 @@ class ParticipantControllerTest {
 
     private Event testEvent1;
     private Participant testP1;
+
 
 
     @BeforeEach
@@ -31,14 +33,18 @@ class ParticipantControllerTest {
     }
 
     @Test
+    void constructorTest() {
+        ParticipantController pc = new ParticipantController(partRepo, eventRepo);
+        assertNotNull(pc);
+    }
+
+    @Test
     void addParticipantTest() {
         eventRepo.save(testEvent1);
         var retPart = sut.add(testP1, testEvent1.getId());
         assertEquals(retPart.getBody(), testP1);
 
     }
-
-
 
     @Test
     void removeParticipant() {
@@ -48,5 +54,21 @@ class ParticipantControllerTest {
                 testEvent1.getId());
         assertEquals(retDelete.getBody(), testP1);
 //        assertEquals(0, eventRepo.getAll(testEvent1.getId()).getBody().size());
+    }
+
+    @Test
+    void removeParticipantBadRequestTest() {
+        var retPart = sut.removeParticipant(-123L, -2423L);
+        assertTrue(retPart.getStatusCode().is4xxClientError());
+        partRepo.save(testP1);
+        var retPart2 = sut.removeParticipant(testP1.getParticipantId(), -2424234L);
+        assertTrue(retPart2.getStatusCode().is4xxClientError());
+    }
+
+    @Test
+    void addParticipantBadRequest() {
+        testP1.setName("");
+        var retPart = sut.add(testP1, testEvent1.getId());
+        assertTrue(retPart.getStatusCode().is4xxClientError());
     }
 }

@@ -189,8 +189,8 @@ public class MainCtrl {
     public void showAdminPage(String password) {
         try {
             adminCtrl.setPassword(password);
-            adminCtrl.refresh();
             adminCtrl.setEvents(server.getAllEvents(password));
+            adminCtrl.refresh();
             primaryStage.setScene(admin);
             admin.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
                 if (e.getCode() == KeyCode.ESCAPE) {
