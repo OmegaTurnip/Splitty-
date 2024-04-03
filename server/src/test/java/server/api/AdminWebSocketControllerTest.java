@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import server.database.EventRepository;
-import server.util.DebtSimplifier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
