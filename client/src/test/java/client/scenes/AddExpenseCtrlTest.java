@@ -2,10 +2,7 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
-import com.sun.javafx.application.PlatformImpl;
 import jakarta.ws.rs.client.Client;
-import javafx.application.Platform;
-import javafx.scene.control.Alert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -26,6 +23,8 @@ public class AddExpenseCtrlTest {
     private Client client;
     @InjectMocks
     private ServerUtils server;
+
+
 
     @BeforeEach
     public void setUp() {
