@@ -1,4 +1,4 @@
-package server.util;
+package server.financial;
 
 import commons.*;
 import server.financial.ExchangeRateFactory;
@@ -167,6 +167,7 @@ public class DebtSimplifier {
     public void addDebts(Event event) {
         Objects.requireNonNull(event, "event is null");
 
+        // todo make deterministic
         for (Transaction transaction : event.getTransactions())
             addDebt(transaction);
     }

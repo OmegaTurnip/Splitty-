@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
 import server.financial.ExchangeRateAPI;
 import server.financial.FrankfurterExchangeRateAPI;
-import server.util.DebtSimplifier;
+import server.financial.DebtSimplifier;
 
 import java.time.LocalDate;
 import java.util.Currency;
