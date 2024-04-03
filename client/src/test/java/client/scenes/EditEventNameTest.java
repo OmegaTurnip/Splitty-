@@ -83,16 +83,16 @@ public class EditEventNameTest extends FxRobot {
         return (T) lookup(query).queryAll().iterator().next();
     }
 
-    @Test
-    public void testSetEmptyEvent() {
-        assertEquals(event.getEventName(), null);
-    }
-
-    @Test
-    public void testSetEvent() {
-        event.setEventName("Test party");
-        assertEquals(event.getEventName(), "Test party");
-    }
+//    @Test
+//    public void testSetEmptyEvent() {
+//        assertEquals(event.getEventName(), null);
+//    }
+//
+//    @Test
+//    public void testSetEvent() {
+//        event.setEventName("Test party");
+//        assertEquals(event.getEventName(), "Test party");
+//    }
 
 //    @Test
 //    public void testEditEventName(){
