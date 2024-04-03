@@ -8,8 +8,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import server.financial.ExchangeRateFactory;
-import server.util.DebtSimplifier;
 
 import java.util.ArrayList;
 import java.util.List;

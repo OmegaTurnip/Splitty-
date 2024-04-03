@@ -1,7 +1,9 @@
 package server.financial;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import commons.Money;
-import org.springframework.boot.json.JacksonJsonParser;
 
 import java.net.*;
 import java.time.LocalDate;
@@ -75,48 +77,45 @@ public class FrankfurterExchangeRateAPI implements ExchangeRateAPI {
      * @return The new exchange rates.
      */
     @Override
-    // make the compiler ignore about the unchecked cast:
-    // (also ignore method length as it's mostly comments and a stream)
-    @SuppressWarnings({"unchecked", "checkstyle:MethodLength"})
     public Optional<Map<Currency, Double>> getExchangeRates() {
         // let's not do failed requests over and even record failed requests as
         // a request made
         lastRequestDate = LocalDate.now();
 
-        // this might be the most horrendous code I've ever written
-        // I hate it with every fiber of my being
         try {
             URLConnection con = apiUrl.openConnection();
             con.setConnectTimeout(5_000);
             con.setReadTimeout(5_000);
 
-            // idc
             String result = new String(con.getInputStream().readAllBytes());
 
-            JacksonJsonParser mapper = new JacksonJsonParser();
+            ObjectMapper mapper = new ObjectMapper();
+            Response response = mapper.readValue(result, Response.class);
+
             return Optional.of(
-                    // idc, I hate this, but idc
-                    (((Map<String, Object>) mapper.parseMap(result)
-                            .get("rates"))
-                            .entrySet()
-                            .stream()
+                    response.rates.entrySet().stream()
                             .filter(e -> Money.isValidCurrencyCode(e.getKey()))
-                            .collect(
-                                    Collectors.toMap(
-                                            e -> Currency
-                                                    .getInstance(e.getKey()),
-                                            // this is incredibly stupid, but
-                                            // otherwise the integer (?!)
-                                            // exchange rate of IDR will break
-                                            // the exchange rate factory...
-                                            // (╯°□°）╯︵ ┻━┻
-                                            e -> Double.parseDouble(
-                                                    e.getValue().toString())
-                                    )
+                            .collect(Collectors.toMap(
+                                    e -> Currency.getInstance(e.getKey()),
+                                    Map.Entry::getValue
                             ))
             );
         } catch (Exception e) {
             return Optional.empty();
+        }
+    }
+
+    private record Response(int amount, String base, String date,
+                            Map<String, Double> rates) {
+        @JsonCreator
+        private Response(@JsonProperty("amount") int amount,
+                         @JsonProperty("base") String base,
+                         @JsonProperty("date") String date,
+                         @JsonProperty("rates") Map<String, Double> rates) {
+            this.amount = amount;
+            this.base = base;
+            this.date = date;
+            this.rates = rates;
         }
     }
 }
