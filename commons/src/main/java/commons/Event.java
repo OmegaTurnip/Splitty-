@@ -437,7 +437,7 @@ public class Event {
      * @param id Tag id
      * @return the tag
      */
-    public Tag getTagbyId(Long id) {
+    public Tag getTagById(Long id) {
         for (Tag tag : tags) {
             if (id != null && id.equals(tag.getTagId())) {
                 return tag;

@@ -129,7 +129,7 @@ public class EventController {
                 ));
             }
             transaction.setParticipants(participants);
-            transaction.setTag(event.getTagbyId(
+            transaction.setTag(event.getTagById(
                     transaction.getTag().getTagId()));
         }
 
