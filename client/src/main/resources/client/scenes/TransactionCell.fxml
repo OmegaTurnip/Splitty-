@@ -9,11 +9,11 @@
 
 <StackPane prefHeight="17.0" prefWidth="179.0" styleClass="event-cell" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.TransactionCellController">
    <children>
-      <HBox alignment="CENTER" prefHeight="54.0" prefWidth="155.0">
+      <HBox alignment="CENTER" prefHeight="22.0" prefWidth="190.0">
          <children>
-            <Label id="transactionInfoLabel" fx:id="transactionInfoLabel" alignment="CENTER" prefHeight="34.0" prefWidth="106.0" text="Label" textFill="#fefdfd">
+            <Label id="transactionInfoLabel" fx:id="transactionInfoLabel" alignment="CENTER" prefHeight="34.0" prefWidth="106.0" styleClass="list-cell" text="Label" textFill="#fefdfd">
                <font>
-                  <Font name="Garamond" size="17.0" />
+                  <Font name="Garamond" size="9.0" />
                </font>
             </Label>
             <HBox alignment="CENTER" prefHeight="35.0" prefWidth="110.0">

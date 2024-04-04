@@ -67,6 +67,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     private final MainCtrl mainCtrl;
 
 
+
     /**
      * Initializes the controller
      * @param server .
@@ -117,6 +118,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         }
 
     }
+
     public static class ParticipantStringConverter
             extends StringConverter<Object> {
 
@@ -260,8 +262,11 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 transactionsParticipant =
                         FXCollections.observableArrayList();
                 for (Transaction transaction : transactions) {
-                    if (transaction.getParticipants().contains(participant)) {
-                        transactionsParticipant.add(transaction);
+                    for(Participant p : transaction.getParticipants()) {
+                        p.setEvent(event);
+                        if (p.equals(participant)) {
+                            transactionsParticipant.add(transaction);
+                        }
                     }
                 }
                 expensesListView.setItems(transactionsParticipant);
@@ -271,6 +276,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 transactionsPayer =
                         FXCollections.observableArrayList();
                 for (Transaction transaction : transactions) {
+                    transaction.getPayer().setEvent(event);
                     if (transaction.getPayer().equals(participant)) {
                         transactionsPayer.add(transaction);
                     }
@@ -316,6 +322,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         expensesDropDown.setPromptText(Translator
                     .getTranslation(client.language
                             .Text.EventOverview.expensesDropDown));
+
 
         if (event != null ) eventNameLabel.setText(event.getEventName());
     }

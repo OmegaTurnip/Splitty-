@@ -64,6 +64,14 @@ public class Text {
         public static final String expensesDropDown = level
                 + "expensesDropDown";
 
+        public static final class ExpenseListing{
+            private static final String level = EventOverview.level +
+                    "ExpenseListing.";
+
+            public static final String paid = level + "paid";
+            public static final String for_ = level + "for";
+        }
+
 
         public static final class Buttons {
 

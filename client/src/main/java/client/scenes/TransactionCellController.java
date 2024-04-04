@@ -17,6 +17,9 @@ public class TransactionCellController {
 
     private Transaction transaction;
 
+    private String paid;
+    private String for_;
+
     private ServerUtils server;
     private EventOverviewCtrl eventOverviewCtrl;
     @FXML
@@ -33,6 +36,7 @@ public class TransactionCellController {
      */
     @FXML
     public void initialize() {
+        refreshText();
         editTransactionButton.setOnAction(event -> {
             System.out.println("Edit transaction button clicked");
         });
@@ -41,15 +45,29 @@ public class TransactionCellController {
         });
     }
 
+    public void refresh(){
+        refreshText();
+    }
+
+    public void refreshText(){
+    paid = Translator
+            .getTranslation(client.language
+                    .Text.EventOverview.ExpenseListing.paid);
+    for_ = Translator.getTranslation(client.language
+            .Text.EventOverview.ExpenseListing.for_);
+    }
+
     /**
      * Provide label for the transaction.
      * @param transaction transaction
      */
     public void setTransactionData(Transaction transaction) {
-        String transactionInfo = String.format("%s %s paid %s for %s (%s)",
+        String transactionInfo = String.format("%s %s %s %s %s %s (%s)",
                 transaction.getDate(),
                 transaction.getPayer().getName(),
+                paid,
                 transaction.getAmount().format(Translator.getLocale()),
+                for_,
                 transaction.getName(),
                 transaction.getParticipants().stream()
                         .map(Participant::getName)
