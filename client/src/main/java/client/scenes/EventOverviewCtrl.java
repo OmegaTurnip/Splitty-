@@ -386,7 +386,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
             } else {
                 if (loader == null) {
                     loader = new FXMLLoader(getClass()
-                            .getResource("client/scenes/TransactionCell.fxml"));
+                            .getResource("/client/scenes/TransactionCell.fxml"));
                     try {
                         Parent root = loader.load();
                         loader.setRoot(root);
@@ -396,7 +396,9 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 }
                 TransactionCellController controller = loader.getController();
                 controller.setTransactionData(transaction);
-
+                controller.setEvent(event);
+                controller.setServer(server);
+                controller.setEventOverviewCtrl(EventOverviewCtrl.this);
                 setText(null);
                 setGraphic(loader.getRoot());
             }

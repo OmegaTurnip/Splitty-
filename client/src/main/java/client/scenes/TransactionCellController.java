@@ -26,6 +26,8 @@ public class TransactionCellController {
     @FXML
     private Button deleteTransactionButton;
 
+
+
     /**
      * Initialize the controller.
      */
@@ -55,4 +57,37 @@ public class TransactionCellController {
 
         transactionInfoLabel.setText(transactionInfo);
     }
+
+    /**
+     * Sets the event
+     * @param event The event to be set
+     */
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
+    /**
+     * Set the transaction
+     * @param transaction the transaction of the cell
+     */
+    public void setTransaction(Transaction transaction) {
+        this.transaction = transaction;
+    }
+
+    /**
+     * Sets the server
+     * @param server server
+     */
+    public void setServer(ServerUtils server) {
+        this.server = server;
+    }
+
+    /**
+     * Set the eventOverviewController
+     * @param eventOverviewCtrl the event overview controller
+     */
+    public void setEventOverviewCtrl(EventOverviewCtrl eventOverviewCtrl) {
+        this.eventOverviewCtrl = eventOverviewCtrl;
+    }
+
 }
