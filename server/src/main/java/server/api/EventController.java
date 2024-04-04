@@ -123,9 +123,9 @@ public class EventController {
     }
 
     /**
-     * Get an event by invite code.
+     * Get events by invite codes.
      * @param inviteCodes The list of invite codes
-     * @return The event
+     * @return The events
      */
     @GetMapping("/invite/{inviteCodes}")
     @ResponseBody
@@ -136,7 +136,7 @@ public class EventController {
         List<String> inviteCodesList = List.of(inviteCodes.split(","));
         List<Event> events = eventRepository
                 .findByInviteCodeIn(inviteCodesList);
-        if (events.isEmpty()) {
+        if (events == null || events.isEmpty()) {
             return ResponseEntity.ok(new ArrayList<>());
 //            return ResponseEntity.notFound().build();
         }

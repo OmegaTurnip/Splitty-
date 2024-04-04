@@ -147,7 +147,7 @@ public class AdminCtrl implements TextPage, Initializable {
      * @return the events.
      */
     public List<Event> getEvents() {
-        return (List<Event>) events.values();
+        return new ArrayList<>(events.values());
     }
 
     /**
