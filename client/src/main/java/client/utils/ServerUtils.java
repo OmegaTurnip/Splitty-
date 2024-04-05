@@ -104,6 +104,7 @@ public class ServerUtils {
         this.server = userSettings.getServerUrl();
     }
 
+
     /**
      * Injectable constructor
      * @param userSettings Inject the userSettings.
@@ -352,7 +353,12 @@ public class ServerUtils {
 //                .delete();
 //    }
 
-    private StompSession connect(String url) {
+    /**
+     * Connects to the  websocket server
+     * @param url the url for the websocket server
+     * @return the StompSession
+     */
+    public StompSession connect(String url) {
         var client = new StandardWebSocketClient();
         var stomp = new WebSocketStompClient(client);
         ObjectMapper mapper = new ObjectMapper();

@@ -105,6 +105,12 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         date.setConverter(new MyLocalDateStringConverter("dd/MM/yyyy"));
         refresh();
     }
+
+//    @Override
+//    public void fetchLanguages(Menu languagesMenu) {
+//        TextPage.super.fetchLanguages(languagesMenu);
+//    }
+
     static class MyLocalDateStringConverter extends StringConverter<LocalDate> {
 
         private final DateTimeFormatter dateFormatter;
@@ -154,6 +160,22 @@ public class AddExpenseCtrl implements Initializable, TextPage {
                 expensePayer = (Participant) payer.getValue();
             }
         });
+    }
+
+    /**
+     * Sets the items of the payer choice box for testing
+     * @param participants the items to set
+     */
+    public void setPayerItems(List<Object> participants) {
+        payer.setItems(FXCollections.observableArrayList(participants));
+    }
+
+    /**
+     * Getter for expensePayer
+     * @return the expensePayer
+     */
+    public Participant getExpensePayer() {
+        return expensePayer;
     }
 
     void tagSelection() {
