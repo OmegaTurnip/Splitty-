@@ -23,7 +23,9 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Currency;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.concurrent.ExecutorService;
@@ -64,6 +66,8 @@ public class ServerUtils {
     private Client client;
 
     private StompSession session;
+
+    private Set<Currency> availableCurrenciesCache = null;
 
     /**
      * Getter.
@@ -176,6 +180,25 @@ public class ServerUtils {
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
+    }
+
+
+    /**
+     * Get available currencies, is guaranteed to always return the same due to
+     * caching (so storing the result also isn't needed).
+     *
+     * @return  The available currencies.
+     */
+    public Set<Currency> getAvailableCurrencies() {
+        if (availableCurrenciesCache == null) {
+            availableCurrenciesCache = client //
+                    .target(server).path("api/event/currencies") //
+                    .request(APPLICATION_JSON) //
+                    .accept(APPLICATION_JSON) //
+                    .get(new GenericType<Set<Currency>>() {
+                    });
+        }
+        return availableCurrenciesCache;
     }
 
     /**
