@@ -22,16 +22,16 @@ public class Transaction {
     @JoinColumn(name = "event_id", nullable = false)
     @JsonBackReference
     private Event event;
-    @OneToOne
+    @ManyToOne
     private Participant payer;
     private String name;
     private LocalDate date;
     @Column(name = "amount", length = 1024)
     private Money amount;
     private boolean isPayoff;
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Participant> participants;
-    @OneToOne
+    @ManyToOne
     private Tag tag;
 
     /**

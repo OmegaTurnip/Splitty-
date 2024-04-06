@@ -130,8 +130,11 @@ public class EventController {
                 ));
             }
             transaction.setParticipants(participants);
-            transaction.setTag(event.getTagbyId(
-                    transaction.getTag().getTagId()));
+            if (transaction.getTag() != null) {
+                transaction.setTag(event.getTagbyId(
+                        transaction.getTag().getTagId()
+                ));
+            }
         }
 
         Event dbEvent = eventRepository.save(event);
@@ -232,4 +235,5 @@ public class EventController {
             );
         }
     }
+
 }
