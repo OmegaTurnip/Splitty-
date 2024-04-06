@@ -418,4 +418,10 @@ public class Event {
         return transactions.remove(transaction);
     }
 
+    public Participant addParticipant(String name, String email, String iban, String bic) {
+        Participant participant = new Participant(this, name, email, iban, bic);
+        this.participants.add(participant);
+        updateLastActivity();
+        return participant;
+    }
 }

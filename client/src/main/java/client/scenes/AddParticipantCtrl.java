@@ -50,7 +50,7 @@ public class AddParticipantCtrl implements TextPage, Initializable {
     private Event event;
 
     /**
-     * Initalizes the controller
+     * Initializes the controller
      * @param server .
      * @param mainCtrl .
      * @param eventOverviewCtrl .
@@ -154,9 +154,12 @@ public class AddParticipantCtrl implements TextPage, Initializable {
             emptyCheck();
             formatCheck();
             Participant participant =
-                    event.addParticipant(usernameTextField.getText());
+                    event.addParticipant(usernameTextField.getText(),
+                            emailTextField.getText(),
+                            ibanTextField.getText(),
+                            bicTextField.getText());
             System.out.println("Created " + participant);
-            server.saveEvent(event);
+            server.saveParticipant(participant);
         } catch(WebApplicationException e){
             e.printStackTrace();
             var alert = new Alert(Alert.AlertType.ERROR);
@@ -179,24 +182,24 @@ public class AddParticipantCtrl implements TextPage, Initializable {
                             Text.AddParticipant.Alert.NoName
                                     ), 422);
         }
-        if (emailTextField.getText().isEmpty()) {
-            throw new WebApplicationException(
-                    Translator.getTranslation(
-                            Text.AddParticipant.Alert.NoMail
-                    ), 422);
-        }
-        if (ibanTextField.getText().isEmpty()) {
-            throw new WebApplicationException(
-                    Translator.getTranslation(
-                            Text.AddParticipant.Alert.NoIBAN
-                    ), 422);
-        }
-        if (bicTextField.getText().isEmpty()) {
-            throw new WebApplicationException(
-                    Translator.getTranslation(
-                            Text.AddParticipant.Alert.NoBIC
-                    ), 422);
-        }
+//        if (emailTextField.getText().isEmpty()) {
+//            throw new WebApplicationException(
+//                    Translator.getTranslation(
+//                            Text.AddParticipant.Alert.NoMail
+//                    ), 422);
+//        }
+//        if (ibanTextField.getText().isEmpty()) {
+//            throw new WebApplicationException(
+//                    Translator.getTranslation(
+//                            Text.AddParticipant.Alert.NoIBAN
+//                    ), 422);
+//        }
+//        if (bicTextField.getText().isEmpty()) {
+//            throw new WebApplicationException(
+//                    Translator.getTranslation(
+//                            Text.AddParticipant.Alert.NoBIC
+//                    ), 422);
+//        }
     }
 
     /**
@@ -240,7 +243,7 @@ public class AddParticipantCtrl implements TextPage, Initializable {
      * @return  Whether the supplied email is valid.
      */
     static boolean isValidEmail(String email) {
-        return email != null && EMAIL_PATTERN.matcher(email).matches();
+        return email.isEmpty() || EMAIL_PATTERN.matcher(email).matches();
     }
 
     /**
@@ -250,7 +253,7 @@ public class AddParticipantCtrl implements TextPage, Initializable {
      * @return  Whether the supplied IBAN is valid.
      */
     static boolean isValidIban(String iban) {
-        return iban != null && IBAN_PATTERN.matcher(iban).matches();
+        return iban.isEmpty() || IBAN_PATTERN.matcher(iban).matches();
     }
 
     /**
@@ -260,6 +263,6 @@ public class AddParticipantCtrl implements TextPage, Initializable {
      * @return  Whether the supplied BIC is valid.
      */
     static boolean isValidBic(String bic) {
-        return bic != null && BIC_PATTERN.matcher(bic).matches();
+        return bic.isEmpty() || BIC_PATTERN.matcher(bic).matches();
     }
 }

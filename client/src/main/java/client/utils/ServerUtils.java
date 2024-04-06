@@ -17,18 +17,12 @@ package client.utils;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Consumer;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,7 +34,6 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
-import commons.Quote;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
@@ -140,44 +133,6 @@ public class ServerUtils {
     }
 
     /**
-     * @throws IOException no description was provided in the template.
-     * @throws URISyntaxException no description was provided in the template.
-     */
-    public void getQuotesTheHardWay() throws IOException, URISyntaxException {
-        var url = new URI(server + "api/quotes").toURL();
-        var is = url.openConnection().getInputStream();
-        var br = new BufferedReader(new InputStreamReader(is));
-        String line;
-        while ((line = br.readLine()) != null) {
-            System.out.println(line);
-        }
-    }
-
-    /**
-     * @return no description was provided in the template.
-     */
-    public List<Quote> getQuotes() {
-        return client //
-                .target(server).path("api/quotes") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<Quote>>() {
-                });
-    }
-
-    /**
-     * @param quote no description was provided in the template.
-     * @return no description was provided in the template.
-     */
-    public Quote addQuote(Quote quote) {
-        return client //
-                .target(server).path("api/quotes") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
-    }
-
-    /**
      * Create Event REST API request.
      * @param event The event to be created
      * @return The created
@@ -188,29 +143,6 @@ public class ServerUtils {
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(event, APPLICATION_JSON), Event.class);
-    }
-
-    /**
-     * Adds a participant to the db
-     * @param participant the participant to add
-     * @return the participant added
-     */
-    public Participant addParticipant(Participant participant) {
-//        Long participantId = server.addParticipant(participant)
-//                .getParticipantId();
-//        participant = event.getParticipants().getLast();
-//        participant.setParticipantId(participantId);
-//        System.out.println("Created " + participant);
-        var path = "api/event/" + participant.getEvent().getId()
-                + "/participants";
-        Participant dbParticipant = client //
-                .target(server).path(path) //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .post(Entity.entity(participant, APPLICATION_JSON),
-                        Participant.class);
-        participant.setParticipantId(dbParticipant.getParticipantId());
-        return dbParticipant;
     }
 
     /**
@@ -298,9 +230,6 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .delete(new GenericType<>() {});
-//        TODO make sure events that don't exist are
-//         deleted from the user config for all users
-        //Paras: I have taken care of this with my websockets implementation.
     }
 
 //    /**
@@ -343,7 +272,7 @@ public class ServerUtils {
          * @param participant participant to create
          * @return created participant
          */
-    public Participant createParticipant(Participant participant){
+    public Participant saveParticipant(Participant participant){
         return client
                 .target(server).path("/api/event/" + participant.getEvent()
                         .getId() + "/participants")

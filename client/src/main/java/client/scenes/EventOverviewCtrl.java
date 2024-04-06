@@ -96,6 +96,11 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         expensesListView.setCellFactory(param ->
                 new TransactionCellFactory());
         server.registerForUpdates(t -> updateTransactions(t), event);
+        server.registerForMessages("/topic/admin", Event.class, e -> {
+            this.event = e;
+            System.out.println("Received event: " + event.getEventName());
+            refresh();
+        });
         refresh();
     }
 

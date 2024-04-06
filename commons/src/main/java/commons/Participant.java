@@ -17,6 +17,9 @@ public class Participant {
     @JsonBackReference
     private Event event;
     private String name;
+    private String email;
+    private String iban;
+    private String bic;
 
 
 
@@ -29,6 +32,22 @@ public class Participant {
     Participant(String name, Event event) {
         this.name = name;
         this.event = event;
+    }
+
+    /**
+     * Constructor.
+     * @param event the event
+     * @param name the name
+     * @param email the email
+     * @param iban the iban
+     * @param bic the bic
+     */
+    Participant(Event event, String name, String email, String iban, String bic) {
+        this.event = event;
+        this.name = name;
+        this.email = email;
+        this.iban = iban;
+        this.bic = bic;
     }
 
     /**
