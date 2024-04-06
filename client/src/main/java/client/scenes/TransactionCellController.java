@@ -18,7 +18,7 @@ public class TransactionCellController {
     private Transaction transaction;
 
     private String paid;
-    private String for_;
+    private String forString;
 
     private ServerUtils server;
     private EventOverviewCtrl eventOverviewCtrl;
@@ -28,7 +28,6 @@ public class TransactionCellController {
     private Button editTransactionButton;
     @FXML
     private Button deleteTransactionButton;
-
 
 
     /**
@@ -45,20 +44,27 @@ public class TransactionCellController {
         });
     }
 
-    public void refresh(){
+    /**
+     *
+     */
+    public void refresh() {
         refreshText();
     }
 
-    public void refreshText(){
-    paid = Translator
-            .getTranslation(client.language
-                    .Text.EventOverview.ExpenseListing.paid);
-    for_ = Translator.getTranslation(client.language
-            .Text.EventOverview.ExpenseListing.for_);
+    /**
+     *
+     */
+    void refreshText() {
+        paid = Translator
+                .getTranslation(client.language
+                        .Text.EventOverview.ExpenseListing.paid);
+        forString = Translator.getTranslation(client.language
+                .Text.EventOverview.ExpenseListing.for_);
     }
 
     /**
      * Provide label for the transaction.
+     *
      * @param transaction transaction
      */
     public void setTransactionData(Transaction transaction) {
@@ -67,7 +73,7 @@ public class TransactionCellController {
                 transaction.getPayer().getName(),
                 paid,
                 transaction.getAmount().format(Translator.getLocale()),
-                for_,
+                forString,
                 transaction.getName(),
                 transaction.getParticipants().stream()
                         .map(Participant::getName)
@@ -78,6 +84,7 @@ public class TransactionCellController {
 
     /**
      * Sets the event
+     *
      * @param event The event to be set
      */
     public void setEvent(Event event) {
@@ -86,6 +93,7 @@ public class TransactionCellController {
 
     /**
      * Set the transaction
+     *
      * @param transaction the transaction of the cell
      */
     public void setTransaction(Transaction transaction) {
@@ -94,6 +102,7 @@ public class TransactionCellController {
 
     /**
      * Sets the server
+     *
      * @param server server
      */
     public void setServer(ServerUtils server) {
@@ -102,6 +111,7 @@ public class TransactionCellController {
 
     /**
      * Set the eventOverviewController
+     *
      * @param eventOverviewCtrl the event overview controller
      */
     public void setEventOverviewCtrl(EventOverviewCtrl eventOverviewCtrl) {

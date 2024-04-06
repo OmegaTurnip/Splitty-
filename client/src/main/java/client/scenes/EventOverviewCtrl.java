@@ -248,6 +248,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      * @param participant The participant.
      * @param transactions The transactions.
      */
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     public void showSelectedExpenses(ToggleButton selected,
                                      Participant participant,
                                      ObservableList<Transaction> transactions){
@@ -393,7 +394,9 @@ public class EventOverviewCtrl implements TextPage, Initializable {
             } else {
                 if (loader == null) {
                     loader = new FXMLLoader(getClass()
-                            .getResource("/client/scenes/TransactionCell.fxml"));
+                            .getResource(
+                                    "/client/scenes/TransactionCell.fxml"
+                            ));
                     try {
                         Parent root = loader.load();
                         loader.setRoot(root);
