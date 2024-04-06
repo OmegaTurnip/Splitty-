@@ -31,6 +31,7 @@ import org.testfx.framework.junit5.ApplicationTest;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -124,9 +125,9 @@ public class AddExpenseCtrlTest extends ApplicationTest {
         press(KeyCode.DOWN);
         press(KeyCode.ENTER);
         assertNull(sut.getExpensePayer());
-                    }
+    }
     @Test
-    public void payerSelectionTest() {
+    void payerSelectionTest() {
         ArrayList<Object> list = new ArrayList<>();
         Participant test1 = event.addParticipant("Billy");
         list.add("Boo");
@@ -139,5 +140,27 @@ public class AddExpenseCtrlTest extends ApplicationTest {
         press(KeyCode.DOWN);
         press(KeyCode.ENTER);
         assertEquals(test1, sut.getExpensePayer());
+    }
+
+    @Test
+    void tagSelectionTest() {
+        List<Object> list = new ArrayList<>();
+        list.add(Translator.getTranslation(Text.AddExpense.expenseTypePrompt));
+        list.addAll(event.getTags());
+        Platform.runLater(() -> sut.setExpenseTypeItems(list));
+
+        clickOn("#expenseType");
+        press(KeyCode.DOWN);
+        press(KeyCode.DOWN);
+        press(KeyCode.ENTER);
+        assertEquals(event.getTags().get(0), sut.getExpenseTag());
+    }
+
+    @Test
+    public void tagSelectionNullTest() {
+        clickOn("#expenseType");
+        press(KeyCode.DOWN);
+        press(KeyCode.ENTER);
+        assertNull(sut.getExpenseTag());
     }
 }

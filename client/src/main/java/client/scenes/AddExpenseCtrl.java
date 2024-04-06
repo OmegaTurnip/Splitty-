@@ -106,6 +106,8 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         refresh();
     }
 
+
+
 //    @Override
 //    public void fetchLanguages(Menu languagesMenu) {
 //        TextPage.super.fetchLanguages(languagesMenu);
@@ -178,14 +180,33 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         return expensePayer;
     }
 
-    void tagSelection() {
+    /**
+     * Updates expenseTag whenever an item is selected in expenseType
+     */
+    public void tagSelection() {
         expenseType.setOnAction(event -> {
-            if (payer.getSelectionModel().isSelected(0)) {
+            if (expenseType.getSelectionModel().isSelected(0)) {
                 expenseTag = null;
             } else {
                 expenseTag = (Tag) expenseType.getValue();
             }
         });
+    }
+
+    /**
+     * Sets the items of the expenseType choicebox for testing
+     * @param list the items to set
+     */
+    public void setExpenseTypeItems(List<Object> list) {
+        expenseType.setItems(FXCollections.observableArrayList(list));
+    }
+
+    /**
+     * Gets the selected expenseTag
+     * @return the selected expense tag
+     */
+    public Tag getExpenseTag() {
+        return expenseTag;
     }
 
     /**
@@ -365,7 +386,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         expenseType.setCellFactory(lv -> new TagListCell());
     }
 
-    public static class TagListCell extends ListCell<Object> {
+    public class TagListCell extends ListCell<Object> {
 
         @Override
         protected void updateItem(Object item, boolean empty) {
@@ -376,8 +397,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
                 setBackground(Background.EMPTY);
                 setText("");
             } else if (item.equals(
-                    Translator.getTranslation(
-                            Text.AddExpense.expenseTypePrompt))) {
+                    expenseType.getItems().get(0))) {
                 setBackground(new Background(
                         new BackgroundFill(Color.WHITE, null, null)));
             } else {
