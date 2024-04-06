@@ -324,7 +324,6 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                     .getTranslation(client.language
                             .Text.EventOverview.expensesDropDown));
 
-
         if (event != null ) eventNameLabel.setText(event.getEventName());
     }
     /**
@@ -409,7 +408,6 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 controller.setEvent(event);
                 controller.setServer(server);
                 controller.setEventOverviewCtrl(EventOverviewCtrl.this);
-                setText(null);
                 setGraphic(loader.getRoot());
             }
         }

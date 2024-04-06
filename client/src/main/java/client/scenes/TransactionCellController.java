@@ -68,6 +68,7 @@ public class TransactionCellController {
      * @param transaction transaction
      */
     public void setTransactionData(Transaction transaction) {
+        refreshText();
         String transactionInfo = String.format("%s %s %s %s %s %s (%s)",
                 transaction.getDate(),
                 transaction.getPayer().getName(),
@@ -78,7 +79,6 @@ public class TransactionCellController {
                 transaction.getParticipants().stream()
                         .map(Participant::getName)
                         .collect(Collectors.joining(", ")));
-
         transactionInfoLabel.setText(transactionInfo);
     }
 
