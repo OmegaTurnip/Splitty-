@@ -98,9 +98,10 @@ public class EventController {
         if (event.getEventName().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-
-//        the following code makes sure that the participants
-//        that are equal become the same instance
+        for(Tag tag : event.getTags()){
+            tag.setEvent(event);
+        }
+// checks that the participants that are equal become the same instance
         for (Participant participant : event.getParticipants()) {
             participant.setEvent(event);
         }
@@ -117,6 +118,8 @@ public class EventController {
                 ));
             }
             transaction.setParticipants(participants);
+            transaction.setTag(event.getTagById(
+                    transaction.getTag().getTagId()));
         }
 
         Event dbEvent = eventRepository.save(event);
