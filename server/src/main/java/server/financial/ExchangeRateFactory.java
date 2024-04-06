@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  */
 public class ExchangeRateFactory {
 
-    public static final File DEFAULT_DIR = new File("rates");
+    public static final File DEFAULT_DIR = new File("server/rates");
 
     /**
      * A set containing all known {@code ExchangeRates}.
@@ -191,6 +191,7 @@ public class ExchangeRateFactory {
      *          If an IO error occurred.
      */
     public void loadAll() throws IOException {
+        System.out.println(directory.toPath());
         try (DirectoryStream<Path> stream =
                      Files.newDirectoryStream(directory.toPath())) {
             // this is a bad idea as this doesn't scale well, as the space
