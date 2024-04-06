@@ -326,9 +326,9 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                     .getTranslation(client.language
                             .Text.EventOverview.expensesDropDown));
         if(transactionCellController != null){
-       transactionCellController.refreshText();
-       expensesListView.refresh();
-}
+            transactionCellController.refreshText();
+            expensesListView.refresh();
+        }
         if (event != null ) eventNameLabel.setText(event.getEventName());
     }
     /**
@@ -412,7 +412,8 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 transactionCellController.setTransactionData(transaction);
                 transactionCellController.setEvent(event);
                 transactionCellController.setServer(server);
-                transactionCellController.setEventOverviewCtrl(EventOverviewCtrl.this);
+                transactionCellController.setEventOverviewCtrl(
+                        EventOverviewCtrl.this);
                 setGraphic(loader.getRoot());
             }
         }
