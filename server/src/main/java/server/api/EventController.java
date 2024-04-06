@@ -124,14 +124,13 @@ public class EventController {
             ));
             List<Participant> participants = new ArrayList<>();
             for (Participant participant : transaction.getParticipants()) {
-                // added if statement below, but i think the problem is in the get Participants
+
                 participants.add(event.getParticipantById(
                         participant.getParticipantId()
                 ));
             }
             transaction.setParticipants(participants);
-            transaction.setTag(event.getTagbyId(
-                    transaction.getTag().getTagId()));
+            setTagInstances(event, transaction);
         }
 
         Event dbEvent = eventRepository.save(event);
@@ -140,6 +139,14 @@ public class EventController {
         //tbf this might not be the proper way to do PUT.
         // PUT methods should specify the URI exactly,
         // so a proper pathing would be /{id}
+    }
+
+    private static void setTagInstances(Event event, Transaction transaction) {
+        if (transaction.getTag() != null) {
+            transaction.setTag(event.getTagbyId(
+                    transaction.getTag().getTagId()
+            ));
+        }
     }
 
     /**
@@ -232,4 +239,5 @@ public class EventController {
             );
         }
     }
+
 }
