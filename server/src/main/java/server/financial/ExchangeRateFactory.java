@@ -191,7 +191,6 @@ public class ExchangeRateFactory {
      *          If an IO error occurred.
      */
     public void loadAll() throws IOException {
-        System.out.println(directory.toPath());
         try (DirectoryStream<Path> stream =
                      Files.newDirectoryStream(directory.toPath())) {
             // this is a bad idea as this doesn't scale well, as the space
