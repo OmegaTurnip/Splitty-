@@ -274,13 +274,15 @@ public class ServerUtils {
          * @return created participant
          */
     public Participant saveParticipant(Participant participant){
-        return client
+        Participant returned = client
                 .target(server).path("/api/event/" + participant.getEvent()
                         .getId() + "/participants")
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(participant, APPLICATION_JSON),
                         Participant.class);
+        returned.setEvent(participant.getEvent());
+        return returned;
     }
 
 //    /**

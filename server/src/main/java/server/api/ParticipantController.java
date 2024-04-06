@@ -24,6 +24,7 @@ public class ParticipantController {
      *
      * @param repo      the repository
      * @param eventRepo the event repository
+     * @param messagingTemplate the messaging template
      */
     public ParticipantController(ParticipantRepository repo,
                                  EventRepository eventRepo,
@@ -43,7 +44,7 @@ public class ParticipantController {
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Participant>
-    saveParticipant(@RequestBody Participant participant,
+        saveParticipant(@RequestBody Participant participant,
                     @PathVariable("eventId") long eventId) {
 
         if (isNullOrEmpty(participant.getName())) {
@@ -54,9 +55,9 @@ public class ParticipantController {
         if (event.isEmpty()) return ResponseEntity.badRequest().build();
 
         participant.setEvent(event.get());
-        Participant saved = repo.save(participant);
+        repo.save(participant);
         messagingTemplate.convertAndSend("/topic/admin", event.get());
-        return ResponseEntity.ok(saved);
+        return ResponseEntity.ok(participant);
     }
 
     private static boolean isNullOrEmpty(String s) {
@@ -88,6 +89,7 @@ public class ParticipantController {
         repo.delete(participant);
         event.removeParticipant(participant);
         eventRepo.save(event);
+        messagingTemplate.convertAndSend("/topic/admin", event);
         return ResponseEntity.ok(participant);
     }
 

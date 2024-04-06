@@ -24,10 +24,6 @@ public class AddParticipantCtrl implements TextPage, Initializable {
     @FXML
     private Menu languages;
     @FXML
-    private Menu rto;
-    @FXML
-    private Menu close;
-    @FXML
     private Label username;
     @FXML
     private Label title;
@@ -48,6 +44,8 @@ public class AddParticipantCtrl implements TextPage, Initializable {
     private final MainCtrl mainCtrl;
     private final EventOverviewCtrl eventOverviewCtrl;
     private Event event;
+
+    private Participant participantToOverwrite;
 
     /**
      * Initializes the controller
@@ -82,6 +80,12 @@ public class AddParticipantCtrl implements TextPage, Initializable {
      * Refresh the page
      */
     public void refresh() {
+        if (participantToOverwrite != null) {
+            usernameTextField.setText(participantToOverwrite.getName());
+            emailTextField.setText(participantToOverwrite.getEmail());
+            ibanTextField.setText(participantToOverwrite.getIban());
+            bicTextField.setText(participantToOverwrite.getBic());
+        }
         refreshText();
     }
 
@@ -91,21 +95,21 @@ public class AddParticipantCtrl implements TextPage, Initializable {
     public void refreshText() {
         languages.setText(
                 Translator.getTranslation(Text.Menu.Languages));
-        rto.setText(
-                Translator.getTranslation(Text.Menu.ReturnToOverview)
-        );
-        close.setText(
-                Translator.getTranslation(Text.Menu.Close)
-        );
         username.setText(
                 Translator.getTranslation(Text.AddParticipant.Username)
         );
         addParticipant.setText(
                 Translator.getTranslation(Text.AddParticipant.Add)
         );
-        title.setText(
-                Translator.getTranslation(Text.AddParticipant.Title)
-        );
+        if (participantToOverwrite != null) {
+            title.setText(
+                    Translator.getTranslation(Text.AddParticipant.EditTitle)
+            );
+        } else {
+            title.setText(
+                    Translator.getTranslation(Text.AddParticipant.Title)
+            );
+        }
         cancel.setText(
                 Translator.getTranslation(Text.AddParticipant.Cancel)
         );
@@ -153,13 +157,26 @@ public class AddParticipantCtrl implements TextPage, Initializable {
         try{
             emptyCheck();
             formatCheck();
-            Participant participant =
-                    event.addParticipant(usernameTextField.getText(),
-                            emailTextField.getText(),
-                            ibanTextField.getText(),
-                            bicTextField.getText());
-            System.out.println("Created " + participant);
-            server.saveParticipant(participant);
+            if (participantToOverwrite != null) {
+                participantToOverwrite.setName(usernameTextField.getText());
+                participantToOverwrite.setEmail(emailTextField.getText());
+                participantToOverwrite.setIban(ibanTextField.getText());
+                participantToOverwrite.setBic(bicTextField.getText());
+                Participant returnedP = server
+                        .saveParticipant(participantToOverwrite);
+                event.removeParticipant(participantToOverwrite);
+                event.addParticipant(returnedP);
+            } else {
+                Participant participant =
+                        event.addParticipant(usernameTextField.getText(),
+                                emailTextField.getText(),
+                                ibanTextField.getText(),
+                                bicTextField.getText());
+                System.out.println("Created " + participant);
+                Participant returnedP = server.saveParticipant(participant);
+                event.removeParticipant(participant);
+                event.addParticipant(returnedP);
+            }
         } catch(WebApplicationException e){
             e.printStackTrace();
             var alert = new Alert(Alert.AlertType.ERROR);
@@ -264,5 +281,13 @@ public class AddParticipantCtrl implements TextPage, Initializable {
      */
     static boolean isValidBic(String bic) {
         return bic.isEmpty() || BIC_PATTERN.matcher(bic).matches();
+    }
+
+    /**
+     * Setter.
+     * @param participant The participant to be set.
+     */
+    public void setParticipant(Participant participant) {
+        this.participantToOverwrite = participant;
     }
 }

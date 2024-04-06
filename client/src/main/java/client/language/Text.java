@@ -109,13 +109,11 @@ public class Text {
         public static final String Cancel = level + "Cancel";
         public static final String Add = level + "Add";
         public static final String Title = level + "Title";
+        public static final String EditTitle = level + "EditTitle";
 
         public static final class Alert{
             public static final String level = AddParticipant.level + "Alert.";
             public static final String NoName = level + "NoName";
-            public static final String NoMail = level + "NoMail";
-            public static final String NoIBAN = level + "NoIBAN";
-            public static final String NoBIC = level + "NoBIC";
 
             public static final String InvalidMail = level + "InvalidMail";
             public static final String InvalidIBAN = level + "InvalidIBAN";
@@ -175,6 +173,11 @@ public class Text {
 
         public static final class Alert {
             public static final String level = Admin.level + "Alert.";
+
+            public static final String unauthorisedTitle = level
+                    + "unauthorisedTitle";
+            public static final String unauthorisedContent = level
+                    + "unauthorisedContent";
             public static final String restoreEventAlertTitle = level
                     + "restoreEventAlertTitle";
             public static final String restoreEventAlertContent = level

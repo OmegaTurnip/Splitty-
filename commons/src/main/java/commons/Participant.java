@@ -42,7 +42,8 @@ public class Participant {
      * @param iban the iban
      * @param bic the bic
      */
-    Participant(Event event, String name, String email, String iban, String bic) {
+    Participant(Event event, String name,
+                String email, String iban, String bic) {
         this.event = event;
         this.name = name;
         this.email = email;
@@ -143,4 +144,51 @@ public class Participant {
         return participantId;
     }
 
+    /**
+     * Setter for email
+     * @param email the email
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * Setter for iban
+     * @param iban the iban
+     */
+    public void setIban(String iban) {
+        this.iban = iban;
+    }
+
+    /**
+     * Getter for email
+     * @return the email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * Getter for iban
+     * @return the iban
+     */
+    public String getIban() {
+        return iban;
+    }
+
+    /**
+     * Getter for bic
+     * @return the bic
+     */
+    public String getBic() {
+        return bic;
+    }
+
+    /**
+     * Setter for bic
+     * @param bic the bic
+     */
+    public void setBic(String bic) {
+        this.bic = bic;
+    }
 }
