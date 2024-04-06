@@ -4,6 +4,10 @@ import commons.Event;
 import commons.Participant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,18 +20,24 @@ class ParticipantControllerTest {
     private Event testEvent1;
     private Participant testP1;
 
+    @Mock
+    SimpMessagingTemplate sim;
+
 
 
     @BeforeEach
     void setup() {
+        MockitoAnnotations.openMocks(this);
         eventRepo = new TestEventRepository();
         partRepo = new TestParticipantRepository();
-        sut = new ParticipantController(partRepo, eventRepo, null);
+        sut = new ParticipantController(partRepo, eventRepo, sim);
         testEvent1 = new Event("testEvent1");
         testEvent1.setId(100L);
         testEvent1.addParticipant("testP1");
         testP1 = testEvent1.getParticipants().get(0);
         testP1.setParticipantId(500L);
+
+        Mockito.doNothing().when(sim).convertAndSend("/topic/admin", testEvent1);
 
     }
 
