@@ -11,7 +11,6 @@ import commons.Event;
 import jakarta.inject.Inject;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -61,8 +60,8 @@ public class AdminCtrl implements TextPage, Initializable {
     private Button restoreEventBtn;
     @FXML
     private ChoiceBox<Event> restoreEventChoiceBox;
-    private List<Event> events;
-    private List<Event> restoredEvents;
+    private HashMap<Long, Event> events;
+    private HashMap<Long, Event> restoredEvents;
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
 
@@ -83,8 +82,8 @@ public class AdminCtrl implements TextPage, Initializable {
         this.mainCtrl = mainCtrl;
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
-        restoredEvents = new ArrayList<>();
-        events = new ArrayList<>();
+        restoredEvents = new HashMap<>();
+        events = new HashMap<>();
         file = new File("client/events.json");
     }
 
@@ -99,8 +98,8 @@ public class AdminCtrl implements TextPage, Initializable {
         this.mainCtrl = mainCtrl;
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
-        restoredEvents = new ArrayList<>();
-        events = new ArrayList<>();
+        restoredEvents = new HashMap<>();
+        events = new HashMap<>();
         this.file = file;
     }
 
@@ -117,19 +116,19 @@ public class AdminCtrl implements TextPage, Initializable {
      */
     public void saveToJson() {
         try {
-            List<Event> tempList;
+            HashMap<Long, Event> tempList;
             Event selectedEvent = eventsTable
                     .getSelectionModel().getSelectedItem();
             if (file.length() == 0) {
-                tempList = new ArrayList<>();
+                tempList = new HashMap<>();
             } else {
                 tempList = objectMapper.readValue(file,
-                        new TypeReference<List<Event>>() {});
+                        new TypeReference<HashMap<Long, Event>>() {});
             }
-            if (tempList.contains(selectedEvent)) {
-                tempList.remove(selectedEvent);
-                //Overwriting the event if it exists
-            }
+//            if (tempList.contains(selectedEvent)) {
+//                tempList.remove(selectedEvent);
+//                //Overwriting the event if it exists
+//            }
 
             try (PrintWriter writer = new PrintWriter(file)) {
                 saveToJsonProper(selectedEvent, writer, tempList);
@@ -148,7 +147,7 @@ public class AdminCtrl implements TextPage, Initializable {
      * @return the events.
      */
     public List<Event> getEvents() {
-        return events;
+        return new ArrayList<>(events.values());
     }
 
     /**
@@ -158,10 +157,10 @@ public class AdminCtrl implements TextPage, Initializable {
      * @param tempList The list of events from the JSON file
      */
     public void saveToJsonProper(Event selectedEvent,
-                                 Writer writer, List<Event> tempList) {
+                                 Writer writer, HashMap<Long, Event> tempList) {
         try {
             if (selectedEvent != null) {
-                tempList.add(selectedEvent);
+                tempList.put(selectedEvent.getId(), selectedEvent);
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle(Translator
@@ -204,7 +203,9 @@ public class AdminCtrl implements TextPage, Initializable {
      * @param events the events.
      */
     public void setEvents(List<Event> events) {
-        this.events = events;
+        for (Event event : events) {
+            this.events.put(event.getId(), event);
+        }
     }
 
     /**
@@ -213,19 +214,14 @@ public class AdminCtrl implements TextPage, Initializable {
     public void loadFromJson() {
         try {
             restoredEvents = objectMapper
-                    .readValue(file, new TypeReference<List<Event>>() {});
+                    .readValue(file,
+                            new TypeReference<HashMap<Long, Event>>() {});
         } catch (Exception e) {
             e.printStackTrace();
         }
-        for (Event e : restoredEvents) {
-            if (!restoreEventChoiceBox.getItems().contains(e)) {
-                restoreEventChoiceBox.getItems().add(e);
-            } else {
-                restoreEventChoiceBox.getItems()
-                        .remove(e);
-                restoreEventChoiceBox.getItems().add(e);
-                //Overwriting the event if it exists
-            }
+        restoreEventChoiceBox.getItems().clear();
+        for (Event e : restoredEvents.values()) {
+            restoreEventChoiceBox.getItems().add(e);
         }
         System.out.println("Loaded from JSON");
         restoreEventBtn.setVisible(true);
@@ -292,7 +288,7 @@ public class AdminCtrl implements TextPage, Initializable {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
-                    events.remove(selectedEvent);
+                    events.remove(selectedEvent.getId());
                     server.deleteEvent(selectedEvent, password);
                     refresh();
                 } catch (Exception e) {
@@ -310,38 +306,37 @@ public class AdminCtrl implements TextPage, Initializable {
                     .getTranslation(Text
                             .Admin.Alert.JSONUnselectedContent));
             alert.showAndWait();
-            return;
         }
     }
 
-    private void sortByEventName() {
-        SortedList<Event> sortedEvents = sortEvents(Comparator
-                .comparing(Event::getEventName));
-        eventsTable.setItems(sortedEvents);
-    }
-
-    private void sortByCreationDate() {
-        SortedList<Event> sortedEvents = sortEvents(Comparator
-                .comparing(Event::getEventCreationDate).reversed());
-        eventsTable.setItems(sortedEvents);
-    }
-
-    private void sortByLastActivity() {
-        SortedList<Event> sortedEvents = sortEvents(Comparator
-                .comparing(Event::getLastActivity).reversed());
-        eventsTable.setItems(sortedEvents);
-    }
-
-    /**
-     * Sorts the events using a comparator
-     * @param comparator the comparator to use
-     * @return  a sorted list of events
-     */
-    public SortedList<Event> sortEvents(Comparator<Event> comparator) {
-        ObservableList<Event> observableEvents =
-                FXCollections.observableArrayList(events);
-        return new SortedList<>(observableEvents, comparator);
-    }
+//    private void sortByEventName() {
+//        SortedList<Event> sortedEvents = sortEvents(Comparator
+//                .comparing(Event::getEventName));
+//        eventsTable.setItems(sortedEvents);
+//    }
+//
+//    private void sortByCreationDate() {
+//        SortedList<Event> sortedEvents = sortEvents(Comparator
+//                .comparing(Event::getEventCreationDate).reversed());
+//        eventsTable.setItems(sortedEvents);
+//    }
+//
+//    private void sortByLastActivity() {
+//        SortedList<Event> sortedEvents = sortEvents(Comparator
+//                .comparing(Event::getLastActivity).reversed());
+//        eventsTable.setItems(sortedEvents);
+//    }
+//
+//    /**
+//     * Sorts the events using a comparator
+//     * @param comparator the comparator to use
+//     * @return  a sorted list of events
+//     */
+//    public SortedList<Event> sortEvents(Comparator<Event> comparator) {
+//        ObservableList<Event> observableEvents =
+//                FXCollections.observableArrayList(events);
+//        return new SortedList<>(observableEvents, comparator);
+//    }
 
 
     /**
@@ -374,8 +369,8 @@ public class AdminCtrl implements TextPage, Initializable {
 //        events = server.getAllEvents(password);
 
         server.registerForMessages("/topic/admin", Event.class, e -> {
-            events.remove(e); //Overwriting the event if it exists
-            events.add(e);
+//            events.remove(e); //Overwriting the event if it exists
+            events.put(e.getId(), e);
             System.out.println("Received event: " + e.getEventName());
             refresh();
         });
@@ -386,6 +381,7 @@ public class AdminCtrl implements TextPage, Initializable {
                         "eventCreationDate"));
         lastActivity.setCellValueFactory(
                 new PropertyValueFactory<Event, LocalDateTime>("lastActivity"));
+//        refresh();
 
     }
     /**
@@ -393,7 +389,7 @@ public class AdminCtrl implements TextPage, Initializable {
      */
     public void refresh() {
         ObservableList<Event> eventObservableList =
-                FXCollections.observableList(events);
+                FXCollections.observableArrayList(events.values());
         eventsTable.setItems(eventObservableList);
         refreshText();
     }

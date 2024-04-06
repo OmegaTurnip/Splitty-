@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
 import server.financial.ExchangeRateAPI;
 import server.financial.FrankfurterExchangeRateAPI;
-import server.util.DebtSimplifier;
+import server.financial.DebtSimplifier;
 
 import java.time.LocalDate;
 import java.util.Currency;
@@ -76,17 +76,6 @@ public class EventController {
 //    }
 
     /**
-     * Get all events
-     * @return  All events
-     */
-    @GetMapping(path = { "", "/" })
-    @ResponseBody
-    public ResponseEntity<List<Event>> allEvents() {
-        List<Event> events = eventRepository.findAll();
-        return ResponseEntity.ok(events);
-    }
-
-    /**
      * Create an event
      * @param event The event to create
      * @return  The created event
@@ -94,7 +83,7 @@ public class EventController {
     @PostMapping(path = { "", "/" })
     @ResponseBody
     public ResponseEntity<Event> createEvent(@RequestBody Event event) {
-        eventRepository.saveAndFlush(event);
+        eventRepository.save(event);
         messagingTemplate.convertAndSend("/topic/admin", event);
         return ResponseEntity.ok(event);
     }
@@ -134,9 +123,9 @@ public class EventController {
     }
 
     /**
-     * Get an event by invite code.
+     * Get events by invite codes.
      * @param inviteCodes The list of invite codes
-     * @return The event
+     * @return The events
      */
     @GetMapping("/invite/{inviteCodes}")
     @ResponseBody
@@ -147,7 +136,7 @@ public class EventController {
         List<String> inviteCodesList = List.of(inviteCodes.split(","));
         List<Event> events = eventRepository
                 .findByInviteCodeIn(inviteCodesList);
-        if (events == null) {
+        if (events == null || events.isEmpty()) {
             return ResponseEntity.ok(new ArrayList<>());
 //            return ResponseEntity.notFound().build();
         }

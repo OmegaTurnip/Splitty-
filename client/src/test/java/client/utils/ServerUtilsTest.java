@@ -103,4 +103,22 @@ class ServerUtilsTest {
         assertEquals(events.get(0), test1);
 
     }
+
+    @Test
+    void generateWsURLFromHTTPTest() {
+        String http = "http://localhost:8080/";
+        String ws = "ws://localhost:8080/websocket";
+        String result = sut.generateWsURL(http);
+
+        assertEquals(result, ws);
+    }
+
+    @Test
+    void generateWsURLFromHTTPSTest() {
+        String http = "https://localhost:8080/";
+        String ws = "ws://localhost:8080/websocket";
+        String result = sut.generateWsURL(http);
+
+        assertEquals(result, ws);
+    }
 }

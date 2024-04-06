@@ -68,27 +68,27 @@ class AdminCtrlTest {
 //        assertEquals(expectedJson, stringWriter.toString());
 //        Mockito.verify(objectMapper).writeValueAsString(events);
 //    }
-    @Test
-    void sortEventsOnName() {
-        SortedList<Event> sortedList = sut.sortEvents(Comparator.comparing(Event::getEventName));
-        assertEquals("A", sortedList.get(0).getEventName());
-
-    }
-
-    @Test
-    void sortEventsOnLastActivity() {
-        // B, A. A is latest.
-        sut.getEvents().get(0).updateLastActivity();
-        // B, A. B is latest.
-        SortedList<Event> sortedList = sut.sortEvents(Comparator.comparing(Event::getLastActivity).reversed());
-        assertEquals("B", sortedList.get(0).getEventName());
-    }
-
-    @Test
-    void sortEventsOnCreationDate() {
-        LocalDate creationDate = LocalDate.of(1993, 4, 5);
-        sut.getEvents().get(0).setEventCreationDate(creationDate);
-        SortedList<Event> sortedList = sut.sortEvents(Comparator.comparing(Event::getEventCreationDate).reversed());
-        assertEquals(creationDate, sortedList.get(1).getEventCreationDate());
-    }
+//    @Test
+//    void sortEventsOnName() {
+//        SortedList<Event> sortedList = sut.sortEvents(Comparator.comparing(Event::getEventName));
+//        assertEquals("A", sortedList.get(0).getEventName());
+//
+//    }
+//
+//    @Test
+//    void sortEventsOnLastActivity() {
+//        // B, A. A is latest.
+//        sut.getEvents().get(0).updateLastActivity();
+//        // B, A. B is latest.
+//        SortedList<Event> sortedList = sut.sortEvents(Comparator.comparing(Event::getLastActivity).reversed());
+//        assertEquals("B", sortedList.get(0).getEventName());
+//    }
+//
+//    @Test
+//    void sortEventsOnCreationDate() {
+//        LocalDate creationDate = LocalDate.of(1993, 4, 5);
+//        sut.getEvents().get(0).setEventCreationDate(creationDate);
+//        SortedList<Event> sortedList = sut.sortEvents(Comparator.comparing(Event::getEventCreationDate).reversed());
+//        assertEquals(creationDate, sortedList.get(1).getEventCreationDate());
+//    }
 }
