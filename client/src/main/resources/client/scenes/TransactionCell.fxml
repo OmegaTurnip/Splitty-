@@ -7,13 +7,13 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<StackPane prefHeight="17.0" prefWidth="179.0" styleClass="event-cell" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.TransactionCellController">
+<StackPane prefHeight="44.0" styleClass="event-cell" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.TransactionCellController">
    <children>
       <HBox alignment="CENTER" prefHeight="22.0" prefWidth="190.0">
          <children>
-            <Label id="transactionInfoLabel" fx:id="transactionInfoLabel" alignment="CENTER" prefHeight="34.0" prefWidth="106.0" styleClass="list-cell" text="Label" textFill="#fefdfd">
+            <Label id="transactionInfoLabel" fx:id="transactionInfoLabel" alignment="CENTER" graphicTextGap="0.0" prefHeight="22.0" prefWidth="318.0" styleClass="list-cell" stylesheets="@style.css" text="Label" textFill="#fefdfd" wrapText="true" HBox.hgrow="ALWAYS">
                <font>
-                  <Font name="Garamond" size="9.0" />
+                  <Font name="Garamond" size="10.0" />
                </font>
             </Label>
             <HBox alignment="CENTER" prefHeight="35.0" prefWidth="110.0">
