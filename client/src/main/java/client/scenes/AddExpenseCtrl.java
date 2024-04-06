@@ -291,6 +291,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
 
     }
 
+
     private boolean verifyInput() {
         if (!verifyPrice(price.getText())) return false;
         if (expensePayer == null

@@ -11,7 +11,7 @@ public class Tag {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
+    private Long tagId;
     @Id
     @ManyToOne
     @JoinColumn(name="event_id", nullable = false)
@@ -56,7 +56,7 @@ public class Tag {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Tag tag = (Tag) o;
-        return Objects.equals(id, tag.id)
+        return Objects.equals(tagId, tag.tagId)
                 && Objects.equals(event, tag.event);
     }
 
@@ -96,16 +96,24 @@ public class Tag {
      * Getter method
      * @return id
      */
-    public Long getId() {
-        return id;
+    public Long getTagId() {
+        return tagId;
     }
 
     /**
      * Setter method
      * @param id id of tag
      */
-    public void setId(Long id) {
-        this.id = id;
+    public void setTagId(Long id) {
+        this.tagId = id;
+    }
+
+    /**
+     * Sets the tag of the event
+     * @param event Event of the tag
+     */
+    public void setEvent(Event event) {
+        this.event = event;
     }
 
     /**
@@ -126,7 +134,9 @@ public class Tag {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(id, event);
+        return Objects.hash(tagId, event);
     }
 }
+
+
 
