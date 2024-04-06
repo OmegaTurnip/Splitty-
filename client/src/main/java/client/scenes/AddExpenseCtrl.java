@@ -275,7 +275,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         try {
             if (verifyInput()) {
                 Transaction expense = getExpense();
-                saveEvent(event);
+                server.saveEvent(event);
                 System.out.println("Added expense " + expense);
             }
         } catch (WebApplicationException e) {
@@ -291,9 +291,6 @@ public class AddExpenseCtrl implements Initializable, TextPage {
 
     }
 
-    private void saveEvent(Event event){
-        server.saveEvent(event);
-    }
 
     private boolean verifyInput() {
         if (!verifyPrice(price.getText())) return false;
@@ -497,6 +494,8 @@ public class AddExpenseCtrl implements Initializable, TextPage {
      * Updates {@code participantList} to the checked participants
      */
     public void getCheckedParticipants() {
+        // added below
+        participantList.clear();
         for (Object o : participants.getCheckModel().getCheckedItems()) {
             if (!Objects.equals(o, "Everyone")) {
                 participantList.add((Participant) o);

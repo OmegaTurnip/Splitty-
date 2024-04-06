@@ -124,6 +124,7 @@ public class EventController {
             ));
             List<Participant> participants = new ArrayList<>();
             for (Participant participant : transaction.getParticipants()) {
+                // added if statement below, but i think the problem is in the get Participants
                 participants.add(event.getParticipantById(
                         participant.getParticipantId()
                 ));
