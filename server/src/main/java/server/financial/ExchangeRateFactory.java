@@ -211,6 +211,8 @@ public class ExchangeRateFactory {
                         // remove to update any old exchange rates
                         exchangeRates.remove(result);
                         exchangeRates.add(result);
+                        knownCurrencies.add(result.getFrom());
+                        knownCurrencies.add(result.getTo());
                     } catch (Exception e) {
                         // do nothing, as invalid files are invalid and you cant
                         // make them be any more valid than that :)

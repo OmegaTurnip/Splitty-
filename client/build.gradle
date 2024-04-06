@@ -37,4 +37,9 @@ dependencies {
 	implementation 'com.google.inject:guice:7.0.0'
 	implementation 'org.openjfx:javafx-controls:21.0.2'
 	implementation 'org.openjfx:javafx-fxml:21.0.2'
+
+	testImplementation "org.testfx:testfx-core:4.0.18"
+	testImplementation "org.testfx:testfx-junit5:4.0.18"
+	testImplementation 'org.testfx:openjfx-monocle:21.0.2'
+	testImplementation 'org.hamcrest:hamcrest:2.2'
 }

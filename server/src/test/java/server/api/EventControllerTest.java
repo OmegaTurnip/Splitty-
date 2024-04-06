@@ -8,13 +8,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import server.financial.ExchangeRateFactory;
-import server.util.DebtSimplifier;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class EventControllerTest {
@@ -40,17 +39,32 @@ public class EventControllerTest {
         events.add(testEvent1);
     }
 
-//    @Test
-//    void saveEventsTest() {
-//        var retEvent = sut.saveEvents(events);
-//        assertEquals(retEvent.getBody(), events);
-//    }
+    @Test
+    void createEventTest() {
+        var retEvent = sut.createEvent(testEvent1);
+        Mockito.doNothing().when(sim).convertAndSend("/topic/admin", testEvent1);
+        assertEquals(retEvent.getBody(), testEvent1);
+
+    }
 
     @Test
     void saveEventTest() {
+        Mockito.doNothing().when(sim).convertAndSend("/topic/admin", testEvent1);
+        sut.saveEvent(testEvent1);
+        var retEvent = eventRepository.findById(testEvent1.getId()).get();
+        assertEquals(retEvent.getEventName(), "testEvent1");
+        testEvent1.setEventName("newName");
+        sut.saveEvent(testEvent1);
+        retEvent = eventRepository.findById(testEvent1.getId()).get();
+        assertEquals(retEvent.getEventName(), "newName");
+    }
+
+    @Test
+    void saveEventBadNameTest() {
+        testEvent1.setEventName("");
+        Mockito.doNothing().when(sim).convertAndSend("/topic/admin", testEvent1);
         var retEvent = sut.saveEvent(testEvent1);
-        Mockito.doNothing().when(sim).convertAndSend("/topic/event", testEvent1);
-        assertEquals(retEvent.getBody(), testEvent1);
+        assertTrue(retEvent.getStatusCode().is4xxClientError());
     }
 
     @Test
@@ -59,10 +73,30 @@ public class EventControllerTest {
         var retEvent = sut.getEvent(testEvent1.getId());
         assertEquals(retEvent.getBody(), testEvent1);
     }
-//    @Test
-//    void getEventByInviteCodeTest() {
-//        eventRepository.save(testEvent1);
-//        var retEvents = sut.getEventByInviteCode("43fabbfca0644e5db1d0c1e3cb0d5416");
-//        assertEquals(retEvents.getBody(), events);
-//    }
+
+    @Test
+    void getEventTestNonExistentTest() {
+        var retEvent = sut.getEvent(100L);
+        assertTrue(retEvent.getStatusCode().is4xxClientError());
+    }
+    @Test
+    void getEventsByInviteCodeTest() {
+        eventRepository.save(testEvent1);
+        var retEvents = sut.getEventsByInviteCode("43fabbfca0644e5db1d0c1e3cb0d5416");
+        assertEquals(retEvents.getBody(), events);
+    }
+
+    @Test
+    void getEventsByInviteCodeEmptyCodesTest() {
+        var retEvents = sut.getEventsByInviteCode("");
+        assertTrue(retEvents.getBody().isEmpty());
+
+    }
+
+    @Test
+    void getEventsByInviteCodeEmptyEventsTest() {
+        var retEvents = sut.getEventsByInviteCode("43fabbfca0644e5db1d0c1e3cb0d5416");
+        assertTrue(retEvents.getBody().isEmpty());
+
+    }
 }
