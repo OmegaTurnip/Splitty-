@@ -134,6 +134,6 @@ class EventTest {
       Tag tag = new Tag("school", "green");
       tag.setTagId(2L);
       testEvent.addTag(tag);
-      assertEquals(tag, testEvent.getTagById(2L));
+      assertSame(tag, testEvent.getTagById(2L));
     }
 }
