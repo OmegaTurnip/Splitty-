@@ -321,6 +321,10 @@ public class AddParticipantCtrl implements TextPage, Initializable {
         this.participantToOverwrite = participant;
     }
 
+    /**
+     * Getter.
+     * @return The username text field.
+     */
     public TextField getUsernameTextField() {
         return usernameTextField;
     }
