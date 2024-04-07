@@ -14,6 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 
+import javax.swing.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
@@ -33,6 +34,7 @@ public class AddParticipantCtrl implements TextPage, Initializable {
     private Button addParticipant;
     @FXML
     private TextField usernameTextField;
+
     @FXML
     private TextField emailTextField;
     @FXML
@@ -40,9 +42,8 @@ public class AddParticipantCtrl implements TextPage, Initializable {
     @FXML
     private TextField bicTextField;
 
-    private final ServerUtils server;
-    private final MainCtrl mainCtrl;
-    private final EventOverviewCtrl eventOverviewCtrl;
+    private ServerUtils server;
+    private MainCtrl mainCtrl;
     private Event event;
 
     private Participant participantToOverwrite;
@@ -51,14 +52,11 @@ public class AddParticipantCtrl implements TextPage, Initializable {
      * Initializes the controller
      * @param server .
      * @param mainCtrl .
-     * @param eventOverviewCtrl .
      */
     @Inject
-    public AddParticipantCtrl(ServerUtils server, MainCtrl mainCtrl,
-                              EventOverviewCtrl eventOverviewCtrl) {
+    public AddParticipantCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
-        this.eventOverviewCtrl = eventOverviewCtrl;
     }
 
     /**
@@ -74,6 +72,38 @@ public class AddParticipantCtrl implements TextPage, Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         fetchLanguages(languages);
+    }
+
+    /**
+     * Getter.
+     * @return The email text field.
+     */
+    public TextField getEmailTextField() {
+        return emailTextField;
+    }
+
+    /**
+     * Getter.
+     * @return The iban text field.
+     */
+    public TextField getIbanTextField() {
+        return ibanTextField;
+    }
+
+    /**
+     * Getter.
+     * @return The bic text field.
+     */
+    public TextField getBicTextField() {
+        return bicTextField;
+    }
+
+    /**
+     * Getter.
+     * @return The languages menu.
+     */
+    public Menu getLanguages() {
+        return languages;
     }
 
     /**
@@ -117,6 +147,14 @@ public class AddParticipantCtrl implements TextPage, Initializable {
     }
 
     /**
+     * Getter.
+     * @return The cancel button.
+     */
+    public Button getCancel() {
+        return cancel;
+    }
+
+    /**
      * Cancels the action in the addParticipant window
      */
     public void cancel(){
@@ -131,10 +169,6 @@ public class AddParticipantCtrl implements TextPage, Initializable {
         if(createParticipant()){
             this.mainCtrl.showEventOverview(event);
         }
-    }
-
-    private Participant getParticipant(){
-        return null;
     }
 
 
@@ -153,7 +187,7 @@ public class AddParticipantCtrl implements TextPage, Initializable {
      * @throws WebApplicationException Alert when something goes wrong
      */
 
-    public boolean createParticipant() throws WebApplicationException{
+    public boolean createParticipant() throws WebApplicationException {
         try{
             emptyCheck();
             formatCheck();
@@ -252,7 +286,6 @@ public class AddParticipantCtrl implements TextPage, Initializable {
     private static final Pattern BIC_PATTERN = Pattern.compile(
             "^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}(?>[A-Z0-9]{3})?$"
     );
-
     /**
      * Checks whether the supplied email is valid.
      * @param   email
@@ -262,7 +295,6 @@ public class AddParticipantCtrl implements TextPage, Initializable {
     static boolean isValidEmail(String email) {
         return email.isEmpty() || EMAIL_PATTERN.matcher(email).matches();
     }
-
     /**
      * Checks whether the supplied IBAN is valid.
      * @param   iban
@@ -272,7 +304,6 @@ public class AddParticipantCtrl implements TextPage, Initializable {
     static boolean isValidIban(String iban) {
         return iban.isEmpty() || IBAN_PATTERN.matcher(iban).matches();
     }
-
     /**
      * Checks whether the supplied BIC is valid.
      * @param   bic
@@ -282,12 +313,70 @@ public class AddParticipantCtrl implements TextPage, Initializable {
     static boolean isValidBic(String bic) {
         return bic.isEmpty() || BIC_PATTERN.matcher(bic).matches();
     }
-
     /**
      * Setter.
      * @param participant The participant to be set.
      */
     public void setParticipant(Participant participant) {
         this.participantToOverwrite = participant;
+    }
+
+    public TextField getUsernameTextField() {
+        return usernameTextField;
+    }
+
+    /**
+     * Getter.
+     * @return The title label.
+     */
+    public Label getTitle() {
+        return title;
+    }
+
+    /**
+     * Getter.
+     * @return The username label.
+     */
+    public Label getUsername() {
+        return username;
+    }
+
+    /**
+     * Getter.
+     * @return The add participant label.
+     */
+    public Button getAdd() {
+        return addParticipant;
+    }
+
+    /**
+     * Getter.
+     * @return The server utils.
+     */
+    public ServerUtils getServer() {
+        return server;
+    }
+    /**
+     * Getter.
+     * @return The main controller.
+     */
+    public MainCtrl getMainCtrl() {
+        return mainCtrl;
+    }
+
+    /**
+     * Setter.
+     * @param server The server utils to be set.
+     */
+    public void setServer(ServerUtils server) {
+        this.server = server;
+    }
+
+    /**
+     * Setter.
+     * @param mainCtrl The main controller to be set.
+     */
+    public void setMainCtrl(MainCtrl mainCtrl) {
+        this.mainCtrl = mainCtrl;
     }
 }
