@@ -104,8 +104,6 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 new ParticipantCellFactory());
         expensesListView.setCellFactory(param ->
                 new TransactionCellFactory());
-<<<<<<< HEAD
-=======
         server.registerForUpdates(t -> updateTransactions(t), event);
         server.registerForMessages("/topic/admin", Event.class, e -> {
             if (event.equals(e)) event = e; //Overwrite current event
@@ -128,7 +126,6 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 });
             }
         });
->>>>>>> main
         refresh();
     }
 
@@ -136,24 +133,6 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      * Refreshes the page.
      */
     public void refresh() {
-<<<<<<< HEAD
-        server.registerForUpdates(t -> updateTransactions(t), event);
-        refreshText();
-        if (event != null) {
-            ObservableList<Participant> observableParticipants =
-                    FXCollections.observableArrayList(event.getParticipants());
-            participantsListView.setItems(observableParticipants);
-            ObservableList<Object> participantsEvent =
-                    FXCollections.observableArrayList(event.getParticipants());
-            expensesDropDown.setItems(participantsEvent);
-            expensesDropDown.setCellFactory(lv -> new ParticipantListCell());
-            expensesDropDown.setConverter(new ParticipantStringConverter());
-            getExpenses();
-        }
-
-    }
-
-=======
         Platform.runLater(() -> {
             refreshText();
             if (event != null) {
@@ -191,7 +170,6 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         return mainCtrl;
     }
 
->>>>>>> main
     public static class ParticipantStringConverter
             extends StringConverter<Object> {
 
