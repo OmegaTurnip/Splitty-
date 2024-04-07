@@ -227,7 +227,7 @@ public class AddParticipantCtrl implements TextPage, Initializable {
             "^[A-Za-z0-9+_.-]+@.+$"
     );
     private static final Pattern IBAN_PATTERN = Pattern.compile(
-            "^[A-Z]{2}[0-9]{2}(?: ?[0-9]{4}){4}(?: ?[0-9]{1,2})?$"
+            "[A-Z0-9\\s]+"
     );
     private static final Pattern BIC_PATTERN = Pattern.compile(
             "^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}(?>[A-Z0-9]{3})?$"
