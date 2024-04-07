@@ -1,6 +1,7 @@
 package client.scenes;
 
 
+import client.language.Formatter;
 import client.language.Text;
 import client.language.TextPage;
 import client.language.Translator;
@@ -13,6 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 
@@ -23,7 +25,6 @@ public class EditEventNameCtrl extends TextPage implements Initializable {
     private final EventOverviewCtrl eventOverviewCtrl;
 
     private AlertWrapper alertWrapper;
-
 
 
     @FXML
@@ -38,9 +39,10 @@ public class EditEventNameCtrl extends TextPage implements Initializable {
     private Event event;
 
     /**
-     * Constructer
-     * @param server serverUtils file
-     * @param mainCtrl mainCtrl file
+     * Constructor
+     *
+     * @param server            serverUtils file
+     * @param mainCtrl          mainCtrl file
      * @param eventOverviewCtrl eventOverviewCtrl file
      */
     @Inject
@@ -54,13 +56,11 @@ public class EditEventNameCtrl extends TextPage implements Initializable {
 
     /**
      * Initializes the controller
-     * @param location
-     * The location used to resolve relative paths for the root object, or
-     * {@code null} if the location is not known.
      *
-     * @param resources
-     * The resources used to localize the root object, or {@code null} if
-     * the root object was not localized.
+     * @param location  The location used to resolve relative paths for the root object, or
+     *                  {@code null} if the location is not known.
+     * @param resources The resources used to localize the root object, or {@code null} if
+     *                  the root object was not localized.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -69,6 +69,7 @@ public class EditEventNameCtrl extends TextPage implements Initializable {
 
     /**
      * Setter.
+     *
      * @param event Event to be set.
      */
     public void setEvent(Event event) {
@@ -78,6 +79,7 @@ public class EditEventNameCtrl extends TextPage implements Initializable {
 
     /**
      * sets an alertWrapper
+     *
      * @param alertWrapper alertWrapper
      */
     public void setAlertWrapper(AlertWrapper alertWrapper) {
@@ -88,8 +90,8 @@ public class EditEventNameCtrl extends TextPage implements Initializable {
     /**
      * Refreshes the text
      */
-    public void refreshText(){
-        if(event!= null){
+    public void refreshText() {
+        if (event != null) {
             eventName.setText(event.getEventName());
         }
         eventInput.setText(
@@ -106,25 +108,18 @@ public class EditEventNameCtrl extends TextPage implements Initializable {
     /**
      * Return to the eventoverview
      */
-    public void cancel(){
+    public void cancel() {
         eventOverviewCtrl.refreshText();
         mainCtrl.showEventOverview(event);
     }
 
 
-
     /**
      * Changes the name and saves it to the database
      */
-    public void changeName(){
-        if (!event.getEventName().equals(eventName.getText())){
-            ButtonType result = alertWrapper.showAlertButton(
-                            Alert.AlertType.CONFIRMATION,
-                    "Name change confirmation",
-                    "Are you sure you want to change the name of "+
-                    "the event '" + event.getEventName()+ "' to the following: "
-                    + eventName.getText() + ".");
-            if (result == ButtonType.OK){
+    public void changeName() {
+        if (!event.getEventName().equals(eventName.getText())) {
+            if (sendConfirmationAlert() == ButtonType.OK) {
                 event.setEventName(eventName.getText());
                 server.saveEvent(event);
                 mainCtrl.showEventOverview(event);
@@ -133,8 +128,22 @@ public class EditEventNameCtrl extends TextPage implements Initializable {
         mainCtrl.showEventOverview(event);
     }
 
+    private ButtonType sendConfirmationAlert() {
+        HashMap<String, String> parameters = new HashMap<>();
+        parameters.put("old event", event.getEventName());
+        parameters.put("new event", eventName.getText());
+        return alertWrapper.showAlertButton(
+                Alert.AlertType.CONFIRMATION,
+                Translator.getTranslation(
+                        Text.EditName.Alert.confirmContent),
+                Formatter.format(Translator.getTranslation(
+                        Text.EditName.Alert.confirmContent),
+                        parameters));
+    }
+
     /**
      * Setter for mainCtrl
+     *
      * @param mainCtrl the MainCtrl to set
      */
     public void setMainCtrl(MainCtrl mainCtrl) {

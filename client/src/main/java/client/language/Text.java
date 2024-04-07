@@ -40,7 +40,7 @@ public class Text {
         }
     }
 
-    public static final class Menu{
+    public static final class Menu {
         private static final String level = "Menu.";
 
         public static final String Languages = level + "Languages";
@@ -105,7 +105,7 @@ public class Text {
         }
     }
 
-    public static final class AddParticipant{
+    public static final class AddParticipant {
         private static final String level = "AddParticipant.";
 
         public static final String Username = level + "Username";
@@ -117,7 +117,7 @@ public class Text {
         public static final String Title = level + "Title";
         public static final String EditTitle = level + "EditTitle";
 
-        public static final class Alert{
+        public static final class Alert {
             public static final String level = AddParticipant.level + "Alert.";
             public static final String NoName = level + "NoName";
 
@@ -148,6 +148,7 @@ public class Text {
             public static final String removeYourEvents =
                     level + "removeYourEvents";
         }
+
         public static final class Buttons {
             public static final String level = StartUp.level + "Buttons.";
             public static final String NewEventButton =
@@ -170,12 +171,19 @@ public class Text {
         }
     }
 
-    public static final class EditName{
-        private static final String level =  "EditName.";
+    public static final class EditName {
+        private static final String level = "EditName.";
 
         public static final String inputName = level + "inputName";
 
         public static final String confirm = level + "confirm";
+
+        public static final class Alert {
+            public static final String level = EditName.level + "Alert.";
+            public static final String confirmTitle = level + "confirmTitle";
+            public static final String confirmContent = level
+                    + "confirmContent";
+        }
     }
 
     public static final class Admin {
@@ -243,6 +251,7 @@ public class Text {
                 level + "participantsPrompt";
         public static final String expenseTypePrompt = level + "typePrompt";
         public static final String participantsEveryone = level + "everyone";
+
         public static final class Button {
             public static final String level = AddExpense.level + "Buttons.";
             public static final String addExpenseButton = level + "addExpense";
