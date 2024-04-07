@@ -112,10 +112,12 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 Platform.runLater(() -> {
                     mainCtrl.showStartUp();
                     Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle(Translator.getTranslation(Text.EventOverview
+                    alert.setTitle(Translator
+                            .getTranslation(Text.EventOverview
                             .Alert.deletedEventTitle));
                     alert.setHeaderText(null);
-                    alert.setContentText(Translator.getTranslation(Text.EventOverview
+                    alert.setContentText(Translator
+                            .getTranslation(Text.EventOverview
                             .Alert.deletedEventContent));
                     alert.showAndWait();
                 });
