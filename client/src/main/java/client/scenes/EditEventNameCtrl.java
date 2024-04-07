@@ -149,8 +149,7 @@ public class EditEventNameCtrl implements TextPage, Initializable {
      */
     public void changeName(){
         if (!event.getEventName().equals(eventName.getText())){
-            ButtonType
-                    result = alertWrapper.showAlertButton(
+            ButtonType result = alertWrapper.showAlertButton(
                             Alert.AlertType.CONFIRMATION,
                     "Name change confirmation",
                     "Are you sure you want to change the name of "+
