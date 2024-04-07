@@ -23,7 +23,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
-import org.checkerframework.checker.units.qual.C;
 
 import java.io.IOException;
 import java.net.URL;
