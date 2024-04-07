@@ -14,7 +14,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 
-import javax.swing.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
@@ -233,24 +232,6 @@ public class AddParticipantCtrl implements TextPage, Initializable {
                             Text.AddParticipant.Alert.NoName
                                     ), 422);
         }
-//        if (emailTextField.getText().isEmpty()) {
-//            throw new WebApplicationException(
-//                    Translator.getTranslation(
-//                            Text.AddParticipant.Alert.NoMail
-//                    ), 422);
-//        }
-//        if (ibanTextField.getText().isEmpty()) {
-//            throw new WebApplicationException(
-//                    Translator.getTranslation(
-//                            Text.AddParticipant.Alert.NoIBAN
-//                    ), 422);
-//        }
-//        if (bicTextField.getText().isEmpty()) {
-//            throw new WebApplicationException(
-//                    Translator.getTranslation(
-//                            Text.AddParticipant.Alert.NoBIC
-//                    ), 422);
-//        }
     }
 
     /**
