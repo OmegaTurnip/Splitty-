@@ -610,4 +610,48 @@ public class AddExpenseCtrl implements Initializable, TextPage {
 //                        Currency.getInstance(currency.getValue())),
                 participantList, expenseTag);
     }
+
+    public void setAddExpense(Button addExpense) {
+        this.addExpense = addExpense;
+    }
+
+    public void setCurrency(ChoiceBox<String> currency) {
+        this.currency = currency;
+    }
+
+    public void setPrice(TextField price) {
+        this.price = price;
+    }
+
+    public void setPayer(ChoiceBox<Object> payer) {
+        this.payer = payer;
+    }
+
+    public void setExpensePayer(Participant expensePayer) {
+        this.expensePayer = expensePayer;
+    }
+
+    public void setParticipants(CheckComboBox<Object> participants) {
+        this.participants = participants;
+    }
+
+    public void setParticipantList(List<Participant> participantList) {
+        this.participantList = participantList;
+    }
+
+    public void setDate(DatePicker date) {
+        this.date = date;
+    }
+
+    public void setExpenseName(TextField expenseName) {
+        this.expenseName = expenseName;
+    }
+
+    public void setExpenseType(ComboBox<Object> expenseType) {
+        this.expenseType = expenseType;
+    }
+
+    public void setExpenseTag(Tag expenseTag) {
+        this.expenseTag = expenseTag;
+    }
 }

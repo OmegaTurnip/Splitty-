@@ -482,10 +482,15 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         this.event = event;
     }
 
+
     /**
      * Shows the startUpWindow
      */
     public void returnToOverview() {
         mainCtrl.showStartUp();
+    }
+
+    public ListView<Transaction> getExpensesListView() {
+        return expensesListView;
     }
 }
