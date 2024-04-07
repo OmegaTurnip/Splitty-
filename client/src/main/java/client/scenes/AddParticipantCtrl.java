@@ -165,7 +165,7 @@ public class AddParticipantCtrl implements TextPage, Initializable {
      * Method still in construction
      */
     public void addParticipant(){
-        if(createParticipant()){
+        if(saveParticipant()){
             this.mainCtrl.showEventOverview(event);
         }
     }
@@ -186,29 +186,14 @@ public class AddParticipantCtrl implements TextPage, Initializable {
      * @throws WebApplicationException Alert when something goes wrong
      */
 
-    public boolean createParticipant() throws WebApplicationException {
+    public boolean saveParticipant() throws WebApplicationException {
         try{
             emptyCheck();
             formatCheck();
             if (participantToOverwrite != null) {
-                participantToOverwrite.setName(usernameTextField.getText());
-                participantToOverwrite.setEmail(emailTextField.getText());
-                participantToOverwrite.setIban(ibanTextField.getText());
-                participantToOverwrite.setBic(bicTextField.getText());
-                Participant returnedP = server
-                        .saveParticipant(participantToOverwrite);
-                event.removeParticipant(participantToOverwrite);
-                event.addParticipant(returnedP);
+                overwriteParticipant();
             } else {
-                Participant participant =
-                        event.addParticipant(usernameTextField.getText(),
-                                emailTextField.getText(),
-                                ibanTextField.getText(),
-                                bicTextField.getText());
-                System.out.println("Created " + participant);
-                Participant returnedP = server.saveParticipant(participant);
-                event.removeParticipant(participant);
-                event.addParticipant(returnedP);
+                createParticipant();
             }
         } catch(WebApplicationException e){
             e.printStackTrace();
@@ -220,6 +205,32 @@ public class AddParticipantCtrl implements TextPage, Initializable {
         }
 
         return true;
+    }
+
+    private void createParticipant() {
+        Participant participant =
+                event.addParticipant(usernameTextField.getText(),
+                        emailTextField.getText(),
+                        ibanTextField.getText(),
+                        bicTextField.getText());
+        System.out.println("Created " + participant);
+        Participant returnedP = server.saveParticipant(participant);
+        event.removeParticipant(participant);
+        event.addParticipant(returnedP);
+    }
+
+    private void overwriteParticipant() {
+        participantToOverwrite.setName(usernameTextField.getText());
+        participantToOverwrite.setEmail(emailTextField.getText());
+        participantToOverwrite.setIban(ibanTextField.getText());
+        participantToOverwrite.setBic(bicTextField.getText());
+//        Participant returnedP = server
+//                .saveParticipant(participantToOverwrite);
+//        event.removeParticipant(participantToOverwrite);
+//        event.addParticipant(returnedP);
+        event.removeParticipant(participantToOverwrite);
+        event.addParticipant(participantToOverwrite);
+        server.saveEvent(event);
     }
 
     /**

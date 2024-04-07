@@ -4,10 +4,6 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.4'
 }
 
-bootRun {
-	workingDir = projectDir // This is needed to run the server from the root directory
-}
-
 java {
 	sourceCompatibility = '21'
 }

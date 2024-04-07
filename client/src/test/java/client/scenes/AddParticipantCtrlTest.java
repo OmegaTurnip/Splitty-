@@ -116,7 +116,7 @@ class AddParticipantCtrlTest extends ApplicationTest {
         Mockito.when(server.saveParticipant(any())).thenReturn(testParticipant2); //Saving an event makes id non-null
 
         sut.getUsernameTextField().setText("testParticipant2");
-        sut.createParticipant();
+        sut.saveParticipant();
 
         verify(server, times(1)).saveParticipant(any());
         assertEquals(testParticipant2, testEvent1.getParticipants().get(1));
@@ -131,7 +131,7 @@ class AddParticipantCtrlTest extends ApplicationTest {
         testEvent1.removeParticipant(edited);
         Mockito.when(server.saveParticipant(any())).thenReturn(edited);
         sut.getUsernameTextField().setText("edited");
-        sut.createParticipant();
+        sut.saveParticipant();
         verify(server, times(1)).saveParticipant(any());
         assertEquals(edited, testEvent1.getParticipants().get(0));
     }
@@ -141,7 +141,7 @@ class AddParticipantCtrlTest extends ApplicationTest {
         Platform.runLater(() -> {
             sut.getUsernameTextField().setText("");
             Mockito.when(server.saveParticipant(any())).thenReturn(testParticipant1);
-            assertFalse(sut.createParticipant());
+            assertFalse(sut.saveParticipant());
 //            WaitForAsyncUtils.waitForFxEvents();
 //            FxAssert.verifyThat(window(Alert.AlertType.ERROR.name()), WindowMatchers.isShowing());
         });
