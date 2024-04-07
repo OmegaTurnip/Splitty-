@@ -2,6 +2,8 @@ package client.scenes;
 
 
 
+import client.language.Text;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -63,8 +65,12 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     private ListView<Participant> participantsListView;
     @FXML
     private ListView<Transaction> expensesListView;
+    @FXML
+    private MenuItem returnToOverview;
+    @FXML
+    private Menu rtoButton;
     private final ServerUtils server;
-    private final MainCtrl mainCtrl;
+    private MainCtrl mainCtrl;
 
     private TransactionCellController transactionCellController;
 
@@ -99,6 +105,27 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         expensesListView.setCellFactory(param ->
                 new TransactionCellFactory());
         server.registerForUpdates(t -> updateTransactions(t), event);
+        server.registerForMessages("/topic/admin", Event.class, e -> {
+            if (event.equals(e)) event = e; //Overwrite current event
+            System.out.println("Received event: " + event.getEventName());
+            refresh();
+        });
+        server.registerForMessages("/topic/admin/delete", Event.class, e -> {
+            if (event.equals(e)) {
+                Platform.runLater(() -> {
+                    mainCtrl.showStartUp();
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle(Translator
+                            .getTranslation(Text.EventOverview
+                            .Alert.deletedEventTitle));
+                    alert.setHeaderText(null);
+                    alert.setContentText(Translator
+                            .getTranslation(Text.EventOverview
+                            .Alert.deletedEventContent));
+                    alert.showAndWait();
+                });
+            }
+        });
         refresh();
     }
 
@@ -106,19 +133,41 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      * Refreshes the page.
      */
     public void refresh() {
-        refreshText();
-        if (event != null) {
-            ObservableList<Participant> observableParticipants =
-                    FXCollections.observableArrayList(event.getParticipants());
-            participantsListView.setItems(observableParticipants);
-            ObservableList<Object> participantsEvent =
-                    FXCollections.observableArrayList(event.getParticipants());
-            expensesDropDown.setItems(participantsEvent);
-            expensesDropDown.setCellFactory(lv -> new ParticipantListCell());
-            expensesDropDown.setConverter(new ParticipantStringConverter());
-            getExpenses();
-        }
+        Platform.runLater(() -> {
+            refreshText();
+            if (event != null) {
+                ObservableList<Participant> observableParticipants =
+                        FXCollections.observableArrayList(
+                                event.getParticipants());
+                participantsListView.setItems(observableParticipants);
+                ObservableList<Object> participantsEvent =
+                        FXCollections.observableArrayList(
+                                event.getParticipants());
+                expensesDropDown.setItems(participantsEvent);
+                expensesDropDown.setCellFactory(lv ->
+                        new ParticipantListCell());
+                expensesDropDown.setConverter(new ParticipantStringConverter());
+                getExpenses();
+            }
+        });
 
+
+    }
+
+    /**
+     * Setter for mainCtrl
+     * @param mainCtrl the MainCtrl to set
+     */
+    public void setMainCtrl(MainCtrl mainCtrl) {
+        this.mainCtrl = mainCtrl;
+    }
+
+    /**
+     * Getter for mainCtrl
+     * @return return mainCtrl
+     */
+    public MainCtrl getMainCtrl() {
+        return mainCtrl;
     }
 
     public static class ParticipantStringConverter
@@ -196,8 +245,9 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     /**
      * This method adds the transaction to the correct list.
      * @param transaction The transaction that was added.
+     * @return Transaction that is added
      */
-    public void updateTransactions(Transaction transaction) {
+    public Transaction updateTransactions(Transaction transaction) {
         transactions.add(transaction);
         Participant participant = (Participant) expensesDropDown.getValue();
         if (participant != null &&
@@ -207,6 +257,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         if (transaction.getPayer().equals(participant)) {
             transactionsPayer.add(transaction);
         }
+        return transaction;
     }
 
     /**
@@ -376,6 +427,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 controller.setEvent(event);
                 controller.setParticipant(item);
                 controller.setServer(server);
+                controller.setMainController(mainCtrl);
                 controller.setEventOverviewCtrl(EventOverviewCtrl.this);
                 setText(null);
                 setGraphic(loader.getRoot());
@@ -429,5 +481,10 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         this.event = event;
     }
 
-
+    /**
+     * Shows the startUpWindow
+     */
+    public void returnToOverview() {
+        mainCtrl.showStartUp();
+    }
 }

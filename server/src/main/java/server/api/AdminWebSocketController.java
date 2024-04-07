@@ -17,7 +17,7 @@ public class AdminWebSocketController {
      * Constructor for the AdminWebSocketController
      *
      * @param eventController The event controller
-     * @param adminController
+     * @param adminController The admin controller
      */
     @Autowired
     public AdminWebSocketController(EventController eventController,
