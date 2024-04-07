@@ -63,8 +63,12 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     private ListView<Participant> participantsListView;
     @FXML
     private ListView<Transaction> expensesListView;
+    @FXML
+    private MenuItem returnToOverview;
+    @FXML
+    private Menu rtoButton;
     private final ServerUtils server;
-    private final MainCtrl mainCtrl;
+    private MainCtrl mainCtrl;
 
 
     /**
@@ -117,6 +121,23 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         }
 
     }
+
+    /**
+     * Setter for mainCtrl
+     * @param mainCtrl the MainCtrl to set
+     */
+    public void setMainCtrl(MainCtrl mainCtrl) {
+        this.mainCtrl = mainCtrl;
+    }
+
+    /**
+     * Getter for mainCtrl
+     * @return return mainCtrl
+     */
+    public MainCtrl getMainCtrl() {
+        return mainCtrl;
+    }
+
     public static class ParticipantStringConverter
             extends StringConverter<Object> {
 
@@ -413,5 +434,10 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         this.event = event;
     }
 
-
+    /**
+     * Shows the startUpWindow
+     */
+    public void returnToOverview() {
+        mainCtrl.showStartUp();
+    }
 }
