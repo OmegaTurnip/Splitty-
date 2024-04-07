@@ -129,10 +129,10 @@ class AddParticipantCtrlTest extends ApplicationTest {
         testEvent1.addParticipant("edited");
         Participant edited = testEvent1.getParticipants().get(1);
         testEvent1.removeParticipant(edited);
-        Mockito.when(server.saveParticipant(any())).thenReturn(edited);
+        Mockito.when(server.saveEvent(any())).thenReturn(testEvent1);
         sut.getUsernameTextField().setText("edited");
         sut.saveParticipant();
-        verify(server, times(1)).saveParticipant(any());
+        verify(server, times(1)).saveEvent(any());
         assertEquals(edited, testEvent1.getParticipants().get(0));
     }
 
