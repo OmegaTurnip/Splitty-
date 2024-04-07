@@ -257,6 +257,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         if (transaction.getPayer().equals(participant)) {
             transactionsPayer.add(transaction);
         }
+
         return transaction;
     }
 
