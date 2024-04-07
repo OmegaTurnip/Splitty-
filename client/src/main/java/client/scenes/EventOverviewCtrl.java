@@ -29,7 +29,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 
-public class EventOverviewCtrl implements TextPage, Initializable {
+public class EventOverviewCtrl extends TextPage implements Initializable {
 
     private Event event;
 
@@ -43,8 +43,6 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     private Label participantsLabel;
     @FXML
     private Label expensesLabel;
-    @FXML
-    private Menu languages;
     @FXML
     private Button addParticipantButton;
     @FXML
@@ -98,12 +96,12 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        fetchLanguages(languages);
+        fetchLanguages();
         participantsListView.setCellFactory(param ->
                 new ParticipantCellFactory());
         expensesListView.setCellFactory(param ->
                 new TransactionCellFactory());
-        server.registerForUpdates(t -> updateTransactions(t), event);
+        server.registerForUpdates(this::updateTransactions, event);
         server.registerForMessages("/topic/admin", Event.class, e -> {
             if (event.equals(e)) event = e; //Overwrite current event
             System.out.println("Received event: " + event.getEventName());
@@ -172,8 +170,8 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     public static class ParticipantStringConverter
             extends StringConverter<Object> {
 
-        private StringConverter<Object> participantStringConverter =
-                new StringConverter<Object>() {
+        private final StringConverter<Object> participantStringConverter =
+                new StringConverter<>() {
 
         /**
          * Converts the given object to its string representation.
@@ -342,8 +340,10 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     /**
      * Refreshes the text of EventOverview
      */
-
+    @Override
     public void refreshText() {
+        languageMenu.setText(
+                Translator.getTranslation(Text.Menu.Languages));
         participantsLabel.setText(Translator
                 .getTranslation(client.language
                         .Text.EventOverview.participantsLabel));
@@ -442,7 +442,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         }
     }
 
-    private class TransactionCellFactory extends ListCell<Transaction> {
+    private static class TransactionCellFactory extends ListCell<Transaction> {
 
         private FXMLLoader loader;
 
