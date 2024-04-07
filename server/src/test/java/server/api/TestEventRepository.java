@@ -220,7 +220,12 @@ public class TestEventRepository implements EventRepository {
      */
     @Override
     public <S extends Event> S save(S entity) {
-        added.add(entity);
+        if (!added.contains(entity)) {
+            added.add(entity);
+        } else {
+            added.remove(entity);
+            added.add(entity);
+        }
         return entity;
     }
 
@@ -233,8 +238,10 @@ public class TestEventRepository implements EventRepository {
      */
     @Override
     public <S extends Event> List<S> saveAll(Iterable<S> entities) {
-        // TODO Auto-generated method stub
-        return null;
+        for (S e : entities) {
+            added.add(e);
+        }
+        return (List<S>) added;
     }
 
     /**
@@ -271,8 +278,7 @@ public class TestEventRepository implements EventRepository {
      */
     @Override
     public List<Event> findAll() {
-        // TODO Auto-generated method stub
-        return null;
+        return added;
     }
 
     /**
@@ -313,8 +319,7 @@ public class TestEventRepository implements EventRepository {
      */
     @Override
     public void delete(Event entity) {
-        // TODO Auto-generated method stub
-
+        added.remove(entity);
     }
 
     /**
@@ -357,8 +362,7 @@ public class TestEventRepository implements EventRepository {
      */
     @Override
     public List<Event> findAll(Sort sort) {
-        // TODO Auto-generated method stub
-        return null;
+        return added;
     }
 
     /**
