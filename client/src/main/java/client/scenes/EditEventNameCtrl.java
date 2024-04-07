@@ -57,10 +57,11 @@ public class EditEventNameCtrl extends TextPage implements Initializable {
     /**
      * Initializes the controller
      *
-     * @param location  The location used to resolve relative paths for the root object, or
-     *                  {@code null} if the location is not known.
-     * @param resources The resources used to localize the root object, or {@code null} if
-     *                  the root object was not localized.
+     * @param location  The location used to resolve relative paths for
+     *                  the root object, or {@code null} if the location
+     *                  is not known.
+     * @param resources The resources used to localize the root object, or
+     *                  {@code null} if the root object was not localized.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -130,8 +131,8 @@ public class EditEventNameCtrl extends TextPage implements Initializable {
 
     private ButtonType sendConfirmationAlert() {
         HashMap<String, String> parameters = new HashMap<>();
-        parameters.put("old event", event.getEventName());
-        parameters.put("new event", eventName.getText());
+        parameters.put("oldEvent", event.getEventName());
+        parameters.put("newEvent", eventName.getText());
         return alertWrapper.showAlertButton(
                 Alert.AlertType.CONFIRMATION,
                 Translator.getTranslation(
