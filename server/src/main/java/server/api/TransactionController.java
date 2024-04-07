@@ -1,6 +1,7 @@
 package server.api;
 
 import commons.Event;
+import commons.Participant;
 import commons.Transaction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,10 +10,7 @@ import org.springframework.web.context.request.async.DeferredResult;
 import server.database.EventRepository;
 import server.database.TransactionRepository;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 
 @RestController
@@ -150,14 +148,33 @@ public class TransactionController {
     public ResponseEntity<Transaction>
         addTransaction(@PathVariable("eventId") Long eventId,
                        @RequestBody Transaction transaction) {
-        if (!transaction.isValid()
-                || !(transaction.getEvent().getId().equals(eventId))) {
-
-            return ResponseEntity.notFound().build();
+        if(transaction == null){
+            return ResponseEntity.badRequest().build();
+        }
+        var event = eventRepository.findById(eventId);
+        if (event.isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
+        transaction.setEvent(event.get());
+        transaction.setPayer(event.get().getParticipantById(
+                transaction.getPayer().getParticipantId()
+        ));
+        List<Participant> participants = new ArrayList<>();
+        for (Participant participant : transaction.getParticipants()) {
+            participants.add(event.get().getParticipantById(
+                    participant.getParticipantId()
+            ));
+        }
+        transaction.setParticipants(participants);
+        if (transaction.getTag() != null) {
+            transaction.setTag(event.get().getTagbyId(
+                    transaction.getTag().getTagId()
+            ));
         }
         listners.forEach((k,l) -> l.accept(transaction));
         return ResponseEntity.ok(repo.save(transaction));
     }
+
 
     /**
      * Delete a transaction from an event

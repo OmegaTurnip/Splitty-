@@ -458,4 +458,21 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .delete(new GenericType<>() {});
     }
+
+    /**
+     * saves an transaction
+     * @param transaction transaction to be saved
+     * @return Transaction that is saved
+     */
+    public Transaction saveTransaction(Transaction transaction) {
+        Transaction returned = client
+                .target(server).path("/api/event/" + transaction.getEvent()
+                        .getId() + "/transactions")
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(transaction, APPLICATION_JSON),
+                        Transaction.class);
+        returned.setEvent(transaction.getEvent());
+        return returned;
+    }
 }

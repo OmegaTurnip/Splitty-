@@ -296,7 +296,9 @@ public class AddExpenseCtrl implements Initializable, TextPage {
         try {
             if (verifyInput()) {
                 Transaction expense = getExpense();
-                server.saveEvent(event);
+                Transaction returnedE = server.saveTransaction(expense);
+                event.removeTransaction(expense);
+                event.addTransaction(returnedE);
                 System.out.println("Added expense " + expense);
             }
         } catch (WebApplicationException e) {
@@ -611,45 +613,52 @@ public class AddExpenseCtrl implements Initializable, TextPage {
                 participantList, expenseTag);
     }
 
-    public void setAddExpense(Button addExpense) {
-        this.addExpense = addExpense;
-    }
-
-    public void setCurrency(ChoiceBox<String> currency) {
-        this.currency = currency;
-    }
+    /**
+     * Price to set
+     * @param price price
+     */
 
     public void setPrice(TextField price) {
         this.price = price;
     }
 
-    public void setPayer(ChoiceBox<Object> payer) {
-        this.payer = payer;
-    }
-
+    /**
+     * Payer of the expense
+     * @param expensePayer the person that has paid for the expense
+     */
     public void setExpensePayer(Participant expensePayer) {
         this.expensePayer = expensePayer;
     }
 
-    public void setParticipants(CheckComboBox<Object> participants) {
-        this.participants = participants;
-    }
+    /**
+     * Sets the participantlist
+     * @param participantList the participantlist to be set
+     */
 
     public void setParticipantList(List<Participant> participantList) {
         this.participantList = participantList;
     }
 
+    /**
+     * Sets the date
+     * @param date date to be set
+     */
     public void setDate(DatePicker date) {
         this.date = date;
     }
 
+    /**
+     * Sets the name of the expense
+     * @param expenseName the exspenseName
+     */
     public void setExpenseName(TextField expenseName) {
         this.expenseName = expenseName;
     }
 
-    public void setExpenseType(ComboBox<Object> expenseType) {
-        this.expenseType = expenseType;
-    }
+    /**
+     * Sets the expenseTag
+     * @param expenseTag the tag to be set
+     */
 
     public void setExpenseTag(Tag expenseTag) {
         this.expenseTag = expenseTag;

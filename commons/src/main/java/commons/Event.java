@@ -255,6 +255,21 @@ public class Event {
     }
 
     /**
+     * Adds a transaction
+     * @param transaction transaction to be added
+     */
+    public void addTransaction(Transaction transaction){
+        this.transactions.add(transaction);
+    }
+    /**
+     * Removes a transaction from the transactions
+     * @param transaction transaction
+     */
+    public void removeTransaction(Transaction transaction){
+        this.transactions.remove(transaction);
+    }
+
+    /**
      * Edit transactions (with updateLastActivity)
      * @param transactions The transactions
      */
