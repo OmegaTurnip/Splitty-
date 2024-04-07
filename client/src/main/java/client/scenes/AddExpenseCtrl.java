@@ -31,10 +31,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AddExpenseCtrl implements Initializable, TextPage {
+public class AddExpenseCtrl extends TextPage implements Initializable {
 
-    @FXML
-    private Menu languages;
     @FXML
     private Button cancel;
     @FXML
@@ -99,7 +97,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        fetchLanguages(languages);
+        fetchLanguages();
         payerSelection();
         tagSelection();
         participantSelection();
@@ -474,8 +472,9 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     /**
      * Refreshes the text
      */
+    @Override
     public void refreshText() {
-        languages.setText(
+        languageMenu.setText(
                 Translator.getTranslation(Text.Menu.Languages));
         cancel.setText(
                 Translator.getTranslation(Text.AddParticipant.Cancel));

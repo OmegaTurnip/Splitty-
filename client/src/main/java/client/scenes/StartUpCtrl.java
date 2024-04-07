@@ -3,6 +3,7 @@ package client.scenes;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
+import client.utils.UserConfig;
 import commons.Event;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
@@ -22,18 +23,22 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
 
-public class StartUpCtrl implements Initializable, TextPage {
+public class StartUpCtrl extends TextPage implements Initializable {
 
     private List<Event> currentEvents;
 
     private final MenuItem removeFromYourEvents =
             new MenuItem("Remove from your events");
     private ContextMenu contextMenu;
+
+    @FXML
+    private Menu currencyMenu1;
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
@@ -94,8 +99,6 @@ public class StartUpCtrl implements Initializable, TextPage {
     }
 
     @FXML
-    private Menu languages;
-    @FXML
     private Menu adminLogin;
     @FXML
     private MenuItem loginButton;
@@ -136,7 +139,8 @@ public class StartUpCtrl implements Initializable, TextPage {
     public void initialize(URL location, ResourceBundle resources) {
         contextMenu = new ContextMenu();
         fetchYourEvents();
-        fetchLanguages(languages);
+        fetchLanguages();
+        loadCurrencyMenu();
         newEvent1.setOnAction(event -> createEvent());
         joinEvent1.setOnAction(event -> joinEvent());
         yourEvents.setCellFactory(param -> new EventListCell());
@@ -190,6 +194,7 @@ public class StartUpCtrl implements Initializable, TextPage {
         server.registerForMessages("/topic/admin", Event.class,
                 event -> refresh());
     }
+
     private void registerForDeleteMessages() {
         server.registerForMessages("/topic/admin/delete", Event.class,
                 event -> {
@@ -313,6 +318,8 @@ public class StartUpCtrl implements Initializable, TextPage {
         return null;
     }
 
+
+
     /**
      * Refreshes the page and updates the list view.
      */
@@ -337,6 +344,7 @@ public class StartUpCtrl implements Initializable, TextPage {
     /**
      * Refreshes the text on the page.
      */
+    @Override
     public void refreshText() {
         newEventButton1.setText(Translator
                 .getTranslation(client.language
@@ -347,9 +355,11 @@ public class StartUpCtrl implements Initializable, TextPage {
         yourEventsLabel.setText(Translator
                 .getTranslation(client.language
                         .Text.StartUp.yourEventsLabel));
-        languages.setText(Translator
+        languageMenu.setText(Translator
                 .getTranslation(client.language
                         .Text.StartUp.languagesMenu));
+        currencyMenu1.setText(UserConfig.get().getPreferredCurrency()
+                .getCurrencyCode());
         removeFromYourEvents.setText(Translator.
                 getTranslation(client.language
                         .Text.StartUp.Menu.removeYourEvents));
@@ -441,5 +451,27 @@ public class StartUpCtrl implements Initializable, TextPage {
         }
     }
 
+    private void loadCurrencyMenu() {
+        currencyMenu1.getItems().clear();
+        for (Currency currency : server.getAvailableCurrencies()) {
+            MenuItem item = new MenuItem(currency.getCurrencyCode());
+            item.setOnAction(event ->
+                setCurrency(currency)
+            );
+            currencyMenu1.getItems().add(item);
+        }
+        currencyMenu1.setText(UserConfig.get().getPreferredCurrency()
+                .getCurrencyCode());
+    }
+
+    private void setCurrency(Currency currency) {
+        try {
+            server.getUserSettings().setPreferredCurrency(currency);
+            currencyMenu1.setText(UserConfig.get().getPreferredCurrency()
+                    .getCurrencyCode());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

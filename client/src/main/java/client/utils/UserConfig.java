@@ -31,6 +31,9 @@ public class UserConfig {
     // key: "events"
     private List<String> eventCodes;
 
+    // key: "currency"
+    private Currency preferredCurrency;
+
     // When adding new attributes, don't forget to:
     //  - add getters, setters
     //  - update read()
@@ -92,8 +95,7 @@ public class UserConfig {
      *          the configuration is stored.
      */
     public void setServerUrl(String serverUrl) throws IOException {
-        if (serverUrl == null)
-            throw new IllegalArgumentException("serverUrl is null");
+        Objects.requireNonNull(serverUrl, "serverUrl is null");
 
         configFile.setAttribute("serverUrl", serverUrl);
         this.serverUrl = serverUrl;
@@ -121,6 +123,7 @@ public class UserConfig {
      *          the configuration is stored.
      */
     public void setUserLanguage(String userLanguage) throws IOException {
+        Objects.requireNonNull(userLanguage, "userLanguage is null");
         if (!Language.languages.containsKey(userLanguage))
             throw new IllegalArgumentException("Language doesn't exist!");
 
@@ -159,9 +162,8 @@ public class UserConfig {
      */
     public void setAvailableLanguages(HashMap<String, File> availableLanguages)
             throws IOException {
-
-        if (availableLanguages == null)
-            throw new IllegalArgumentException("availableLanguages is null!");
+        Objects.requireNonNull(availableLanguages,
+                "availableLanguages is null");
 
         configFile.setAttributeOrRemoveOnNull("languages",
                 fromHashMap(availableLanguages, File::getAbsolutePath));
@@ -180,6 +182,7 @@ public class UserConfig {
     }
 
     private void setEventCodes(String[] eventCodes) throws IOException {
+        Objects.requireNonNull(eventCodes, "eventCodes is null");
         setEventCodes(Arrays.asList(eventCodes));
     }
 
@@ -194,8 +197,7 @@ public class UserConfig {
      *          the configuration is stored.
      */
     public void setEventCodes(List<String> eventCodes) throws IOException {
-        if (eventCodes == null)
-            throw new IllegalArgumentException("eventCodes is null!");
+        Objects.requireNonNull(eventCodes, "eventCodes is null");
 
         ArrayList<String> eventCodesArrayList = new ArrayList<>(eventCodes);
 
@@ -206,6 +208,35 @@ public class UserConfig {
         ));
 
         this.eventCodes = eventCodesArrayList;
+    }
+
+    /**
+     * Gets the preferred currency of the user.
+     *
+     * @return  The preferred currency of the user.
+     */
+    public Currency getPreferredCurrency() {
+        return preferredCurrency;
+    }
+
+    /**
+     * Sets the preferred currency of the user.
+     *
+     * @param   preferredCurrency
+     *          The preferred currency of the user.
+     *
+     * @throws  IOException
+     *          If an I/O error occurs writing to or creating the file in which
+     *          the configuration is stored.
+     */
+    public void setPreferredCurrency(Currency preferredCurrency)
+            throws IOException {
+        Objects.requireNonNull(preferredCurrency,
+                "preferredCurrency is null");
+
+        configFile.setAttribute("currency",
+                preferredCurrency.getCurrencyCode());
+        this.preferredCurrency = preferredCurrency;
     }
 
 
@@ -223,6 +254,7 @@ public class UserConfig {
         readAvailableLanguages(properties);
         readUserLanguage(properties);
         readEventCodes(properties);
+        readPreferredCurrency(properties);
     }
 
     private void readServerUrl(Properties properties) throws IOException {
@@ -256,6 +288,12 @@ public class UserConfig {
         String events = properties.getProperty("events");
         setEventCodes((events == null || events.isEmpty())
                 ?  new String[0] : toArray(events));
+    }
+
+    private void readPreferredCurrency(Properties properties)
+            throws IOException {
+        String currency = properties.getProperty("currency", "EUR");
+        setPreferredCurrency(Currency.getInstance(currency));
     }
 
 
