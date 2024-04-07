@@ -99,7 +99,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
      * @return The languages menu.
      */
     public Menu getLanguages() {
-        return languages;
+        return languageMenu;
     }
 
     /**
