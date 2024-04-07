@@ -167,8 +167,13 @@ public class DebtSimplifier {
     public void addDebts(Event event) {
         Objects.requireNonNull(event, "event is null");
 
-        // todo make deterministic
-        for (Transaction transaction : event.getTransactions())
+        List<Transaction> transactions = event.getTransactions();
+
+        // sort transactions by id to ensure deterministic results.
+        // does make the assumption that the ids are generated in order.
+        transactions.sort(Comparator.comparing(Transaction::getId));
+
+        for (Transaction transaction : transactions)
             addDebt(transaction);
     }
 

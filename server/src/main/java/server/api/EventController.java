@@ -7,14 +7,12 @@ import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
 
 import server.financial.ExchangeRateAPI;
+import server.financial.ExchangeRateFactory;
 import server.financial.FrankfurterExchangeRateAPI;
 import server.financial.DebtSimplifier;
 
 import java.time.LocalDate;
-import java.util.Currency;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 @RestController
@@ -23,9 +21,11 @@ public class EventController {
 
     private final EventRepository eventRepository;
     private final DebtSimplifier debtSimplifier;
-    private final Currency baseCurrency = Currency.getInstance("EUR");
+
+    private static final Currency apiBaseCurrency =
+            Currency.getInstance("EUR");
     private final ExchangeRateAPI exchangeRateAPI =
-            new FrankfurterExchangeRateAPI(baseCurrency);
+            new FrankfurterExchangeRateAPI(apiBaseCurrency);
 
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -167,6 +167,58 @@ public class EventController {
     }
 
     /**
+     * Get amount of the transaction in a specified currency.
+     * @param   eventId
+     *          The id of the event.
+     * @param   transactionId
+     *          The id of the transaction.
+     * @param   currency
+     *          The currency of the result.
+     *
+     * @return  Transaction
+     */
+    @GetMapping("/{eventId}/transaction/{transactionId}/amount/{currency}")
+    @ResponseBody
+    public ResponseEntity<Money> getTransaction(
+            @PathVariable("eventId") Long eventId,
+            @PathVariable("transactionId") Long transactionId,
+            @PathVariable("currency") String currency) {
+        Event event = eventRepository.findById(eventId).orElse(null);
+
+        if (event == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Transaction transaction = event.getTransactions().stream()
+                .filter(t -> t.getId().equals(transactionId))
+                .findFirst().orElse(null);
+
+        if (transaction == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (!Money.isValidCurrencyCode(currency)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Currency currencyObj = Currency.getInstance(currency);
+
+        ExchangeRateFactory exchangeRateFactory = debtSimplifier
+                .getExchangeRateFactory();
+
+        if (!exchangeRateFactory.getKnownCurrencies().contains(currencyObj)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok(
+                exchangeRateFactory.getMostRecent(
+                        transaction.getAmount().getCurrency(),
+                        currencyObj
+                ).convert(transaction.getAmount())
+        );
+    }
+
+    /**
      * Get the simplified version of the debts of an event.
      *
      * @param   id
@@ -228,7 +280,7 @@ public class EventController {
             exchangeRateAPI.getExchangeRates().ifPresent(exchangeRates ->
                     debtSimplifier.getExchangeRateFactory()
                             .generateExchangeRates(
-                                    baseCurrency, exchangeRates
+                                    apiBaseCurrency, exchangeRates
                             )
             );
         }
