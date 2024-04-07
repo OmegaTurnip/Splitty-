@@ -157,7 +157,7 @@ public class AddParticipantCtrl implements TextPage, Initializable {
      * Cancels the action in the addParticipant window
      */
     public void cancel(){
-        refreshText();
+//        refreshText();
         mainCtrl.showEventOverview(event);
     }
 

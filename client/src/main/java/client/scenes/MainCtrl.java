@@ -143,11 +143,21 @@ public class MainCtrl {
      * @param event the event the participant is a part of.
      */
     public void showAddParticipant(Event event) {
-        addParticipantCtrl.setEvent(event);
         addParticipantCtrl.setParticipant(null);
+        showParticipant(event);
+    }
+
+    private void showParticipant(Event event) {
+        addParticipantCtrl.setEvent(event);
         addParticipantCtrl.refresh();
         primaryStage.setTitle("Splitty!");
         primaryStage.setScene(add);
+        add.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                showEventOverview(event);
+                e.consume();
+            }
+        });
     }
 
     /**
@@ -156,11 +166,8 @@ public class MainCtrl {
      * @param participant the participant to edit.
      */
     public void showEditParticipant(Event event, Participant participant) {
-        addParticipantCtrl.setEvent(event);
         addParticipantCtrl.setParticipant(participant);
-        addParticipantCtrl.refresh();
-        primaryStage.setTitle("Splitty!");
-        primaryStage.setScene(add);
+        showParticipant(event);
     }
 
 
