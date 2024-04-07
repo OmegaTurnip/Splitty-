@@ -98,7 +98,6 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 new ParticipantCellFactory());
         expensesListView.setCellFactory(param ->
                 new TransactionCellFactory());
-        server.registerForUpdates(t -> updateTransactions(t), event);
         refresh();
     }
 
@@ -106,6 +105,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      * Refreshes the page.
      */
     public void refresh() {
+        server.registerForUpdates(t -> updateTransactions(t), event);
         refreshText();
         if (event != null) {
             ObservableList<Participant> observableParticipants =
@@ -196,8 +196,9 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     /**
      * This method adds the transaction to the correct list.
      * @param transaction The transaction that was added.
+     * @return Transaction that is added
      */
-    public void updateTransactions(Transaction transaction) {
+    public Transaction updateTransactions(Transaction transaction) {
         transactions.add(transaction);
         Participant participant = (Participant) expensesDropDown.getValue();
         if (participant != null &&
@@ -207,6 +208,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         if (transaction.getPayer().equals(participant)) {
             transactionsPayer.add(transaction);
         }
+        return transaction;
     }
 
     /**
