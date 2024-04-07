@@ -2,6 +2,7 @@ package client.scenes;
 
 
 
+import client.language.Text;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -105,6 +106,22 @@ public class EventOverviewCtrl implements TextPage, Initializable {
             if (event.equals(e)) event = e; //Overwrite current event
             System.out.println("Received event: " + event.getEventName());
             refresh();
+        });
+        server.registerForMessages("/topic/admin/delete", Event.class, e -> {
+            if (event.equals(e)) {
+                Platform.runLater(() -> {
+                    mainCtrl.showStartUp();
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle(Translator
+                            .getTranslation(Text.EventOverview
+                            .Alert.deletedEventTitle));
+                    alert.setHeaderText(null);
+                    alert.setContentText(Translator
+                            .getTranslation(Text.EventOverview
+                            .Alert.deletedEventContent));
+                    alert.showAndWait();
+                });
+            }
         });
         refresh();
     }
