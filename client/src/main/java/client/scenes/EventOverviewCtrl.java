@@ -19,6 +19,7 @@ import commons.Transaction;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.StringConverter;
 
@@ -232,6 +233,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
             setFont(Font.font("Arial", 14));
+            setTextFill(Color.WHITESMOKE);
 
             if (empty || item == null) {
                 setText("");
