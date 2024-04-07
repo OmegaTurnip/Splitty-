@@ -11,18 +11,19 @@ import jakarta.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-
 import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 
 public class EditEventNameCtrl implements TextPage, Initializable {
 
     private final ServerUtils server;
-    private final MainCtrl mainCtrl;
+    private MainCtrl mainCtrl;
     private final EventOverviewCtrl eventOverviewCtrl;
+
+    private AlertWrapper alertWrapper;
+
 
 
     @FXML
@@ -50,6 +51,7 @@ public class EditEventNameCtrl implements TextPage, Initializable {
         this.mainCtrl = mainCtrl;
         this.server = server;
         this.eventOverviewCtrl = eventOverviewCtrl;
+        this.alertWrapper = new AlertWrapper();
     }
 
     /**
@@ -92,6 +94,14 @@ public class EditEventNameCtrl implements TextPage, Initializable {
 //            this.languages.getItems().add(item);
 //        }
 //    }
+
+    /**
+     * sets an alertWrapper
+     * @param alertWrapper alertWrapper
+     */
+    public void setAlertWrapper(AlertWrapper alertWrapper) {
+        this.alertWrapper = alertWrapper;
+    }
 
     /**
      * Sets the language (not in use yet)
@@ -139,13 +149,14 @@ public class EditEventNameCtrl implements TextPage, Initializable {
      */
     public void changeName(){
         if (!event.getEventName().equals(eventName.getText())){
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Name change confirmation");
-            alert.setContentText("Are you sure you want to change the name of "+
+            ButtonType
+                    result = alertWrapper.showAlertButton(
+                            Alert.AlertType.CONFIRMATION,
+                    "Name change confirmation",
+                    "Are you sure you want to change the name of "+
                     "the event '" + event.getEventName()+ "' to the following: "
                     + eventName.getText() + ".");
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK){
+            if (result == ButtonType.OK){
                 event.setEventName(eventName.getText());
                 server.saveEvent(event);
                 mainCtrl.showEventOverview(event);
@@ -154,4 +165,11 @@ public class EditEventNameCtrl implements TextPage, Initializable {
         mainCtrl.showEventOverview(event);
     }
 
+    /**
+     * Setter for mainCtrl
+     * @param mainCtrl the MainCtrl to set
+     */
+    public void setMainCtrl(MainCtrl mainCtrl) {
+        this.mainCtrl = mainCtrl;
+    }
 }

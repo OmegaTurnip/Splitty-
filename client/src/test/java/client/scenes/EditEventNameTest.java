@@ -1,106 +1,147 @@
 package client.scenes;
 
-import client.Main;
+
+import client.MyFXML;
+import client.MyModule;
+import client.language.Language;
+import client.language.Translator;
 import client.utils.ServerUtils;
+import client.utils.UserConfig;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import commons.Event;
-import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.testfx.api.FxRobot;
-import org.testfx.api.FxToolkit;
-import org.testfx.util.WaitForAsyncUtils;
-
-
+import org.mockito.*;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.testfx.framework.junit5.ApplicationTest;
+import java.io.File;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 
+public class EditEventNameTest extends ApplicationTest {
 
-public class EditEventNameTest extends FxRobot {
-
-    @Mock
     private EditEventNameCtrl sut;
-    @InjectMocks
+    @Mock
     private ServerUtils server;
     @Mock
     private MainCtrl mainCtrlMock;
     @Mock
     private EventOverviewCtrl eventOverviewCtrlMock;
     @Mock
+    private AlertWrapper alertWrapper;
     private Event event;
 
-    @BeforeEach
-    public void setup() throws Exception{
-        MockitoAnnotations.openMocks(this);
-        server.setServer("http://localhost:8080");
-        sut = new EditEventNameCtrl(server, mainCtrlMock, eventOverviewCtrlMock);
-        event = new Event();
-        sut.setEvent(event);
-        FxToolkit.registerPrimaryStage();
-        FxToolkit.setupApplication(Main.class);
+    private TextField eventName;
+    private Button confirmButton;
+    private Button cancelButton;
 
-        // Create a new Stage and pass it to the start method
-        Platform.runLater(() -> {
-            try {
-                Stage stage = new Stage();
-                start(stage);
-            } catch (Exception e) {
-                e.printStackTrace();
+    @Override
+    public void start(Stage stage) throws Exception {
+        try (MockedStatic<UserConfig> userConfigMockedStatic = Mockito.mockStatic(UserConfig.class)) {
+            try (MockedConstruction<ServerUtils> mockPaymentService = Mockito.mockConstruction(ServerUtils.class,(mock,context)-> {
+                when(mock.connect(anyString())).thenReturn(Mockito.mock(StompSession.class));
+            })) {
+                UserConfig userConfig = Mockito.mock(UserConfig.class);
+                userConfigMockedStatic.when(UserConfig::get).thenReturn(userConfig);
+                Mockito.when(userConfig.getUserLanguage()).thenReturn("eng");
+                Language.fromLanguageFile(
+                        "eng", new File("../includedLanguages/eng.properties")
+                );
+                Translator.setCurrentLanguage(Language.languages.get("eng"));
+                Injector injector = Guice.createInjector(new MyModule());
+                MyFXML FXML = new MyFXML(injector);
+
+                Pair<EditEventNameCtrl, Parent> editName = FXML.load(EditEventNameCtrl.class,
+                        "client", "scenes", "EditEventName.fxml");
+
+                this.sut = editName.getKey();
+                MockitoAnnotations.openMocks(this).close();
+                Mockito.when(server.connect(anyString())).thenReturn(Mockito.mock(StompSession.class));
+
+                event = new Event("Test");
+                Scene scene = new Scene(editName.getValue());
+                stage.setScene(scene);
+                stage.show();
+                sut.setEvent(event);
+                sut.setAlertWrapper(Mockito.mock(AlertWrapper.class));
+
+                eventName = lookup("#eventName").queryAs(TextField.class);
+                confirmButton = lookup("#confirmButton").queryAs(Button.class);
+                cancelButton = lookup("#cancelButton").queryAs(Button.class);
+
             }
-        });
-        // Wait for JavaFX thread to finish
-        WaitForAsyncUtils.waitForFxEvents();
+        }
     }
 
-    public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(Main.class.getResource("EditEventName.fxml"));
-        loader.setController(sut);
-        Parent mainNode = loader.load();
-        stage.setScene(new Scene(mainNode));
-        stage.show();
-        stage.toFront();
+    @BeforeAll
+    public static void setupSpec() throws Exception {
+        System.setProperty("testfx.robot", "glass");
+        System.setProperty("testfx.headless", "true");
+        System.setProperty("prism.order", "sw");
+        System.setProperty("prism.text", "t2k");
+        System.setProperty("java.awt.headless", "true");
+    }
+
+    @Test
+    void constructorTest() {
+        assertNotNull(sut);
+        assertNotNull(server);
+        assertNotNull(mainCtrlMock);
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
-        FxToolkit.cleanupStages();
-        FxToolkit.hideStage();
-        release(new KeyCode[]{});
-        release(new MouseButton[]{});
+    void breakDown() {
+        Mockito.reset(server );
+        Mockito.reset(mainCtrlMock);
     }
 
-    public <T extends Node> T find(final String query){
-        return (T) lookup(query).queryAll().iterator().next();
+    @Test
+    public void testSetEmptyEvent() {
+        event.setEventName(null);
+        assertEquals(event.getEventName(), null);
+    }
+
+    @Test
+    public void testSetEvent() {
+        event.setEventName("Test party");
+        assertEquals(event.getEventName(), "Test party");
+    }
+
+    @Test
+    public void testSameName() {
+        String newName = event.getEventName();
+        eventName.setText(newName);
+        MainCtrl mainCtrlMock = Mockito.mock(MainCtrl.class);
+        sut.setMainCtrl(mainCtrlMock);
+        doNothing().when(mainCtrlMock).showEventOverview(event);
+        sut.changeName();
+        assertEquals(newName, event.getEventName());
     }
 
 //    @Test
-//    public void testSetEmptyEvent() {
-//        assertEquals(event.getEventName(), null);
-//    }
-//
-//    @Test
-//    public void testSetEvent() {
-//        event.setEventName("Test party");
-//        assertEquals(event.getEventName(), "Test party");
+//    public void testDifferentName() {
+//        String newName = "Birthday";
+//        eventName.setText(newName);
+//        MainCtrl mainCtrlMock = Mockito.mock(MainCtrl.class);
+//        sut.setMainCtrl(mainCtrlMock);
+//        doNothing().when(mainCtrlMock).showEventOverview(event);
+//        when(alertWrapper.showAlertButton(Mockito.any(Alert.AlertType.class),
+//        Mockito.anyString(), Mockito.anyString())).thenReturn(ButtonType.OK);
+//        sut.changeName();
+//        assertEquals(newName, event.getEventName());
 //    }
 
-//    @Test
-//    public void testEditEventName(){
-//        String inputText = "Test party";
-//        clickOn("#eventName");
-//        write(inputText);
-//        verifyThat("#eventName", hasText(inputText));
-//        }
-//
+
    }
 
