@@ -19,7 +19,7 @@
    <top>
       <MenuBar prefWidth="917.0" BorderPane.alignment="CENTER">
         <menus>
-          <Menu fx:id="languages" mnemonicParsing="false" text="Languages" />
+          <Menu fx:id="languageMenu" mnemonicParsing="false" text="Languages" />
         </menus>
       </MenuBar>
    </top>

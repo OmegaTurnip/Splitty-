@@ -42,7 +42,6 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
-import commons.Quote;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
@@ -143,45 +142,6 @@ public class ServerUtils {
         this.server = server;
         this.client = client;
     }
-
-    /**
-     * @throws IOException no description was provided in the template.
-     * @throws URISyntaxException no description was provided in the template.
-     */
-    public void getQuotesTheHardWay() throws IOException, URISyntaxException {
-        var url = new URI(server + "api/quotes").toURL();
-        var is = url.openConnection().getInputStream();
-        var br = new BufferedReader(new InputStreamReader(is));
-        String line;
-        while ((line = br.readLine()) != null) {
-            System.out.println(line);
-        }
-    }
-
-    /**
-     * @return no description was provided in the template.
-     */
-    public List<Quote> getQuotes() {
-        return client //
-                .target(server).path("api/quotes") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<Quote>>() {
-                });
-    }
-
-    /**
-     * @param quote no description was provided in the template.
-     * @return no description was provided in the template.
-     */
-    public Quote addQuote(Quote quote) {
-        return client //
-                .target(server).path("api/quotes") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
-    }
-
 
     /**
      * Get available currencies, is guaranteed to always return the same due to
