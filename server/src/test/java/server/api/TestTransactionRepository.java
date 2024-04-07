@@ -318,8 +318,16 @@ public class TestTransactionRepository implements TransactionRepository {
         return null;
     }
 
+    /**
+     * Find transaction by transactionId
+     * @param id the transactionId
+     * @return .
+     */
     @Override
     public Optional<Transaction> findByTransactionId(Long id) {
+        for (Transaction transaction : added) {
+            if (transaction.getTransactionId().equals(id)) return Optional.of(transaction);
+        }
         return Optional.empty();
     }
 }

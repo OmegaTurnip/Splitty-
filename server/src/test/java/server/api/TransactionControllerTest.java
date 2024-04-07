@@ -6,6 +6,7 @@ import commons.Participant;
 import commons.Transaction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -90,5 +91,20 @@ public class TransactionControllerTest {
         sut.addTransaction(testEvent1.getId(), transaction);
         var retPart = sut.deleteTransaction(testEvent1.getId(), transaction.getTransactionId());
         assertEquals(retPart.getBody(), transaction);
+    }
+
+    @Test
+    void deleteTransactionNotFound() {
+        var retTransaction = sut.deleteTransaction(testEvent1.getId(), transaction.getTransactionId());
+        assertEquals(ResponseEntity.notFound().build(), retTransaction);
+    }
+
+    @Test
+    void deleteTransactionBadRequest() {
+        eventRepo.save(testEvent1);
+        sut.addTransaction(testEvent1.getId(), transaction);
+        transaction.setEvent(new Event());
+        var retPart = sut.deleteTransaction(testEvent1.getId(), transaction.getTransactionId());
+        assertEquals(retPart, ResponseEntity.badRequest().build());
     }
 }
