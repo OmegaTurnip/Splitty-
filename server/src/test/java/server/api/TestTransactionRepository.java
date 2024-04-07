@@ -17,16 +17,6 @@ import java.util.function.Function;
 public class TestTransactionRepository implements TransactionRepository {
 
     private List<Transaction> added = new ArrayList<>();
-    /**
-     * @param transactionName The transaction name
-     * @return
-     */
-    @Override
-    public Transaction findTransactionByName(
-            String transactionName) {
-
-        return null;
-    }
 
     /**
      *
@@ -244,7 +234,7 @@ public class TestTransactionRepository implements TransactionRepository {
     @Override
     public void deleteById(Long aLong) {
         for (Transaction t : added) {
-            if (t.getId().equals(aLong)) {
+            if (t.getTransactionId().equals(aLong)) {
                 added.remove(t);
                 return;
             }
@@ -293,7 +283,7 @@ public class TestTransactionRepository implements TransactionRepository {
     public Optional<Transaction> findById(Long aLong) {
         Optional<Transaction> found = Optional.empty();
         for (Transaction t : added) {
-            if (t.getId().equals(aLong)) {
+            if (t.getTransactionId().equals(aLong)) {
                 found = Optional.of(t);
                 break;
             }
@@ -326,6 +316,11 @@ public class TestTransactionRepository implements TransactionRepository {
     @Override
     public Page<Transaction> findAll(Pageable pageable) {
         return null;
+    }
+
+    @Override
+    public Optional<Transaction> findByTransactionId(Long id) {
+        return Optional.empty();
     }
 }
 

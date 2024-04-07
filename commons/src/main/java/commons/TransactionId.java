@@ -26,7 +26,7 @@ public class TransactionId implements Serializable {
      * Getter for id
      * @return the id
      */
-    public Long getId() {
+    public Long getTransactionId() {
         return id;
     }
 
@@ -42,7 +42,7 @@ public class TransactionId implements Serializable {
      * Setter for id
      * @param id the new id
      */
-    public void setId(Long id) {
+    public void setTransactionId(Long id) {
         this.id = id;
     }
 

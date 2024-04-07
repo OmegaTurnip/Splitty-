@@ -480,7 +480,7 @@ public class ServerUtils {
      */
     public Transaction removeTransaction(Transaction transaction) {
         var path = "api/event/" + transaction.getEvent().getId() +
-                "/transactions/" + transaction.getId();
+                "/transactions/" + transaction.getTransactionId();
         return client
                 .target(server).path(path)
                 .request(APPLICATION_JSON)
