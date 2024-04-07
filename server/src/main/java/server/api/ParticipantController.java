@@ -3,6 +3,7 @@ package server.api;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import commons.Participant;
@@ -17,16 +18,20 @@ public class ParticipantController {
     private final ParticipantRepository repo;
     private final EventRepository eventRepo;
 
+    private SimpMessagingTemplate messagingTemplate;
     /**
      * Constructor
      *
      * @param repo      the repository
      * @param eventRepo the event repository
+     * @param messagingTemplate the messaging template
      */
     public ParticipantController(ParticipantRepository repo,
-                                 EventRepository eventRepo) {
+                                 EventRepository eventRepo,
+                                 SimpMessagingTemplate messagingTemplate) {
         this.repo = repo;
         this.eventRepo = eventRepo;
+        this.messagingTemplate = messagingTemplate;
     }
 
     /**
@@ -39,8 +44,8 @@ public class ParticipantController {
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Participant>
-        add(@RequestBody Participant participant,
-        @PathVariable("eventId") long eventId) {
+        saveParticipant(@RequestBody Participant participant,
+                    @PathVariable("eventId") long eventId) {
 
         if (isNullOrEmpty(participant.getName())) {
             return ResponseEntity.badRequest().build();
@@ -50,8 +55,9 @@ public class ParticipantController {
         if (event.isEmpty()) return ResponseEntity.badRequest().build();
 
         participant.setEvent(event.get());
-        Participant saved = repo.save(participant);
-        return ResponseEntity.ok(saved);
+        repo.save(participant);
+        messagingTemplate.convertAndSend("/topic/admin", event.get());
+        return ResponseEntity.ok(participant);
     }
 
     private static boolean isNullOrEmpty(String s) {
@@ -83,6 +89,7 @@ public class ParticipantController {
         repo.delete(participant);
         event.removeParticipant(participant);
         eventRepo.save(event);
+        messagingTemplate.convertAndSend("/topic/admin", event);
         return ResponseEntity.ok(participant);
     }
 
