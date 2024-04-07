@@ -6,6 +6,7 @@ import client.language.Translator;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.*;
+import jakarta.ws.rs.WebApplicationException;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -16,8 +17,10 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.util.StringConverter;
 import org.controlsfx.control.CheckComboBox;
+
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
@@ -71,8 +74,8 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     /**
      * Initializes the controller
      *
-     * @param server            .
-     * @param mainCtrl          .
+     * @param server   .
+     * @param mainCtrl .
      */
     @Inject
     public AddExpenseCtrl(ServerUtils server, MainCtrl mainCtrl) {
@@ -98,18 +101,15 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         payerSelection();
         tagSelection();
         participantSelection();
-        addExpense.setOnAction(event -> registerExpense());
+        addExpense.setOnAction(event -> {
+            if (registerExpense()) {
+                this.mainCtrl.showEventOverview(this.event);
+            }
+        });
         date.setValue(LocalDate.now());
         date.setConverter(new MyLocalDateStringConverter("dd/MM/yyyy"));
         refresh();
     }
-
-
-
-//    @Override
-//    public void fetchLanguages(Menu languagesMenu) {
-//        TextPage.super.fetchLanguages(languagesMenu);
-//    }
 
     static class MyLocalDateStringConverter extends StringConverter<LocalDate> {
 
@@ -283,13 +283,27 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     /**
      * Register the expense added.
      */
-    private void registerExpense() {
+    private boolean registerExpense() {
         getCheckedParticipants();
-        if (verifyInput()) {
-            Transaction expense = getExpense();
+        try {
+            if (verifyInput()) {
+                Transaction expense = getExpense();
+                server.saveEvent(event);
+                System.out.println("Added expense " + expense);
+            }
+        } catch (WebApplicationException e) {
+            e.printStackTrace();
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+            return false;
         }
-        //TODO: Connect to back-end
+
+        return true;
+
     }
+
 
     private boolean verifyInput() {
         if (!verifyPrice(price.getText())) return false;
@@ -337,9 +351,11 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         payer.setConverter(new ParticipantStringConverter());
         payer.setItems(participantObservableList);
     }
+
     public class ParticipantStringConverter extends StringConverter<Object> {
         /**
          * ToString for participant in converter
+         *
          * @param o the object of type {@code T} to convert
          * @return the normal toString for non-participant
          * objects, the name of the Participant for Participant objects
@@ -355,6 +371,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
         /**
          * FromString for participants
+         *
          * @param string the {@code String} to convert
          * @return a participant if the name exists for the event, else null
          */
@@ -366,6 +383,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             return null;
         }
     }
+
     /**
      * Gets the tags in the event from the server and
      * constructs the items for the ChoiceBox expenseType
@@ -424,10 +442,8 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                 if (!useWhiteText) setTextFill(Color.BLACK);
             });
 
-            setOnMouseExited(event -> {
-                setStyle("-fx-background-color: " +
-                        tag.getColour() + ";");
-            });
+            setOnMouseExited(event -> setStyle("-fx-background-color: " +
+                    tag.getColour() + ";"));
         }
     }
 
@@ -520,6 +536,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             }
         }
     }
+
     void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -527,6 +544,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
     boolean verifyPrice(String input) {
         Matcher matcher = pricePattern.matcher(input);
 
@@ -572,9 +590,10 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
 
     Transaction getExpense() {
+        BigDecimal b = new BigDecimal(price.getText());
         return event.registerDebt(expensePayer,
                 expenseName.getText(),
-                new Money(new BigDecimal(price.getText()),
+                new Money(b,
                         Currency.getInstance("EUR")), //placeholder
 //                        Currency.getInstance(currency.getValue())),
                 participantList, expenseTag);

@@ -46,8 +46,6 @@
     <MenuBar VBox.vgrow="NEVER">
       <menus>
             <Menu fx:id="languageMenu" mnemonicParsing="false" text="Languages" />
-            <Menu fx:id="rto" mnemonicParsing="false" text="Return to Overview" />
-            <Menu fx:id="close" mnemonicParsing="false" text="Close" />
       </menus>
     </MenuBar>
     <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="238.0" prefWidth="287.0" VBox.vgrow="ALWAYS">

@@ -25,7 +25,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Consumer;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -170,29 +169,6 @@ public class ServerUtils {
     }
 
     /**
-     * Adds a participant to the db
-     * @param participant the participant to add
-     * @return the participant added
-     */
-    public Participant addParticipant(Participant participant) {
-//        Long participantId = server.addParticipant(participant)
-//                .getParticipantId();
-//        participant = event.getParticipants().getLast();
-//        participant.setParticipantId(participantId);
-//        System.out.println("Created " + participant);
-        var path = "api/event/" + participant.getEvent().getId()
-                + "/participants";
-        Participant dbParticipant = client //
-                .target(server).path(path) //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .post(Entity.entity(participant, APPLICATION_JSON),
-                        Participant.class);
-        participant.setParticipantId(dbParticipant.getParticipantId());
-        return dbParticipant;
-    }
-
-    /**
      * Removes a participant from the database
      * @param participant the participant to remove
      * @return removed participant
@@ -277,9 +253,6 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .delete(new GenericType<>() {});
-//        TODO make sure events that don't exist are
-//         deleted from the user config for all users
-        //Paras: I have taken care of this with my websockets implementation.
     }
 
 //    /**
@@ -322,14 +295,16 @@ public class ServerUtils {
          * @param participant participant to create
          * @return created participant
          */
-    public Participant createParticipant(Participant participant){
-        return client
+    public Participant saveParticipant(Participant participant){
+        Participant returned = client
                 .target(server).path("/api/event/" + participant.getEvent()
                         .getId() + "/participants")
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(participant, APPLICATION_JSON),
                         Participant.class);
+        returned.setEvent(participant.getEvent());
+        return returned;
     }
 
 //    /**
@@ -472,4 +447,18 @@ public class ServerUtils {
         EXEC.shutdownNow();
     }
 
+    /**
+     * Remove transaction from db
+     * @param transaction the transaction to remove
+     * @return the removed transaction
+     */
+    public Transaction removeTransaction(Transaction transaction) {
+        var path = "api/event/" + transaction.getEvent().getId() +
+                "/transactions/" + transaction.getId();
+        return client
+                .target(server).path(path)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete(new GenericType<>() {});
+    }
 }

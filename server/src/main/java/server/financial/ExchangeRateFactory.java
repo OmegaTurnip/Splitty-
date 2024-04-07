@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  */
 public class ExchangeRateFactory {
 
-    public static final File DEFAULT_DIR = new File("rates");
+    public static final File DEFAULT_DIR = new File("server/rates");
 
     /**
      * A set containing all known {@code ExchangeRates}.
