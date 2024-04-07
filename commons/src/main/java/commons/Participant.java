@@ -122,8 +122,6 @@ public class Participant {
      */
     @Override
     public String toString() {
-        System.out.println(name);
-        System.out.println(event);
         return "Participant { '" + name +  "' (id: " + participantId +
                 ") in the event '" + event.getEventName() + "' }";
     }

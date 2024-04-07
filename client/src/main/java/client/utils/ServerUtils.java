@@ -425,4 +425,18 @@ public class ServerUtils {
         EXEC.shutdownNow();
     }
 
+    /**
+     * Remove transaction from db
+     * @param transaction the transaction to remove
+     * @return the removed transaction
+     */
+    public Transaction removeTransaction(Transaction transaction) {
+        var path = "api/event/" + transaction.getEvent().getId() +
+                "/transactions/" + transaction.getId();
+        return client
+                .target(server).path(path)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete(new GenericType<>() {});
+    }
 }

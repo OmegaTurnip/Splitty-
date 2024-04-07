@@ -76,4 +76,16 @@ public class ParticipantId implements Serializable {
     public int hashCode() {
         return Objects.hash(participantId, event);
     }
+
+    /**
+     * Turns a participant id into a readable string
+     * @return the string
+     */
+    @Override
+    public String toString() {
+        return "ParticipantId{" +
+                "participantId=" + participantId +
+                ", event=" + event +
+                '}';
+    }
 }
