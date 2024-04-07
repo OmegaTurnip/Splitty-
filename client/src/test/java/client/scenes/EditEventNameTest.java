@@ -12,7 +12,9 @@ import com.google.inject.Injector;
 import commons.Event;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -22,7 +24,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.testfx.framework.junit5.ApplicationTest;
+
 import java.io.File;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -49,7 +53,7 @@ public class EditEventNameTest extends ApplicationTest {
     @Override
     public void start(Stage stage) throws Exception {
         try (MockedStatic<UserConfig> userConfigMockedStatic = Mockito.mockStatic(UserConfig.class)) {
-            try (MockedConstruction<ServerUtils> mockPaymentService = Mockito.mockConstruction(ServerUtils.class,(mock,context)-> {
+            try (MockedConstruction<ServerUtils> mockPaymentService = Mockito.mockConstruction(ServerUtils.class, (mock, context) -> {
                 when(mock.connect(anyString())).thenReturn(Mockito.mock(StompSession.class));
             })) {
                 UserConfig userConfig = Mockito.mock(UserConfig.class);
@@ -102,7 +106,7 @@ public class EditEventNameTest extends ApplicationTest {
 
     @AfterEach
     void breakDown() {
-        Mockito.reset(server );
+        Mockito.reset(server);
         Mockito.reset(mainCtrlMock);
     }
 
@@ -129,19 +133,22 @@ public class EditEventNameTest extends ApplicationTest {
         assertEquals(newName, event.getEventName());
     }
 
-//    @Test
-//    public void testDifferentName() {
-//        String newName = "Birthday";
-//        eventName.setText(newName);
-//        MainCtrl mainCtrlMock = Mockito.mock(MainCtrl.class);
-//        sut.setMainCtrl(mainCtrlMock);
-//        doNothing().when(mainCtrlMock).showEventOverview(event);
-//        when(alertWrapper.showAlertButton(Mockito.any(Alert.AlertType.class),
-//        Mockito.anyString(), Mockito.anyString())).thenReturn(ButtonType.OK);
-//        sut.changeName();
-//        assertEquals(newName, event.getEventName());
-//    }
+    @Test
+    public void testDifferentName() {
+        String newName = "Birthday";
+        eventName.setText(newName);
+        MainCtrl mainCtrlMock = Mockito.mock(MainCtrl.class);
+        sut.setMainCtrl(mainCtrlMock);
+        sut.setAlertWrapper(alertWrapper);
+        doNothing().when(mainCtrlMock).showEventOverview(event);
+        when(alertWrapper.showAlertButton(Mockito.any(Alert.AlertType.class),
+                Mockito.anyString(), Mockito.anyString())).thenReturn(ButtonType.OK);
+        sut.changeName();
+        verify(alertWrapper, times(1)).showAlertButton(Mockito.any(Alert.AlertType.class),
+                Mockito.anyString(), Mockito.anyString());
+        assertEquals(newName, event.getEventName());
+    }
 
 
-   }
+}
 
