@@ -369,7 +369,6 @@ public class AdminCtrl implements TextPage, Initializable {
 //        events = server.getAllEvents(password);
 
         server.registerForMessages("/topic/admin", Event.class, e -> {
-//            events.remove(e); //Overwriting the event if it exists
             events.put(e.getId(), e);
             System.out.println("Received event: " + e.getEventName());
             refresh();

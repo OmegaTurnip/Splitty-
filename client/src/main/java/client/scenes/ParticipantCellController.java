@@ -13,6 +13,7 @@ import java.util.Optional;
 public class ParticipantCellController {
 
     private Event event;
+    private MainCtrl mainCtrl;
 
     private Participant participant;
 
@@ -43,12 +44,21 @@ public class ParticipantCellController {
     @FXML
     public void initialize() {
         editParticipantButton.setOnAction(event -> {
+            editParticipant(participant);
             System.out.println("Edit participant button clicked");
         });
         deleteParticipantButton.setOnAction(event -> {
             deleteParticipant(participant);
             System.out.println("Delete participant button clicked");
         });
+    }
+
+    /**
+     * Edit the participant.
+     * @param participant The participant to edit.
+     */
+    private void editParticipant(Participant participant) {
+        mainCtrl.showEditParticipant(event, participant);
     }
 
     /**
@@ -69,14 +79,7 @@ public class ParticipantCellController {
                     .Alert.deleteParticipantContent));
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                event.removeParticipant(participant);
-                try {
-                    server.removeParticipant(participant);
-                    server.saveEvent(event);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                eventOverviewCtrl.refresh();
+                server.removeParticipant(participant);
             }
         }
     }
@@ -113,6 +116,11 @@ public class ParticipantCellController {
         this.eventOverviewCtrl = eventOverviewCtrl;
     }
 
-
-
+    /**
+     * Setter.
+     * @param mainCtrl The mainCtrl to set.
+     */
+    public void setMainController(MainCtrl mainCtrl) {
+        this.mainCtrl = mainCtrl;
+    }
 }
