@@ -4,8 +4,6 @@ package client.scenes;
 
 import client.language.Text;
 import javafx.application.Platform;
-
-import client.utils.UserConfig;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -387,20 +385,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
 
 
     public void editName() {mainCtrl.showEditName(event);}
-
-
-    /**
-     * Set user language.
-     * @param langKey The language to set.
-     */
-    private void setLanguage(String langKey) {
-        try {
-            UserConfig.get().setUserLanguage(langKey);
-            refreshText();
-        }catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     private class ParticipantCellFactory extends ListCell<Participant> {
 

@@ -43,7 +43,6 @@ public class AddExpenseCtrlTest extends ApplicationTest {
     private MainCtrl mainCtrl;
     @Mock
     private ServerUtils server;
-
     Event event;
 
     @Override

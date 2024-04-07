@@ -241,6 +241,10 @@ class AddParticipantCtrlTest extends ApplicationTest {
         sut.getEmailTextField().setText("t");
         assertThrows(WebApplicationException.class, () -> sut.formatCheck());
 
+        sut.getEmailTextField().setText("");
+        sut.getIbanTextField().setText("t");
+        assertThrows(WebApplicationException.class, () -> sut.formatCheck());
+
         sut.getIbanTextField().setText("");
         sut.getBicTextField().setText("t");
         assertThrows(WebApplicationException.class, () -> sut.formatCheck());

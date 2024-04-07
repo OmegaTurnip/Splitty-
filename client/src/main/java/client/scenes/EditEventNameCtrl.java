@@ -5,18 +5,18 @@ import client.language.Text;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
-import client.utils.UserConfig;
+
 import commons.Event;
 import jakarta.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import java.io.IOException;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 
 
-public class EditEventNameCtrl implements TextPage, Initializable {
+public class EditEventNameCtrl extends TextPage implements Initializable {
 
     private final ServerUtils server;
     private MainCtrl mainCtrl;
@@ -34,8 +34,6 @@ public class EditEventNameCtrl implements TextPage, Initializable {
     private Button cancelButton;
     @FXML
     private Button confirmButton;
-    @FXML
-    private Menu languages;
 
     private Event event;
 
@@ -66,8 +64,7 @@ public class EditEventNameCtrl implements TextPage, Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        fetchLanguages(languages);
-
+        fetchLanguages();
     }
 
     /**
@@ -78,22 +75,6 @@ public class EditEventNameCtrl implements TextPage, Initializable {
         this.event = event;
     }
 
-//    private void fetchLanguages() {
-//        HashMap<String, Language> languages = Language.languages;
-//        for (String langKey : languages.keySet()) {
-//            MenuItem item = new MenuItem(langKey);
-//            item.setOnAction(event -> {
-//                setLanguage(langKey);
-//            });
-//            Image image = new Image(languages
-//                    .get(langKey).getIconFile().toURI().toString());
-//            ImageView imageView = new ImageView(image);
-//            imageView.setFitHeight(20);
-//            imageView.setFitWidth(20);
-//            item.setGraphic(imageView);
-//            this.languages.getItems().add(item);
-//        }
-//    }
 
     /**
      * sets an alertWrapper
@@ -103,18 +84,6 @@ public class EditEventNameCtrl implements TextPage, Initializable {
         this.alertWrapper = alertWrapper;
     }
 
-    /**
-     * Sets the language (not in use yet)
-     * @param langKey key of the language that needs to be activated
-     */
-    private void setLanguage(String langKey) {
-        try {
-            UserConfig.get().setUserLanguage(langKey);
-            refreshText();
-        }catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     /**
      * Refreshes the text
