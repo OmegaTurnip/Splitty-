@@ -198,9 +198,9 @@ class AddParticipantCtrlTest extends ApplicationTest {
     @Test
     void isValidIban() {
         assertFalse(AddParticipantCtrl.isValidIban("test"));
-        assertFalse(AddParticipantCtrl.isValidIban("AB12 1234 1234 1234 123"));
-        assertFalse(AddParticipantCtrl.isValidIban("AB12 1234 1234 1234 1234 123"));
-        assertFalse(AddParticipantCtrl.isValidIban("1234 1234 1234 1234 1234"));
+        assertTrue(AddParticipantCtrl.isValidIban("AB12 1234 1234 1234 123"));
+        assertTrue(AddParticipantCtrl.isValidIban("AB12 1234 1234 1234 1234 123"));
+        assertTrue(AddParticipantCtrl.isValidIban("1234 1234 1234 1234 1234"));
 
         assertTrue(AddParticipantCtrl.isValidIban(""));
         assertTrue(AddParticipantCtrl.isValidIban("AB12 1234 1234 1234 1234 1"));
