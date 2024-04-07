@@ -1,5 +1,8 @@
 package commons;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serial;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -26,7 +29,9 @@ public class Money implements java.io.Serializable, Comparable<Money> {
      *          The currency in which the original amount was specified in the
      *          form of a {@link Currency} instance.
      */
-    public Money(BigDecimal amount, Currency currency) {
+    @JsonCreator
+    public Money(@JsonProperty("amount") BigDecimal amount,
+                 @JsonProperty("currency") Currency currency) {
         Objects.requireNonNull(amount, "amount is null");
         Objects.requireNonNull(currency, "currency is null");
 

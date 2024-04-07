@@ -1,4 +1,4 @@
-package server.util;
+package server.financial;
 
 import commons.Debt;
 import commons.Event;
@@ -6,6 +6,7 @@ import commons.Money;
 import commons.Participant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.financial.DebtSimplifier;
 import server.financial.ExchangeRate;
 import server.financial.ExchangeRateFactory;
 

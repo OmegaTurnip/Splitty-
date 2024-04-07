@@ -64,6 +64,15 @@ public class Text {
         public static final String expensesDropDown = level
                 + "expensesDropDown";
 
+        public static final class Alert {
+            private static final String level = EventOverview.level +
+                    "Alert.";
+            public static final String deletedEventTitle = level +
+                    "deletedEventTitle";
+            public static final String deletedEventContent = level +
+                    "deletedEventContent";
+        }
+
 
         public static final class Buttons {
 
@@ -109,13 +118,11 @@ public class Text {
         public static final String Cancel = level + "Cancel";
         public static final String Add = level + "Add";
         public static final String Title = level + "Title";
+        public static final String EditTitle = level + "EditTitle";
 
         public static final class Alert{
             public static final String level = AddParticipant.level + "Alert.";
             public static final String NoName = level + "NoName";
-            public static final String NoMail = level + "NoMail";
-            public static final String NoIBAN = level + "NoIBAN";
-            public static final String NoBIC = level + "NoBIC";
 
             public static final String InvalidMail = level + "InvalidMail";
             public static final String InvalidIBAN = level + "InvalidIBAN";
@@ -183,6 +190,11 @@ public class Text {
 
         public static final class Alert {
             public static final String level = Admin.level + "Alert.";
+
+            public static final String unauthorisedTitle = level
+                    + "unauthorisedTitle";
+            public static final String unauthorisedContent = level
+                    + "unauthorisedContent";
             public static final String restoreEventAlertTitle = level
                     + "restoreEventAlertTitle";
             public static final String restoreEventAlertContent = level
@@ -220,6 +232,36 @@ public class Text {
         public static final String serverDownTitle = level + "serverDownTitle";
         public static final String serverDownContent =
                 level + "serverDownContent";
+    }
+
+    public static final class AddExpense {
+        private static final String level = "AddExpense.";
+        public static final String expenseNamePrompt = level + "namePrompt";
+        public static final String expensePricePrompt = level + "pricePrompt";
+        public static final String expensePayerPrompt = level + "payerPrompt";
+        public static final String expenseDatePrompt = level + "datePrompt";
+        public static final String expenseParticipantsPrompt =
+                level + "participantsPrompt";
+        public static final String expenseTypePrompt = level + "typePrompt";
+        public static final String participantsEveryone = level + "everyone";
+        public static final class Button {
+            public static final String level = AddExpense.level + "Buttons.";
+            public static final String addExpenseButton = level + "addExpense";
+        }
+
+        public static final class Alert {
+            public static final String level = AddExpense.level + "Alert.";
+            public static final String invalidPrice = level + "invalidPrice";
+            public static final String emptyString = level + "emptyString";
+            public static final String startWithDigit = level +
+                    "mustStartWithDigit";
+            public static final String noLetters = level + "noLettersAllowed";
+            public static final String onlyOnePeriodOrComma = level +
+                    "onlyOnePeriodOrCommaAllowed";
+            public static final String generallyInvalid = level +
+                    "generallyInvalid";
+        }
+
     }
 
 }

@@ -15,8 +15,11 @@
  */
 package client.scenes;
 
+import client.language.Text;
+import client.language.Translator;
 import client.utils.ServerUtils;
 import commons.Event;
+import commons.Participant;
 import jakarta.ws.rs.NotAuthorizedException;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -119,12 +122,12 @@ public class MainCtrl {
     }
 
     /**
-     * go to the start-up page (by changing the content of the window).
+     * Go to the Event Overview page.
      * @param event the event to show.
      */
     public void showEventOverview(Event event) {
         overviewCtrl.setEvent(event);
-        primaryStage.setTitle("Event Overview");
+        primaryStage.setTitle("Splitty!");
         primaryStage.setScene(overview);
         overview.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
@@ -146,14 +149,35 @@ public class MainCtrl {
     }
 
     /**
-     * go to the add quote page (by changing the content of the window).
+     * Go to the edit participant page.
      * @param event the event the participant is a part of.
      */
     public void showAddParticipant(Event event) {
+        addParticipantCtrl.setParticipant(null);
+        showParticipant(event);
+    }
+
+    private void showParticipant(Event event) {
         addParticipantCtrl.setEvent(event);
         addParticipantCtrl.refresh();
-        primaryStage.setTitle("Event Overview: Adding participant");
+        primaryStage.setTitle("Splitty!");
         primaryStage.setScene(add);
+        add.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                showEventOverview(event);
+                e.consume();
+            }
+        });
+    }
+
+    /**
+     * Go to the edit participant page.
+     * @param event the event the participant is a part of.
+     * @param participant the participant to edit.
+     */
+    public void showEditParticipant(Event event, Participant participant) {
+        addParticipantCtrl.setParticipant(participant);
+        showParticipant(event);
     }
 
     /**
@@ -210,8 +234,8 @@ public class MainCtrl {
     public void showAdminPage(String password) {
         try {
             adminCtrl.setPassword(password);
-            adminCtrl.refresh();
             adminCtrl.setEvents(server.getAllEvents(password));
+            adminCtrl.refresh();
             primaryStage.setScene(admin);
             admin.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
                 if (e.getCode() == KeyCode.ESCAPE) {
@@ -221,9 +245,13 @@ public class MainCtrl {
             });
         } catch (NotAuthorizedException e) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Unauthorized");
+            alert.setTitle(Translator.getTranslation(Text
+                    .Admin
+                    .Alert.unauthorisedTitle));
             alert.setHeaderText(null);
-            alert.setContentText("You entered the wrong admin password.");
+            alert.setContentText(Translator.getTranslation(Text
+                    .Admin
+                    .Alert.unauthorisedContent));
             alert.showAndWait();
         }
     }

@@ -1,15 +1,14 @@
 package server.api;
 
-import commons.Debt;
-import commons.Event;
-import commons.Money;
+import commons.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
+
 import server.financial.ExchangeRateAPI;
 import server.financial.FrankfurterExchangeRateAPI;
-import server.util.DebtSimplifier;
+import server.financial.DebtSimplifier;
 
 import java.time.LocalDate;
 import java.util.Currency;
@@ -76,17 +75,6 @@ public class EventController {
 //    }
 
     /**
-     * Get all events
-     * @return  All events
-     */
-    @GetMapping(path = { "", "/" })
-    @ResponseBody
-    public ResponseEntity<List<Event>> allEvents() {
-        List<Event> events = eventRepository.findAll();
-        return ResponseEntity.ok(events);
-    }
-
-    /**
      * Create an event
      * @param event The event to create
      * @return  The created event
@@ -94,7 +82,7 @@ public class EventController {
     @PostMapping(path = { "", "/" })
     @ResponseBody
     public ResponseEntity<Event> createEvent(@RequestBody Event event) {
-        eventRepository.saveAndFlush(event);
+        eventRepository.save(event);
         messagingTemplate.convertAndSend("/topic/admin", event);
         return ResponseEntity.ok(event);
     }
@@ -110,9 +98,33 @@ public class EventController {
         if (event.getEventName().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        eventRepository.save(event);
-        messagingTemplate.convertAndSend("/topic/admin", event);
-        return ResponseEntity.ok(event);
+        for(Tag tag : event.getTags()){
+            tag.setEvent(event);
+        }
+// checks that the participants that are equal become the same instance
+        for (Participant participant : event.getParticipants()) {
+            participant.setEvent(event);
+        }
+
+        for (Transaction transaction : event.getTransactions()) {
+            transaction.setEvent(event);
+            transaction.setPayer(event.getParticipantById(
+                    transaction.getPayer().getParticipantId()
+            ));
+            List<Participant> participants = new ArrayList<>();
+            for (Participant participant : transaction.getParticipants()) {
+                participants.add(event.getParticipantById(
+                        participant.getParticipantId()
+                ));
+            }
+            transaction.setParticipants(participants);
+            transaction.setTag(event.getTagById(
+                    transaction.getTag().getTagId()));
+        }
+
+        Event dbEvent = eventRepository.save(event);
+        messagingTemplate.convertAndSend("/topic/admin", dbEvent);
+        return ResponseEntity.ok(dbEvent);
         //tbf this might not be the proper way to do PUT.
         // PUT methods should specify the URI exactly,
         // so a proper pathing would be /{id}
@@ -134,9 +146,9 @@ public class EventController {
     }
 
     /**
-     * Get an event by invite code.
+     * Get events by invite codes.
      * @param inviteCodes The list of invite codes
-     * @return The event
+     * @return The events
      */
     @GetMapping("/invite/{inviteCodes}")
     @ResponseBody
@@ -147,7 +159,7 @@ public class EventController {
         List<String> inviteCodesList = List.of(inviteCodes.split(","));
         List<Event> events = eventRepository
                 .findByInviteCodeIn(inviteCodesList);
-        if (events == null) {
+        if (events == null || events.isEmpty()) {
             return ResponseEntity.ok(new ArrayList<>());
 //            return ResponseEntity.notFound().build();
         }

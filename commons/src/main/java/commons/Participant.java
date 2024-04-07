@@ -17,6 +17,9 @@ public class Participant {
     @JsonBackReference
     private Event event;
     private String name;
+    private String email;
+    private String iban;
+    private String bic;
 
 
 
@@ -29,6 +32,23 @@ public class Participant {
     Participant(String name, Event event) {
         this.name = name;
         this.event = event;
+    }
+
+    /**
+     * Constructor.
+     * @param event the event
+     * @param name the name
+     * @param email the email
+     * @param iban the iban
+     * @param bic the bic
+     */
+    Participant(Event event, String name,
+                String email, String iban, String bic) {
+        this.event = event;
+        this.name = name;
+        this.email = email;
+        this.iban = iban;
+        this.bic = bic;
     }
 
     /**
@@ -102,8 +122,6 @@ public class Participant {
      */
     @Override
     public String toString() {
-        System.out.println(name);
-        System.out.println(event);
         return "Participant { '" + name +  "' (id: " + participantId +
                 ") in the event '" + event.getEventName() + "' }";
     }
@@ -124,4 +142,51 @@ public class Participant {
         return participantId;
     }
 
+    /**
+     * Setter for email
+     * @param email the email
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * Setter for iban
+     * @param iban the iban
+     */
+    public void setIban(String iban) {
+        this.iban = iban;
+    }
+
+    /**
+     * Getter for email
+     * @return the email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * Getter for iban
+     * @return the iban
+     */
+    public String getIban() {
+        return iban;
+    }
+
+    /**
+     * Getter for bic
+     * @return the bic
+     */
+    public String getBic() {
+        return bic;
+    }
+
+    /**
+     * Setter for bic
+     * @param bic the bic
+     */
+    public void setBic(String bic) {
+        this.bic = bic;
+    }
 }

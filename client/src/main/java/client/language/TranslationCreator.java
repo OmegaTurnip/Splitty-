@@ -5,6 +5,7 @@ import client.utils.ConfigFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,7 +19,8 @@ import java.util.regex.Pattern;
  */
 public class TranslationCreator {
 
-    private static final Scanner input = new Scanner(System.in);
+    private static final Scanner input =
+            new Scanner(System.in, StandardCharsets.UTF_8);
 
     private static int reachedIdx = 0;
     private static boolean lastWasGoBack = false;

@@ -1,3 +1,4 @@
-# OOPP Template Project
+# OOPP TEAM 70 PROJECT
 
-This repository contains the template for the OOPP project. Please extend this README.md with instructions on how to run your project.
+PLEASE run the server using the main class in the server package. If you use gradle bootRun it doesn't work
+due to pathing issues.

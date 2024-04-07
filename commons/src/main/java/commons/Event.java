@@ -418,4 +418,62 @@ public class Event {
         return transactions.remove(transaction);
     }
 
+    /**
+     * Gets the participant from participants that has the same id, used for
+     * making sure the same participant instance is used across an event
+     * @param id the id
+     * @return the participant of the same id
+     */
+    public Participant getParticipantById(Long id) {
+        for (Participant participant : participants) {
+            if (id != null && id.equals(participant.getParticipantId()))
+                return participant;
+        }
+        return null;
+    }
+
+    /**
+     * Get the Tag by its id
+     * @param id Tag id
+     * @return the tag
+     */
+    public Tag getTagById(Long id) {
+        for (Tag tag : tags) {
+            if (id != null && id.equals(tag.getTagId())) {
+                return tag;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Adds a participant to the event
+     *
+     * @param name name of the Participant to add
+     * @param email email of the Participant to add
+     * @param iban iban of the Participant to add
+     * @param bic bic of the Participant to add
+     * @return    the participant that was added
+     */
+    public Participant addParticipant(String name,
+                                      String email,
+                                      String iban,
+                                      String bic) {
+        Participant participant = new Participant(this, name, email, iban, bic);
+        this.participants.add(participant);
+        updateLastActivity();
+        return participant;
+    }
+
+    /**
+     * Adds a participant to the event
+     *
+     * @param participant The participant to add
+     * @return            the participant that was added
+     */
+    public Participant addParticipant(Participant participant) {
+        this.participants.add(participant);
+        updateLastActivity();
+        return participant;
+    }
 }
