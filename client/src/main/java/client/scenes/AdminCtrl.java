@@ -32,11 +32,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
 
-public class AdminCtrl implements TextPage, Initializable {
+public class AdminCtrl extends TextPage implements Initializable {
     @FXML
     private Label eventsLabel;
-    @FXML
-    private Menu languages;
     @FXML
     private TableView<Event> eventsTable;
     @FXML
@@ -351,7 +349,7 @@ public class AdminCtrl implements TextPage, Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        fetchLanguages(languages);
+        fetchLanguages();
         rto.setOnAction(event -> mainCtrl.showStartUp());
         restoreEventBtn.setVisible(false);
         restoreEventBtn.setManaged(false);
@@ -401,7 +399,7 @@ public class AdminCtrl implements TextPage, Initializable {
         rto.setText(Translator.getTranslation(Text.Menu.ReturnToOverview));
         rtoHeader.setText(Translator.getTranslation(Text
                 .Menu.ReturnToOverview));
-        languages.setText(Translator.getTranslation(Text
+        languageMenu.setText(Translator.getTranslation(Text
                 .Menu.Languages));
         String titleTranslation = Translator
                 .getTranslation(Text.Admin.title);
