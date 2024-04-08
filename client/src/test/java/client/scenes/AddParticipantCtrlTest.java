@@ -245,7 +245,7 @@ class AddParticipantCtrlTest extends ApplicationTest {
     }
 
     @Test
-    void formatCheckTest() {
+    void formatCheckTestParticipant() {
         List<Participant> before = testEvent1.getParticipants();
         when(alertWrapper.showAlertButton(Mockito.any(Alert.AlertType.class),
                 Mockito.anyString(), Mockito.anyString())).thenReturn(ButtonType.OK);
@@ -257,14 +257,51 @@ class AddParticipantCtrlTest extends ApplicationTest {
     }
 
     @Test
-    void emptyCheckTest() {
+    void emptyCheckTestParticipants() {
         List<Participant> before = testEvent1.getParticipants();
         sut.getUsernameTextField().setText("");
         when(alertWrapper.showAlertButton(Mockito.any(Alert.AlertType.class),
                 Mockito.anyString(), Mockito.anyString())).thenReturn(ButtonType.OK);
         assertEquals(before, testEvent1.getParticipants());
-
     }
+
+    @Test
+    void emptyCheck(){
+        sut.getUsernameTextField().setText("");
+        assertTrue(sut.getUsernameTextField().getText().isEmpty());
+        when(alertWrapper.showAlertButton(Mockito.any(Alert.AlertType.class),
+                Mockito.anyString(), Mockito.anyString())).thenReturn(ButtonType.OK);
+        when(sut.sendEmptyCheckError()).thenReturn(ButtonType.OK);
+        assertFalse(sut.emptyCheck());
+    }
+
+    @Test
+    void uniqueCheck(){
+        testEvent1.addParticipant("Test");
+        sut.getUsernameTextField().setText("Test");
+        when(alertWrapper.showAlertButton(Mockito.any(Alert.AlertType.class),
+                Mockito.anyString(), Mockito.anyString())).thenReturn(ButtonType.OK);
+        when(sut.sendDuplicateNameError()).thenReturn(ButtonType.OK);
+        assertFalse(sut.uniqueCheck());
+    }
+
+    @Test
+    void formatCheck(){
+        sut.getEmailTextField().setText("fail");
+        when(alertWrapper.showAlertButton(Mockito.any(Alert.AlertType.class),
+                Mockito.anyString(), Mockito.anyString())).thenReturn(ButtonType.OK);
+        assertFalse(sut.formatCheck());
+        sut.getEmailTextField().setText("test@gmail.com");
+        sut.getIbanTextField().setText("fail");
+        assertFalse(sut.formatCheck());
+        sut.getIbanTextField().setText("AB123456789012345678");
+        sut.getBicTextField().setText("fail");
+        assertFalse(sut.formatCheck());
+        sut.getBicTextField().setText("INGBNL2A");
+        assertTrue(sut.formatCheck());
+    }
+
+
 
 //    @Test
 //    void cancelTest() {
