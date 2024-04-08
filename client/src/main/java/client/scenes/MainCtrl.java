@@ -20,6 +20,7 @@ import client.language.Translator;
 import client.utils.ServerUtils;
 import commons.Event;
 import commons.Participant;
+import commons.Transaction;
 import jakarta.ws.rs.NotAuthorizedException;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -157,6 +158,13 @@ public class MainCtrl {
         showParticipant(event);
     }
 
+    public void showEditExpense(Event event, Transaction transaction) {
+        addExpenseCtrl.setEvent(event);
+        addExpenseCtrl.setExpenseToOverwrite(transaction);
+        addExpenseCtrl.refresh();
+        primaryStage.setScene(addExpense);
+    }
+
     private void showParticipant(Event event) {
         addParticipantCtrl.setEvent(event);
         addParticipantCtrl.refresh();
@@ -223,7 +231,7 @@ public class MainCtrl {
     public void showAddExpense(Event event) {
         addExpenseCtrl.setEvent(event);
         addExpenseCtrl.refresh();
-        primaryStage.setTitle("Splitty!");
+        addExpenseCtrl.setExpenseToOverwrite(null);
         primaryStage.setScene(addExpense);
     }
 

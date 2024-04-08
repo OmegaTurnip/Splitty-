@@ -70,6 +70,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
     private final Pattern pricePattern;
+    private Transaction expenseToOverwrite;
 
     /**
      * Initializes the controller
@@ -109,6 +110,10 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         date.setValue(LocalDate.now());
         date.setConverter(new MyLocalDateStringConverter("dd/MM/yyyy"));
         refresh();
+    }
+
+    public void setExpenseToOverwrite(Transaction expenseToOverwrite) {
+        this.expenseToOverwrite = expenseToOverwrite;
     }
 
     static class MyLocalDateStringConverter extends StringConverter<LocalDate> {
@@ -293,7 +298,8 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                 event.addTransaction(returnedE);
 //                server.saveEvent(event);
                 System.out.println("Added expense " + expense);
-            }
+                return true;
+            } return false;
         } catch (WebApplicationException e) {
             e.printStackTrace();
             var alert = new Alert(Alert.AlertType.ERROR);
@@ -302,9 +308,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             alert.showAndWait();
             return false;
         }
-
-        return true;
-
     }
 
 
@@ -333,7 +336,11 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         loadParticipants();
         loadTags();
         expenseType.getSelectionModel().select(0);
-        //TODO: Connect to back-end
+        if (expenseToOverwrite != null) {
+            addExpense.setText("Edit expense");
+        } else {
+            addExpense.setText("Add expense");
+        }
         System.out.println("Page has been refreshed!");
     }
 
@@ -502,14 +509,12 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         loadTags();
         expenseType.getSelectionModel().select(index);
 
-//        the following lines don't work as expected,
-//        but I don't think it is worth fixing
-        ArrayList<Integer> indices = new ArrayList<>(
-                participants.getCheckModel().getCheckedIndices());
-        loadParticipants(); // this works
-        for (Integer i : indices) {
-            participants.getCheckModel().check(i);
-        }
+//        ArrayList<Integer> indices = new ArrayList<>(
+//                participants.getCheckModel().getCheckedIndices());
+        loadParticipants();
+//        for (Integer i : indices) {
+//            participants.getCheckModel().check(i);
+//        }
     }
 
     /**
