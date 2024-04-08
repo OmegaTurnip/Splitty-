@@ -18,11 +18,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
-public class AddParticipantCtrl implements TextPage, Initializable {
+public class AddParticipantCtrl extends TextPage implements Initializable {
 
-
-    @FXML
-    private Menu languages;
     @FXML
     private Label username;
     @FXML
@@ -70,7 +67,7 @@ public class AddParticipantCtrl implements TextPage, Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        fetchLanguages(languages);
+        fetchLanguages();
     }
 
     /**
@@ -102,7 +99,7 @@ public class AddParticipantCtrl implements TextPage, Initializable {
      * @return The languages menu.
      */
     public Menu getLanguages() {
-        return languages;
+        return languageMenu;
     }
 
     /**
@@ -121,8 +118,9 @@ public class AddParticipantCtrl implements TextPage, Initializable {
     /**
      * Refreshes the text
      */
+    @Override
     public void refreshText() {
-        languages.setText(
+        languageMenu.setText(
                 Translator.getTranslation(Text.Menu.Languages));
         username.setText(
                 Translator.getTranslation(Text.AddParticipant.Username)

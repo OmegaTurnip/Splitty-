@@ -23,7 +23,7 @@
          <children>
             <MenuBar maxWidth="1.7976931348623157E308" style="-fx-background-color: #fefdfd;" VBox.vgrow="NEVER">
               <menus>
-                <Menu fx:id="languages" mnemonicParsing="false" text="Languages" />
+                <Menu fx:id="languageMenu" mnemonicParsing="false" text="Languages" />
                   <Menu fx:id="rtoHeader" mnemonicParsing="false" text="Return to overview">
                     <items>
                       <MenuItem fx:id="rto" mnemonicParsing="false" text="Return to overview" />

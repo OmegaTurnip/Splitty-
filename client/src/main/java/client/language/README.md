@@ -4,7 +4,7 @@ Implements the requirements made by [this issue](https://gitlab.ewi.tudelft.nl/c
 
 ### Language class and fxml controllers
 
-The new `Language` class will contain all pieces of text needed in the UI. This way, by switching out the `currentLanguage` attribute in the `Translator` class, all newly gotten pieces of text will be in the newly selected language. To update existing pieces of text, the `refreshText()` method, specified in the `TextPage` interface, should be called on the corresponding fxml controller. This function should ideally also be used for the initial page load.
+The new `Language` class will contain all pieces of text needed in the UI. This way, by switching out the `currentLanguage` attribute in the `Translator` class, all newly gotten pieces of text will be in the newly selected language. To update existing pieces of text, the `refreshText()` method, specified in the `TextPage` abstract class, should be called on the corresponding fxml controller. This function should ideally also be used for the initial page load.
 
 The `Text` class stores all text ids used to select a specific piece of text. When a piece of text is added to one of the language files (preferably initially the English one) a corresponding attribute should be added to the `Text` class.
 
