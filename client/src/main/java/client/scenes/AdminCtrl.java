@@ -18,8 +18,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.io.File;
@@ -233,17 +231,11 @@ public class AdminCtrl extends TextPage implements Initializable {
         restoreEventChoiceBox.setVisible(true);
         restoreEventChoiceBox.setManaged(true);
         refresh();
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(Translator
-                .getTranslation(Text.Admin.Alert.eventLoadedTitle));
-        alert.setHeaderText(null);
-        TextArea textArea = new TextArea(Translator
-                .getTranslation(Text.Admin.Alert.eventLoadedContent));
-        textArea.setEditable(false);
-        textArea.setWrapText(true);
-        ScrollPane scrollPane = new ScrollPane(textArea);
-        alert.getDialogPane().setContent(scrollPane);
-        alert.showAndWait();
+        alertWrapper.showAlert(Alert.AlertType.INFORMATION,
+                Translator.getTranslation
+                        (Text.Admin.Alert.eventLoadedTitle),
+                Translator
+                        .getTranslation(Text.Admin.Alert.eventLoadedContent));
     }
 
     /**

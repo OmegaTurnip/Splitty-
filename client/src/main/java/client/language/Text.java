@@ -176,8 +176,12 @@ public class Text {
             public static final String level = StartUp.level + "Alert.";
             public static final String noEventWritten =
                     level + "noEventWritten";
+            public static final String noEventWrittenTitle =
+                    level + "noEventWrittenTitle";
             public static final String alreadyInEvent =
                     level + "alreadyInEvent";
+            public static final String alreadyInEventTitle =
+                    level + "alreadyInEventTitle";
             public static final String removeEventHeader =
                     level + "removeEventHeader";
             public static final String removeEventContent =
