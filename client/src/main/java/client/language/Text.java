@@ -265,6 +265,15 @@ public class Text {
             public static final String addExpenseButton = level + "addExpense";
         }
 
+        public static final class StringConverter{
+            public static final String level = AddExpense.level +
+                    "StringConverter";
+
+            public static final String formatTitle = level + "FormatTitle";
+
+            public static final String formatContent = level + "FormatContent";
+        }
+
         public static final class Alert {
             public static final String level = AddExpense.level + "Alert.";
             public static final String invalidPrice = level + "invalidPrice";

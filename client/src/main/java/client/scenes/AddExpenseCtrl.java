@@ -17,7 +17,6 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.stage.Modality;
 import javafx.util.StringConverter;
 import org.controlsfx.control.CheckComboBox;
 
@@ -70,6 +69,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
     private final Pattern pricePattern;
+    private AlertWrapper alertWrapper;
 
     /**
      * Initializes the controller
@@ -82,7 +82,16 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.participantList = new ArrayList<>();
+        this.alertWrapper = new AlertWrapper();
         pricePattern = Pattern.compile("^[0-9]+(?:[.,][0-9]+)?$");
+    }
+
+    /**
+     * Sets alertWrapper
+     * @param alertWrapper alertWrapper
+     */
+    public void setAlertWrapper(AlertWrapper alertWrapper) {
+        this.alertWrapper = alertWrapper;
     }
 
     /**
@@ -114,6 +123,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     static class MyLocalDateStringConverter extends StringConverter<LocalDate> {
 
         private final DateTimeFormatter dateFormatter;
+        private AlertWrapper alertWrapper;
 
         public MyLocalDateStringConverter(String pattern) {
             this.dateFormatter = DateTimeFormatter.ofPattern(pattern);
@@ -128,19 +138,23 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             }
         }
 
+        public void setAlertWrapper(AlertWrapper alertWrapper){
+            this.alertWrapper = alertWrapper;
+        }
+
         @Override
         public LocalDate fromString(String string) {
             if (string != null && !string.isEmpty()) {
                 try {
                     return LocalDate.parse(string, dateFormatter);
                 } catch (DateTimeParseException e) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Invalid date format");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Try entering a date of the " +
-                            "format dd/mm/yyyy! " +
-                            "You can also pick the date from the calendar.");
-                    alert.showAndWait();
+                    alertWrapper.showAlert(Alert.AlertType.ERROR,
+                            Translator.getTranslation(
+                                    Text.AddExpense.StringConverter.
+                                            formatTitle),
+                            Translator.getTranslation(
+                                    Text.AddExpense.StringConverter.
+                                            formatContent));
                     return null;
                 }
             } else {
@@ -293,10 +307,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             }
         } catch (WebApplicationException e) {
             e.printStackTrace();
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
             return false;
         }
 
@@ -313,9 +323,13 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         try {
             if (date.getValue() == null) return false;
         } catch (DateTimeParseException e) {
-            showAlert("Invalid date format",
-                    "Try entering a date of the format dd/mm/yyyy! " +
-                            "You can also pick the date from the calendar.");
+            alertWrapper.showAlert(Alert.AlertType.ERROR,
+                    Translator.getTranslation(
+                            Text.AddExpense.StringConverter.
+                                    formatTitle),
+                    Translator.getTranslation(
+                            Text.AddExpense.StringConverter.
+                                    formatContent));
         }
         return !participantList.isEmpty();
     }

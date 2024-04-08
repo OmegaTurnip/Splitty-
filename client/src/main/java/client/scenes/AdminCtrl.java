@@ -65,6 +65,8 @@ public class AdminCtrl extends TextPage implements Initializable {
 
     private ObjectMapper objectMapper;
 
+    private AlertWrapper alertWrapper;
+
     private File file;
 
     private String password;
@@ -80,6 +82,7 @@ public class AdminCtrl extends TextPage implements Initializable {
         this.mainCtrl = mainCtrl;
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
+        this.alertWrapper = new AlertWrapper();
         restoredEvents = new HashMap<>();
         events = new HashMap<>();
         file = new File("client/events.json");
@@ -141,6 +144,14 @@ public class AdminCtrl extends TextPage implements Initializable {
     }
 
     /**
+     * Sets the alertWrapper
+     * @param alertWrapper alertWrapper
+     */
+    public void setAlertWrapper(AlertWrapper alertWrapper) {
+        this.alertWrapper = alertWrapper;
+    }
+
+    /**
      * Getter for events.
      * @return the events.
      */
@@ -160,28 +171,23 @@ public class AdminCtrl extends TextPage implements Initializable {
             if (selectedEvent != null) {
                 tempList.put(selectedEvent.getId(), selectedEvent);
             } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(Translator
-                        .getTranslation(Text
-                                .Admin.Alert.JSONUnselectedTitle));
-                alert.setHeaderText(null);
-                alert.setContentText(Translator
-                        .getTranslation(Text
-                                .Admin.Alert.JSONUnselectedContent));
-                alert.showAndWait();
+                alertWrapper.showAlert(Alert.AlertType.ERROR,
+                        Translator.getTranslation(
+                                Text.Admin.Alert.JSONUnselectedTitle),
+                        (Translator
+                                .getTranslation(Text.Admin.Alert.
+                                        JSONUnselectedContent))
+                );
                 return;
             }
             String json = objectMapper.writeValueAsString(tempList);
             writer.write(json);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle(Translator
-                    .getTranslation(Text
-                            .Admin.Alert.saveToJSONSuccessTitle));
-            alert.setHeaderText(null);
-            alert.setContentText(Translator
-                    .getTranslation(Text
-                            .Admin.Alert.saveToJSONSuccessContent));
-            alert.showAndWait();
+            alertWrapper.showAlert(Alert.AlertType.INFORMATION,
+                    Translator.getTranslation(Text
+                                    .Admin.Alert.saveToJSONSuccessTitle),
+                    Translator.getTranslation(Text
+                                    .Admin.Alert.saveToJSONSuccessContent)
+            );
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -295,15 +301,11 @@ public class AdminCtrl extends TextPage implements Initializable {
             }
 
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle(Translator
-                    .getTranslation(Text
-                            .Admin.Alert.JSONUnselectedTitle));
-            alert.setHeaderText(null);
-            alert.setContentText(Translator
-                    .getTranslation(Text
-                            .Admin.Alert.JSONUnselectedContent));
-            alert.showAndWait();
+            alertWrapper.showAlert(Alert.AlertType.ERROR,
+                    Translator.getTranslation(Text.Admin.Alert
+                            .JSONUnselectedTitle),
+                    Translator.getTranslation(Text.Admin.Alert
+                            .JSONUnselectedContent));
         }
     }
 
