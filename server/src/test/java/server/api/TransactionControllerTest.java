@@ -80,6 +80,7 @@ public class TransactionControllerTest {
 
     @Test
     void addTransaction() {
+        eventRepo.save(testEvent1);
         var retPart = sut.addTransaction(testEvent1.getId(), transaction);
         assertEquals(retPart.getBody(), transaction);
     }

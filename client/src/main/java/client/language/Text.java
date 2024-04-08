@@ -61,6 +61,13 @@ public class Text {
         public static final String expensesDropDown = level
                 + "expensesDropDown";
 
+        public static final class ExpenseListing {
+            private static final String level = EventOverview.level +
+                    "ExpenseListing.";
+
+            public static final String paid = level + "paid";
+        }
+
         public static final class Alert {
             private static final String level = EventOverview.level +
                     "Alert.";
@@ -68,6 +75,7 @@ public class Text {
                     "deletedEventTitle";
             public static final String deletedEventContent = level +
                     "deletedEventContent";
+
         }
 
 
@@ -248,7 +256,6 @@ public class Text {
         public static final String serverDownContent =
                 level + "serverDownContent";
     }
-
     public static final class AddExpense {
         private static final String level = "AddExpense.";
         public static final String expenseNamePrompt = level + "namePrompt";
@@ -281,3 +288,4 @@ public class Text {
     }
 
 }
+
