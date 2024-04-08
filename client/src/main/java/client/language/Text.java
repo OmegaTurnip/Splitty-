@@ -68,6 +68,12 @@ public class Text {
                     "deletedEventTitle";
             public static final String deletedEventContent = level +
                     "deletedEventContent";
+
+            public static final String notSelectedTitle = level +
+                    "notSelectedTitle";
+
+            public static final String notSelectedContent = level +
+                    "notSelectedContent";
         }
 
 

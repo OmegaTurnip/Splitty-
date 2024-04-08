@@ -8,8 +8,6 @@ import commons.Participant;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import java.util.Optional;
-
 public class ParticipantCellController {
 
     private Event event;
@@ -28,6 +26,8 @@ public class ParticipantCellController {
 
     @FXML
     private Button deleteParticipantButton;
+
+    private AlertWrapper alertWrapper;
 
 
     /**
@@ -51,6 +51,15 @@ public class ParticipantCellController {
             deleteParticipant(participant);
             System.out.println("Delete participant button clicked");
         });
+        this.alertWrapper = new AlertWrapper();
+    }
+
+    /**
+     * Sets the alertWrapper
+     * @param alertWrapper alertWrapper
+     */
+    public void setAlertWrapper(AlertWrapper alertWrapper) {
+        this.alertWrapper = alertWrapper;
     }
 
     /**
@@ -65,23 +74,31 @@ public class ParticipantCellController {
      * Delete the participant.
      * @param participant The participant to delete.
      */
-    private void deleteParticipant(Participant participant) {
+    public void deleteParticipant(Participant participant) {
         if (participant != null) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle(Translator.getTranslation(Text
-                    .EventOverview
-                    .ParticipantCellController
-                    .Alert.deleteParticipantTitle));
-            alert.setHeaderText(null);
-            alert.setContentText(Translator.getTranslation(Text
-                    .EventOverview
-                    .ParticipantCellController
-                    .Alert.deleteParticipantContent));
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
+            ButtonType result = showDeletionAlert();
+            if (result == ButtonType.OK) {
                 server.removeParticipant(participant);
             }
         }
+    }
+
+    /**
+     * For some reason the test won't work without this
+     * @return Outcome of buttonpress
+     */
+    public ButtonType showDeletionAlert(){
+        return alertWrapper.showAlertButton(
+                Alert.AlertType.CONFIRMATION,
+                Translator.getTranslation(Text
+                        .EventOverview
+                        .ParticipantCellController
+                        .Alert.deleteParticipantTitle),
+                Translator.getTranslation(Text
+                        .EventOverview
+                        .ParticipantCellController
+                        .Alert.deleteParticipantContent)
+        );
     }
 
     /**
