@@ -122,6 +122,14 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
     }
 
     /**
+     * Sets alertWrapper
+     * @param alertWrapper alertWrapper to be set
+     */
+    public void setAlertWrapper(AlertWrapper alertWrapper) {
+        this.alertWrapper = alertWrapper;
+    }
+
+    /**
      * Refreshes the text
      */
     @Override

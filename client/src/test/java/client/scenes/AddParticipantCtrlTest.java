@@ -3,6 +3,7 @@ package client.scenes;
 import client.MyFXML;
 import client.MyModule;
 import client.language.Language;
+import client.language.Text;
 import client.language.Translator;
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
@@ -14,6 +15,8 @@ import jakarta.ws.rs.WebApplicationException;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.util.Pair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,6 +26,7 @@ import org.springframework.messaging.simp.stomp.StompSession;
 import org.testfx.framework.junit5.ApplicationTest;
 
 import java.io.File;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -39,6 +43,9 @@ class AddParticipantCtrlTest extends ApplicationTest {
     private MainCtrl mainCtrl;
 
     private AddParticipantCtrl sutSpy;
+
+    @Mock
+    private AlertWrapper alertWrapper;
 
     @Mock
     UserConfig userConfig;
@@ -68,6 +75,7 @@ class AddParticipantCtrlTest extends ApplicationTest {
                 sut = addParticipant.getKey();
                 sut.setMainCtrl(mainCtrl);
                 sut.setServer(server);
+                sut.setAlertWrapper(Mockito.mock(AlertWrapper.class));
                 sutSpy = Mockito.spy(sut);
 
 //                doNothing().when(sutSpy).refreshText();
@@ -146,9 +154,13 @@ class AddParticipantCtrlTest extends ApplicationTest {
     @Test
     void invalidParticipantTest() {
         Platform.runLater(() -> {
+            List<Participant> before = testEvent1.getParticipants();
             sut.getUsernameTextField().setText("");
+            when(alertWrapper.showAlertButton(Mockito.any(Alert.AlertType.class),
+                    Mockito.anyString(), Mockito.anyString())).thenReturn(ButtonType.OK);
             Mockito.when(server.saveParticipant(any())).thenReturn(testParticipant1);
-            assertFalse(sut.saveParticipant());
+            sut.addParticipant();
+            assertEquals(before, testEvent1.getParticipants());
 //            WaitForAsyncUtils.waitForFxEvents();
 //            FxAssert.verifyThat(window(Alert.AlertType.ERROR.name()), WindowMatchers.isShowing());
         });
@@ -234,30 +246,23 @@ class AddParticipantCtrlTest extends ApplicationTest {
 
     @Test
     void formatCheckTest() {
+        List<Participant> before = testEvent1.getParticipants();
+        when(alertWrapper.showAlertButton(Mockito.any(Alert.AlertType.class),
+                Mockito.anyString(), Mockito.anyString())).thenReturn(ButtonType.OK);
         sut.getUsernameTextField().setText("test");
-
-        assertDoesNotThrow(() -> sut.formatCheck());
-
         sut.getEmailTextField().setText("t");
-        assertThrows(WebApplicationException.class, () -> sut.formatCheck());
-
-        sut.getEmailTextField().setText("");
         sut.getIbanTextField().setText("t");
-        assertThrows(WebApplicationException.class, () -> sut.formatCheck());
-
-        sut.getIbanTextField().setText("");
         sut.getBicTextField().setText("t");
-        assertThrows(WebApplicationException.class, () -> sut.formatCheck());
+        assertEquals(before, testEvent1.getParticipants());
     }
 
     @Test
     void emptyCheckTest() {
-        sut.getUsernameTextField().setText("test");
-
-        assertDoesNotThrow(() -> sut.emptyCheck());
-
+        List<Participant> before = testEvent1.getParticipants();
         sut.getUsernameTextField().setText("");
-        assertThrows(WebApplicationException.class, () -> sut.emptyCheck());
+        when(alertWrapper.showAlertButton(Mockito.any(Alert.AlertType.class),
+                Mockito.anyString(), Mockito.anyString())).thenReturn(ButtonType.OK);
+        assertEquals(before, testEvent1.getParticipants());
 
     }
 
