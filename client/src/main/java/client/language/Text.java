@@ -124,6 +124,14 @@ public class Text {
             public static final String InvalidMail = level + "InvalidMail";
             public static final String InvalidIBAN = level + "InvalidIBAN";
             public static final String InvalidBIC = level + "InvalidBIC";
+
+            public static final String DuplicateError = level +
+                    "DuplicateError";
+            public static final String EmptyError = level + "EmptyError";
+            public static final String FormatError = level + "FormatError";
+
+            public static final String DuplicateErrorContent = level +
+                    "DuplicateErrorContent";
         }
 
 
