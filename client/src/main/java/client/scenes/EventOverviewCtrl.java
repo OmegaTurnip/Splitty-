@@ -383,6 +383,9 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         mainCtrl.showAddExpense(event);
     }
 
+
+    public void editName() {mainCtrl.showEditName(event);}
+
     private class ParticipantCellFactory extends ListCell<Participant> {
 
         private FXMLLoader loader;

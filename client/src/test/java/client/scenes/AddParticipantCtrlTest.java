@@ -15,6 +15,7 @@ import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.util.Pair;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -84,6 +85,12 @@ class AddParticipantCtrlTest extends ApplicationTest {
                 stage.show();
             }
         }
+    }
+
+    @AfterEach
+    void breakDown() {
+        Mockito.reset(server );
+        Mockito.reset(mainCtrl);
     }
 
     @BeforeAll
