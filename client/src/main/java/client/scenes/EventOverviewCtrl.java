@@ -105,9 +105,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 new TransactionCellFactory());
         server.registerForUpdates(t -> {
             updateTransactions(t);
-            Platform.runLater(() -> {
-                refresh();
-            });
+            Platform.runLater(this::refresh);
             System.out.println("Received transaction: " + t.getName());
         }, event);
         server.registerForMessages("/topic/admin", Event.class, e -> {
