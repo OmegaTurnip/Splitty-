@@ -539,7 +539,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         participantList.clear();
         var list = participants.getCheckModel().getCheckedItems();
         for (Object o : list) {
-            if (list.indexOf(o) != 0) {
+            if (list.get(0) != participants.getItems().get(0)) {
                 participantList.add((Participant) o);
             }
         }
