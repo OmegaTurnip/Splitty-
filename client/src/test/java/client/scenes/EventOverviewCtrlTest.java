@@ -150,11 +150,12 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         Transaction transaction2 = addExpenseCtrlMock.getExpense();
         server.saveEvent(event);
         sut.refresh();
+        WaitForAsyncUtils.waitForFxEvents();
         List ExspenseListView = sut.getExpensesListView().getItems();
         Transaction equalTransaction2 = new Transaction(participant1, name.getText(), amount, participantList,event, null, false);
         transaction2.setId(2L);
         equalTransaction2.setId(2L);
         assertEquals(transaction2, equalTransaction2);
-       //fails  assertEquals(sut.getExpensesListView().getItems().get(1), transaction2);
+        assertEquals(sut.getExpensesListView().getItems().get(1), transaction2);
     }
 }
