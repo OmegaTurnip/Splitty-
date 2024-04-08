@@ -3,6 +3,7 @@ package client.scenes;
 import client.MyFXML;
 import client.MyModule;
 import client.language.Language;
+import client.language.Text;
 import client.language.Translator;
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
