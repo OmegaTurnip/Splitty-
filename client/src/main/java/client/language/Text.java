@@ -180,6 +180,21 @@ public class Text {
         }
     }
 
+    public static final class EditName {
+        private static final String level = "EditName.";
+
+        public static final String inputName = level + "inputName";
+
+        public static final String confirm = level + "confirm";
+
+        public static final class Alert {
+            public static final String level = EditName.level + "Alert.";
+            public static final String confirmTitle = level + "confirmTitle";
+            public static final String confirmContent = level
+                    + "confirmContent";
+        }
+    }
+
     public static final class Admin {
 
         private static final String level = "Admin.";
