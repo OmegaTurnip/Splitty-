@@ -103,7 +103,11 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 new ParticipantCellFactory());
         expensesListView.setCellFactory(param ->
                 new TransactionCellFactory());
-        server.registerForUpdates(this::updateTransactions, event);
+        server.registerForUpdates(t -> {
+            updateTransactions(t);
+            Platform.runLater(this::refresh);
+            System.out.println("Received transaction: " + t.getName());
+        }, event);
         server.registerForMessages("/topic/admin", Event.class, e -> {
             if (event.equals(e)) event = e; //Overwrite current event
             System.out.println("Received event: " + event.getEventName());

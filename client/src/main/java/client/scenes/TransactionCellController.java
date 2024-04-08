@@ -1,5 +1,7 @@
 package client.scenes;
 
+import client.language.Formatter;
+import client.language.Text;
 import client.language.Translator;
 import client.utils.ServerUtils;
 import commons.Event;
@@ -9,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 public class TransactionCellController {
@@ -18,7 +21,6 @@ public class TransactionCellController {
     private Transaction transaction;
 
     private String paid;
-    private String forString;
 
     private ServerUtils server;
     private EventOverviewCtrl eventOverviewCtrl;
@@ -55,11 +57,8 @@ public class TransactionCellController {
      *
      */
     void refreshText() {
-        paid = Translator
-                .getTranslation(client.language
-                        .Text.EventOverview.ExpenseListing.paid);
-        forString = Translator.getTranslation(client.language
-                .Text.EventOverview.ExpenseListing.for_);
+        paid = Translator.getTranslation(
+                Text.EventOverview.ExpenseListing.paid);
     }
 
     /**
@@ -69,17 +68,17 @@ public class TransactionCellController {
      */
     public void setTransactionData(Transaction transaction) {
         refreshText();
-        String transactionInfo = String.format("%s %s %s %s %s %s (%s)",
-                transaction.getDate(),
-                transaction.getPayer().getName(),
-                paid,
-                transaction.getAmount().format(Translator.getLocale()),
-                forString,
-                transaction.getName(),
+        HashMap<String, String> transactionInfo = new HashMap<>();
+        transactionInfo.put("date", transaction.getDate().toString());
+        transactionInfo.put("payer", transaction.getPayer().getName());
+        transactionInfo.put("amount",
+                transaction.getAmount().format(Translator.getLocale()));
+        transactionInfo.put("name",transaction.getName());
+        transactionInfo.put("participants",
                 transaction.getParticipants().stream()
                         .map(Participant::getName)
                         .collect(Collectors.joining(", ")));
-        transactionInfoLabel.setText(transactionInfo);
+        transactionInfoLabel.setText(Formatter.format(paid, transactionInfo));
     }
 
     /**
