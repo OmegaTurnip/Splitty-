@@ -79,6 +79,7 @@ public class ParticipantCellController {
             ButtonType result = showDeletionAlert();
             if (result == ButtonType.OK) {
                 server.removeParticipant(participant);
+                event.removeParticipant(participant);
             }
         }
     }

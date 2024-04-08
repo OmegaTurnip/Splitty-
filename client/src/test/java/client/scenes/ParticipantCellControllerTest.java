@@ -109,15 +109,15 @@ class ParticipantCellControllerTest extends ApplicationTest {
         assertNotNull(alertWrapper);
     }
 
-//    @Test
-//    public void deleteParticipantTest(){
-//        Mockito.when(sut.showDeletionAlert()).thenReturn(ButtonType.OK);
-//        event.addParticipant("Test");
-//        Participant testParticipant = event.getParticipants().get(0);
-//        assertEquals(event.getParticipants().size(), 1);
-//        sut.deleteParticipant(testParticipant);
-//        assertEquals(event.getParticipants().size(), 0);
-//    }
+    @Test
+    public void deleteParticipantTest(){
+        Mockito.when(sut.showDeletionAlert()).thenReturn(ButtonType.OK);
+        event.addParticipant("Test");
+        Participant testParticipant = event.getParticipants().get(0);
+        assertEquals(event.getParticipants().size(), 1);
+        sut.deleteParticipant(testParticipant);
+        assertEquals(event.getParticipants().size(), 0);
+    }
 
 
 }

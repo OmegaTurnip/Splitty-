@@ -22,7 +22,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
 
 import java.io.IOException;
 import java.net.URL;
@@ -244,10 +243,6 @@ public class StartUpCtrl extends TextPage implements Initializable {
             System.out.println("Event: "+ result.getEventName() + " joined!");
         } catch (WebApplicationException e) {
             e.printStackTrace();
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
             return;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -282,10 +277,6 @@ public class StartUpCtrl extends TextPage implements Initializable {
                     " Time of last edit: " + result.getLastActivity());
         } catch (WebApplicationException e) {
             e.printStackTrace();
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
             return;
         } catch (IOException e) {
             throw new RuntimeException(e);
