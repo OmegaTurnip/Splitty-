@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.testfx.framework.junit5.ApplicationTest;
+import org.testfx.util.WaitForAsyncUtils;
 
 import java.awt.*;
 import java.math.BigDecimal;
@@ -104,7 +105,7 @@ public class EventOverviewCtrlTest extends ApplicationTest {
     }
 
     @Test
-    void testAddExpense() {
+    void testAddExpense()  {
         sut.setEvent(event);
         event.addParticipant("testParticipant1");
         Participant participant1 = event.getParticipants().get(0);
@@ -133,7 +134,9 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         transaction.setId(1L);
         equalTransaction.setId(1L);
         assertEquals(transaction, equalTransaction);
-        assertEquals(sut.getExpensesListView().getItems().getFirst(), transaction);
+        WaitForAsyncUtils.waitForFxEvents();
+        Transaction transaction1 = sut.getExpensesListView().getItems().getFirst();
+        assertEquals(transaction1, transaction);
 
         // add second expense
         name = new javafx.scene.control.TextField("tea");
