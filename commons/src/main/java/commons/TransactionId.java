@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class TransactionId implements Serializable {
-    private Long id;
+    private Long transactionId;
     private Long event;
 
     /**
@@ -18,7 +18,7 @@ public class TransactionId implements Serializable {
      * @param event the id of the Event
      */
     public TransactionId(Long id, Long event) {
-        this.id = id;
+        this.transactionId = id;
         this.event = event;
     }
 
@@ -27,7 +27,7 @@ public class TransactionId implements Serializable {
      * @return the id
      */
     public Long getTransactionId() {
-        return id;
+        return transactionId;
     }
 
     /**
@@ -43,7 +43,7 @@ public class TransactionId implements Serializable {
      * @param id the new id
      */
     public void setTransactionId(Long id) {
-        this.id = id;
+        this.transactionId = id;
     }
 
     /**
@@ -64,7 +64,8 @@ public class TransactionId implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TransactionId that = (TransactionId) o;
-        return Objects.equals(id, that.id) && Objects.equals(event, that.event);
+        return Objects.equals(transactionId, that.transactionId)
+                && Objects.equals(event, that.event);
     }
 
     /**
@@ -73,6 +74,6 @@ public class TransactionId implements Serializable {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(id, event);
+        return Objects.hash(transactionId, event);
     }
 }
