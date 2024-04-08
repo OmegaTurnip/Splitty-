@@ -126,10 +126,10 @@ public class EventController {
         Event dbEvent = eventRepository.save(event);
         messagingTemplate.convertAndSend("/topic/admin", dbEvent);
         return ResponseEntity.ok(dbEvent);
-        //tbf this might not be the proper way to do PUT.
-        // PUT methods should specify the URI exactly,
-        // so a proper pathing would be /{id}
     }
+    //tbf this might not be the proper way to do PUT.
+    // PUT methods should specify the URI exactly,
+    // so a proper pathing would be /{id}
 
     private static void setTagInstances(Event event, Transaction transaction) {
         if (transaction.getTag() != null) {
