@@ -293,6 +293,8 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                 event.addTransaction(returnedE);
 //                server.saveEvent(event);
                 System.out.println("Added expense " + expense);
+            } else {
+                throw new WebApplicationException("Invalid input");
             }
         } catch (WebApplicationException e) {
             e.printStackTrace();
