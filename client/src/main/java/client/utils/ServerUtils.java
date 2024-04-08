@@ -494,6 +494,10 @@ public class ServerUtils {
                 .post(Entity.entity(transaction, APPLICATION_JSON),
                         Transaction.class);
         returned.setEvent(transaction.getEvent());
+        returned.getPayer().setEvent(transaction.getEvent());
+        for (Participant participant : returned.getParticipants()) {
+            participant.setEvent(transaction.getEvent());
+        }
         return returned;
     }
 }

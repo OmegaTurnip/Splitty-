@@ -66,7 +66,6 @@ public class Text {
                     "ExpenseListing.";
 
             public static final String paid = level + "paid";
-            public static final String for_ = level + "for";
         }
 
         public static final class Alert {
