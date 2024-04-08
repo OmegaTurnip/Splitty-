@@ -124,6 +124,7 @@ public class EditEventNameCtrl extends TextPage implements Initializable {
                 event.setEventName(eventName.getText());
                 server.saveEvent(event);
                 mainCtrl.showEventOverview(event);
+                event.updateLastActivity();
             }
         }
         mainCtrl.showEventOverview(event);

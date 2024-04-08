@@ -136,8 +136,8 @@ public class EditEventNameTest extends ApplicationTest {
     @Test
     public void testDifferentName() {
         String newName = "Birthday";
-        eventName.setText(newName);
         MainCtrl mainCtrlMock = Mockito.mock(MainCtrl.class);
+        eventName.setText(newName);
         sut.setMainCtrl(mainCtrlMock);
         sut.setAlertWrapper(alertWrapper);
         doNothing().when(mainCtrlMock).showEventOverview(event);
