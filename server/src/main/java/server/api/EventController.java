@@ -132,7 +132,7 @@ public class EventController {
 
     private static void setTagInstances(Event event, Transaction transaction) {
         if (transaction.getTag() != null) {
-            transaction.setTag(event.getTagbyId(
+            transaction.setTag(event.getTagById(
                     transaction.getTag().getTagId()
             ));
         }

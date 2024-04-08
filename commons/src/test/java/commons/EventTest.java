@@ -128,4 +128,12 @@ class EventTest {
       assertTrue(testEvent.deleteTransaction(testTransaction1));
       assertFalse(testEvent.getTransactions().contains(testTransaction1));
     }
+
+    @Test
+    void getTagById(){
+      Tag tag = new Tag("school", "green");
+      tag.setTagId(2L);
+      testEvent.addTag(tag);
+      assertSame(tag, testEvent.getTagById(2L));
+    }
 }

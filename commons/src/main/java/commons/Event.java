@@ -255,6 +255,21 @@ public class Event {
     }
 
     /**
+     * Adds a transaction
+     * @param transaction transaction to be added
+     */
+    public void addTransaction(Transaction transaction){
+        this.transactions.add(transaction);
+    }
+    /**
+     * Removes a transaction from the transactions
+     * @param transaction transaction
+     */
+    public void removeTransaction(Transaction transaction){
+        this.transactions.remove(transaction);
+    }
+
+    /**
      * Edit transactions (with updateLastActivity)
      * @param transactions The transactions
      */
@@ -437,7 +452,7 @@ public class Event {
      * @param id Tag id
      * @return the tag
      */
-    public Tag getTagbyId(Long id) {
+    public Tag getTagById(Long id) {
         for (Tag tag : tags) {
             if (id != null && id.equals(tag.getTagId())) {
                 return tag;
@@ -445,6 +460,7 @@ public class Event {
         }
         return null;
     }
+
     /**
      * Adds a participant to the event
      *

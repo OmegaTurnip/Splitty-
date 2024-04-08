@@ -53,9 +53,9 @@ public class Transaction {
      *          Whether this transaction is a payoff or a debt.
      */
     @SuppressWarnings("checkstyle:ParameterNumber") // no other option really
-    private Transaction(Participant payer, String name, Money amount,
-                        List<Participant> participants, Event event, Tag tag,
-                        boolean isPayoff) {
+    public Transaction(Participant payer, String name, Money amount,
+                       List<Participant> participants, Event event, Tag tag,
+                       boolean isPayoff) {
         this.payer = payer;
         this.name = name;
         this.date = LocalDate.now();
