@@ -36,7 +36,9 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
+import java.util.Currency;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -76,6 +78,8 @@ public class ServerUtils {
     private Client client;
 
     private StompSession session;
+
+    private Set<Currency> availableCurrenciesCache = null;
 
     /**
      * Getter.
@@ -150,6 +154,24 @@ public class ServerUtils {
         this.userSettings = userSettings;
         this.server = server;
         this.client = client;
+    }
+
+    /**
+     * Get available currencies, is guaranteed to always return the same due to
+     * caching (so storing the result also isn't needed).
+     *
+     * @return  The available currencies.
+     */
+    public Set<Currency> getAvailableCurrencies() {
+        if (availableCurrenciesCache == null) {
+            availableCurrenciesCache = client //
+                    .target(server).path("api/event/currencies") //
+                    .request(APPLICATION_JSON) //
+                    .accept(APPLICATION_JSON) //
+                    .get(new GenericType<Set<Currency>>() {
+                    });
+        }
+        return availableCurrenciesCache;
     }
 
     /**

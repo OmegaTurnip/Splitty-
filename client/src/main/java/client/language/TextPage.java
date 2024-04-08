@@ -1,6 +1,7 @@
 package client.language;
 
 import client.utils.UserConfig;
+import javafx.fxml.FXML;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
@@ -9,13 +10,16 @@ import javafx.scene.image.ImageView;
 import java.io.IOException;
 import java.util.HashMap;
 
-public interface TextPage {
+public abstract class TextPage {
+
+    @FXML
+    protected Menu languageMenu;
 
     /**
      * Refreshes the text in the current language on the page, should also be
      * used on initial start-up.
      */
-    void refreshText();
+    public abstract void refreshText();
 
     /**
      * Set the language of the user.
@@ -23,7 +27,7 @@ public interface TextPage {
      * @param languagesMenu the menu to set the language icon
      * @param languages the languages
      */
-    default void setLanguage(String langKey,
+    private void setLanguage(String langKey,
                              Menu languagesMenu,
                              HashMap<String, Language> languages) {
         try {
@@ -35,6 +39,8 @@ public interface TextPage {
             imageView.setFitHeight(20);
             imageView.setFitWidth(20);
             languagesMenu.setGraphic(imageView);
+            languageMenu.setText(
+                    Translator.getTranslation(Text.Menu.Languages));
         }catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -42,9 +48,8 @@ public interface TextPage {
 
     /**
      * Fetches the languages from the app languages and sets the menu items.
-     * @param languagesMenu the menu to set the languages
      */
-    default void fetchLanguages(Menu languagesMenu) {
+    public void fetchLanguages() {
         HashMap<String, Language> languages = Language.languages;
 
         for (String langKey : languages.keySet()) {
@@ -52,7 +57,7 @@ public interface TextPage {
                     .get(langKey).getNativeName());
 
             item.setOnAction(event -> {
-                setLanguage(langKey, languagesMenu, languages);
+                setLanguage(langKey, languageMenu, languages);
             });
 
             Image image = new Image(languages
@@ -61,7 +66,7 @@ public interface TextPage {
             imageView.setFitHeight(20);
             imageView.setFitWidth(20);
             item.setGraphic(imageView);
-            languagesMenu.getItems().add(item);
+            languageMenu.getItems().add(item);
         }
         String langKey = UserConfig.get().getUserLanguage();
         Image image = new Image(languages
@@ -69,6 +74,6 @@ public interface TextPage {
         ImageView imageView = new ImageView(image);
         imageView.setFitHeight(20);
         imageView.setFitWidth(20);
-        languagesMenu.setGraphic(imageView);
+        languageMenu.setGraphic(imageView);
     }
 }

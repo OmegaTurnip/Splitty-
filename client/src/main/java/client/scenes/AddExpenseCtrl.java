@@ -31,10 +31,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AddExpenseCtrl implements Initializable, TextPage {
+public class AddExpenseCtrl extends TextPage implements Initializable {
 
-    @FXML
-    private Menu languages;
     @FXML
     private Button cancel;
     @FXML
@@ -99,7 +97,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        fetchLanguages(languages);
+        fetchLanguages();
         payerSelection();
         tagSelection();
         participantSelection();
@@ -299,6 +297,7 @@ public class AddExpenseCtrl implements Initializable, TextPage {
                 Transaction returnedE = server.saveTransaction(expense);
                 event.removeTransaction(expense);
                 event.addTransaction(returnedE);
+//                server.saveEvent(event);
                 System.out.println("Added expense " + expense);
             }
         } catch (WebApplicationException e) {
@@ -452,10 +451,8 @@ public class AddExpenseCtrl implements Initializable, TextPage {
                 if (!useWhiteText) setTextFill(Color.BLACK);
             });
 
-            setOnMouseExited(event -> {
-                setStyle("-fx-background-color: " +
-                        tag.getColour() + ";");
-            });
+            setOnMouseExited(event -> setStyle("-fx-background-color: " +
+                    tag.getColour() + ";"));
         }
     }
 
@@ -484,8 +481,9 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     /**
      * Refreshes the text
      */
+    @Override
     public void refreshText() {
-        languages.setText(
+        languageMenu.setText(
                 Translator.getTranslation(Text.Menu.Languages));
         cancel.setText(
                 Translator.getTranslation(Text.AddParticipant.Cancel));
@@ -543,8 +541,9 @@ public class AddExpenseCtrl implements Initializable, TextPage {
     public void getCheckedParticipants() {
         // added below
         participantList.clear();
-        for (Object o : participants.getCheckModel().getCheckedItems()) {
-            if (!participants.getCheckModel().isChecked(0)) {
+        var list = participants.getCheckModel().getCheckedItems();
+        for (Object o : list) {
+            if (list.indexOf(o) != 0) {
                 participantList.add((Participant) o);
             }
         }

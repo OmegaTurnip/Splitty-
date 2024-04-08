@@ -19,7 +19,7 @@ public class TransactionController {
     private final TransactionRepository repo;
     private final EventRepository eventRepository;
 
-    private Map<Object, Consumer<Transaction>> listners;
+    private Map<Object, Consumer<Transaction>> listeners;
 
     /**
      * Constructor for the EventController
@@ -30,7 +30,7 @@ public class TransactionController {
                                  EventRepository eventRepository) {
         this.eventRepository = eventRepository;
         this.repo = repo;
-        this.listners = new HashMap<>();
+        this.listeners = new HashMap<>();
     }
 
     /**
@@ -69,8 +69,8 @@ public class TransactionController {
                 500L, noContent);
 
         var key = new Object();
-        listners.put(key, t -> res.setResult(ResponseEntity.ok(t)));
-        res.onCompletion(() -> listners.remove(key));
+        listeners.put(key, t -> res.setResult(ResponseEntity.ok(t)));
+        res.onCompletion(() -> listeners.remove(key));
 
         return res;
     }
@@ -167,11 +167,11 @@ public class TransactionController {
         }
         transaction.setParticipants(participants);
         if (transaction.getTag() != null) {
-            transaction.setTag(event.get().getTagbyId(
+            transaction.setTag(event.get().getTagById(
                     transaction.getTag().getTagId()
             ));
         }
-        listners.forEach((k,l) -> l.accept(transaction));
+        listeners.forEach((k, l) -> l.accept(transaction));
         return ResponseEntity.ok(repo.save(transaction));
     }
 

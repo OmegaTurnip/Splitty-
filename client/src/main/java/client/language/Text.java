@@ -46,9 +46,6 @@ public class Text {
         public static final String Languages = level + "Languages";
         public static final String ReturnToOverview = level +
                 "ReturnToOverview";
-        public static final String English = level + "English";
-        public static final String Dutch = level + "Dutch";
-        public static final String German = level + "German";
         public static final String Close = level + "Close";
 
     }
@@ -152,6 +149,8 @@ public class Text {
         public static final String yourEventsLabel = level + "yourEventsLabel";
 
         public static final String languagesMenu = level + "languagesMenu";
+
+        public static final String currencyMenu = level + "currencyMenu";
 
         public static final class Menu {
             public static final String level = StartUp.level + "Menu.";
