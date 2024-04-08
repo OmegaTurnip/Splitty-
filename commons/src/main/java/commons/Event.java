@@ -302,7 +302,7 @@ public class Event {
                 Transaction.createDebt(
                         creditor, name, price, participants, this, tag
                 );
-        transactions.add(t);
+        this.transactions.add(t);
         updateLastActivity();
         return t;
     }
