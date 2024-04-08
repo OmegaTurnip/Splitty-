@@ -1,5 +1,7 @@
 package client.scenes;
 
+import client.language.Formatter;
+import client.language.Text;
 import client.language.Translator;
 import client.utils.ServerUtils;
 import commons.Event;
@@ -9,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 public class TransactionCellController {
@@ -16,6 +19,8 @@ public class TransactionCellController {
     private Event event;
 
     private Transaction transaction;
+
+    private String paid;
 
     private ServerUtils server;
     private EventOverviewCtrl eventOverviewCtrl;
@@ -26,11 +31,13 @@ public class TransactionCellController {
     @FXML
     private Button deleteTransactionButton;
 
+
     /**
      * Initialize the controller.
      */
     @FXML
     public void initialize() {
+        refreshText();
         editTransactionButton.setOnAction(event -> {
             System.out.println("Edit transaction button clicked");
         });
@@ -40,19 +47,74 @@ public class TransactionCellController {
     }
 
     /**
+     *
+     */
+    public void refresh() {
+        refreshText();
+    }
+
+    /**
+     *
+     */
+    void refreshText() {
+        paid = Translator.getTranslation(
+                Text.EventOverview.ExpenseListing.paid);
+    }
+
+    /**
      * Provide label for the transaction.
+     *
      * @param transaction transaction
      */
     public void setTransactionData(Transaction transaction) {
-        String transactionInfo = String.format("%s %s paid %s for %s (%s)",
-                transaction.getDate(),
-                transaction.getPayer().getName(),
-                transaction.getAmount().format(Translator.getLocale()),
-                transaction.getName(),
+        refreshText();
+        HashMap<String, String> transactionInfo = new HashMap<>();
+        transactionInfo.put("date", transaction.getDate().toString());
+        transactionInfo.put("payer", transaction.getPayer().getName());
+        transactionInfo.put("amount",
+                transaction.getAmount().format(Translator.getLocale()));
+        transactionInfo.put("name",transaction.getName());
+        transactionInfo.put("participants",
                 transaction.getParticipants().stream()
                         .map(Participant::getName)
                         .collect(Collectors.joining(", ")));
-
-        transactionInfoLabel.setText(transactionInfo);
+        transactionInfoLabel.setText(Formatter.format(paid, transactionInfo));
     }
+
+    /**
+     * Sets the event
+     *
+     * @param event The event to be set
+     */
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
+    /**
+     * Set the transaction
+     *
+     * @param transaction the transaction of the cell
+     */
+    public void setTransaction(Transaction transaction) {
+        this.transaction = transaction;
+    }
+
+    /**
+     * Sets the server
+     *
+     * @param server server
+     */
+    public void setServer(ServerUtils server) {
+        this.server = server;
+    }
+
+    /**
+     * Set the eventOverviewController
+     *
+     * @param eventOverviewCtrl the event overview controller
+     */
+    public void setEventOverviewCtrl(EventOverviewCtrl eventOverviewCtrl) {
+        this.eventOverviewCtrl = eventOverviewCtrl;
+    }
+
 }

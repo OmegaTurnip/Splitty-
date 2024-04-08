@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.language.Formatter;
 import client.language.Text;
 import client.language.TextPage;
 import client.language.Translator;
@@ -15,6 +16,9 @@ import javafx.scene.control.*;
 import javafx.stage.Modality;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
@@ -43,6 +47,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
     private Event event;
 
     private Participant participantToOverwrite;
+    private AlertWrapper alertWrapper;
 
     /**
      * Initializes the controller
@@ -53,6 +58,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
     public AddParticipantCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+        this.alertWrapper = new AlertWrapper();
     }
 
     /**
@@ -96,7 +102,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Getter.
-     * @return The languages menu.
+     * @return The languages-menu.
      */
     public Menu getLanguages() {
         return languageMenu;
@@ -113,6 +119,14 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
             bicTextField.setText(participantToOverwrite.getBic());
         }
         refreshText();
+    }
+
+    /**
+     * Sets alertWrapper
+     * @param alertWrapper alertWrapper to be set
+     */
+    public void setAlertWrapper(AlertWrapper alertWrapper) {
+        this.alertWrapper = alertWrapper;
     }
 
     /**
@@ -155,7 +169,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
      * Cancels the action in the addParticipant window
      */
     public void cancel(){
-//        refreshText();
+        clearFields();
         mainCtrl.showEventOverview(event);
     }
 
@@ -186,12 +200,15 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     public boolean saveParticipant() throws WebApplicationException {
         try{
-            emptyCheck();
-            formatCheck();
+            if (!(emptyCheck() && formatCheck() && uniqueCheck())){
+                return false;
+            }
             if (participantToOverwrite != null) {
                 overwriteParticipant();
+                clearFields();
             } else {
                 createParticipant();
+                clearFields();
             }
         } catch(WebApplicationException e){
             e.printStackTrace();
@@ -233,38 +250,108 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Checks whether all fields are non-empty
+     * @return boolean whether check failed or succeeded
      */
-    public void emptyCheck(){
+    public boolean emptyCheck(){
         if (usernameTextField.getText().isEmpty()) {
-            throw new WebApplicationException(
-                    Translator.getTranslation(
-                            Text.AddParticipant.Alert.NoName
-                                    ), 422);
+            if (sendEmptyCheckError() == ButtonType.OK){
+                return false;
+            }
         }
+        return true;
+    }
+
+    /**
+     * Checks if the entered participants name is unique compared
+     * to all other participants
+     * @return boolean whether check fails or passes
+     */
+    public boolean uniqueCheck(){
+        List<Participant> participants = event.getParticipants();
+        ArrayList<String> participantNames = new ArrayList<>();
+        for (Participant participant: participants){
+            participantNames.add(participant.getName());
+        }
+        if (participantNames.contains(usernameTextField.getText())){
+            if (sendDuplicateNameError() == ButtonType.OK){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Formats the alert of a duplication error
+     * @return returns resulting buttonPress of alert
+     */
+    public ButtonType sendDuplicateNameError(){
+        HashMap<String, String> parameters = new HashMap<>();
+        parameters.put("name", usernameTextField.getText());
+        return alertWrapper.showAlertButton(Alert.AlertType.ERROR,
+                Translator.getTranslation(
+                        Text.AddParticipant.Alert.DuplicateError),
+                Formatter.format(Translator.getTranslation(
+                        Text.AddParticipant.Alert.DuplicateErrorContent
+                ), parameters));
+    }
+
+    /**
+     * Formats the alert of an empty error
+     * @return returns resulting buttonPress of alert
+     */
+    public ButtonType sendEmptyCheckError(){
+        return alertWrapper.showAlertButton(Alert.AlertType.ERROR,
+                Translator.getTranslation(
+                        Text.AddParticipant.Alert.EmptyError),
+                Translator.getTranslation(
+                        Text.AddParticipant.Alert.NoName
+                ));
+    }
+
+    /**
+     * Clears all input fields
+     */
+    public void clearFields(){
+        usernameTextField.setText("");
+        emailTextField.setText("");
+        ibanTextField.setText("");
+        bicTextField.setText("");
     }
 
     /**
      * Checks whether the format of the fields is correct
+     * @return boolean whether check fails or not
      */
-    public void formatCheck(){
+    public boolean formatCheck(){
         if (!isValidEmail(emailTextField.getText())) {
-            throw new WebApplicationException(
+            alertWrapper.showAlertButton(Alert.AlertType.ERROR,
                     Translator.getTranslation(
-                            Text.AddParticipant.Alert.InvalidMail
-                    ), 422);
+                            Text.AddParticipant.Alert.FormatError),
+                    Translator.getTranslation(
+                    Text.AddParticipant.Alert.InvalidMail
+                    ));
+            return false;
         }
         if (!isValidIban(ibanTextField.getText())) {
-            throw new WebApplicationException(
+            alertWrapper.showAlertButton(Alert.AlertType.ERROR,
+                    Translator.getTranslation(
+                            Text.AddParticipant.Alert.FormatError),
                     Translator.getTranslation(
                             Text.AddParticipant.Alert.InvalidIBAN
-                    ), 422);
+                    ));
+            return false;
+
         }
         if (!isValidBic(bicTextField.getText())) {
-            throw new WebApplicationException(
+            alertWrapper.showAlertButton(Alert.AlertType.ERROR,
+                    Translator.getTranslation(
+                            Text.AddParticipant.Alert.FormatError),
                     Translator.getTranslation(
                             Text.AddParticipant.Alert.InvalidBIC
-                    ), 422);
+                    ));
+            return false;
         }
+        return true;
     }
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile(

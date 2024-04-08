@@ -35,6 +35,13 @@ public class Text {
         public static final String expensesDropDown = level
                 + "expensesDropDown";
 
+        public static final class ExpenseListing {
+            private static final String level = EventOverview.level +
+                    "ExpenseListing.";
+
+            public static final String paid = level + "paid";
+        }
+
         public static final class Alert {
             private static final String level = EventOverview.level +
                     "Alert.";
@@ -42,6 +49,7 @@ public class Text {
                     "deletedEventTitle";
             public static final String deletedEventContent = level +
                     "deletedEventContent";
+
         }
 
 
@@ -79,7 +87,7 @@ public class Text {
         }
     }
 
-    public static final class AddParticipant{
+    public static final class AddParticipant {
         private static final String level = "AddParticipant.";
 
         public static final String Username = level + "Username";
@@ -91,13 +99,21 @@ public class Text {
         public static final String Title = level + "Title";
         public static final String EditTitle = level + "EditTitle";
 
-        public static final class Alert{
+        public static final class Alert {
             public static final String level = AddParticipant.level + "Alert.";
             public static final String NoName = level + "NoName";
 
             public static final String InvalidMail = level + "InvalidMail";
             public static final String InvalidIBAN = level + "InvalidIBAN";
             public static final String InvalidBIC = level + "InvalidBIC";
+
+            public static final String DuplicateError = level +
+                    "DuplicateError";
+            public static final String EmptyError = level + "EmptyError";
+            public static final String FormatError = level + "FormatError";
+
+            public static final String DuplicateErrorContent = level +
+                    "DuplicateErrorContent";
         }
 
 
@@ -122,6 +138,7 @@ public class Text {
             public static final String removeYourEvents =
                     level + "removeYourEvents";
         }
+
         public static final class Buttons {
             public static final String level = StartUp.level + "Buttons.";
             public static final String NewEventButton =
@@ -141,6 +158,21 @@ public class Text {
                     level + "removeEventHeader";
             public static final String removeEventContent =
                     level + "removeEventContent";
+        }
+    }
+
+    public static final class EditName {
+        private static final String level = "EditName.";
+
+        public static final String inputName = level + "inputName";
+
+        public static final String confirm = level + "confirm";
+
+        public static final class Alert {
+            public static final String level = EditName.level + "Alert.";
+            public static final String confirmTitle = level + "confirmTitle";
+            public static final String confirmContent = level
+                    + "confirmContent";
         }
     }
 
@@ -198,7 +230,6 @@ public class Text {
         public static final String serverDownContent =
                 level + "serverDownContent";
     }
-
     public static final class AddExpense {
         private static final String level = "AddExpense.";
         public static final String expenseNamePrompt = level + "namePrompt";
@@ -209,6 +240,7 @@ public class Text {
                 level + "participantsPrompt";
         public static final String expenseTypePrompt = level + "typePrompt";
         public static final String participantsEveryone = level + "everyone";
+
         public static final class Button {
             public static final String level = AddExpense.level + "Buttons.";
             public static final String addExpenseButton = level + "addExpense";
@@ -230,3 +262,4 @@ public class Text {
     }
 
 }
+
