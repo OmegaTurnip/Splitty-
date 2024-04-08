@@ -153,4 +153,10 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         assertEquals(transaction2, equalTransaction2);
         assertEquals(sut.getExpensesListView().getItems().get(1), transaction2);
     }
+
+    @Test
+    void testGetMainCtrl() {
+        sut.setMainCtrl(mainCtrl);
+        assertEquals(sut.getMainCtrl(), mainCtrl);
+    }
 }

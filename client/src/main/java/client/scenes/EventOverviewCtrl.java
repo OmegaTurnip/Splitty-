@@ -487,7 +487,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         this.event = event;
     }
 
-
     /**
      * Shows the startUpWindow
      */

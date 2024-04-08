@@ -112,6 +112,21 @@ public class Text {
 
             }
         }
+
+        public static class TransactionCellController {
+            public static final String level = EventOverview.level +
+                    "TransactionCellController.";
+
+            public static final class Alert {
+                public static final String level = TransactionCellController
+                        .level + "Alert.";
+                public static final String deleteExpenseTitle = level +
+                        "deleteExpenseTitle";
+                public static final String deleteExpenseContent = level +
+                        "deleteExpenseContent";
+
+            }
+        }
     }
 
     public static final class AddParticipant {
@@ -133,6 +148,14 @@ public class Text {
             public static final String InvalidMail = level + "InvalidMail";
             public static final String InvalidIBAN = level + "InvalidIBAN";
             public static final String InvalidBIC = level + "InvalidBIC";
+
+            public static final String DuplicateError = level +
+                    "DuplicateError";
+            public static final String EmptyError = level + "EmptyError";
+            public static final String FormatError = level + "FormatError";
+
+            public static final String DuplicateErrorContent = level +
+                    "DuplicateErrorContent";
         }
 
 
@@ -249,6 +272,7 @@ public class Text {
         public static final String serverDownContent =
                 level + "serverDownContent";
     }
+
     public static final class AddExpense {
         private static final String level = "AddExpense.";
         public static final String expenseNamePrompt = level + "namePrompt";
@@ -281,4 +305,3 @@ public class Text {
     }
 
 }
-
