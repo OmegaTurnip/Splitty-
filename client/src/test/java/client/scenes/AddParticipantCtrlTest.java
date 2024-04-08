@@ -301,6 +301,17 @@ class AddParticipantCtrlTest extends ApplicationTest {
         assertTrue(sut.formatCheck());
     }
 
+    @Test
+    void saveParticipantFalseCheck(){
+        sut.getEmailTextField().setText("fail");
+        when(alertWrapper.showAlertButton(Mockito.any(Alert.AlertType.class),
+                Mockito.anyString(), Mockito.anyString())).thenReturn(ButtonType.OK);
+        assertFalse(sut.formatCheck());
+        when(sut.sendEmptyCheckError()).thenReturn(ButtonType.OK);
+        when(sut.sendDuplicateNameError()).thenReturn(ButtonType.OK);
+        assertFalse(sut.saveParticipant());
+    }
+
 
 
 //    @Test
