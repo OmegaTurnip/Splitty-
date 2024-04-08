@@ -1,6 +1,5 @@
 package server.financial;
 
-
 import server.Config;
 
 import java.io.File;
@@ -33,6 +32,7 @@ public class ExchangeRateFactory {
     private final HashSet<ExchangeRate> exchangeRates = new HashSet<>();
     private final HashSet<Currency> knownCurrencies = new HashSet<>();
     private final File directory;
+    private final ExchangeRateAPI api;
 
     /**
      * Constructs an {@code ExchangeRateFactory}. Direct calls are only for
@@ -41,9 +41,13 @@ public class ExchangeRateFactory {
      *
      * @param   directory
      *          The directory in which file should be saved.
+     *
+     * @param   api
+     *          The {@link ExchangeRateAPI} object to use.
      */
-    public ExchangeRateFactory(File directory) {
+    public ExchangeRateFactory(File directory, ExchangeRateAPI api) {
         this.directory = directory;
+        this.api = api;
     }
 
     /**
@@ -56,11 +60,12 @@ public class ExchangeRateFactory {
     }
 
     /**
-     * Gets all loaded {@link Currency Currencies}.
+     * Gets all {@link Currency Currencies}.
      *
      * @return  A set containing all loaded {@code Currencies}.
      */
     public Set<Currency> getKnownCurrencies() {
+        retrieveExchangeRates();
         return Set.copyOf(knownCurrencies);
     }
 
@@ -102,8 +107,7 @@ public class ExchangeRateFactory {
     }
 
     /**
-     * Gets all {@link ExchangeRate}s from the date {@code}. Only considers
-     * already loaded {@code ExchangeRate}s.
+     * Gets all {@link ExchangeRate}s from the date {@code}.
      *
      * @param   date
      *          The date on which the exchange rate was retrieved.
@@ -111,6 +115,7 @@ public class ExchangeRateFactory {
      * @return  The corresponding {@code ExchangeRate}s.
      */
     public Set<ExchangeRate> getExchangeRates(LocalDate date) {
+        retrieveExchangeRates(date);
         return exchangeRates.stream()
                 .filter(er -> Objects.equals(date, er.getDate()))
                 .collect(Collectors.toUnmodifiableSet());
@@ -118,8 +123,7 @@ public class ExchangeRateFactory {
 
     /**
      * Gets the {@link ExchangeRate} specified by the parameters. Returns {@code
-     * null} if no {@code ExchangeRate} was found. Only considers already loaded
-     * {@code ExchangeRate}s.
+     * null} if no {@code ExchangeRate} was found.
      *
      * @param   date
      *          The date on which the exchange rate was retrieved.
@@ -135,6 +139,7 @@ public class ExchangeRateFactory {
      */
     public ExchangeRate getExchangeRate(LocalDate date, Currency from,
                                         Currency to) {
+        retrieveExchangeRates(date);
         return exchangeRates.stream()
                 .filter(er -> Objects.equals(date, er.getDate())
                         && Objects.equals(from, er.getFrom())
@@ -144,8 +149,7 @@ public class ExchangeRateFactory {
 
     /**
      * Gets the most recent {@link ExchangeRate} that qualifies the parameters.
-     * Returns {@code null} if no {@code ExchangeRate} was found. Only considers
-     * already loaded {@code ExchangeRate}s.
+     * Returns {@code null} if no {@code ExchangeRate} was found.
      *
      * @param   from
      *          The base currency in the exchange rate as a {@link Currency}
@@ -158,11 +162,44 @@ public class ExchangeRateFactory {
      *          it is not found.
      */
     public ExchangeRate getMostRecent(Currency from, Currency to) {
+        retrieveExchangeRates();
         return exchangeRates.stream()
                 .filter(er -> Objects.equals(from, er.getFrom())
                         && Objects.equals(to, er.getTo()))
                 .max(Comparator.comparing(ExchangeRate::getDate))
                 .orElse(null);
+    }
+
+    /**
+     * Gets the {@link ExchangeRate} specified by the parameters. Returns {@code
+     * null} if no {@code ExchangeRate} was found. Only considers already loaded
+     * {@code ExchangeRate}s. If no {@code ExchangeRate} is found for the
+     * specific date, it will return the closest {@code ExchangeRate} after that
+     * date.
+     *
+     * @param   date
+     *          The date on which the exchange rate was retrieved.
+     * @param   from
+     *          The base currency in the exchange rate as a {@link Currency}
+     *          object.
+     * @param   to
+     *          The converted currency in the exchange rate as a {@code
+     *          Currency} object.
+     *
+     * @return  The corresponding {@code ExchangeRate} object or {@code null} if
+     *          it is not found.
+     */
+    public ExchangeRate getClosest(LocalDate date, Currency from, Currency to) {
+        return exchangeRates.stream()
+                .filter(er -> Objects.equals(from, er.getFrom())
+                        && Objects.equals(to, er.getTo()))
+                .max(Comparator.comparing(ExchangeRate::getDate))
+                .orElse(exchangeRates.stream()
+                        .filter(er -> Objects.equals(from, er.getFrom())
+                                && Objects.equals(to, er.getTo()))
+                        .filter(er -> er.getDate().isAfter(date))
+                        .max(Comparator.comparing(ExchangeRate::getDate))
+                        .orElse(null));
     }
 
     /**
@@ -278,6 +315,55 @@ public class ExchangeRateFactory {
 
     /**
      * Generates new {@code ExchangeRate} objects based on the new api data
+     * and saves them in the directory {@link ExchangeRateFactory#directory}.
+     * The rates should be specified in the form <i>"1 base currency unit = x
+     * other currency units"</i>. If a currency was removed from the api it will
+     * make up for this by using the last known exchange rate for that currency.
+     * So, preferably, <em><strong>call this method after a call to {@link
+     * ExchangeRateFactory#loadAll()}.</strong></em>
+     *
+     * @param   base
+     *          The base currency on which all values are based.
+     * @param   rates
+     *          The values of the currencies relative to 1 unit of the base
+     *          currency.
+     * @param   date
+     *          The date of the exchange rates.
+     */
+    public void generateExchangeRates(Currency base,
+                                             Map<Currency, Double> rates,
+                                             LocalDate date) {
+        Objects.requireNonNull(base, "base is null");
+        Objects.requireNonNull(rates, "rates is null");
+
+        knownCurrencies.add(base);
+        knownCurrencies.addAll(rates.keySet());
+
+        // simplify the algorithm
+        rates.put(base, 1.0);
+
+        for (Currency from : knownCurrencies) {
+            for (Currency to : knownCurrencies) {
+                try {
+                    ExchangeRate result =
+                            generate(base, rates, from, to, date);
+
+                    // remove to update any old exchange rates
+                    exchangeRates.remove(result);
+                    exchangeRates.add(result);
+                    write(result);
+                } catch (Exception e) {
+                    // let errors pass silently to not obstruct the rest of the
+                    // program (they're probably fine if ignored, but print them
+                    // to be sure)
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * Generates new {@code ExchangeRate} objects based on the new api data
      * (which should be from today) and saves them in the directory {@link
      * ExchangeRateFactory#directory}. The rates should be specified in the
      * form <i>"1 base currency unit = x other currency units"</i>. If a
@@ -293,36 +379,36 @@ public class ExchangeRateFactory {
      *          currency.
      */
     public void generateExchangeRates(Currency base,
-                                             Map<Currency, Double> rates) {
-        Objects.requireNonNull(base, "base is null");
-        Objects.requireNonNull(rates, "rates is null");
+                                      Map<Currency, Double> rates) {
+        generateExchangeRates(base, rates, LocalDate.now());
+    }
 
-        knownCurrencies.add(base);
-        knownCurrencies.addAll(rates.keySet());
+    private boolean hasDate(LocalDate date) {
+        return exchangeRates.stream()
+                .anyMatch(er -> Objects.equals(date, er.getDate()));
+    }
 
-        LocalDate today = LocalDate.now();
+    /**
+     * Retrieves the exchange rates for a specific date. If the exchange rates
+     * for that date are already loaded, it will do nothing.
+     *
+     * @param   date
+     *          The date for which to retrieve the exchange rates.
+     */
+    public void retrieveExchangeRates(LocalDate date) {
+        if (hasDate(date) || api == null)
+            return;
 
-        // simplify the algorithm
-        rates.put(base, 1.0);
+        api.getExchangeRates(date).ifPresent(rates ->
+                generateExchangeRates(api.getBase(), rates, date));
+    }
 
-        for (Currency from : knownCurrencies) {
-            for (Currency to : knownCurrencies) {
-                try {
-                    ExchangeRate result =
-                            generate(base, rates, from, to, today);
-
-                    // remove to update any old exchange rates
-                    exchangeRates.remove(result);
-                    exchangeRates.add(result);
-                    write(result);
-                } catch (Exception e) {
-                    // let errors pass silently to not obstruct the rest of the
-                    // program (they're probably fine if ignored, but print them
-                    // to be sure)
-                    e.printStackTrace();
-                }
-            }
-        }
+    /**
+     * Retrieves the exchange rates for today. If the exchange rates for today
+     * are already loaded, it will do nothing.
+     */
+    public void retrieveExchangeRates() {
+        retrieveExchangeRates(LocalDate.now());
     }
 
     /*====================================================================||
@@ -362,19 +448,19 @@ public class ExchangeRateFactory {
      * @param   to
      *          The converted {@code Currency} of the requested {@code
      *          ExchangeRate}.
-     * @param   today
+     * @param   date
      *          A {@link LocalDate} object storing the day.
      *
      * @return  The interpolated {@code ExchangeRate}.
      */
     ExchangeRate generate(Currency base,
                                   Map<Currency, Double> rates,
-                                  Currency from, Currency to, LocalDate today) {
+                                  Currency from, Currency to, LocalDate date) {
         Objects.requireNonNull(base, "base is null");
         Objects.requireNonNull(rates, "rates is null");
 
         if (rates.containsKey(from) && rates.containsKey(to))
-            return new ExchangeRate(today, from, to,
+            return new ExchangeRate(date, from, to,
                     rates.get(to) / rates.get(from));
 
         // in case of no longer supported currencies:
@@ -384,17 +470,17 @@ public class ExchangeRateFactory {
         // should throw an Exception but maybe NullPointerException isn't the
         // most descriptive one)
         if (rates.containsKey(from) && !rates.containsKey(to))
-            return new ExchangeRate(today, from, to,
-                    getMostRecent(base, to).getRate() / rates.get(from));
+            return new ExchangeRate(date, from, to,
+                    getClosest(date, base, to).getRate() / rates.get(from));
 
         if (!rates.containsKey(from) && rates.containsKey(to))
-            return new ExchangeRate(today, from, to,
-                    rates.get(to) / getMostRecent(base, from).getRate());
+            return new ExchangeRate(date, from, to,
+                    rates.get(to) / getClosest(date, base, from).getRate());
 
         // will throw NullPointerException if no rate between the
         // problematic currencies can be found
-        return new ExchangeRate(today, from, to,
-                getMostRecent(from, to).getRate());
+        return new ExchangeRate(date, from, to,
+                getClosest(date, from, to).getRate());
     }
 
     /**

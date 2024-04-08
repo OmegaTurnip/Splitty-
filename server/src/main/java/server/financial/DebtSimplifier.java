@@ -5,6 +5,7 @@ import server.financial.ExchangeRateFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.*;
 
 public class DebtSimplifier {
@@ -107,8 +108,10 @@ public class DebtSimplifier {
      *
      * @param   debt
      *          A debt that should be taken into account in the calculation.
+     * @param   date
+     *          The date of the transaction.
      */
-    public void addDebt(Debt debt) {
+    public void addDebt(Debt debt, LocalDate date) {
         if (!isInitialized)
             throw new IllegalStateException("DebtSimplifier not initialized");
 
@@ -123,7 +126,8 @@ public class DebtSimplifier {
                     "Debt contains unknown participant (to): " + debt);
 
         Debt converted =
-                new Debt(debt.from(), debt.to(), convertToBase(debt.amount()));
+                new Debt(debt.from(), debt.to(), convertToBase(debt.amount(),
+                        date));
 
         participants.get(converted.to()).add(converted);
         participants.get(converted.from()).add(converted);
@@ -143,17 +147,21 @@ public class DebtSimplifier {
         Objects.requireNonNull(transaction, "transaction is null");
 
         if (transaction.isPayoff())
-            addDebt(new Debt(
+            addDebt(
+                    new Debt(
                     // swap payer and receiver
-                    transaction.getParticipants().getFirst(),
-                    transaction.getPayer(),
-                    transaction.getAmount()
-            ));
+                        transaction.getParticipants().getFirst(),
+                        transaction.getPayer(),
+                        transaction.getAmount()
+                    ),
+                    transaction.getDate()
+            );
         else
             divideDebts(
                     transaction.getPayer(),
                     transaction.getParticipants(),
-                    transaction.getAmount()
+                    transaction.getAmount(),
+                    transaction.getDate()
             );
     }
 
@@ -188,16 +196,19 @@ public class DebtSimplifier {
      *          include creditor.</em>
      * @param   amount
      *          The amount of money to divide.
+     * @param   date
+     *          The date of the transaction.
      */
     public void divideDebts(Participant creditor,
-                            Collection<Participant> debtors, Money amount) {
+                            Collection<Participant> debtors, Money amount,
+                            LocalDate date) {
         if (!isInitialized)
             throw new IllegalStateException("DebtSimplifier not initialized");
 
         Set<Participant> uniqueDebtors =
                 validateParameters(creditor, debtors, amount);
 
-        Money convertedAmount = convertToBase(amount);
+        Money convertedAmount = convertToBase(amount, date);
         BigDecimal remainder = getRemainder(convertedAmount, uniqueDebtors);
         BigDecimal fraction = getFraction(convertedAmount, remainder,
                 uniqueDebtors);
@@ -210,13 +221,16 @@ public class DebtSimplifier {
 
         for (Participant debtor : uniqueDebtors) {
             if (!Objects.equals(creditor, debtor))  // the creditor already paid
-                addDebt(new Debt(debtor, creditor,
-                        new Money(
+                addDebt(
+                        new Debt(debtor, creditor,
+                            new Money(
                                 extraCentPayers.contains(debtor) ?
                                         fraction.add(cent) : fraction,
                                 base
-                        )
-                ));
+                            )
+                        ),
+                        date
+                );
         }
     }
 
@@ -275,11 +289,11 @@ public class DebtSimplifier {
                         base.getDefaultFractionDigits()));
     }
 
-    private Money convertToBase(Money amount) {
+    private Money convertToBase(Money amount, LocalDate date) {
         // Will raise a NullPointerException if an exchange rate is unavailable,
         // but that (throwing an exception) is expected behaviour
         return new Money(
-                exchangeRateFactory.getMostRecent(amount.getCurrency(), base)
+                exchangeRateFactory.getClosest(date, amount.getCurrency(), base)
                         .convert(amount)
                         .getAmount(),
                 base

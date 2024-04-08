@@ -24,7 +24,7 @@ class ExchangeRateFactoryTest {
 
     @BeforeEach
     void setup() {
-        exchangeRateFactory = new ExchangeRateFactory(new File("ERFTRates"));
+        exchangeRateFactory = new ExchangeRateFactory(new File("ERFTRates"), null);
         exchangeRates = new HashSet<>();
 
         exchangeRates.add(new ExchangeRate(date, USD, USD,  1));
