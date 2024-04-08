@@ -120,6 +120,7 @@ public class EventController {
             }
             transaction.setParticipants(participants);
             setTagInstances(event, transaction);
+
         }
 
         Event dbEvent = eventRepository.save(event);

@@ -111,12 +111,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         refresh();
     }
 
-
-//    @Override
-//    public void fetchLanguages(Menu languagesMenu) {
-//        TextPage.super.fetchLanguages(languagesMenu);
-//    }
-
     static class MyLocalDateStringConverter extends StringConverter<LocalDate> {
 
         private final DateTimeFormatter dateFormatter;
@@ -586,7 +580,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                     Translator.getTranslation(
                             Text.AddExpense.Alert.onlyOnePeriodOrComma));
         } else if (!Character.isDigit(input.charAt(0))
-
                 || !Character.isDigit(input.charAt(input.length()-1))){
             showAlert(Translator.getTranslation(
                             Text.AddExpense.Alert.invalidPrice),

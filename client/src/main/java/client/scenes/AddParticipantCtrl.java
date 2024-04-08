@@ -188,7 +188,6 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
         try{
             emptyCheck();
             formatCheck();
-
             if (participantToOverwrite != null) {
                 overwriteParticipant();
             } else {
