@@ -12,7 +12,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TransactionCellController {
@@ -48,6 +47,10 @@ public class TransactionCellController {
         deleteTransactionButton.setOnAction(event -> removeTransaction());
     }
 
+    /**
+     * Removes the transaction of the cell from the event
+     * in the application and from the database
+     */
     public void removeTransaction() {
         if (transaction != null) {
             ButtonType result = alertWrapper.showAlertButton(
@@ -142,7 +145,10 @@ public class TransactionCellController {
         this.eventOverviewCtrl = eventOverviewCtrl;
     }
 
-
+    /**
+     * Setter
+     * @param alertWrapper the alertWrapper to set
+     */
     public void setAlertWrapper(AlertWrapper alertWrapper) {
         this.alertWrapper = alertWrapper;
     }
