@@ -166,6 +166,7 @@ public class Text {
 
         public static final String inputName = level + "inputName";
 
+        public static final String cancel = level + "cancel";
         public static final String confirm = level + "confirm";
 
         public static final class Alert {
