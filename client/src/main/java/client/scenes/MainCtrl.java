@@ -51,6 +51,8 @@ public class MainCtrl {
 
     private ServerUtils server;
 
+    private AlertWrapper alertWrapper;
+
     /**
      * @param overview the fx for the event overview page.
      * @param add the fx for the add participant page.
@@ -91,6 +93,8 @@ public class MainCtrl {
         this.adminCtrl = adminPage.getKey();
         this.admin = new Scene(adminPage.getValue());
 
+        this.alertWrapper = new AlertWrapper();
+
 
 
         showStartUp();
@@ -120,6 +124,14 @@ public class MainCtrl {
         primaryStage.setScene(new Scene(lang.getValue()));
 
         primaryStage.show();
+    }
+
+    /**
+     * Sets the alertWrapper
+     * @param alertWrapper sets the alertWrapper
+     */
+    public void setAlertWrapper(AlertWrapper alertWrapper) {
+        this.alertWrapper = alertWrapper;
     }
 
     /**
@@ -157,7 +169,11 @@ public class MainCtrl {
         addParticipantCtrl.setParticipant(null);
         showParticipant(event);
     }
-
+    /**
+     * Go to the edit expense page.
+     * @param event the event the participant is a part of.
+     * @param transaction the transaction to edit
+     */
     public void showEditExpense(Event event, Transaction transaction) {
         addExpenseCtrl.setEvent(event);
         addExpenseCtrl.setExpenseToOverwrite(transaction);
@@ -252,15 +268,11 @@ public class MainCtrl {
                 }
             });
         } catch (NotAuthorizedException e) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle(Translator.getTranslation(Text
-                    .Admin
-                    .Alert.unauthorisedTitle));
-            alert.setHeaderText(null);
-            alert.setContentText(Translator.getTranslation(Text
-                    .Admin
-                    .Alert.unauthorisedContent));
-            alert.showAndWait();
+            alertWrapper.showAlert(Alert.AlertType.INFORMATION,
+                    Translator.getTranslation(Text.Admin
+                            .Alert.unauthorisedTitle),
+                    Translator.getTranslation(Text.Admin
+                            .Alert.unauthorisedContent));
         }
     }
 

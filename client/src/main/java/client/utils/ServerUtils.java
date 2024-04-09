@@ -45,28 +45,6 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import commons.Event;
-import commons.Participant;
-import commons.Transaction;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.core.Response;
-import org.glassfish.jersey.client.ClientConfig;
-
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.core.GenericType;
-import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.simp.stomp.StompFrameHandler;
-import org.springframework.messaging.simp.stomp.StompHeaders;
-import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
-import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.messaging.WebSocketStompClient;
-
-
 public class ServerUtils {
 
     private final UserConfig userSettings;
@@ -494,6 +472,10 @@ public class ServerUtils {
                 .post(Entity.entity(transaction, APPLICATION_JSON),
                         Transaction.class);
         returned.setEvent(transaction.getEvent());
+        returned.getPayer().setEvent(transaction.getEvent());
+        for (Participant participant : returned.getParticipants()) {
+            participant.setEvent(transaction.getEvent());
+        }
         return returned;
     }
 }

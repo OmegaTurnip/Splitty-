@@ -192,6 +192,7 @@ public class TransactionController {
         if(optionalTransaction.isEmpty())
             return ResponseEntity.notFound().build();
         Transaction transaction = optionalTransaction.get();
+        transaction.getParticipants().size(); //terrible workaround
 
         var optionalEvent = eventRepository.findById(eventId);
         if(optionalEvent.isEmpty()) return ResponseEntity.badRequest().build();
@@ -203,6 +204,8 @@ public class TransactionController {
         };
 
         repo.delete(transaction);
+        event.removeTransaction(transaction);
+        Event test = eventRepository.save(event);
 
         return ResponseEntity.ok(transaction);
     }

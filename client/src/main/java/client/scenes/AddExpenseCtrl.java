@@ -17,7 +17,6 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.stage.Modality;
 import javafx.util.StringConverter;
 import org.controlsfx.control.CheckComboBox;
 
@@ -71,6 +70,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     private final MainCtrl mainCtrl;
     private final Pattern pricePattern;
     private Transaction expenseToOverwrite;
+    private AlertWrapper alertWrapper;
 
     /**
      * Initializes the controller
@@ -83,7 +83,16 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.participantList = new ArrayList<>();
+        this.alertWrapper = new AlertWrapper();
         pricePattern = Pattern.compile("^[0-9]+(?:[.,][0-9]+)?$");
+    }
+
+    /**
+     * Sets alertWrapper
+     * @param alertWrapper alertWrapper
+     */
+    public void setAlertWrapper(AlertWrapper alertWrapper) {
+        this.alertWrapper = alertWrapper;
     }
 
     /**
@@ -112,6 +121,11 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         refresh();
     }
 
+    /**
+     * Setter
+     *
+     * @param expenseToOverwrite the expense to set
+     */
     public void setExpenseToOverwrite(Transaction expenseToOverwrite) {
         this.expenseToOverwrite = expenseToOverwrite;
     }
@@ -119,6 +133,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     static class MyLocalDateStringConverter extends StringConverter<LocalDate> {
 
         private final DateTimeFormatter dateFormatter;
+        private AlertWrapper alertWrapper;
 
         public MyLocalDateStringConverter(String pattern) {
             this.dateFormatter = DateTimeFormatter.ofPattern(pattern);
@@ -133,19 +148,21 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             }
         }
 
+        public void setAlertWrapper(AlertWrapper alertWrapper){
+            this.alertWrapper = alertWrapper;
+        }
+
         @Override
         public LocalDate fromString(String string) {
             if (string != null && !string.isEmpty()) {
                 try {
                     return LocalDate.parse(string, dateFormatter);
                 } catch (DateTimeParseException e) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Invalid date format");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Try entering a date of the " +
-                            "format dd/mm/yyyy! " +
-                            "You can also pick the date from the calendar.");
-                    alert.showAndWait();
+                    alertWrapper.showAlert(Alert.AlertType.ERROR,
+                            Translator.getTranslation(
+                                    Text.AddExpense.Alert.dateFormatTitle),
+                            Translator.getTranslation(
+                                    Text.AddExpense.Alert.dateFormatContent));
                     return null;
                 }
             } else {
@@ -169,6 +186,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Sets the items of the payer choice box for testing
+     *
      * @param participants the items to set
      */
     public void setPayerItems(List<Object> participants) {
@@ -177,6 +195,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Getter for expensePayer
+     *
      * @return the expensePayer
      */
     public Participant getExpensePayer() {
@@ -198,6 +217,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Sets the items of the expenseType choicebox for testing
+     *
      * @param list the items to set
      */
     public void setExpenseTypeItems(List<Object> list) {
@@ -206,6 +226,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Gets the selected expenseTag
+     *
      * @return the selected expense tag
      */
     public Tag getExpenseTag() {
@@ -293,19 +314,25 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         try {
             if (verifyInput()) {
                 Transaction expense = getExpense();
-                Transaction returnedE = server.saveTransaction(expense);
-                event.removeTransaction(expense);
-                event.addTransaction(returnedE);
+                if (expenseToOverwrite == null) {
+                    Transaction returnedE = server.saveTransaction(expense);
+                    event.removeTransaction(expense);
+                    event.addTransaction(returnedE);
 //                server.saveEvent(event);
-                System.out.println("Added expense " + expense);
+                    System.out.println(returnedE.getEvent() + returnedE.getTransactionId().toString());
+                    System.out.println("Added expense " + expense);
+                } else {
+                    event.removeTransaction(expenseToOverwrite);
+                    event.addTransaction(expense);
+                    server.saveEvent(event);
+                    System.out.println(expense.getEvent() + expense.getTransactionId().toString());
+                    System.out.println("Edited expense " + expense);
+                }
                 return true;
-            } return false;
+            }
+            return false;
         } catch (WebApplicationException e) {
             e.printStackTrace();
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
             return false;
         }
     }
@@ -319,9 +346,11 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         try {
             if (date.getValue() == null) return false;
         } catch (DateTimeParseException e) {
-            showAlert("Invalid date format",
-                    "Try entering a date of the format dd/mm/yyyy! " +
-                            "You can also pick the date from the calendar.");
+            alertWrapper.showAlert(Alert.AlertType.ERROR,
+                    Translator.getTranslation(
+                            Text.AddExpense.Alert.dateFormatTitle),
+                    Translator.getTranslation(
+                            Text.AddExpense.Alert.dateFormatContent));
         }
         return !participantList.isEmpty();
     }
@@ -332,14 +361,23 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     public void refresh() {
         refreshText();
         loadPayers();
-        payer.getSelectionModel().select(0);
         loadParticipants();
         loadTags();
-        expenseType.getSelectionModel().select(0);
         if (expenseToOverwrite != null) {
+            payer.getSelectionModel().select(expenseToOverwrite.getPayer());
+            expenseType.getSelectionModel().select(expenseToOverwrite.getTag());
             addExpense.setText("Edit expense");
+            expenseName.setText(expenseToOverwrite.getName());
+            price.setText(expenseToOverwrite.getAmount()
+                    .getAmount().toString());
+            date.setValue(expenseToOverwrite.getDate());
         } else {
+            expenseType.getSelectionModel().select(0);
             addExpense.setText("Add expense");
+            payer.getSelectionModel().select(0);
+            expenseName.clear();
+            price.clear();
+            date.setValue(LocalDate.now());
         }
         System.out.println("Page has been refreshed!");
     }
@@ -542,7 +580,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         participantList.clear();
         var list = participants.getCheckModel().getCheckedItems();
         for (Object o : list) {
-            if (list.indexOf(o) != 0) {
+            if (o != participants.getItems().get(0)) {
                 participantList.add((Participant) o);
             }
         }
@@ -569,7 +607,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     private void choosePriceAlert(String input) {
         if (input.isEmpty()) {
             showAlert(Translator.getTranslation(
-                    Text.AddExpense.Alert.invalidPrice),
+                            Text.AddExpense.Alert.invalidPrice),
                     Translator.getTranslation(
                             Text.AddExpense.Alert.emptyString));
         } else if (input.matches("[a-zA-Z]")) {
@@ -585,7 +623,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                     Translator.getTranslation(
                             Text.AddExpense.Alert.onlyOnePeriodOrComma));
         } else if (!Character.isDigit(input.charAt(0))
-                || !Character.isDigit(input.charAt(input.length()-1))){
+                || !Character.isDigit(input.charAt(input.length() - 1))) {
             showAlert(Translator.getTranslation(
                             Text.AddExpense.Alert.invalidPrice),
                     Translator.getTranslation(
@@ -612,6 +650,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Price to set
+     *
      * @param price price
      */
 
@@ -621,6 +660,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Payer of the expense
+     *
      * @param expensePayer the person that has paid for the expense
      */
     public void setExpensePayer(Participant expensePayer) {
@@ -629,6 +669,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Sets the participantlist
+     *
      * @param participantList the participantlist to be set
      */
 
@@ -638,6 +679,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Sets the date
+     *
      * @param date date to be set
      */
     public void setDate(DatePicker date) {
@@ -646,6 +688,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Sets the name of the expense
+     *
      * @param expenseName the exspenseName
      */
     public void setExpenseName(TextField expenseName) {
@@ -654,6 +697,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Sets the expenseTag
+     *
      * @param expenseTag the tag to be set
      */
 

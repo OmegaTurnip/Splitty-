@@ -29,7 +29,7 @@ public class Transaction {
     @Column(name = "amount", length = 1024)
     private Money amount;
     private boolean isPayoff;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     private List<Participant> participants;
     @ManyToOne
     private Tag tag;

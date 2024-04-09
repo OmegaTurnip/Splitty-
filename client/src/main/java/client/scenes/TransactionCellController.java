@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.language.Formatter;
 import client.language.Text;
 import client.language.Translator;
 import client.utils.ServerUtils;
@@ -12,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 public class TransactionCellController {
@@ -21,7 +23,6 @@ public class TransactionCellController {
     private Transaction transaction;
 
     private String paid;
-    private String forString;
 
     private ServerUtils server;
     private EventOverviewCtrl eventOverviewCtrl;
@@ -32,6 +33,7 @@ public class TransactionCellController {
     @FXML
     private Button deleteTransactionButton;
     private AlertWrapper alertWrapper;
+    private MainCtrl mainCtrl;
 
 
     /**
@@ -41,9 +43,7 @@ public class TransactionCellController {
     public void initialize() {
         refreshText();
         alertWrapper = new AlertWrapper();
-        editTransactionButton.setOnAction(event -> {
-            System.out.println("Edit transaction button clicked");
-        });
+        editTransactionButton.setOnAction(event -> editTransaction());
         deleteTransactionButton.setOnAction(event -> removeTransaction());
     }
 
@@ -65,10 +65,19 @@ public class TransactionCellController {
                             .Alert.deleteExpenseContent)
                     );
             if (result == ButtonType.OK) {
-                event.deleteTransaction(server.removeTransaction(transaction));
+                server.removeTransaction(transaction);
+                event.deleteTransaction(transaction);
+                server.saveEvent(event);
                 System.out.println("Delete transaction button clicked");
             }
         }
+    }
+
+    /**
+     * Go to edit transaction page
+     */
+    public void editTransaction() {
+        mainCtrl.showEditExpense(event, transaction);
     }
 
     /**
@@ -82,11 +91,8 @@ public class TransactionCellController {
      *
      */
     void refreshText() {
-        paid = Translator
-                .getTranslation(client.language
-                        .Text.EventOverview.ExpenseListing.paid);
-        forString = Translator.getTranslation(client.language
-                .Text.EventOverview.ExpenseListing.for_);
+        paid = Translator.getTranslation(
+                Text.EventOverview.ExpenseListing.paid);
     }
 
     /**
@@ -95,18 +101,17 @@ public class TransactionCellController {
      */
     public void setTransactionData(Transaction transaction) {
         refreshText();
-        String transactionInfo = String.format("%s %s %s %s %s %s (%s)",
-                transaction.getDate(),
-                transaction.getPayer().getName(),
-                paid,
-                transaction.getAmount().format(Translator.getLocale()),
-                forString,
-                transaction.getName(),
+        HashMap<String, String> transactionInfo = new HashMap<>();
+        transactionInfo.put("date", transaction.getDate().toString());
+        transactionInfo.put("payer", transaction.getPayer().getName());
+        transactionInfo.put("amount",
+                transaction.getAmount().format(Translator.getLocale()));
+        transactionInfo.put("name",transaction.getName());
+        transactionInfo.put("participants",
                 transaction.getParticipants().stream()
                         .map(Participant::getName)
                         .collect(Collectors.joining(", ")));
-
-        transactionInfoLabel.setText(transactionInfo);
+        transactionInfoLabel.setText(Formatter.format(paid, transactionInfo));
     }
 
     /**
@@ -145,6 +150,7 @@ public class TransactionCellController {
         this.eventOverviewCtrl = eventOverviewCtrl;
     }
 
+
     /**
      * Setter
      * @param alertWrapper the alertWrapper to set
@@ -153,4 +159,11 @@ public class TransactionCellController {
         this.alertWrapper = alertWrapper;
     }
 
+    /**
+     * Setter
+     * @param mainCtrl the mainCtrl to set
+     */
+    public void setMainCtrl(MainCtrl mainCtrl) {
+        this.mainCtrl = mainCtrl;
+    }
 }
