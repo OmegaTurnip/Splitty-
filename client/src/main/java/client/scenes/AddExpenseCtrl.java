@@ -18,7 +18,6 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.stage.Modality;
 import javafx.util.StringConverter;
 import org.controlsfx.control.CheckComboBox;
 
@@ -71,6 +70,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
     private final Pattern pricePattern;
+    private AlertWrapper alertWrapper;
 
     /**
      * Initializes the controller
@@ -83,7 +83,16 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.participantList = new ArrayList<>();
+        this.alertWrapper = new AlertWrapper();
         pricePattern = Pattern.compile("^[0-9]+(?:[.,][0-9]+)?$");
+    }
+
+    /**
+     * Sets alertWrapper
+     * @param alertWrapper alertWrapper
+     */
+    public void setAlertWrapper(AlertWrapper alertWrapper) {
+        this.alertWrapper = alertWrapper;
     }
 
     /**
@@ -115,6 +124,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     static class MyLocalDateStringConverter extends StringConverter<LocalDate> {
 
         private final DateTimeFormatter dateFormatter;
+        private AlertWrapper alertWrapper;
 
         public MyLocalDateStringConverter(String pattern) {
             this.dateFormatter = DateTimeFormatter.ofPattern(pattern);
@@ -129,19 +139,21 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             }
         }
 
+        public void setAlertWrapper(AlertWrapper alertWrapper){
+            this.alertWrapper = alertWrapper;
+        }
+
         @Override
         public LocalDate fromString(String string) {
             if (string != null && !string.isEmpty()) {
                 try {
                     return LocalDate.parse(string, dateFormatter);
                 } catch (DateTimeParseException e) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Invalid date format");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Try entering a date of the " +
-                            "format dd/mm/yyyy! " +
-                            "You can also pick the date from the calendar.");
-                    alert.showAndWait();
+                    alertWrapper.showAlert(Alert.AlertType.ERROR,
+                            Translator.getTranslation(
+                                    Text.AddExpense.Alert.dateFormatTitle),
+                            Translator.getTranslation(
+                                    Text.AddExpense.Alert.dateFormatContent));
                     return null;
                 }
             } else {
@@ -294,26 +306,17 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                 event.addTransaction(returnedE);
 //                server.saveEvent(event);
                 System.out.println("Added expense " + expense);
-            } else {
-                throw new WebApplicationException("Invalid input");
-            }
+                return true;
+            } return false;
         } catch (WebApplicationException e) {
             e.printStackTrace();
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
             return false;
         }
-
-        return true;
-
     }
 
 
     private boolean verifyInput() {
         if (!verifyPrice(price.getText())) {
-            showAlert("Invalid price", "Please enter a valid price!");
             return false;
         }
         if (expensePayer == null
@@ -322,9 +325,11 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         try {
             if (date.getValue() == null) return false;
         } catch (DateTimeParseException e) {
-            showAlert("Invalid date format",
-                    "Try entering a date of the format dd/mm/yyyy! " +
-                            "You can also pick the date from the calendar.");
+            alertWrapper.showAlert(Alert.AlertType.ERROR,
+                    Translator.getTranslation(
+                            Text.AddExpense.Alert.dateFormatTitle),
+                    Translator.getTranslation(
+                            Text.AddExpense.Alert.dateFormatContent));
         }
         return !participantList.isEmpty();
     }
@@ -543,7 +548,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         participantList.clear();
         var list = participants.getCheckModel().getCheckedItems();
         for (Object o : list) {
-            if (list.get(0) != participants.getItems().get(0)) {
+            if (o != participants.getItems().get(0)) {
                 participantList.add((Participant) o);
             }
         }
@@ -602,7 +607,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
 
     Transaction getExpense() {
-        BigDecimal b = new BigDecimal(price.getText());
+        BigDecimal b = new BigDecimal(price.getText().replace(",", "."));
         return event.registerDebt(expensePayer,
                 expenseName.getText(),
                 new Money(b,

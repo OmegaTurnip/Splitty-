@@ -72,6 +72,8 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     private final ServerUtils server;
     private MainCtrl mainCtrl;
 
+    private AlertWrapper alertWrapper;
+
     private TransactionCellController transactionCellController;
 
 
@@ -85,6 +87,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     public EventOverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+        this.alertWrapper = new AlertWrapper();
     }
 
     /**
@@ -118,19 +121,25 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
             if (event.equals(e)) {
                 Platform.runLater(() -> {
                     mainCtrl.showStartUp();
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle(Translator
-                            .getTranslation(Text.EventOverview
-                            .Alert.deletedEventTitle));
-                    alert.setHeaderText(null);
-                    alert.setContentText(Translator
-                            .getTranslation(Text.EventOverview
-                            .Alert.deletedEventContent));
-                    alert.showAndWait();
+                    alertWrapper.showAlert(Alert.AlertType.ERROR,
+                            Translator.getTranslation(
+                                    Text.EventOverview.Alert.deletedEventTitle),
+                            Translator.getTranslation(
+                                    Text.EventOverview.Alert.
+                                            deletedEventContent)
+                    );
                 });
             }
         });
         refresh();
+    }
+
+    /**
+     * Sets the alertWrapper
+     * @param alertWrapper alertWrapper
+     */
+    public void setAlertWrapper(AlertWrapper alertWrapper) {
+        this.alertWrapper = alertWrapper;
     }
 
     /**
@@ -266,6 +275,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         return transaction;
     }
 
+
     /**
      * Makes sure that the all threads stop
      */
@@ -290,10 +300,11 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         if (selected != null) {
             String choice = selected.getId();
             if(!choice.equals("AllExpenses") && participant == null){
-                showAlert("Participant Not Selected",
-                        "Please select a participant " +
-                                "first within the expense menu.");
-
+                alertWrapper.showAlert(Alert.AlertType.ERROR,
+                        Translator.getTranslation(
+                                Text.EventOverview.Alert.notSelectedTitle),
+                        Translator.getTranslation(
+                                Text.EventOverview.Alert.notSelectedContent));
             }
             transactions =
                     FXCollections.observableArrayList(event.getTransactions());
@@ -346,13 +357,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         }
     }
 
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
+
     /**
      * Refreshes the text of EventOverview
      */
@@ -477,6 +482,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 transactionCellController.setTransactionData(transaction);
                 transactionCellController.setEvent(event);
                 transactionCellController.setServer(server);
+                transactionCellController.setTransaction(transaction);
                 transactionCellController.setEventOverviewCtrl(
                         EventOverviewCtrl.this);
                 setGraphic(loader.getRoot());

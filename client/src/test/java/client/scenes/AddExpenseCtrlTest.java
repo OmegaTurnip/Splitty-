@@ -17,6 +17,8 @@ import javafx.scene.Parent;
 
 import javafx.scene.Scene;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -30,6 +32,7 @@ import org.springframework.messaging.simp.stomp.StompSession;
 import org.testfx.framework.junit5.ApplicationTest;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +46,9 @@ public class AddExpenseCtrlTest extends ApplicationTest {
     private MainCtrl mainCtrl;
     @Mock
     private ServerUtils server;
+
+    @Mock
+    private AlertWrapper alertWrapper;
     Event event;
 
     @Override
@@ -65,6 +71,7 @@ public class AddExpenseCtrlTest extends ApplicationTest {
                         "client", "scenes", "AddExpense.fxml");
 
                 this.sut = editExpense.getKey();
+                sut.setAlertWrapper(Mockito.mock(AlertWrapper.class));
                 MockitoAnnotations.openMocks(this).close();
                 Mockito.when(server.connect(Mockito.anyString())).thenReturn(Mockito.mock(StompSession.class));
 
@@ -162,5 +169,32 @@ public class AddExpenseCtrlTest extends ApplicationTest {
         press(KeyCode.DOWN);
         press(KeyCode.ENTER);
         assertNull(sut.getExpenseTag());
+    }
+
+    @Test
+    public void emptyFromString(){
+        AddExpenseCtrl.MyLocalDateStringConverter converter =
+                new AddExpenseCtrl.MyLocalDateStringConverter("dd/MM/yyyy");
+        assertEquals(converter.fromString(""), null);
+        assertEquals(converter.fromString(null), null);
+    }
+
+    @Test
+    public void wrongFormatString(){
+        AddExpenseCtrl.MyLocalDateStringConverter converter =
+                new AddExpenseCtrl.MyLocalDateStringConverter("dd/MM/yyyy");
+        converter.setAlertWrapper(Mockito.mock(AlertWrapper.class));
+        when(alertWrapper.showAlertButton(Mockito.any(Alert.AlertType.class),
+                Mockito.anyString(), Mockito.anyString())).thenReturn(ButtonType.OK);
+        assertEquals(converter.fromString("test"), null);
+    }
+
+    @Test
+    public void FormatString(){
+        AddExpenseCtrl.MyLocalDateStringConverter converter =
+                new AddExpenseCtrl.MyLocalDateStringConverter("dd/MM/yyyy");
+        String input = "2000-01-01";
+        LocalDate date = LocalDate.parse(input);
+        assertEquals(converter.fromString("01/01/2000"), date);
     }
 }

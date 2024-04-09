@@ -8,7 +8,9 @@ import commons.Event;
 import commons.Transaction;
 import commons.Participant;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 
 import java.util.HashMap;
@@ -30,6 +32,7 @@ public class TransactionCellController {
     private Button editTransactionButton;
     @FXML
     private Button deleteTransactionButton;
+    private AlertWrapper alertWrapper;
 
 
     /**
@@ -38,12 +41,36 @@ public class TransactionCellController {
     @FXML
     public void initialize() {
         refreshText();
-        editTransactionButton.setOnAction(event -> {
-            System.out.println("Edit transaction button clicked");
-        });
-        deleteTransactionButton.setOnAction(event -> {
-            System.out.println("Delete transaction button clicked");
-        });
+        alertWrapper = new AlertWrapper();
+        editTransactionButton.setOnAction(event ->
+                System.out.println("Edit transaction button clicked"));
+        deleteTransactionButton.setOnAction(event -> removeTransaction());
+    }
+
+    /**
+     * Removes the transaction of the cell from the event
+     * in the application and from the database
+     */
+    public void removeTransaction() {
+        if (transaction != null) {
+            ButtonType result = alertWrapper.showAlertButton(
+                    Alert.AlertType.CONFIRMATION,
+                    Translator.getTranslation(Text
+                            .EventOverview
+                            .TransactionCellController
+                            .Alert.deleteExpenseTitle),
+                    Translator.getTranslation(Text
+                            .EventOverview
+                            .TransactionCellController
+                            .Alert.deleteExpenseContent)
+                    );
+            if (result == ButtonType.OK) {
+                server.removeTransaction(transaction);
+                event.deleteTransaction(transaction);
+                eventOverviewCtrl.refresh();
+                System.out.println("Delete transaction button clicked");
+            }
+        }
     }
 
     /**
@@ -63,7 +90,6 @@ public class TransactionCellController {
 
     /**
      * Provide label for the transaction.
-     *
      * @param transaction transaction
      */
     public void setTransactionData(Transaction transaction) {
@@ -115,6 +141,15 @@ public class TransactionCellController {
      */
     public void setEventOverviewCtrl(EventOverviewCtrl eventOverviewCtrl) {
         this.eventOverviewCtrl = eventOverviewCtrl;
+    }
+
+
+    /**
+     * Setter
+     * @param alertWrapper the alertWrapper to set
+     */
+    public void setAlertWrapper(AlertWrapper alertWrapper) {
+        this.alertWrapper = alertWrapper;
     }
 
 }

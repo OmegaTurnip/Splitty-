@@ -96,7 +96,7 @@ public class EditEventNameCtrl extends TextPage implements Initializable {
                 Translator.getTranslation(Text.EditName.inputName)
         );
         cancelButton.setText(
-                Translator.getTranslation(Text.MessageBox.Options.Cancel)
+                Translator.getTranslation(Text.EditName.cancel)
         );
         confirmButton.setText(
                 Translator.getTranslation(Text.EditName.confirm)
@@ -136,7 +136,7 @@ public class EditEventNameCtrl extends TextPage implements Initializable {
         return alertWrapper.showAlertButton(
                 Alert.AlertType.CONFIRMATION,
                 Translator.getTranslation(
-                        Text.EditName.Alert.confirmContent),
+                        Text.EditName.Alert.confirmTitle),
                 Formatter.format(Translator.getTranslation(
                         Text.EditName.Alert.confirmContent),
                         parameters));

@@ -10,7 +10,6 @@ import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.stage.Modality;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -211,10 +210,6 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
             }
         } catch(WebApplicationException e){
             e.printStackTrace();
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
             return false;
         }
 
