@@ -43,7 +43,8 @@ public class TransactionCellController {
     public void initialize() {
         refreshText();
         alertWrapper = new AlertWrapper();
-        editTransactionButton.setOnAction(event -> editTransaction());
+        editTransactionButton.setOnAction(event ->
+                mainCtrl.showEditExpense(this.event, transaction));
         deleteTransactionButton.setOnAction(event -> removeTransaction());
     }
 
@@ -71,13 +72,6 @@ public class TransactionCellController {
                 System.out.println("Delete transaction button clicked");
             }
         }
-    }
-
-    /**
-     * Go to edit transaction page
-     */
-    public void editTransaction() {
-        mainCtrl.showEditExpense(event, transaction);
     }
 
     /**

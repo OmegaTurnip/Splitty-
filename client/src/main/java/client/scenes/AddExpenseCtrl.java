@@ -66,7 +66,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     private Tag expenseTag;
 
     private Event event;
-    private final ServerUtils server;
+    private ServerUtils server;
     private final MainCtrl mainCtrl;
     private final Pattern pricePattern;
     private Transaction expenseToOverwrite;
@@ -88,7 +88,16 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     }
 
     /**
+     * Setter
+     * @param server the server to set
+     */
+    public void setServer(ServerUtils server) {
+        this.server = server;
+    }
+
+    /**
      * Sets alertWrapper
+     *
      * @param alertWrapper alertWrapper
      */
     public void setAlertWrapper(AlertWrapper alertWrapper) {
@@ -111,8 +120,15 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         payerSelection();
         tagSelection();
         addExpense.setOnAction(event -> {
-            if (registerExpense()) {
-                this.mainCtrl.showEventOverview(this.event);
+            getCheckedParticipants();
+            try {
+                if (verifyInput()) {
+                    Transaction expense = getExpense();
+                    registerExpense(expense);
+                    this.mainCtrl.showEventOverview(this.event);
+                }
+            } catch (WebApplicationException e) {
+                e.printStackTrace();
             }
         });
         date.setValue(LocalDate.now());
@@ -128,6 +144,16 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     public void setExpenseToOverwrite(Transaction expenseToOverwrite) {
         this.expenseToOverwrite = expenseToOverwrite;
     }
+
+    /**
+     * Setter
+     * @param participants the combobox to set
+     */
+    public void setParticipants(CheckComboBox<Object> participants) {
+        this.participants = participants;
+    }
+
+    ;
 
     static class MyLocalDateStringConverter extends StringConverter<LocalDate> {
 
@@ -147,7 +173,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             }
         }
 
-        public void setAlertWrapper(AlertWrapper alertWrapper){
+        public void setAlertWrapper(AlertWrapper alertWrapper) {
             this.alertWrapper = alertWrapper;
         }
 
@@ -307,36 +333,21 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Register the expense added.
+     * @param expense the expense to register
      */
-    private boolean registerExpense() {
-        getCheckedParticipants();
-        try {
-            if (verifyInput()) {
-                Transaction expense = getExpense();
-                if (expenseToOverwrite == null) {
-                    Transaction returnedE = server.saveTransaction(expense);
-                    event.removeTransaction(expense);
-                    expense.setTransactionId(returnedE.getTransactionId());
-                    event.addTransaction(expense);
-//                server.saveEvent(event);
-                    System.out.println(expense);
-                    System.out.println("Added expense " + expense);
-                } else {
-                    expense.setTransactionId(
-                            expenseToOverwrite.getTransactionId());
-                    System.out.println(event.getTransactions());
-                    event.removeTransaction(expenseToOverwrite);
-                    System.out.println(event.getTransactions());
-                    server.saveEvent(event);
-                    System.out.println(expense);
-                    System.out.println("Edited expense " + expense);
-                }
-                return true;
-            }
-            return false;
-        } catch (WebApplicationException e) {
-            e.printStackTrace();
-            return false;
+    public void registerExpense(Transaction expense) {
+        if (expenseToOverwrite == null) {
+            Transaction returnedE = server.saveTransaction(expense);
+            event.removeTransaction(expense);
+            expense.setTransactionId(returnedE.getTransactionId());
+            event.addTransaction(expense);
+            System.out.println("Added expense " + expense);
+        } else {
+            expense.setTransactionId(
+                    expenseToOverwrite.getTransactionId());
+            event.removeTransaction(expenseToOverwrite);
+            server.saveEvent(event);
+            System.out.println("Edited expense " + expense);
         }
     }
 
@@ -604,7 +615,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     private void choosePriceAlert(String input) {
         if (input.isEmpty()) {
             showAlert(Translator.getTranslation(
-                    Text.AddExpense.Alert.invalidPrice),
+                            Text.AddExpense.Alert.invalidPrice),
                     Translator.getTranslation(
                             Text.AddExpense.Alert.emptyString));
         } else if (input.matches("[a-zA-Z]")) {
@@ -669,9 +680,16 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
      *
      * @param participantList the participantlist to be set
      */
-
     public void setParticipantList(List<Participant> participantList) {
         this.participantList = participantList;
+    }
+
+    /**
+     * Getter
+     * @return the participantList
+     */
+    public List<Participant> getParticipantList() {
+        return participantList;
     }
 
     /**
