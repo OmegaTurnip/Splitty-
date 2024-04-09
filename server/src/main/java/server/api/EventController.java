@@ -241,7 +241,8 @@ public class EventController {
 
         refreshExchangeRates();
 
-        return ResponseEntity.ok(debtSimplifier.sumOfExpenses(event.get(), base));
+        return ResponseEntity.ok(
+                debtSimplifier.sumOfExpenses(event.get(), base));
     }
 
     /**
