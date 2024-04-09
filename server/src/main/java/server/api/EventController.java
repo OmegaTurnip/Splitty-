@@ -215,6 +215,39 @@ public class EventController {
     }
 
     /**
+     * Get the sum of the debts of an event.
+     *
+     * @param   id
+     *          The id of the event.
+     * @param   currency
+     *          The currency of the result.
+     *
+     * @return  The sum of the debts of an event.
+     */
+    @GetMapping("/{id}/sum/{currency}")
+    @ResponseBody
+    public ResponseEntity<Money> getSumOfExpenses(
+            @PathVariable("id") Long id,
+            @PathVariable("currency") String currency) {
+
+        if (!Money.isValidCurrencyCode(currency)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Event event = eventRepository.findById(id).orElse(null);
+
+        if (event == null || event.getParticipants().isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Currency base = Currency.getInstance(currency);
+
+        refreshExchangeRates();
+
+        return ResponseEntity.ok(debtSimplifier.sumOfExpenses(event, base));
+    }
+
+    /**
      * Returns all available currencies.
      *
      * @return  All available currencies.
