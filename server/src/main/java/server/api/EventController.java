@@ -11,10 +11,7 @@ import server.financial.FrankfurterExchangeRateAPI;
 import server.financial.DebtSimplifier;
 
 import java.time.LocalDate;
-import java.util.Currency;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 @RestController
@@ -234,9 +231,9 @@ public class EventController {
             return ResponseEntity.badRequest().build();
         }
 
-        Event event = eventRepository.findById(id).orElse(null);
+        Optional<Event> event = eventRepository.findById(id);
 
-        if (event == null || event.getParticipants().isEmpty()) {
+        if (event.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
@@ -244,7 +241,7 @@ public class EventController {
 
         refreshExchangeRates();
 
-        return ResponseEntity.ok(debtSimplifier.sumOfExpenses(event, base));
+        return ResponseEntity.ok(debtSimplifier.sumOfExpenses(event.get(), base));
     }
 
     /**

@@ -320,18 +320,24 @@ public class DebtSimplifier {
      * @return  The sum of all expenses.
      */
     public Money sumOfExpenses(Event event, Currency currency) {
+        Objects.requireNonNull(event, "event is null");
+        Objects.requireNonNull(currency, "currency is null");
+
         BigDecimal sum = BigDecimal.ZERO.setScale(
                 currency.getDefaultFractionDigits(),
                 RoundingMode.HALF_UP
         );
         for (Transaction transaction : event.getTransactions()) {
             if (!transaction.isPayoff()) {
-                sum = sum.add(
-                        exchangeRateFactory.getExchangeRate(
-                                transaction.getDate(),
-                                transaction.getAmount().getCurrency(),
-                                currency
-                        ).convert(transaction.getAmount()).getAmount());
+                ExchangeRate exchangeRate = exchangeRateFactory.getExchangeRate(
+                        transaction.getDate(),
+                        transaction.getAmount().getCurrency(),
+                        currency
+                );
+                if (exchangeRate == null)
+                    return null;
+                sum = sum.add(exchangeRate.convert(
+                        transaction.getAmount()).getAmount());
             }
         }
         return new Money(sum, currency);
