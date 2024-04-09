@@ -256,16 +256,20 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
      * @return Transaction that is added
      */
     public Transaction updateTransactions(Transaction transaction) {
-        transactions.add(transaction);
-        Participant participant = (Participant) expensesDropDown.getValue();
-        if (participant != null &&
-                transaction.getParticipants().contains(participant)) {
-            transactionsParticipant.add(transaction);
-        }
-        if (transaction.getPayer().equals(participant)) {
-            transactionsPayer.add(transaction);
-        }
-
+        transaction.setEvent(event);
+        if(!event.getTransactions().getLast().getName().equals(transaction.getName())) {
+            event.addTransaction(transaction);
+       }
+//        transactions.add(transaction);
+//        Participant participant = (Participant) expensesDropDown.getValue();
+//        if (participant != null &&
+//                transaction.getParticipants().contains(participant)) {
+//            transactionsParticipant.add(transaction);
+//        }
+//        if (transaction.getPayer().equals(participant)) {
+//            transactionsPayer.add(transaction);
+//        }
+        getExpenses();
         return transaction;
     }
 
@@ -491,7 +495,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     public void setEvent(Event event) {
         this.event = event;
         server.registerForUpdates(t -> {
-            updateTransactions(t);
+            Platform.runLater(() -> updateTransactions(t));
             Platform.runLater(this::refresh);
             System.out.println("Received transaction: " + t.getName());
         }, event);
