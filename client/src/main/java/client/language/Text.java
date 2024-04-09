@@ -290,7 +290,8 @@ public class Text {
 
             public static final String dateFormatTitle = level + "FormatTitle";
 
-            public static final String dateFormatContent = level + "FormatContent";
+            public static final String dateFormatContent = level +
+                    "FormatContent";
         }
 
     }
