@@ -77,4 +77,11 @@ public class TransactionId implements Serializable {
         return Objects.hash(transactionId, event);
     }
 
+    @Override
+    public String toString() {
+        return "TransactionId{" +
+                "transactionId=" + transactionId +
+                ", event=" + event +
+                '}';
+    }
 }

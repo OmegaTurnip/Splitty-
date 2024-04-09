@@ -317,15 +317,19 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                 if (expenseToOverwrite == null) {
                     Transaction returnedE = server.saveTransaction(expense);
                     event.removeTransaction(expense);
-                    event.addTransaction(returnedE);
+                    expense.setTransactionId(returnedE.getTransactionId());
+                    event.addTransaction(expense);
 //                server.saveEvent(event);
-                    System.out.println(returnedE.getEvent() + returnedE.getTransactionId().toString());
+                    System.out.println(expense);
                     System.out.println("Added expense " + expense);
                 } else {
+                    expense.setTransactionId(
+                            expenseToOverwrite.getTransactionId());
+                    System.out.println(event.getTransactions());
                     event.removeTransaction(expenseToOverwrite);
-                    event.addTransaction(expense);
+                    System.out.println(event.getTransactions());
                     server.saveEvent(event);
-                    System.out.println(expense.getEvent() + expense.getTransactionId().toString());
+                    System.out.println(expense);
                     System.out.println("Edited expense " + expense);
                 }
                 return true;
@@ -538,7 +542,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         participants.setTitle(
                 Translator.getTranslation(
                         Text.AddExpense.expenseParticipantsPrompt));
-        System.out.println(participants.getTitle());
 
         int index = payer.getSelectionModel().getSelectedIndex();
         loadPayers();
@@ -607,7 +610,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     private void choosePriceAlert(String input) {
         if (input.isEmpty()) {
             showAlert(Translator.getTranslation(
-                            Text.AddExpense.Alert.invalidPrice),
+                    Text.AddExpense.Alert.invalidPrice),
                     Translator.getTranslation(
                             Text.AddExpense.Alert.emptyString));
         } else if (input.matches("[a-zA-Z]")) {

@@ -316,4 +316,19 @@ public class Transaction {
     public void setEvent(Event event) {
         this.event = event;
     }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "transactionId=" + transactionId +
+                ", event=" + event +
+                ", payer=" + payer +
+                ", name='" + name + '\'' +
+                ", date=" + date +
+                ", amount=" + amount +
+                ", isPayoff=" + isPayoff +
+                ", participants=" + participants +
+                ", tag=" + tag +
+                '}';
+    }
 }

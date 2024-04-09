@@ -60,7 +60,7 @@ class EventTest {
     testTransaction1.setDate(testDate1);
     testTransaction2.setDate(testDate1);
 
-    List<Transaction> testTransactions1 = new ArrayList<>();
+    Collection<Transaction> testTransactions1 = new ArrayList<>();
 
     testTransactions1.add(testTransaction1);
     testTransactions1.add(testTransaction2);
