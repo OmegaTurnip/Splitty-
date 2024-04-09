@@ -311,7 +311,10 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
 
     private boolean verifyInput() {
-        if (!verifyPrice(price.getText())) return false;
+        if (!verifyPrice(price.getText())) {
+            showAlert("Invalid price", "Please enter a valid price!");
+            return false;
+        }
         if (expensePayer == null
                 || !expensePayer.getClass().equals(Participant.class))
             return false;
