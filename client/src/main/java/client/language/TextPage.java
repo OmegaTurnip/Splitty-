@@ -1,12 +1,15 @@
 package client.language;
 
 import client.utils.UserConfig;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -58,6 +61,8 @@ public abstract class TextPage {
 
             item.setOnAction(event -> {
                 setLanguage(langKey, languageMenu, languages);
+                languageMenu.getItems().getLast().setText(
+                        Translator.getTranslation(Text.Menu.AddLanguage));
             });
 
             Image image = new Image(languages
@@ -68,6 +73,9 @@ public abstract class TextPage {
             item.setGraphic(imageView);
             languageMenu.getItems().add(item);
         }
+
+        addAddLanguageFileButton();
+
         String langKey = UserConfig.get().getUserLanguage();
         Image image = new Image(languages
                 .get(langKey).getIconFile().toURI().toString());
@@ -75,5 +83,42 @@ public abstract class TextPage {
         imageView.setFitHeight(20);
         imageView.setFitWidth(20);
         languageMenu.setGraphic(imageView);
+    }
+
+    // what a gorgeous name
+    private void addAddLanguageFileButton() {
+        MenuItem item = new MenuItem(
+                Translator.getTranslation(Text.Menu.AddLanguage));
+
+        item.setOnAction(TextPage::addLanguageFile);
+
+
+        Image image = new Image(Language.EMPTY_ICON_FILE.toURI().toString());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitHeight(20);
+        imageView.setFitWidth(20);
+        item.setGraphic(imageView);
+        languageMenu.getItems().add(item);
+    }
+
+    private static void addLanguageFile(ActionEvent actionEvent) {
+        FileDialog dialog = new FileDialog((Frame) null,
+                Translator.getTranslation(Text.Menu.AddLanguage),
+                FileDialog.SAVE);
+        dialog.setFile("ISO-639-3-CODE.properties");
+        dialog.setVisible(true);
+        String file = dialog.getFile();
+        if (file != null) {
+            try {
+                Language.createEmptyLanguageFile(
+                        new File(dialog.getDirectory() + file),
+                        dialog.getFile().split("\\.")[0],
+                        dialog.getFile().split("\\.")[0]
+                );
+            } catch (IOException e) {
+                // let them have an egg hunt for the non-existent file
+                e.printStackTrace();
+            }
+        }
     }
 }

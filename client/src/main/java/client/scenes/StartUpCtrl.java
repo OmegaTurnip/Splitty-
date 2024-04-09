@@ -340,9 +340,9 @@ public class StartUpCtrl extends TextPage implements Initializable {
             yourEvents.setItems(sortedEvents);
 
             refreshText();
-
             System.out.println("Page has been refreshed!");
         });
+
     }
 
     /**

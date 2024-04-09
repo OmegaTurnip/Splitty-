@@ -30,7 +30,7 @@ public class Language {
      * needed there.
      */
     public static final File EMPTY_ICON_FILE =
-            new File("includedLanguages/empty.png");
+            new File("includedLanguages/empty.png").getAbsoluteFile();
 
     /**
      * A regex for validating a language code. The {@code ^} character denotes
