@@ -150,11 +150,9 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                 } catch (DateTimeParseException e) {
                     alertWrapper.showAlert(Alert.AlertType.ERROR,
                             Translator.getTranslation(
-                                    Text.AddExpense.StringConverter.
-                                            formatTitle),
+                                    Text.AddExpense.Alert.dateFormatTitle),
                             Translator.getTranslation(
-                                    Text.AddExpense.StringConverter.
-                                            formatContent));
+                                    Text.AddExpense.Alert.dateFormatContent));
                     return null;
                 }
             } else {
@@ -325,11 +323,9 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         } catch (DateTimeParseException e) {
             alertWrapper.showAlert(Alert.AlertType.ERROR,
                     Translator.getTranslation(
-                            Text.AddExpense.StringConverter.
-                                    formatTitle),
+                            Text.AddExpense.Alert.dateFormatTitle),
                     Translator.getTranslation(
-                            Text.AddExpense.StringConverter.
-                                    formatContent));
+                            Text.AddExpense.Alert.dateFormatContent));
         }
         return !participantList.isEmpty();
     }
