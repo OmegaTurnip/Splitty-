@@ -75,6 +75,12 @@ public class Text {
                     "deletedEventTitle";
             public static final String deletedEventContent = level +
                     "deletedEventContent";
+
+            public static final String notSelectedTitle = level +
+                    "notSelectedTitle";
+
+            public static final String notSelectedContent = level +
+                    "notSelectedContent";
         }
 
 
@@ -192,8 +198,12 @@ public class Text {
             public static final String level = StartUp.level + "Alert.";
             public static final String noEventWritten =
                     level + "noEventWritten";
+            public static final String noEventWrittenTitle =
+                    level + "noEventWrittenTitle";
             public static final String alreadyInEvent =
                     level + "alreadyInEvent";
+            public static final String alreadyInEventTitle =
+                    level + "alreadyInEventTitle";
             public static final String removeEventHeader =
                     level + "removeEventHeader";
             public static final String removeEventContent =
@@ -287,6 +297,7 @@ public class Text {
             public static final String addExpenseButton = level + "addExpense";
         }
 
+
         public static final class Alert {
             public static final String level = AddExpense.level + "Alert.";
             public static final String invalidPrice = level + "invalidPrice";
@@ -298,6 +309,11 @@ public class Text {
                     "onlyOnePeriodOrCommaAllowed";
             public static final String generallyInvalid = level +
                     "generallyInvalid";
+
+            public static final String dateFormatTitle = level + "FormatTitle";
+
+            public static final String dateFormatContent = level +
+                    "FormatContent";
         }
 
     }

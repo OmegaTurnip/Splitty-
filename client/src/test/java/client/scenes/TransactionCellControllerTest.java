@@ -25,12 +25,13 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class TransactionCellControllerTest {
     Event event;
     TransactionCellController sut;
+    @Mock
+    EventOverviewCtrl eventOverviewCtrl;
     @Mock
     ServerUtils server;
     @Mock
@@ -43,10 +44,12 @@ class TransactionCellControllerTest {
         server = mock(ServerUtils.class);
         sut = new TransactionCellController();
         event = new Event("Test event");
+        eventOverviewCtrl = mock(EventOverviewCtrl.class);
         alertWrapper = mock(AlertWrapper.class);
         sut.setEvent(event);
         sut.setServer(server);
         sut.setAlertWrapper(alertWrapper);
+        sut.setEventOverviewCtrl(eventOverviewCtrl);
 
         Language.fromLanguageFile(
                 "eng", new File("../includedLanguages/eng.properties")
@@ -64,6 +67,7 @@ class TransactionCellControllerTest {
         list.add(participant2);
         Transaction transaction = event.registerDebt(participant1, "test debt", amount, list, null);
         sut.setTransaction(transaction);
+        doNothing().when(eventOverviewCtrl).refresh();
         when(alertWrapper.showAlertButton(any(Alert.AlertType.class), anyString(), anyString())).thenReturn(ButtonType.OK);
         when(server.removeTransaction(any(Transaction.class))).thenReturn(transaction);
         sut.removeTransaction();
