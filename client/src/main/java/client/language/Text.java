@@ -10,40 +10,14 @@ public class Text {
     public static final String NativeLanguageName = "NativeLanguageName";
     static final String Locale = "Locale";
 
-    /**
-     * General language class for the common messagebox texts.
-     * This class is to be used throughout the entire program (unlike most that
-     * will be added later on down the line).
-     */
-    public static final class MessageBox {
-
-        private static final String level = "MessageBox.";
-
-        /**
-         * General language class for the common messagebox options.
-         */
-        public static final class Options {
-
-            private static final String level = MessageBox.level + "Options.";
-
-            // Ok is an example of a text id that will be used to select the
-            // sentence we want.
-            public static final String Ok = level + "Ok";
-            public static final String Cancel = level + "Cancel";
-            public static final String Abort = level + "Abort";
-            public static final String Continue = level + "Continue";
-            public static final String Retry = level + "Retry";
-            public static final String Ignore = level + "Ignore";
-            public static final String Yes = level + "Yes";
-            public static final String No = level + "No";
-            public static final String Help = level + "Help";
-        }
-    }
 
     public static final class Menu {
         private static final String level = "Menu.";
 
         public static final String Languages = level + "Languages";
+
+        public static final String AddLanguage = level + "AddLanguage";
+
         public static final String ReturnToOverview = level +
                 "ReturnToOverview";
         public static final String Close = level + "Close";
@@ -216,6 +190,7 @@ public class Text {
 
         public static final String inputName = level + "inputName";
 
+        public static final String cancel = level + "cancel";
         public static final String confirm = level + "confirm";
 
         public static final class Alert {

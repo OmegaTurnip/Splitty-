@@ -99,7 +99,7 @@ public class EditEventNameCtrl extends TextPage implements Initializable {
                 Translator.getTranslation(Text.EditName.inputName)
         );
         cancelButton.setText(
-                Translator.getTranslation(Text.MessageBox.Options.Cancel)
+                Translator.getTranslation(Text.EditName.cancel)
         );
         confirmButton.setText(
                 Translator.getTranslation(Text.EditName.confirm)
