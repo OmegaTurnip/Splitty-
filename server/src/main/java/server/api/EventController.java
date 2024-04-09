@@ -113,21 +113,30 @@ public class EventController {
             ));
             List<Participant> participants = new ArrayList<>();
             for (Participant participant : transaction.getParticipants()) {
+
                 participants.add(event.getParticipantById(
                         participant.getParticipantId()
                 ));
             }
             transaction.setParticipants(participants);
-            transaction.setTag(event.getTagById(
-                    transaction.getTag().getTagId()));
+            setTagInstances(event, transaction);
+
         }
 
         Event dbEvent = eventRepository.save(event);
         messagingTemplate.convertAndSend("/topic/admin", dbEvent);
         return ResponseEntity.ok(dbEvent);
-        //tbf this might not be the proper way to do PUT.
-        // PUT methods should specify the URI exactly,
-        // so a proper pathing would be /{id}
+    }
+    //tbf this might not be the proper way to do PUT.
+    // PUT methods should specify the URI exactly,
+    // so a proper pathing would be /{id}
+
+    private static void setTagInstances(Event event, Transaction transaction) {
+        if (transaction.getTag() != null) {
+            transaction.setTag(event.getTagById(
+                    transaction.getTag().getTagId()
+            ));
+        }
     }
 
     /**

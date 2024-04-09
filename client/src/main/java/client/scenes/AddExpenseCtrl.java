@@ -300,8 +300,13 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         try {
             if (verifyInput()) {
                 Transaction expense = getExpense();
-                server.saveEvent(event);
+                Transaction returnedE = server.saveTransaction(expense);
+                event.removeTransaction(expense);
+                event.addTransaction(returnedE);
+//                server.saveEvent(event);
                 System.out.println("Added expense " + expense);
+            } else {
+                throw new WebApplicationException("Invalid input");
             }
         } catch (WebApplicationException e) {
             e.printStackTrace();
@@ -540,8 +545,11 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
      * Updates {@code participantList} to the checked participants
      */
     public void getCheckedParticipants() {
-        for (Object o : participants.getCheckModel().getCheckedItems()) {
-            if (!participants.getCheckModel().isChecked(0)) {
+        // added below
+        participantList.clear();
+        var list = participants.getCheckModel().getCheckedItems();
+        for (Object o : list) {
+            if (list.get(0) != participants.getItems().get(0)) {
                 participantList.add((Participant) o);
             }
         }
@@ -607,5 +615,56 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                         Currency.getInstance("EUR")), //placeholder
 //                        Currency.getInstance(currency.getValue())),
                 participantList, expenseTag);
+    }
+
+    /**
+     * Price to set
+     * @param price price
+     */
+
+    public void setPrice(TextField price) {
+        this.price = price;
+    }
+
+    /**
+     * Payer of the expense
+     * @param expensePayer the person that has paid for the expense
+     */
+    public void setExpensePayer(Participant expensePayer) {
+        this.expensePayer = expensePayer;
+    }
+
+    /**
+     * Sets the participantlist
+     * @param participantList the participantlist to be set
+     */
+
+    public void setParticipantList(List<Participant> participantList) {
+        this.participantList = participantList;
+    }
+
+    /**
+     * Sets the date
+     * @param date date to be set
+     */
+    public void setDate(DatePicker date) {
+        this.date = date;
+    }
+
+    /**
+     * Sets the name of the expense
+     * @param expenseName the exspenseName
+     */
+    public void setExpenseName(TextField expenseName) {
+        this.expenseName = expenseName;
+    }
+
+    /**
+     * Sets the expenseTag
+     * @param expenseTag the tag to be set
+     */
+
+    public void setExpenseTag(Tag expenseTag) {
+        this.expenseTag = expenseTag;
     }
 }
