@@ -388,21 +388,6 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Transaction>>() {});
     }
-    /**
-     * Edit transaction
-     * This still needs to be converted to long-polling
-     * @param event Event of which the transaction needs to be edited
-     * @param transaction The transaction to edit
-     * @return The edited transaction
-     */
-    public Transaction editTransaction(Event event, Transaction transaction) {
-        return client.target(server)
-                .path("api/event/" + event.getId() + "/transactions")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .put(Entity.entity(transaction, APPLICATION_JSON),
-                        Transaction.class);
-    }
     private static final ExecutorService EXEC =
             Executors.newSingleThreadExecutor();
 

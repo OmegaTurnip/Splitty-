@@ -283,5 +283,4 @@ public class AddExpenseCtrlTest extends ApplicationTest {
         assertEquals(expectedResult.getName(), event.getTransactions().getLast().getName());
         verify(server, times(1)).saveEvent(any(Event.class));
     }
-
 }

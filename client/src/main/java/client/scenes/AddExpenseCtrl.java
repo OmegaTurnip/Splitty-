@@ -88,6 +88,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     }
 
     /**
+<<<<<<< HEAD
      * Setter
      * @param server the server to set
      */
@@ -98,6 +99,9 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     /**
      * Sets alertWrapper
      *
+=======
+     * Sets alertWrapper
+>>>>>>> 6b44806791296d276a07ac204883fdfe2897260c
      * @param alertWrapper alertWrapper
      */
     public void setAlertWrapper(AlertWrapper alertWrapper) {
@@ -353,7 +357,9 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
 
     private boolean verifyInput() {
-        if (!verifyPrice(price.getText())) return false;
+        if (!verifyPrice(price.getText())) {
+            return false;
+        }
         if (expensePayer == null
                 || !expensePayer.getClass().equals(Participant.class))
             return false;
@@ -647,7 +653,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
 
     Transaction getExpense() {
-        BigDecimal b = new BigDecimal(price.getText());
+        BigDecimal b = new BigDecimal(price.getText().replace(",", "."));
         return event.registerDebt(expensePayer,
                 expenseName.getText(),
                 new Money(b,
