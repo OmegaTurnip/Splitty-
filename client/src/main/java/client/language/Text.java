@@ -116,6 +116,21 @@ public class Text {
 
             }
         }
+
+        public static class TransactionCellController {
+            public static final String level = EventOverview.level +
+                    "TransactionCellController.";
+
+            public static final class Alert {
+                public static final String level = TransactionCellController
+                        .level + "Alert.";
+                public static final String deleteExpenseTitle = level +
+                        "deleteExpenseTitle";
+                public static final String deleteExpenseContent = level +
+                        "deleteExpenseContent";
+
+            }
+        }
     }
 
     public static final class AddParticipant {
