@@ -55,6 +55,10 @@ public class Text {
 
             public static final String notSelectedContent = level +
                     "notSelectedContent";
+            public static final String noUndoTitle = level + "noUndoTitle";
+            public static final String noUndoContent = level + "noUndoContent";
+            public static final String noRedoTitle = level + "noRedoTitle";
+            public static final String noRedoContent = level + "noRedoContent";
         }
 
 

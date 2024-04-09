@@ -1,5 +1,7 @@
 package client.scenes;
 
+import client.history.Action;
+import client.history.ActionHistory;
 import client.language.Formatter;
 import client.language.Text;
 import client.language.Translator;
@@ -34,6 +36,8 @@ public class TransactionCellController {
     private Button deleteTransactionButton;
     private AlertWrapper alertWrapper;
 
+    private ActionHistory actionHistory;
+
 
     /**
      * Initialize the controller.
@@ -67,8 +71,12 @@ public class TransactionCellController {
             if (result == ButtonType.OK) {
                 server.removeTransaction(transaction);
                 event.deleteTransaction(transaction);
+                server.saveEvent(event);
                 eventOverviewCtrl.refresh();
                 System.out.println("Delete transaction button clicked");
+                Action deleteAction = new ExpenseDeleteAction(transaction, server,
+                        event, eventOverviewCtrl);
+                actionHistory.addAction(deleteAction);
             }
         }
     }
@@ -143,6 +151,14 @@ public class TransactionCellController {
         this.eventOverviewCtrl = eventOverviewCtrl;
     }
 
+    /**
+     * Setter
+     * @param actionHistory the actionHistory to set
+     */
+    public void setActionHistory(ActionHistory actionHistory) {
+        this.actionHistory = actionHistory;
+    }
+
 
     /**
      * Setter
@@ -150,6 +166,38 @@ public class TransactionCellController {
      */
     public void setAlertWrapper(AlertWrapper alertWrapper) {
         this.alertWrapper = alertWrapper;
+    }
+
+    private static class ExpenseDeleteAction implements Action {
+        private Transaction transaction;
+        private ServerUtils server;
+        private Event event;
+        private EventOverviewCtrl eventOverviewCtrl;
+
+        public ExpenseDeleteAction(Transaction transaction, ServerUtils server,
+                                   Event event, EventOverviewCtrl eventOverviewCtrl) {
+            this.transaction = transaction;
+            this.server = server;
+            this.event = event;
+            this.eventOverviewCtrl = eventOverviewCtrl;
+        }
+
+        @Override
+        public void undo() {
+            Transaction returnedE = server.saveTransaction(transaction);
+            transaction = returnedE;
+            event.addTransaction(returnedE);
+            server.saveEvent(event);
+            eventOverviewCtrl.refresh();
+        }
+
+        @Override
+        public void redo() {
+            server.removeTransaction(transaction);
+            event.deleteTransaction(transaction);
+            server.saveEvent(event);
+            eventOverviewCtrl.refresh();
+        }
     }
 
 }

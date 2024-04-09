@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import client.history.ActionHistory;
 import client.language.Text;
 import client.language.Translator;
 import client.utils.ServerUtils;
@@ -144,6 +145,15 @@ public class MainCtrl {
         overview.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
                 showStartUp();
+                e.consume();
+            }
+        });
+        overview.setOnKeyPressed(e -> {
+            if (e.isControlDown() && e.getCode() == KeyCode.Z) {
+                overviewCtrl.undo();
+                e.consume();
+            } else if (e.isControlDown() && e.getCode() == KeyCode.Y) {
+                overviewCtrl.redo();
                 e.consume();
             }
         });
