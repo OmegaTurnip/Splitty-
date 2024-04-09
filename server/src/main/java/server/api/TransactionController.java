@@ -3,6 +3,7 @@ package server.api;
 import commons.Event;
 import commons.Participant;
 import commons.Transaction;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -182,6 +183,7 @@ public class TransactionController {
      * @param transactionId the id of the transaction to delete
      * @return The transaction deleted
      */
+    @Transactional
     @DeleteMapping("/{transactionId}")
     @ResponseBody
     public ResponseEntity<Transaction> deleteTransaction(
@@ -202,6 +204,8 @@ public class TransactionController {
                 || !Objects.equals(transaction.getEvent().getId(), eventId)){
             return ResponseEntity.badRequest().build();
         };
+
+        event.deleteTransaction(transaction);
 
         repo.delete(transaction);
         event.removeTransaction(transaction);
