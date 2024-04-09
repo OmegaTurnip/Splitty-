@@ -122,7 +122,7 @@ public class EventController {
             setTagInstances(event, transaction);
 
         }
-        System.out.println(event.getTransactions());
+
         Event dbEvent = eventRepository.save(event);
         messagingTemplate.convertAndSend("/topic/admin", dbEvent);
         return ResponseEntity.ok(dbEvent);

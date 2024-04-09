@@ -317,6 +317,10 @@ public class Transaction {
         this.event = event;
     }
 
+    /**
+     * Turns a transaction into a human-readable string
+     * @return the string
+     */
     @Override
     public String toString() {
         return "Transaction{" +

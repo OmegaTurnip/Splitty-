@@ -110,7 +110,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         fetchLanguages();
         payerSelection();
         tagSelection();
-        participantSelection();
         addExpense.setOnAction(event -> {
             if (registerExpense()) {
                 this.mainCtrl.showEventOverview(this.event);
@@ -363,6 +362,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
      * Refreshes the page and updates the list view.
      */
     public void refresh() {
+        participantSelection();
         refreshText();
         loadPayers();
         loadParticipants();
@@ -516,7 +516,10 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         }
         ObservableList<Object> participantObservableList =
                 FXCollections.observableArrayList(participantChoiceBoxList);
+        participants.getCheckModel().clearChecks();
         participants.getItems().clear();
+        participants.setTitle(Translator.getTranslation(
+                Text.AddExpense.expenseParticipantsPrompt));
         participants.getItems().addAll(participantObservableList);
     }
 
@@ -539,9 +542,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                 Translator.getTranslation(Text.AddExpense.expensePricePrompt));
         date.setPromptText(
                 Translator.getTranslation(Text.AddExpense.expenseDatePrompt));
-        participants.setTitle(
-                Translator.getTranslation(
-                        Text.AddExpense.expenseParticipantsPrompt));
 
         int index = payer.getSelectionModel().getSelectedIndex();
         loadPayers();
@@ -549,13 +549,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         index = expenseType.getSelectionModel().getSelectedIndex();
         loadTags();
         expenseType.getSelectionModel().select(index);
-
-//        ArrayList<Integer> indices = new ArrayList<>(
-//                participants.getCheckModel().getCheckedIndices());
         loadParticipants();
-//        for (Integer i : indices) {
-//            participants.getCheckModel().check(i);
-//        }
     }
 
     /**
