@@ -256,6 +256,7 @@ public class Text {
         public static final String serverDownContent =
                 level + "serverDownContent";
     }
+
     public static final class AddExpense {
         private static final String level = "AddExpense.";
         public static final String expenseNamePrompt = level + "namePrompt";
@@ -288,4 +289,3 @@ public class Text {
     }
 
 }
-

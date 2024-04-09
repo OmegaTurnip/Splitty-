@@ -43,8 +43,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import commons.Event;
@@ -65,7 +65,6 @@ import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
-
 
 
 public class ServerUtils {
@@ -473,7 +472,7 @@ public class ServerUtils {
      */
     public Transaction removeTransaction(Transaction transaction) {
         var path = "api/event/" + transaction.getEvent().getId() +
-                "/transactions/" + transaction.getId();
+                "/transactions/" + transaction.getTransactionId();
         return client
                 .target(server).path(path)
                 .request(APPLICATION_JSON)
