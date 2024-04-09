@@ -198,6 +198,11 @@ public class Text {
             public static final String confirmTitle = level + "confirmTitle";
             public static final String confirmContent = level
                     + "confirmContent";
+            public static final String showInviteTitle = level +
+                    "showInviteTitle";
+
+            public static final String showInviteContent = level +
+                    "showInviteContent";
         }
     }
 

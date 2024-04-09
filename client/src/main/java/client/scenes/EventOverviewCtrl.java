@@ -19,6 +19,7 @@ import commons.Transaction;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.StringConverter;
@@ -487,6 +488,30 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         }
     }
 
+    /**
+     * Shows the invite code of the event
+     */
+    public void showInviteCode(){
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle(Translator.getTranslation(client.language.
+                Text.EditName.Alert.showInviteTitle));
+        ButtonType loginButtonType = new ButtonType(
+                Translator.getTranslation(Text.EditName.confirm),
+                ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(loginButtonType);
+        Label label = new Label(Translator.getTranslation(
+                Text.EditName.Alert.showInviteContent));
+        TextField textField = new TextField();
+        textField.setText(event.getInviteCode());
+        textField.setEditable(false);
+        textField.setPrefWidth(275);
+        GridPane grid = new GridPane();
+        grid.add(label, 1, 1);
+        grid.add(textField, 2, 1);
+        dialog.getDialogPane().setContent(grid);
+        dialog.getDialogPane().setMinWidth(450);
+        dialog.showAndWait();
+    }
 
 
     /**
