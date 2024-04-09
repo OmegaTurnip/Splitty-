@@ -375,7 +375,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
         joinEvent1.setPromptText(Translator
                 .getTranslation(client.language
                         .Text.StartUp.joinEventLabel));
-        refreshIcon(UserConfig.get().getUserLanguage(),
+        refreshIcon(Translator.getCurrentLanguage().getLanguageCode(),
                 languageMenu, Language.languages);
     }
 

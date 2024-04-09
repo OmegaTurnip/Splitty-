@@ -5,7 +5,6 @@ import client.language.Text;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
-import client.utils.UserConfig;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -424,7 +423,7 @@ public class AdminCtrl extends TextPage implements Initializable {
                 .getTranslation(Text.Admin.Buttons.deleteEvent));
         restoreEventBtn.setText(Translator
                 .getTranslation(Text.Admin.Buttons.restoreEvent));
-        refreshIcon(UserConfig.get().getUserLanguage(),
+        refreshIcon(Translator.getCurrentLanguage().getLanguageCode(),
                 languageMenu, Language.languages);
 
     }

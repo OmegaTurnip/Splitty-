@@ -5,7 +5,6 @@ import client.language.Text;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
-import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.*;
 import jakarta.ws.rs.WebApplicationException;
@@ -515,7 +514,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         for (Integer i : indices) {
             participants.getCheckModel().check(i);
         }
-        refreshIcon(UserConfig.get().getUserLanguage(),
+        refreshIcon(Translator.getCurrentLanguage().getLanguageCode(),
                 languageMenu, Language.languages);
     }
 
