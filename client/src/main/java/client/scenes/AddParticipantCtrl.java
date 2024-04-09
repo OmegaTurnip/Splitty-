@@ -1,10 +1,8 @@
 package client.scenes;
 
-import client.language.Formatter;
-import client.language.Text;
-import client.language.TextPage;
-import client.language.Translator;
+import client.language.*;
 import client.utils.ServerUtils;
+import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
@@ -154,6 +152,8 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
         cancel.setText(
                 Translator.getTranslation(Text.AddParticipant.Cancel)
         );
+        refreshIcon(UserConfig.get().getUserLanguage(),
+                languageMenu, Language.languages);
 
     }
 

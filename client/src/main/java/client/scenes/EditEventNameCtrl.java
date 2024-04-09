@@ -1,12 +1,10 @@
 package client.scenes;
 
 
-import client.language.Formatter;
-import client.language.Text;
-import client.language.TextPage;
-import client.language.Translator;
+import client.language.*;
 import client.utils.ServerUtils;
 
+import client.utils.UserConfig;
 import commons.Event;
 import jakarta.inject.Inject;
 import javafx.fxml.FXML;
@@ -104,6 +102,8 @@ public class EditEventNameCtrl extends TextPage implements Initializable {
         confirmButton.setText(
                 Translator.getTranslation(Text.EditName.confirm)
         );
+        refreshIcon(UserConfig.get().getUserLanguage(),
+                languageMenu, Language.languages);
     }
 
     /**

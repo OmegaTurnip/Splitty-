@@ -1,9 +1,11 @@
 package client.scenes;
 
+import client.language.Language;
 import client.language.Text;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
+import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.*;
 import jakarta.ws.rs.WebApplicationException;
@@ -499,14 +501,12 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                 Translator.getTranslation(
                         Text.AddExpense.expenseParticipantsPrompt));
         System.out.println(participants.getTitle());
-
         int index = payer.getSelectionModel().getSelectedIndex();
         loadPayers();
         payer.getSelectionModel().select(index);
         index = expenseType.getSelectionModel().getSelectedIndex();
         loadTags();
         expenseType.getSelectionModel().select(index);
-
 //        the following lines don't work as expected,
 //        but I don't think it is worth fixing
         ArrayList<Integer> indices = new ArrayList<>(
@@ -515,6 +515,8 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         for (Integer i : indices) {
             participants.getCheckModel().check(i);
         }
+        refreshIcon(UserConfig.get().getUserLanguage(),
+                languageMenu, Language.languages);
     }
 
     /**

@@ -1,9 +1,11 @@
 package client.scenes;
 
+import client.language.Language;
 import client.language.Text;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
+import client.utils.UserConfig;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -215,6 +217,7 @@ public class AdminCtrl extends TextPage implements Initializable {
                     .readValue(file,
                             new TypeReference<HashMap<Long, Event>>() {});
         } catch (Exception e) {
+            System.out.println("Could not load from JSON");
             e.printStackTrace();
         }
         restoreEventChoiceBox.getItems().clear();
@@ -421,6 +424,8 @@ public class AdminCtrl extends TextPage implements Initializable {
                 .getTranslation(Text.Admin.Buttons.deleteEvent));
         restoreEventBtn.setText(Translator
                 .getTranslation(Text.Admin.Buttons.restoreEvent));
+        refreshIcon(UserConfig.get().getUserLanguage(),
+                languageMenu, Language.languages);
 
     }
 }

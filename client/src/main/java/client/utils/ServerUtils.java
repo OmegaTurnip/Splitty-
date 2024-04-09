@@ -221,7 +221,10 @@ public class ServerUtils {
      */
     public List<Event> getMyEvents() {
         List<String> invCodes = userSettings.getEventCodes();
-        String commaSeparatedInvCodes = String.join(",", invCodes);
+        String commaSeparatedInvCodes = "";
+        if (!invCodes.isEmpty()) {
+            commaSeparatedInvCodes = String.join(",", invCodes);
+        }
         return client.target(server)
                 .path("api/event/invite/" + commaSeparatedInvCodes)
                 .request(APPLICATION_JSON)
