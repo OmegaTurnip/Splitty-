@@ -42,9 +42,8 @@ public class TransactionCellController {
     public void initialize() {
         refreshText();
         alertWrapper = new AlertWrapper();
-        editTransactionButton.setOnAction(event -> {
-            System.out.println("Edit transaction button clicked");
-        });
+        editTransactionButton.setOnAction(event ->
+                System.out.println("Edit transaction button clicked"));
         deleteTransactionButton.setOnAction(event -> removeTransaction());
     }
 
@@ -66,7 +65,9 @@ public class TransactionCellController {
                             .Alert.deleteExpenseContent)
                     );
             if (result == ButtonType.OK) {
-                event.deleteTransaction(server.removeTransaction(transaction));
+                server.removeTransaction(transaction);
+                event.deleteTransaction(transaction);
+                eventOverviewCtrl.refresh();
                 System.out.println("Delete transaction button clicked");
             }
         }
@@ -141,6 +142,7 @@ public class TransactionCellController {
     public void setEventOverviewCtrl(EventOverviewCtrl eventOverviewCtrl) {
         this.eventOverviewCtrl = eventOverviewCtrl;
     }
+
 
     /**
      * Setter

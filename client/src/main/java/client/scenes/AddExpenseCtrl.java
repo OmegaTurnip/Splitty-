@@ -293,9 +293,8 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                 event.addTransaction(returnedE);
 //                server.saveEvent(event);
                 System.out.println("Added expense " + expense);
-            } else {
-                throw new WebApplicationException("Invalid input");
-            }
+                return true;
+            } return false;
         } catch (WebApplicationException e) {
             e.printStackTrace();
             var alert = new Alert(Alert.AlertType.ERROR);
@@ -304,9 +303,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             alert.showAndWait();
             return false;
         }
-
-        return true;
-
     }
 
 
@@ -539,7 +535,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         participantList.clear();
         var list = participants.getCheckModel().getCheckedItems();
         for (Object o : list) {
-            if (list.get(0) != participants.getItems().get(0)) {
+            if (o != participants.getItems().get(0)) {
                 participantList.add((Participant) o);
             }
         }

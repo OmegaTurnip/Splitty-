@@ -474,6 +474,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 transactionCellController.setTransactionData(transaction);
                 transactionCellController.setEvent(event);
                 transactionCellController.setServer(server);
+                transactionCellController.setTransaction(transaction);
                 transactionCellController.setEventOverviewCtrl(
                         EventOverviewCtrl.this);
                 setGraphic(loader.getRoot());

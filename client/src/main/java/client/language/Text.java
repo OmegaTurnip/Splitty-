@@ -75,7 +75,6 @@ public class Text {
                     "deletedEventTitle";
             public static final String deletedEventContent = level +
                     "deletedEventContent";
-
         }
 
 

@@ -80,6 +80,7 @@ public class ParticipantCellController {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 server.removeParticipant(participant);
+                System.out.println(server.getMyEvents().get(0).getParticipants());
             }
         }
     }

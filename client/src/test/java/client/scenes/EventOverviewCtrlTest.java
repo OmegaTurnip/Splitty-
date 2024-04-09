@@ -159,4 +159,5 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         sut.setMainCtrl(mainCtrl);
         assertEquals(sut.getMainCtrl(), mainCtrl);
     }
+
 }
