@@ -42,6 +42,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -429,6 +430,8 @@ public class ServerUtils {
     private static final ExecutorService EXEC =
             Executors.newSingleThreadExecutor();
 
+    private Future<?> future;
+
     /**
      * Registers for updates (adding of transactions)
      * In case of no content, the rest of the loop is skipped (continue)
@@ -439,8 +442,11 @@ public class ServerUtils {
      * @param event current event
      */
     public void registerForUpdates(Consumer<Transaction> consumer, Event event){
+        if (future != null) {
+            future.cancel(true);
+        }
 
-        EXEC.submit(() -> {
+        future = EXEC.submit(() -> {
             while (!Thread.interrupted()) {
                 var res = client.target(server)
                         .path("api/event/" + event.getId()

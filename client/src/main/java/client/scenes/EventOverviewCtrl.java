@@ -103,11 +103,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 new ParticipantCellFactory());
         expensesListView.setCellFactory(param ->
                 new TransactionCellFactory());
-        server.registerForUpdates(t -> {
-            updateTransactions(t);
-            Platform.runLater(this::refresh);
-            System.out.println("Received transaction: " + t.getName());
-        }, event);
         server.registerForMessages("/topic/admin", Event.class, e -> {
             if (event.equals(e)) event = e; //Overwrite current event
             System.out.println("Received event: " + event.getEventName());
@@ -489,6 +484,11 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
      */
     public void setEvent(Event event) {
         this.event = event;
+        server.registerForUpdates(t -> {
+            updateTransactions(t);
+            Platform.runLater(this::refresh);
+            System.out.println("Received transaction: " + t.getName());
+        }, event);
     }
 
 
