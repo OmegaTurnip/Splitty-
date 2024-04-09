@@ -44,30 +44,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
-
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import commons.Event;
-import commons.Participant;
-import commons.Transaction;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.core.Response;
-import org.glassfish.jersey.client.ClientConfig;
-
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.core.GenericType;
-import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.simp.stomp.StompFrameHandler;
-import org.springframework.messaging.simp.stomp.StompHeaders;
-import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
-import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.messaging.WebSocketStompClient;
-
-
 
 public class ServerUtils {
 
@@ -412,21 +389,6 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Transaction>>() {});
     }
-    /**
-     * Edit transaction
-     * This still needs to be converted to long-polling
-     * @param event Event of which the transaction needs to be edited
-     * @param transaction The transaction to edit
-     * @return The edited transaction
-     */
-    public Transaction editTransaction(Event event, Transaction transaction) {
-        return client.target(server)
-                .path("api/event/" + event.getId() + "/transactions")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .put(Entity.entity(transaction, APPLICATION_JSON),
-                        Transaction.class);
-    }
     private static final ExecutorService EXEC =
             Executors.newSingleThreadExecutor();
 
@@ -479,7 +441,7 @@ public class ServerUtils {
      */
     public Transaction removeTransaction(Transaction transaction) {
         var path = "api/event/" + transaction.getEvent().getId() +
-                "/transactions/" + transaction.getId();
+                "/transactions/" + transaction.getTransactionId();
         return client
                 .target(server).path(path)
                 .request(APPLICATION_JSON)

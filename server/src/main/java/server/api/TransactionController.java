@@ -3,6 +3,7 @@ package server.api;
 import commons.Event;
 import commons.Participant;
 import commons.Transaction;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -182,29 +183,33 @@ public class TransactionController {
      * @param transactionId the id of the transaction to delete
      * @return The transaction deleted
      */
+    @Transactional
     @DeleteMapping("/{transactionId}")
     @ResponseBody
     public ResponseEntity<Transaction> deleteTransaction(
             @PathVariable("eventId") Long eventId,
             @PathVariable("transactionId") Long transactionId) {
 
-        Transaction transaction = repo.findById(transactionId).orElse(null);
-        Event event = eventRepository.findById(eventId).orElse(null);
-
-        if (event == null || transaction == null) {
+        var optionalTransaction = repo.findByTransactionId(transactionId);
+        if(optionalTransaction.isEmpty())
             return ResponseEntity.notFound().build();
-        }
+        Transaction transaction = optionalTransaction.get();
+        transaction.getParticipants().size(); //terrible workaround
 
-        if( transaction.getEvent() == null
+        var optionalEvent = eventRepository.findById(eventId);
+        if(optionalEvent.isEmpty()) return ResponseEntity.badRequest().build();
+        Event event = optionalEvent.get();
+
+        if(transaction.getEvent() == null
                 || !Objects.equals(transaction.getEvent().getId(), eventId)){
             return ResponseEntity.badRequest().build();
         };
-        boolean deleted = event.deleteTransaction(transaction);
-        repo.deleteById(transaction.getId());
 
-        if(!deleted) {
-            return ResponseEntity.badRequest().build();
-        }
+        event.deleteTransaction(transaction);
+
+        repo.delete(transaction);
+        event.removeTransaction(transaction);
+        Event test = eventRepository.save(event);
 
         return ResponseEntity.ok(transaction);
     }

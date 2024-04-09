@@ -10,40 +10,14 @@ public class Text {
     public static final String NativeLanguageName = "NativeLanguageName";
     static final String Locale = "Locale";
 
-    /**
-     * General language class for the common messagebox texts.
-     * This class is to be used throughout the entire program (unlike most that
-     * will be added later on down the line).
-     */
-    public static final class MessageBox {
-
-        private static final String level = "MessageBox.";
-
-        /**
-         * General language class for the common messagebox options.
-         */
-        public static final class Options {
-
-            private static final String level = MessageBox.level + "Options.";
-
-            // Ok is an example of a text id that will be used to select the
-            // sentence we want.
-            public static final String Ok = level + "Ok";
-            public static final String Cancel = level + "Cancel";
-            public static final String Abort = level + "Abort";
-            public static final String Continue = level + "Continue";
-            public static final String Retry = level + "Retry";
-            public static final String Ignore = level + "Ignore";
-            public static final String Yes = level + "Yes";
-            public static final String No = level + "No";
-            public static final String Help = level + "Help";
-        }
-    }
 
     public static final class Menu {
         private static final String level = "Menu.";
 
         public static final String Languages = level + "Languages";
+
+        public static final String AddLanguage = level + "AddLanguage";
+
         public static final String ReturnToOverview = level +
                 "ReturnToOverview";
         public static final String Close = level + "Close";
@@ -76,6 +50,11 @@ public class Text {
             public static final String deletedEventContent = level +
                     "deletedEventContent";
 
+            public static final String notSelectedTitle = level +
+                    "notSelectedTitle";
+
+            public static final String notSelectedContent = level +
+                    "notSelectedContent";
         }
 
 
@@ -108,6 +87,21 @@ public class Text {
                         "deleteParticipantTitle";
                 public static final String deleteParticipantContent = level +
                         "deleteParticipantContent";
+
+            }
+        }
+
+        public static class TransactionCellController {
+            public static final String level = EventOverview.level +
+                    "TransactionCellController.";
+
+            public static final class Alert {
+                public static final String level = TransactionCellController
+                        .level + "Alert.";
+                public static final String deleteExpenseTitle = level +
+                        "deleteExpenseTitle";
+                public static final String deleteExpenseContent = level +
+                        "deleteExpenseContent";
 
             }
         }
@@ -178,8 +172,12 @@ public class Text {
             public static final String level = StartUp.level + "Alert.";
             public static final String noEventWritten =
                     level + "noEventWritten";
+            public static final String noEventWrittenTitle =
+                    level + "noEventWrittenTitle";
             public static final String alreadyInEvent =
                     level + "alreadyInEvent";
+            public static final String alreadyInEventTitle =
+                    level + "alreadyInEventTitle";
             public static final String removeEventHeader =
                     level + "removeEventHeader";
             public static final String removeEventContent =
@@ -192,6 +190,7 @@ public class Text {
 
         public static final String inputName = level + "inputName";
 
+        public static final String cancel = level + "cancel";
         public static final String confirm = level + "confirm";
 
         public static final class Alert {
@@ -256,6 +255,7 @@ public class Text {
         public static final String serverDownContent =
                 level + "serverDownContent";
     }
+
     public static final class AddExpense {
         private static final String level = "AddExpense.";
         public static final String expenseNamePrompt = level + "namePrompt";
@@ -272,6 +272,7 @@ public class Text {
             public static final String addExpenseButton = level + "addExpense";
         }
 
+
         public static final class Alert {
             public static final String level = AddExpense.level + "Alert.";
             public static final String invalidPrice = level + "invalidPrice";
@@ -283,9 +284,13 @@ public class Text {
                     "onlyOnePeriodOrCommaAllowed";
             public static final String generallyInvalid = level +
                     "generallyInvalid";
+
+            public static final String dateFormatTitle = level + "FormatTitle";
+
+            public static final String dateFormatContent = level +
+                    "FormatContent";
         }
 
     }
 
 }
-
