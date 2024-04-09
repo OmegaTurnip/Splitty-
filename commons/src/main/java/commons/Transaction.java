@@ -16,7 +16,7 @@ import java.util.*;
 public class Transaction {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long id;
+    private Long transactionId;
     @Id
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
@@ -29,7 +29,7 @@ public class Transaction {
     @Column(name = "amount", length = 1024)
     private Money amount;
     private boolean isPayoff;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     private List<Participant> participants;
     @ManyToOne
     private Tag tag;
@@ -263,7 +263,7 @@ public class Transaction {
         if (this == other) return true;
         if (other == null || getClass() != other.getClass()) return false;
         Transaction that = (Transaction) other;
-        return Objects.equals(id, that.id)
+        return Objects.equals(transactionId, that.transactionId)
                 && Objects.equals(event, that.event);
     }
 
@@ -274,23 +274,23 @@ public class Transaction {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(event, id);
+        return Objects.hash(event, transactionId);
     }
 
     /**
      * Setter for id
      * @param id the id
      */
-    public void setId(Long id) {
-        this.id = id;
+    public void setTransactionId(Long id) {
+        this.transactionId = id;
     }
 
     /**
      * Getter for id
      * @return the id
      */
-    public Long getId() {
-        return id;
+    public Long getTransactionId() {
+        return transactionId;
     }
 
     /**

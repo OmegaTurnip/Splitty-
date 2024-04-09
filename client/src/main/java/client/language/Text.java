@@ -50,6 +50,11 @@ public class Text {
             public static final String deletedEventContent = level +
                     "deletedEventContent";
 
+            public static final String notSelectedTitle = level +
+                    "notSelectedTitle";
+
+            public static final String notSelectedContent = level +
+                    "notSelectedContent";
         }
 
 
@@ -82,6 +87,21 @@ public class Text {
                         "deleteParticipantTitle";
                 public static final String deleteParticipantContent = level +
                         "deleteParticipantContent";
+
+            }
+        }
+
+        public static class TransactionCellController {
+            public static final String level = EventOverview.level +
+                    "TransactionCellController.";
+
+            public static final class Alert {
+                public static final String level = TransactionCellController
+                        .level + "Alert.";
+                public static final String deleteExpenseTitle = level +
+                        "deleteExpenseTitle";
+                public static final String deleteExpenseContent = level +
+                        "deleteExpenseContent";
 
             }
         }
@@ -152,8 +172,12 @@ public class Text {
             public static final String level = StartUp.level + "Alert.";
             public static final String noEventWritten =
                     level + "noEventWritten";
+            public static final String noEventWrittenTitle =
+                    level + "noEventWrittenTitle";
             public static final String alreadyInEvent =
                     level + "alreadyInEvent";
+            public static final String alreadyInEventTitle =
+                    level + "alreadyInEventTitle";
             public static final String removeEventHeader =
                     level + "removeEventHeader";
             public static final String removeEventContent =
@@ -231,6 +255,7 @@ public class Text {
         public static final String serverDownContent =
                 level + "serverDownContent";
     }
+
     public static final class AddExpense {
         private static final String level = "AddExpense.";
         public static final String expenseNamePrompt = level + "namePrompt";
@@ -247,6 +272,7 @@ public class Text {
             public static final String addExpenseButton = level + "addExpense";
         }
 
+
         public static final class Alert {
             public static final String level = AddExpense.level + "Alert.";
             public static final String invalidPrice = level + "invalidPrice";
@@ -258,9 +284,13 @@ public class Text {
                     "onlyOnePeriodOrCommaAllowed";
             public static final String generallyInvalid = level +
                     "generallyInvalid";
+
+            public static final String dateFormatTitle = level + "FormatTitle";
+
+            public static final String dateFormatContent = level +
+                    "FormatContent";
         }
 
     }
 
 }
-

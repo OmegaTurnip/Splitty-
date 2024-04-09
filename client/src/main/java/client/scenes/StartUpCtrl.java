@@ -22,7 +22,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
+
 
 import java.io.IOException;
 import java.net.URL;
@@ -104,6 +104,8 @@ public class StartUpCtrl extends TextPage implements Initializable {
     private MenuItem loginButton;
     private String password;
 
+    private AlertWrapper alertWrapper;
+
     /**
      * Constructor
      * @param server The server.
@@ -114,6 +116,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.currentEvents = new ArrayList<>();
+        this.alertWrapper = new AlertWrapper();
     }
 
     /**
@@ -226,16 +229,23 @@ public class StartUpCtrl extends TextPage implements Initializable {
         try {
             List<String> eventCodes = server.getUserSettings().getEventCodes();
             if (eventCodes.contains(code)) {
-                throw new WebApplicationException(
-                        Translator
-                                .getTranslation(
-                                        client.language.Text.StartUp
-                                        .Alert.alreadyInEvent), 422);
-            } else if (code.isEmpty()) {
-                throw new WebApplicationException(
+                alertWrapper.showAlert(Alert.AlertType.ERROR,
                         Translator.getTranslation(
-                                client.language.Text
-                                        .StartUp.Alert.noEventWritten), 422);
+                                client.language.Text.StartUp
+                                        .Alert.alreadyInEventTitle),
+                        Translator.getTranslation(
+                                client.language.Text.StartUp
+                                        .Alert.alreadyInEvent)
+                );
+            } else if (code.isEmpty()) {
+                alertWrapper.showAlert(Alert.AlertType.ERROR,
+                        Translator.getTranslation(
+                                client.language.Text.StartUp
+                                        .Alert.noEventWrittenTitle),
+                        Translator.getTranslation(
+                                client.language.Text.StartUp
+                                        .Alert.noEventWritten)
+                );
             }
             Event result = server.joinEvent(code);
             currentEvents.add(result);
@@ -244,15 +254,10 @@ public class StartUpCtrl extends TextPage implements Initializable {
             System.out.println("Event: "+ result.getEventName() + " joined!");
         } catch (WebApplicationException e) {
             e.printStackTrace();
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
             return;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         clearFields();
         refresh();
     }
@@ -267,10 +272,13 @@ public class StartUpCtrl extends TextPage implements Initializable {
         try {
             Event e = getEvent();
             if (e.getEventName().isEmpty()) {
-                throw new WebApplicationException(
+                alertWrapper.showAlert(Alert.AlertType.ERROR,
                         Translator.getTranslation(
-                                client.language.Text
-                                        .StartUp.Alert.noEventWritten), 422);
+                                client.language.Text.StartUp
+                                        .Alert.noEventWrittenTitle),
+                        Translator.getTranslation(
+                                client.language.Text.StartUp
+                                        .Alert.noEventWritten));
             }
             Event result = server.createEvent(e);
             List<String> eventCodes = server.getUserSettings().getEventCodes();
@@ -282,10 +290,6 @@ public class StartUpCtrl extends TextPage implements Initializable {
                     " Time of last edit: " + result.getLastActivity());
         } catch (WebApplicationException e) {
             e.printStackTrace();
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
             return;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -377,16 +381,15 @@ public class StartUpCtrl extends TextPage implements Initializable {
      */
     public void undoEventJoin(Event selected) {
         if (selected != null) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle(Translator
-                    .getTranslation(client.language
-                            .Text.StartUp.Alert.removeEventHeader));
-            alert.setHeaderText(null);
-            alert.setContentText(Translator
-                    .getTranslation(client.language
-                            .Text.StartUp.Alert.removeEventContent));
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
+            ButtonType result = alertWrapper.showAlertButton(
+                    Alert.AlertType.CONFIRMATION,
+                    Translator
+                            .getTranslation(client.language
+                                    .Text.StartUp.Alert.removeEventHeader),
+                    Translator
+                            .getTranslation(client.language
+                                    .Text.StartUp.Alert.removeEventContent));
+            if (result == ButtonType.OK) {
                 try {
                     List<String> eventCodes =
                             server.getUserSettings().getEventCodes();

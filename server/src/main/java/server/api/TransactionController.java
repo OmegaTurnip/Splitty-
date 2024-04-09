@@ -188,23 +188,24 @@ public class TransactionController {
             @PathVariable("eventId") Long eventId,
             @PathVariable("transactionId") Long transactionId) {
 
-        Transaction transaction = repo.findById(transactionId).orElse(null);
-        Event event = eventRepository.findById(eventId).orElse(null);
-
-        if (event == null || transaction == null) {
+        var optionalTransaction = repo.findByTransactionId(transactionId);
+        if(optionalTransaction.isEmpty())
             return ResponseEntity.notFound().build();
-        }
+        Transaction transaction = optionalTransaction.get();
+        transaction.getParticipants().size(); //terrible workaround
 
-        if( transaction.getEvent() == null
+        var optionalEvent = eventRepository.findById(eventId);
+        if(optionalEvent.isEmpty()) return ResponseEntity.badRequest().build();
+        Event event = optionalEvent.get();
+
+        if(transaction.getEvent() == null
                 || !Objects.equals(transaction.getEvent().getId(), eventId)){
             return ResponseEntity.badRequest().build();
         };
-        boolean deleted = event.deleteTransaction(transaction);
-        repo.deleteById(transaction.getId());
 
-        if(!deleted) {
-            return ResponseEntity.badRequest().build();
-        }
+        repo.delete(transaction);
+        event.removeTransaction(transaction);
+        Event test = eventRepository.save(event);
 
         return ResponseEntity.ok(transaction);
     }

@@ -12,12 +12,9 @@ import commons.Event;
 import commons.Money;
 import commons.Participant;
 import commons.Transaction;
-import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -29,7 +26,6 @@ import org.springframework.messaging.simp.stomp.StompSession;
 import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
-import java.awt.*;
 import java.math.BigDecimal;
 import java.util.*;
 import java.io.File;
@@ -37,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class EventOverviewCtrlTest extends ApplicationTest {
@@ -116,11 +111,11 @@ public class EventOverviewCtrlTest extends ApplicationTest {
 
         sut.addExpense();
         AddExpenseCtrl addExpenseCtrlMock = new AddExpenseCtrl(server,mainCtrl);
-        javafx.scene.control.TextField name = new javafx.scene.control.TextField("coffee");
+        TextField name = new TextField("coffee");
         addExpenseCtrlMock.setEvent(event);
         addExpenseCtrlMock.setExpenseName(name);
         addExpenseCtrlMock.setExpensePayer(participant1);
-        List participantList = new ArrayList<Participant>();
+        List<Participant> participantList = new ArrayList<Participant>();
         participantList.add(participant2);
         addExpenseCtrlMock.setParticipantList(participantList);
         addExpenseCtrlMock.setDate(new DatePicker());
@@ -131,15 +126,15 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         sut.refresh();
         Money amount = new Money(new BigDecimal(5),  Currency.getInstance("EUR"));
         Transaction equalTransaction = new Transaction(participant1, name.getText(), amount, participantList,event, null, false);
-        transaction.setId(1L);
-        equalTransaction.setId(1L);
+        transaction.setTransactionId(1L);
+        equalTransaction.setTransactionId(1L);
         assertEquals(transaction, equalTransaction);
         WaitForAsyncUtils.waitForFxEvents();
         Transaction transaction1 = sut.getExpensesListView().getItems().getFirst();
         assertEquals(transaction1, transaction);
 
         // add second expense
-        name = new javafx.scene.control.TextField("tea");
+        name = new TextField("tea");
         addExpenseCtrlMock.setEvent(event);
         addExpenseCtrlMock.setExpenseName(name);
         addExpenseCtrlMock.setExpensePayer(participant1);
@@ -151,11 +146,18 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         server.saveEvent(event);
         sut.refresh();
         WaitForAsyncUtils.waitForFxEvents();
-        List ExspenseListView = sut.getExpensesListView().getItems();
+        List<Transaction> ExspenseListView = sut.getExpensesListView().getItems();
         Transaction equalTransaction2 = new Transaction(participant1, name.getText(), amount, participantList,event, null, false);
-        transaction2.setId(2L);
-        equalTransaction2.setId(2L);
+        transaction2.setTransactionId(2L);
+        equalTransaction2.setTransactionId(2L);
         assertEquals(transaction2, equalTransaction2);
         assertEquals(sut.getExpensesListView().getItems().get(1), transaction2);
     }
+
+    @Test
+    void testGetMainCtrl() {
+        sut.setMainCtrl(mainCtrl);
+        assertEquals(sut.getMainCtrl(), mainCtrl);
+    }
+
 }

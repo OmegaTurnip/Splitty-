@@ -6,6 +6,7 @@ import commons.Participant;
 import commons.Transaction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ public class TransactionControllerTest {
         group.add(testP1);
         transaction = testEvent1.registerDebt(testP1, "testTransaction1", new Money(new BigDecimal(100), Currency.getInstance("EUR")),
                 group, testEvent1.getTags().get(0));
-        transaction.setId(600L);
+        transaction.setTransactionId(600L);
         editTransaction = Transaction.createDebt(testP1, "editTransaction",  new Money(new BigDecimal(100), Currency.getInstance("EUR")), group, testEvent1,testEvent1.getTags().get(0));
 
     }
@@ -54,13 +55,13 @@ public class TransactionControllerTest {
     void getTransactionById() {
         eventRepo.save(testEvent1);
         sut.addTransaction(testEvent1.getId(), transaction);
-        var retPart = sut.getTransaction(testEvent1.getId(), transaction.getId());
+        var retPart = sut.getTransaction(testEvent1.getId(), transaction.getTransactionId());
         assertEquals(retPart.getBody(), transaction);
     }
 
     @Test
     void getTransactionIdIsNull(){
-        var retPart = sut.getTransaction(testEvent1.getId(), transaction.getId());
+        var retPart = sut.getTransaction(testEvent1.getId(), transaction.getTransactionId());
         assertNull(retPart.getBody());
     }
 
@@ -68,7 +69,7 @@ public class TransactionControllerTest {
     void editTransaction() {
         eventRepo.save(testEvent1);
         sut.addTransaction(testEvent1.getId(), transaction);
-        var retPart = sut.editTransaction(testEvent1.getId(), transaction.getId(), editTransaction);
+        var retPart = sut.editTransaction(testEvent1.getId(), transaction.getTransactionId(), editTransaction);
         assertEquals(retPart.getBody().getName(), editTransaction.getName());
         assertEquals(retPart.getBody().getAmount(), editTransaction.getAmount());
         assertEquals(retPart.getBody().getPayer(), editTransaction.getPayer());
@@ -89,7 +90,22 @@ public class TransactionControllerTest {
     void deleteTransaction() {
         eventRepo.save(testEvent1);
         sut.addTransaction(testEvent1.getId(), transaction);
-        var retPart = sut.deleteTransaction(testEvent1.getId(), transaction.getId());
+        var retPart = sut.deleteTransaction(testEvent1.getId(), transaction.getTransactionId());
         assertEquals(retPart.getBody(), transaction);
+    }
+
+    @Test
+    void deleteTransactionNotFound() {
+        var retTransaction = sut.deleteTransaction(testEvent1.getId(), transaction.getTransactionId());
+        assertEquals(ResponseEntity.notFound().build(), retTransaction);
+    }
+
+    @Test
+    void deleteTransactionBadRequest() {
+        eventRepo.save(testEvent1);
+        sut.addTransaction(testEvent1.getId(), transaction);
+        transaction.setEvent(new Event());
+        var retPart = sut.deleteTransaction(testEvent1.getId(), transaction.getTransactionId());
+        assertEquals(retPart, ResponseEntity.badRequest().build());
     }
 }

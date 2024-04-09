@@ -3,10 +3,8 @@ package commons;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -77,28 +75,28 @@ class TransactionTest {
 
     @Test
     void getId() {
-        testTransaction3.setId((long) 2);
-        assertEquals(2, testTransaction3.getId());
+        testTransaction3.setTransactionId((long) 2);
+        assertEquals(2, testTransaction3.getTransactionId());
     }
 
     @Test
     void testNotEquals() {
-        testTransaction1.setId((long) 3);
-        testTransaction3.setId((long) 2);
+        testTransaction1.setTransactionId((long) 3);
+        testTransaction3.setTransactionId((long) 2);
         assertNotEquals(testTransaction1, testTransaction3);
     }
 
     @Test
     void testEquals() {
-        testTransaction1.setId((long) 2);
-        testTransaction3.setId((long) 2);
+        testTransaction1.setTransactionId((long) 2);
+        testTransaction3.setTransactionId((long) 2);
         assertEquals(testTransaction1, testTransaction3);
     }
 
     @Test
     void testHashCode() {
-        testTransaction1.setId((long) 2);
-        testTransaction3.setId((long) 2);
+        testTransaction1.setTransactionId((long) 2);
+        testTransaction3.setTransactionId((long) 2);
         assertEquals(testTransaction3.hashCode(), testTransaction1.hashCode());
     }
 }

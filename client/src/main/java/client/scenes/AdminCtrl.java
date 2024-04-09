@@ -18,8 +18,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.io.File;
@@ -65,6 +63,8 @@ public class AdminCtrl extends TextPage implements Initializable {
 
     private ObjectMapper objectMapper;
 
+    private AlertWrapper alertWrapper;
+
     private File file;
 
     private String password;
@@ -80,6 +80,7 @@ public class AdminCtrl extends TextPage implements Initializable {
         this.mainCtrl = mainCtrl;
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
+        this.alertWrapper = new AlertWrapper();
         restoredEvents = new HashMap<>();
         events = new HashMap<>();
         file = new File("client/events.json");
@@ -141,6 +142,14 @@ public class AdminCtrl extends TextPage implements Initializable {
     }
 
     /**
+     * Sets the alertWrapper
+     * @param alertWrapper alertWrapper
+     */
+    public void setAlertWrapper(AlertWrapper alertWrapper) {
+        this.alertWrapper = alertWrapper;
+    }
+
+    /**
      * Getter for events.
      * @return the events.
      */
@@ -160,28 +169,23 @@ public class AdminCtrl extends TextPage implements Initializable {
             if (selectedEvent != null) {
                 tempList.put(selectedEvent.getId(), selectedEvent);
             } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(Translator
-                        .getTranslation(Text
-                                .Admin.Alert.JSONUnselectedTitle));
-                alert.setHeaderText(null);
-                alert.setContentText(Translator
-                        .getTranslation(Text
-                                .Admin.Alert.JSONUnselectedContent));
-                alert.showAndWait();
+                alertWrapper.showAlert(Alert.AlertType.ERROR,
+                        Translator.getTranslation(
+                                Text.Admin.Alert.JSONUnselectedTitle),
+                        (Translator
+                                .getTranslation(Text.Admin.Alert.
+                                        JSONUnselectedContent))
+                );
                 return;
             }
             String json = objectMapper.writeValueAsString(tempList);
             writer.write(json);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle(Translator
-                    .getTranslation(Text
-                            .Admin.Alert.saveToJSONSuccessTitle));
-            alert.setHeaderText(null);
-            alert.setContentText(Translator
-                    .getTranslation(Text
-                            .Admin.Alert.saveToJSONSuccessContent));
-            alert.showAndWait();
+            alertWrapper.showAlert(Alert.AlertType.INFORMATION,
+                    Translator.getTranslation(Text
+                                    .Admin.Alert.saveToJSONSuccessTitle),
+                    Translator.getTranslation(Text
+                                    .Admin.Alert.saveToJSONSuccessContent)
+            );
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -227,17 +231,11 @@ public class AdminCtrl extends TextPage implements Initializable {
         restoreEventChoiceBox.setVisible(true);
         restoreEventChoiceBox.setManaged(true);
         refresh();
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(Translator
-                .getTranslation(Text.Admin.Alert.eventLoadedTitle));
-        alert.setHeaderText(null);
-        TextArea textArea = new TextArea(Translator
-                .getTranslation(Text.Admin.Alert.eventLoadedContent));
-        textArea.setEditable(false);
-        textArea.setWrapText(true);
-        ScrollPane scrollPane = new ScrollPane(textArea);
-        alert.getDialogPane().setContent(scrollPane);
-        alert.showAndWait();
+        alertWrapper.showAlert(Alert.AlertType.INFORMATION,
+                Translator.getTranslation
+                        (Text.Admin.Alert.eventLoadedTitle),
+                Translator
+                        .getTranslation(Text.Admin.Alert.eventLoadedContent));
     }
 
     /**
@@ -246,26 +244,30 @@ public class AdminCtrl extends TextPage implements Initializable {
      */
     public void restoreEvent() {
         Event eventToRestore = restoreEventChoiceBox.getValue();
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(Translator
-                .getTranslation(Text.Admin.Alert.restoreEventAlertTitle));
-        alert.setHeaderText(null);
-        alert.setContentText(Translator
-                .getTranslation(Text.Admin.Alert.restoreEventAlertContent));
+        alertWrapper.showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
+                        Text.Admin.Alert.restoreEventAlertTitle),
+                Translator
+                        .getTranslation(Text.Admin.Alert.
+                                restoreEventAlertContent)
+        );
         if (eventToRestore != null) {
             server.saveEvent(eventToRestore);
-            Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
-            alert1.setTitle(Translator
-                    .getTranslation(Text
-                            .Admin.Alert.restoreEventAlertSuccessTitle));
-            alert1.setHeaderText(null);
-            alert1.setContentText(Translator
-                    .getTranslation(Text
-                            .Admin.Alert.restoreEventAlertSuccessContent));
-            alert1.showAndWait();
+            alertWrapper.showAlert(Alert.AlertType.INFORMATION,
+                    Translator.getTranslation(Text
+                                    .Admin.Alert.restoreEventAlertSuccessTitle),
+                    Translator
+                            .getTranslation(Text.Admin.Alert.
+                                    restoreEventAlertSuccessContent));
             refresh();
         } else {
-            alert.showAndWait();
+            alertWrapper.showAlert(Alert.AlertType.ERROR,
+                    Translator.getTranslation(
+                            Text.Admin.Alert.restoreEventAlertTitle),
+                    Translator
+                            .getTranslation(Text.Admin.Alert.
+                                    restoreEventAlertContent));
+            
         }
     }
 
@@ -275,16 +277,15 @@ public class AdminCtrl extends TextPage implements Initializable {
     public void deleteEvent() {
         Event selectedEvent = eventsTable.getSelectionModel().getSelectedItem();
         if (selectedEvent != null) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle(Translator
-                    .getTranslation(client.language
-                            .Text.StartUp.Alert.removeEventHeader));
-            alert.setHeaderText(null);
-            alert.setContentText(Translator
-                    .getTranslation(client.language
-                            .Text.StartUp.Alert.removeEventContent));
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
+            ButtonType result = alertWrapper.showAlertButton(
+                    Alert.AlertType.CONFIRMATION,
+                    Translator.getTranslation(client.language
+                                    .Text.StartUp.Alert.removeEventHeader),
+                    Translator
+                            .getTranslation(client.language
+                                    .Text.StartUp.Alert.removeEventContent)
+                    );
+            if (result == ButtonType.OK) {
                 try {
                     events.remove(selectedEvent.getId());
                     server.deleteEvent(selectedEvent, password);
@@ -295,15 +296,11 @@ public class AdminCtrl extends TextPage implements Initializable {
             }
 
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle(Translator
-                    .getTranslation(Text
-                            .Admin.Alert.JSONUnselectedTitle));
-            alert.setHeaderText(null);
-            alert.setContentText(Translator
-                    .getTranslation(Text
-                            .Admin.Alert.JSONUnselectedContent));
-            alert.showAndWait();
+            alertWrapper.showAlert(Alert.AlertType.ERROR,
+                    Translator.getTranslation(Text.Admin.Alert
+                            .JSONUnselectedTitle),
+                    Translator.getTranslation(Text.Admin.Alert
+                            .JSONUnselectedContent));
         }
     }
 
