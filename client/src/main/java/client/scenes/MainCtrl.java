@@ -15,7 +15,6 @@
  */
 package client.scenes;
 
-import client.history.ActionHistory;
 import client.language.Text;
 import client.language.Translator;
 import client.utils.ServerUtils;

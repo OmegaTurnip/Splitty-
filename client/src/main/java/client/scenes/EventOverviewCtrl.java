@@ -2,7 +2,6 @@ package client.scenes;
 
 
 
-import client.history.Action;
 import client.history.ActionHistory;
 import client.language.Text;
 import javafx.application.Platform;

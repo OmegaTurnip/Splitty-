@@ -74,7 +74,8 @@ public class TransactionCellController {
                 server.saveEvent(event);
                 eventOverviewCtrl.refresh();
                 System.out.println("Delete transaction button clicked");
-                Action deleteAction = new ExpenseDeleteAction(transaction, server,
+                Action deleteAction = new ExpenseDeleteAction(
+                        transaction, server,
                         event, eventOverviewCtrl);
                 actionHistory.addAction(deleteAction);
             }
@@ -175,7 +176,8 @@ public class TransactionCellController {
         private EventOverviewCtrl eventOverviewCtrl;
 
         public ExpenseDeleteAction(Transaction transaction, ServerUtils server,
-                                   Event event, EventOverviewCtrl eventOverviewCtrl) {
+                                   Event event,
+                                   EventOverviewCtrl eventOverviewCtrl) {
             this.transaction = transaction;
             this.server = server;
             this.event = event;

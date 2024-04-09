@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.history.ActionHistory;
 import client.language.Language;
 import client.language.Translator;
 import client.utils.ServerUtils;
@@ -50,6 +51,7 @@ class TransactionCellControllerTest {
         sut.setServer(server);
         sut.setAlertWrapper(alertWrapper);
         sut.setEventOverviewCtrl(eventOverviewCtrl);
+        sut.setActionHistory(new ActionHistory());
 
         Language.fromLanguageFile(
                 "eng", new File("../includedLanguages/eng.properties")
