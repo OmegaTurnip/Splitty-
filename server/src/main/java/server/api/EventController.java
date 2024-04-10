@@ -189,7 +189,7 @@ public class EventController {
             return ResponseEntity.notFound().build();
         }
         Transaction transaction = event.getTransactions().stream()
-                .filter(t -> t.getId().equals(transactionId))
+                .filter(t -> t.getTransactionId().equals(transactionId))
                 .findFirst().orElse(null);
 
         if (transaction == null) {

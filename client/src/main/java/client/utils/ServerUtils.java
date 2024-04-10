@@ -18,6 +18,7 @@ package client.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import commons.Event;
+import commons.Money;
 import commons.Participant;
 import commons.Transaction;
 import jakarta.ws.rs.client.Client;
@@ -93,12 +94,7 @@ public class ServerUtils {
      * @return The web socket URL.
      */
     public String generateWsURL(String url) {
-        String[] split = url.split(":", 2);
-        StringBuilder ws = new StringBuilder();
-        ws.append("ws:");
-        ws.append(split[1]);
-        ws.append("websocket");
-        return ws.toString();
+        return "ws:" + url.split(":", 2)[1] + "websocket";
     }
 
     /**
@@ -380,7 +376,6 @@ public class ServerUtils {
      * @param event Event of which needs to be returned
      * @return list of transactions
      */
-
     public List<Transaction> getTransactionsOfEvent(Event event){
         return client.target(server)
                 .path("api/event/" + event.getId() + "/transactions")
@@ -388,6 +383,46 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Transaction>>() {});
     }
+
+    /**
+     * Get the amount of a transaction in a certain currency.
+     *
+     * @param   eventId
+     *          The id of the event.
+     * @param   transactionId
+     *          The id of the transaction.
+     * @param   currency
+     *          The currency of the result.
+     *
+     * @return  The resulting amount in the specified currency.
+     */
+    public Money getTransactionAmountInCurrency(long eventId,
+                                                long transactionId,
+                                                Currency currency) {
+        return client.target(server)
+                .path("api/event/" + eventId + "/transactions/" +
+                        transactionId + "/amount/" + currency.getCurrencyCode())
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<>() {});
+    }
+
+    /**
+     * Edit transaction
+     * This still needs to be converted to long-polling
+     * @param event Event of which the transaction needs to be edited
+     * @param transaction The transaction to edit
+     * @return The edited transaction
+     */
+    public Transaction editTransaction(Event event, Transaction transaction) {
+        return client.target(server)
+                .path("api/event/" + event.getId() + "/transactions")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(transaction, APPLICATION_JSON),
+                        Transaction.class);
+    }
+
     private static final ExecutorService EXEC =
             Executors.newSingleThreadExecutor();
 

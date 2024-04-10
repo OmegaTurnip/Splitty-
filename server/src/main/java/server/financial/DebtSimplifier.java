@@ -179,7 +179,7 @@ public class DebtSimplifier {
 
         // sort transactions by id to ensure deterministic results.
         // does make the assumption that the ids are generated in order.
-        transactions.sort(Comparator.comparing(Transaction::getId));
+        transactions.sort(Comparator.comparing(Transaction::getTransactionId));
 
         for (Transaction transaction : transactions)
             addDebt(transaction);
