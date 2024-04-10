@@ -189,32 +189,33 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         private final StringConverter<Object> participantStringConverter =
                 new StringConverter<>() {
 
-        /**
-         * Converts the given object to its string representation.
-         * @param o The object to convert.
-         * @return The string representation of the object's name,
-         * or an empty string if the object is null.
-         */
-                @Override
-                public String toString(Object o) {
-                    if (o == null) {
-                        return "";
-                    } else {
-                        return ((Participant) o).getName();
+                    /**
+                     * Converts the given object to its string representation.
+                     * @param o The object to convert.
+                     * @return The string representation of the object's name,
+                     * or an empty string if the object is null.
+                     */
+                    @Override
+                    public String toString(Object o) {
+                        if (o == null) {
+                            return "";
+                        } else {
+                            return ((Participant) o).getName();
+                        }
                     }
-                }
 
-            /**
-             * Converts the given string to an object.
-             * @param s The string to convert.
-             * @return Always returns null,
-             * as the conversion from string to object is not implemented.
-             */
-                @Override
-                public Object fromString(String s) {
-                    return null;
-                }
-            };
+                    /**
+                     * Converts the given string to an object.
+                     * @param s The string to convert.
+                     * @return Always returns null,
+                     * as the conversion from string to object is
+                     * not implemented.
+                     */
+                    @Override
+                    public Object fromString(String s) {
+                        return null;
+                    }
+                };
 
         /**
          * Converts the given object to its string
@@ -387,8 +388,8 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 .getTranslation(client.language
                         .Text.EventOverview.Buttons.fromExpensesButton));
         expensesDropDown.setPromptText(Translator
-                    .getTranslation(client.language
-                            .Text.EventOverview.expensesDropDown));
+                .getTranslation(client.language
+                        .Text.EventOverview.expensesDropDown));
         if(transactionCellController != null){
             transactionCellController.refreshText();
             expensesListView.refresh();
@@ -479,9 +480,9 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                     }
                 }
                 transactionCellController = loader.getController();
+                transactionCellController.setServer(server);
                 transactionCellController.setTransactionData(transaction);
                 transactionCellController.setEvent(event);
-                transactionCellController.setServer(server);
                 transactionCellController.setTransaction(transaction);
                 transactionCellController.setEventOverviewCtrl(
                         EventOverviewCtrl.this);

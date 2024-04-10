@@ -4,7 +4,9 @@ import client.language.Formatter;
 import client.language.Text;
 import client.language.Translator;
 import client.utils.ServerUtils;
+import client.utils.UserConfig;
 import commons.Event;
+import commons.Money;
 import commons.Transaction;
 import commons.Participant;
 import javafx.fxml.FXML;
@@ -63,7 +65,7 @@ public class TransactionCellController {
                             .EventOverview
                             .TransactionCellController
                             .Alert.deleteExpenseContent)
-                    );
+            );
             if (result == ButtonType.OK) {
                 server.removeTransaction(transaction);
                 event.deleteTransaction(transaction);
@@ -97,8 +99,10 @@ public class TransactionCellController {
         HashMap<String, String> transactionInfo = new HashMap<>();
         transactionInfo.put("date", transaction.getDate().toString());
         transactionInfo.put("payer", transaction.getPayer().getName());
+        Money shownAmount = server.convertMoney(transaction.getAmount(),
+                UserConfig.get().getPreferredCurrency(), transaction.getDate());
         transactionInfo.put("amount",
-                transaction.getAmount().format(Translator.getLocale()));
+                shownAmount.format(Translator.getLocale()));
         transactionInfo.put("name",transaction.getName());
         transactionInfo.put("participants",
                 transaction.getParticipants().stream()

@@ -5,6 +5,7 @@ import client.language.Text;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
+import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.*;
 import jakarta.ws.rs.WebApplicationException;
@@ -108,6 +109,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         fetchLanguages();
+        loadCurrencies();
         payerSelection();
         tagSelection();
         participantSelection();
@@ -119,6 +121,16 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         date.setValue(LocalDate.now());
         date.setConverter(new MyLocalDateStringConverter("dd/MM/yyyy"));
         refresh();
+    }
+
+    private void loadCurrencies() {
+        List<String> currencies = new ArrayList<>();
+        for (Currency currency : server.getAvailableCurrencies()) {
+            currencies.add(currency.getCurrencyCode());
+        }
+        currency.setItems(FXCollections.observableArrayList(currencies));
+        currency.setValue(UserConfig.get()
+                .getPreferredCurrency().getCurrencyCode());
     }
 
     static class MyLocalDateStringConverter extends StringConverter<LocalDate> {
@@ -339,6 +351,8 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
      */
     public void refresh() {
         refreshText();
+        currency.setValue(UserConfig.get()
+                .getPreferredCurrency().getCurrencyCode());
         loadPayers();
         payer.getSelectionModel().select(0);
         loadParticipants();
@@ -575,7 +589,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     private void choosePriceAlert(String input) {
         if (input.isEmpty()) {
             showAlert(Translator.getTranslation(
-                    Text.AddExpense.Alert.invalidPrice),
+                            Text.AddExpense.Alert.invalidPrice),
                     Translator.getTranslation(
                             Text.AddExpense.Alert.emptyString));
         } else if (input.matches("[a-zA-Z]")) {
@@ -611,8 +625,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         return event.registerDebt(expensePayer,
                 expenseName.getText(),
                 new Money(b,
-                        Currency.getInstance("EUR")), //placeholder
-//                        Currency.getInstance(currency.getValue())),
+                        Currency.getInstance(currency.getValue())),
                 participantList, expenseTag);
     }
 
