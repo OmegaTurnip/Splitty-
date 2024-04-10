@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.language.Language;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
@@ -124,8 +125,13 @@ public class StartUpCtrl extends TextPage implements Initializable {
      */
     private void fetchYourEvents() {
         this.currentEvents = new ArrayList<>();
-        List<String> codes = server.getUserSettings().getEventCodes();
-        currentEvents.addAll(server.getMyEvents());
+        try {
+            currentEvents.addAll(server.getMyEvents());
+        } catch (Exception e) {
+            System.out.println("Event codes are " +
+                    "empty so it throws 404 exception");
+        }
+
     }
 
     /**
@@ -373,6 +379,8 @@ public class StartUpCtrl extends TextPage implements Initializable {
         joinEvent1.setPromptText(Translator
                 .getTranslation(client.language
                         .Text.StartUp.joinEventLabel));
+        refreshIcon(Translator.getCurrentLanguage().getLanguageCode(),
+                languageMenu, Language.languages);
     }
 
     /**

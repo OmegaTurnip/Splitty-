@@ -36,17 +36,28 @@ public abstract class TextPage {
         try {
             UserConfig.get().setUserLanguage(langKey);
             refreshText();
-            Image image = new Image(languages
-                    .get(langKey).getIconFile().toURI().toString());
-            ImageView imageView = new ImageView(image);
-            imageView.setFitHeight(20);
-            imageView.setFitWidth(20);
-            languagesMenu.setGraphic(imageView);
+            refreshIcon(langKey, languagesMenu, languages);
             languageMenu.setText(
                     Translator.getTranslation(Text.Menu.Languages));
         }catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Refreshes the icon of the language menu.
+     * @param langKey the language key
+     * @param languagesMenu the menu to set the language icon on
+     * @param languages the available languages
+     */
+    public void refreshIcon(String langKey, Menu languagesMenu, HashMap<String,
+            Language> languages) {
+        Image image = new Image(languages
+                .get(langKey).getIconFile().toURI().toString());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitHeight(20);
+        imageView.setFitWidth(20);
+        languagesMenu.setGraphic(imageView);
     }
 
     /**
@@ -77,12 +88,7 @@ public abstract class TextPage {
         addAddLanguageFileButton();
 
         String langKey = UserConfig.get().getUserLanguage();
-        Image image = new Image(languages
-                .get(langKey).getIconFile().toURI().toString());
-        ImageView imageView = new ImageView(image);
-        imageView.setFitHeight(20);
-        imageView.setFitWidth(20);
-        languageMenu.setGraphic(imageView);
+        refreshIcon(langKey, languageMenu, languages);
     }
 
     // what a gorgeous name
