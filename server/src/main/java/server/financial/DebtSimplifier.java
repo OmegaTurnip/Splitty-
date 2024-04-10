@@ -328,6 +328,41 @@ public class DebtSimplifier {
     }
 
     /**
+     * Returns the sum of all expenses in the specified event in the specified
+     * currency. The sum does not include payoffs.
+     *
+     * @param   event
+     *          The event to calculate the sum of expenses for.
+     * @param   currency
+     *          The currency to calculate the sum in.
+     *
+     * @return  The sum of all expenses.
+     */
+    public Money sumOfExpenses(Event event, Currency currency) {
+        Objects.requireNonNull(event, "event is null");
+        Objects.requireNonNull(currency, "currency is null");
+
+        BigDecimal sum = BigDecimal.ZERO.setScale(
+                currency.getDefaultFractionDigits(),
+                RoundingMode.HALF_UP
+        );
+        for (Transaction transaction : event.getTransactions()) {
+            if (!transaction.isPayoff()) {
+                ExchangeRate exchangeRate = exchangeRateFactory.getExchangeRate(
+                        transaction.getDate(),
+                        transaction.getAmount().getCurrency(),
+                        currency
+                );
+                if (exchangeRate == null)
+                    return null;
+                sum = sum.add(exchangeRate.convert(
+                        transaction.getAmount()).getAmount());
+            }
+        }
+        return new Money(sum, currency);
+    }
+
+    /**
      * Simplifies the debt structure. Returns a simplified version of the debts
      * with at most {@code n-1} payments.<br/>Pseudocode <i>(Khan, 2024)</i>:
      * <pre><code>

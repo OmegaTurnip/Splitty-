@@ -1,9 +1,6 @@
 package server.financial;
 
-import commons.Debt;
-import commons.Event;
-import commons.Money;
-import commons.Participant;
+import commons.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.financial.DebtSimplifier;
@@ -553,4 +550,29 @@ class DebtSimplifierTest {
         ));
         assertEquals(expected, debtSimplifier.simplify());
     }
+
+    @Test
+    void sumOfExpenses() {
+        assertThrows(NullPointerException.class, () -> debtSimplifier.sumOfExpenses(null, EUR));
+        assertThrows(NullPointerException.class, () -> debtSimplifier.sumOfExpenses(event, null));
+
+        assertEquals(new Money(new BigDecimal(0), EUR), debtSimplifier.sumOfExpenses(event, EUR));
+
+        event.addTransaction(Transaction.createDebt(participants.get(0), "thee", new Money(new BigDecimal(10), EUR), participants, event, null));
+
+        assertEquals(new Money(new BigDecimal(10), EUR), debtSimplifier.sumOfExpenses(event, EUR));
+
+        event.addTransaction(Transaction.createPayoff(participants.get(0), "thee", new Money(new BigDecimal(10), EUR), participants.get(2), event, null));
+
+        assertEquals(new Money(new BigDecimal(10), EUR), debtSimplifier.sumOfExpenses(event, EUR));
+
+        event.addTransaction(Transaction.createDebt(participants.get(0), "coffee", new Money(new BigDecimal(5), EUR), participants, event, null));
+
+        assertEquals(new Money(new BigDecimal(15), EUR), debtSimplifier.sumOfExpenses(event, EUR));
+
+        event.addTransaction(Transaction.createDebt(participants.get(0), "coffee", new Money(new BigDecimal(5), Currency.getInstance("IDR")), participants, event, null));
+
+        assertNull(debtSimplifier.sumOfExpenses(event, EUR));
+    }
+
 }

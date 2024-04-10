@@ -2,6 +2,7 @@ package client.scenes;
 
 
 
+import client.language.Language;
 import client.language.Text;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -393,6 +394,8 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
             expensesListView.refresh();
         }
         if (event != null ) eventNameLabel.setText(event.getEventName());
+        refreshIcon(Translator.getCurrentLanguage().getLanguageCode(),
+                languageMenu, Language.languages);
     }
     /**
      * Add participant to event
