@@ -78,7 +78,6 @@ class AddParticipantCtrlTest extends ApplicationTest {
                 sut.setAlertWrapper(Mockito.mock(AlertWrapper.class));
                 sutSpy = Mockito.spy(sut);
 
-//                doNothing().when(sutSpy).refreshText();
                 doNothing().when(sut.getMainCtrl()).showEventOverview(testEvent1);
                 Mockito.when(sut.getServer().connect(Mockito.anyString())).thenReturn(Mockito.mock(StompSession.class));
                 testEvent1 = new Event("testEvent1");
