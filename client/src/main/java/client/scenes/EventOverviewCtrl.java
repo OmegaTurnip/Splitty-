@@ -263,15 +263,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                         .equals(transaction.getTransactionId())) {
             event.addTransaction(transaction);
         }
-//        transactions.add(transaction);
-//        Participant participant = (Participant) expensesDropDown.getValue();
-//        if (participant != null &&
-//                transaction.getParticipants().contains(participant)) {
-//            transactionsParticipant.add(transaction);
-//        }
-//        if (transaction.getPayer().equals(participant)) {
-//            transactionsPayer.add(transaction);
-//        }
         getExpenses();
         return transaction;
     }
