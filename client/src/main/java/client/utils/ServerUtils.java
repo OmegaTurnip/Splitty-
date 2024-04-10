@@ -18,6 +18,7 @@ package client.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import commons.Event;
+import commons.Money;
 import commons.Participant;
 import commons.Transaction;
 import jakarta.ws.rs.client.Client;
@@ -36,6 +37,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.util.Currency;
 import java.util.List;
 import java.util.Set;
@@ -93,12 +95,7 @@ public class ServerUtils {
      * @return The web socket URL.
      */
     public String generateWsURL(String url) {
-        String[] split = url.split(":", 2);
-        StringBuilder ws = new StringBuilder();
-        ws.append("ws:");
-        ws.append(split[1]);
-        ws.append("websocket");
-        return ws.toString();
+        return "ws:" + url.split(":", 2)[1] + "websocket";
     }
 
     /**
@@ -383,7 +380,6 @@ public class ServerUtils {
      * @param event Event of which needs to be returned
      * @return list of transactions
      */
-
     public List<Transaction> getTransactionsOfEvent(Event event){
         return client.target(server)
                 .path("api/event/" + event.getId() + "/transactions")
@@ -391,6 +387,29 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Transaction>>() {});
     }
+
+    /**
+     * Get the amount of a transaction in a certain currency.
+     *
+     * @param   money
+     *          The amount to convert.
+     * @param   currency
+     *          The currency of the result.
+     * @param   date
+     *          The date of the exchange rate.
+     *
+     * @return  The resulting amount in the specified currency.
+     */
+    public Money convertMoney(Money money, Currency currency, LocalDate date) {
+        return client.target(server)
+                .path("api/event/convert/" + currency + "/" + date)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(money, APPLICATION_JSON),
+                        Money.class);
+    }
+
+
     private static final ExecutorService EXEC =
             Executors.newSingleThreadExecutor();
 
