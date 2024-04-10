@@ -49,16 +49,18 @@ public class Transaction {
      *          The event the transactions belongs to.
      * @param   tag
      *          The tag of the transaction.
+     * @param   date
+     *          The date of the transaction.
      * @param   isPayoff
      *          Whether this transaction is a payoff or a debt.
      */
     @SuppressWarnings("checkstyle:ParameterNumber") // no other option really
     public Transaction(Participant payer, String name, Money amount,
                        List<Participant> participants, Event event, Tag tag,
-                       boolean isPayoff) {
+                       LocalDate date, boolean isPayoff) {
         this.payer = payer;
         this.name = name;
-        this.date = LocalDate.now();
+        this.date = date;
         this.amount = amount;
         this.participants = participants;
         this.event = event;
@@ -80,24 +82,22 @@ public class Transaction {
      *
      * @param   payer
      *          The person who paid for the transaction.
-     * @param   name
-     *          The name of the transaction.
      * @param   amount
      *          The amount of money transferred in the transaction.
      * @param   receiver
      *          The person who received money.
      * @param   event
      *          The event the transactions belongs to
-     * @param   tag
-     *          The tag of the transaction.
+     * @param   date
+     *          The date of the payoff.
      *
      * @return  The resulting transaction.
      */
-    public static Transaction createPayoff(Participant payer, String name,
-                                            Money amount, Participant receiver,
-                                            Event event, Tag tag) {
-        return new Transaction(payer, name, amount, List.of(receiver), event,
-                tag, true);
+    public static Transaction createPayoff(Participant payer, Money amount,
+                                           Participant receiver, Event event,
+                                           LocalDate date) {
+        return new Transaction(payer, null, amount, List.of(receiver), event,
+                null, date,  true);
     }
 
     /**
@@ -114,16 +114,19 @@ public class Transaction {
      *          The people who owe money.
      * @param   event
      *          The event the transactions belongs to
+     * @param   date
+     *          The date of the payoff.
      * @param   tag
      *          The tag of the transaction.
      *
      * @return  The resulting transaction.
      */
+    @SuppressWarnings("checkstyle:ParameterNumber")
     public static Transaction createDebt(
             Participant creditor, String name, Money amount,
-            List<Participant> debtors, Event event, Tag tag) {
+            List<Participant> debtors, Event event, LocalDate date, Tag tag) {
         return new Transaction(creditor, name, amount, debtors, event, tag,
-                false);
+                date, false);
     }
 
 

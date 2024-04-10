@@ -103,7 +103,7 @@ class ParticipantControllerTest {
         List<Participant> group = new ArrayList<>();
         group.add(testP1);
         transaction = testEvent1.registerDebt(testP1, "testTransaction1", new Money(new BigDecimal(100), Currency.getInstance("EUR")),
-                group, testEvent1.getTags().get(0));
+                group, null, testEvent1.getTags().get(0));
         transaction.setTransactionId(600L);
 
         Mockito.when(transactionController.deleteTransaction(Mockito.anyLong(), Mockito.anyLong())).thenReturn(null);
@@ -121,7 +121,7 @@ class ParticipantControllerTest {
         group.add(testP1);
 //        group.add(testP2);
         transaction = testEvent1.registerDebt(testP2, "testTransaction1", new Money(new BigDecimal(100), Currency.getInstance("EUR")),
-                group, testEvent1.getTags().get(0));
+                group, null, testEvent1.getTags().get(0));
         transaction.setTransactionId(600L);
 
         Mockito.when(transactionController.deleteTransaction(Mockito.anyLong(), Mockito.anyLong())).thenReturn(null);
