@@ -654,7 +654,8 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                 new Money(b,
                         Currency.getInstance("EUR")), //placeholder
 //                        Currency.getInstance(currency.getValue())),
-                participantList, expenseTag);
+                // todo date
+                participantList, LocalDate.now(), expenseTag);
     }
 
     /**
