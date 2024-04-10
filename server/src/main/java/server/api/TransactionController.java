@@ -1,7 +1,9 @@
 package server.api;
 
 import commons.Event;
+import commons.Participant;
 import commons.Transaction;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,10 +11,7 @@ import org.springframework.web.context.request.async.DeferredResult;
 import server.database.EventRepository;
 import server.database.TransactionRepository;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 
 @RestController
@@ -21,7 +20,7 @@ public class TransactionController {
     private final TransactionRepository repo;
     private final EventRepository eventRepository;
 
-    private Map<Object, Consumer<Transaction>> listners;
+    private Map<Object, Consumer<Transaction>> listeners;
 
     /**
      * Constructor for the EventController
@@ -32,7 +31,7 @@ public class TransactionController {
                                  EventRepository eventRepository) {
         this.eventRepository = eventRepository;
         this.repo = repo;
-        this.listners = new HashMap<>();
+        this.listeners = new HashMap<>();
     }
 
     /**
@@ -70,8 +69,8 @@ public class TransactionController {
                 500L, noContent);
 
         var key = new Object();
-        listners.put(key, t -> res.setResult(ResponseEntity.ok(t)));
-        res.onCompletion(() -> listners.remove(key));
+        listeners.put(key, t -> res.setResult(ResponseEntity.ok(t)));
+        res.onCompletion(() -> listeners.remove(key));
 
         return res;
     }
@@ -148,14 +147,33 @@ public class TransactionController {
     public ResponseEntity<Transaction>
         addTransaction(@PathVariable("eventId") Long eventId,
                        @RequestBody Transaction transaction) {
-        if (!transaction.isValid()
-                || !(transaction.getEvent().getId().equals(eventId))) {
-
-            return ResponseEntity.notFound().build();
+        if(transaction == null){
+            return ResponseEntity.badRequest().build();
         }
-        listners.forEach((k,l) -> l.accept(transaction));
+        var event = eventRepository.findById(eventId);
+        if (event.isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
+        transaction.setEvent(event.get());
+        transaction.setPayer(event.get().getParticipantById(
+                transaction.getPayer().getParticipantId()
+        ));
+        List<Participant> participants = new ArrayList<>();
+        for (Participant participant : transaction.getParticipants()) {
+            participants.add(event.get().getParticipantById(
+                    participant.getParticipantId()
+            ));
+        }
+        transaction.setParticipants(participants);
+        if (transaction.getTag() != null) {
+            transaction.setTag(event.get().getTagById(
+                    transaction.getTag().getTagId()
+            ));
+        }
+        listeners.forEach((k, l) -> l.accept(transaction));
         return ResponseEntity.ok(repo.save(transaction));
     }
+
 
     /**
      * Delete a transaction from an event
@@ -163,29 +181,33 @@ public class TransactionController {
      * @param transactionId the id of the transaction to delete
      * @return The transaction deleted
      */
+    @Transactional
     @DeleteMapping("/{transactionId}")
     @ResponseBody
     public ResponseEntity<Transaction> deleteTransaction(
             @PathVariable("eventId") Long eventId,
             @PathVariable("transactionId") Long transactionId) {
 
-        Transaction transaction = repo.findById(transactionId).orElse(null);
-        Event event = eventRepository.findById(eventId).orElse(null);
-
-        if (event == null || transaction == null) {
+        var optionalTransaction = repo.findByTransactionId(transactionId);
+        if(optionalTransaction.isEmpty())
             return ResponseEntity.notFound().build();
-        }
+        Transaction transaction = optionalTransaction.get();
+        transaction.getParticipants().size(); //terrible workaround
 
-        if( transaction.getEvent() == null
+        var optionalEvent = eventRepository.findById(eventId);
+        if(optionalEvent.isEmpty()) return ResponseEntity.badRequest().build();
+        Event event = optionalEvent.get();
+
+        if(transaction.getEvent() == null
                 || !Objects.equals(transaction.getEvent().getId(), eventId)){
             return ResponseEntity.badRequest().build();
         };
-        boolean deleted = event.deleteTransaction(transaction);
-        repo.deleteById(transaction.getId());
 
-        if(!deleted) {
-            return ResponseEntity.badRequest().build();
-        }
+        event.deleteTransaction(transaction);
+
+        repo.delete(transaction);
+        event.removeTransaction(transaction);
+        Event test = eventRepository.save(event);
 
         return ResponseEntity.ok(transaction);
     }
