@@ -6,12 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
-import server.Config;
 import server.database.EventRepository;
 import server.database.TransactionRepository;
 import server.financial.ExchangeRateFactory;
 
-import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Consumer;
 
