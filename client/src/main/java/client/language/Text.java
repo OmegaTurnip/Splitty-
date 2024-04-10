@@ -289,6 +289,10 @@ public class Text {
 
             public static final String dateFormatContent = level +
                     "FormatContent";
+            public static final String noParticipantsTitle = level +
+                    "noParticipants";
+            public static final String noParticipantsContent = level +
+                    "noParticipantsContent";
         }
 
     }

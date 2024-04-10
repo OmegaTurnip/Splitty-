@@ -369,7 +369,14 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                     Translator.getTranslation(
                             Text.AddExpense.Alert.dateFormatContent));
         }
-        return !participantList.isEmpty();
+        if (participantList.isEmpty()) {
+            showAlert(Translator.getTranslation(
+                            Text.AddExpense.Alert.noParticipantsTitle),
+                    Translator.getTranslation(
+                            Text.AddExpense.Alert.noParticipantsContent));
+            return false;
+        }
+        return true;
     }
 
     /**
