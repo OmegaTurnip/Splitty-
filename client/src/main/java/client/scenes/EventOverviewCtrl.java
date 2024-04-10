@@ -257,9 +257,11 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
      */
     public Transaction updateTransactions(Transaction transaction) {
         transaction.setEvent(event);
-        if(event.getTransactions().isEmpty() || !event.getTransactions().getLast().getName().equals(transaction.getName())) {
+        if (event.getTransactions().isEmpty() ||
+                !event.getTransactions().getLast().getTransactionId()
+                        .equals(transaction.getTransactionId())) {
             event.addTransaction(transaction);
-       }
+        }
 //        transactions.add(transaction);
 //        Participant participant = (Participant) expensesDropDown.getValue();
 //        if (participant != null &&
@@ -497,7 +499,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         server.registerForUpdates(t -> {
             try {
                 Platform.runLater(() -> updateTransactions(t));
-               Platform.runLater(this::refresh);
+                Platform.runLater(this::refresh);
                 System.out.println("Received transaction: " + t.getName());
             }
             catch (Exception e) {
@@ -511,6 +513,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
      * Shows the startUpWindow
      */
     public void returnToOverview() {
+        server.stopLongPolling();
         mainCtrl.showStartUp();
     }
 

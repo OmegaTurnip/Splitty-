@@ -172,8 +172,9 @@ public class TransactionController {
                     transaction.getTag().getTagId()
             ));
         }
-        listeners.forEach((k, l) -> l.accept(transaction));
-        return ResponseEntity.ok(repo.save(transaction));
+        Transaction response = repo.save(transaction);
+        listeners.forEach((k, l) -> l.accept(response));
+        return ResponseEntity.ok(response);
     }
 
 

@@ -209,6 +209,22 @@ public class ServerUtils {
     }
 
     /**
+     * Request to get an updated version of the event.
+     *
+     * @param   event
+     *          The event to get the updated version of.
+     *
+     * @return  The updated event.
+     */
+    public Event getUpdatedEvent(Event event) {
+        return client
+                .target(server).path("api/event/" + event.getId())
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Event.class);
+    }
+
+    /**
      * Join an event
      * @param code The event code
      * @return The event
@@ -381,7 +397,6 @@ public class ServerUtils {
      * @param event Event of which needs to be returned
      * @return list of transactions
      */
-
     public List<Transaction> getTransactionsOfEvent(Event event){
         return client.target(server)
                 .path("api/event/" + event.getId() + "/transactions")
@@ -393,6 +408,16 @@ public class ServerUtils {
             Executors.newSingleThreadExecutor();
 
     private Future<?> future;
+
+    /**
+     * Stops the long polling.
+     */
+    public void stopLongPolling() {
+        if (future != null) {
+            future.cancel(true);
+        }
+        future = null;
+    }
 
     /**
      * Registers for updates (adding of transactions)
@@ -424,7 +449,8 @@ public class ServerUtils {
                     var t = res.readEntity(Transaction.class);
                     consumer.accept(t);
                 } catch (Exception e) {
-                    System.err.println("An error occurred in the thread: " + e.getMessage());
+                    System.err.println("An error occurred in the thread: " +
+                            e.getMessage());
                     e.printStackTrace();
                     //Thread.currentThread().interrupt();
                 }
