@@ -3,6 +3,7 @@ package client.scenes;
 import client.MyFXML;
 import client.MyModule;
 import client.language.Language;
+import client.language.Text;
 import client.language.Translator;
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
@@ -12,8 +13,10 @@ import commons.Event;
 import commons.Money;
 import commons.Participant;
 import commons.Transaction;
+import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -24,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.testfx.framework.junit5.ApplicationTest;
+import org.testfx.matcher.base.NodeMatchers;
 import org.testfx.util.WaitForAsyncUtils;
 
 import java.math.BigDecimal;
@@ -34,6 +38,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+import static org.testfx.api.FxAssert.verifyThat;
 
 public class EventOverviewCtrlTest extends ApplicationTest {
     @InjectMocks
@@ -42,6 +47,8 @@ public class EventOverviewCtrlTest extends ApplicationTest {
     private MainCtrl mainCtrl;
     @Mock
     private ServerUtils server;
+
+
     Event event;
 
     @Override
@@ -159,5 +166,28 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         sut.setMainCtrl(mainCtrl);
         assertEquals(sut.getMainCtrl(), mainCtrl);
     }
+
+    @Test
+    public void testShowInviteCodeCopy() {
+        sut.setEvent(event);
+        Platform.runLater(() -> sut.showInviteCode());
+        WaitForAsyncUtils.waitForFxEvents();
+        Button copyButton = lookup(Translator.getTranslation(Text.EditName.copy)).queryButton();
+        clickOn(copyButton);
+        verify(mainCtrl, times(1)).showEventOverview(event);
+
+    }
+
+    @Test
+    public void testShowInviteCodeCancel() {
+        sut.setEvent(event);
+        Platform.runLater(() -> sut.showInviteCode());
+        WaitForAsyncUtils.waitForFxEvents();
+        Button cancelButton = lookup(Translator.getTranslation(Text.EditName.cancel)).queryButton();
+        clickOn(cancelButton);
+        verify(mainCtrl, times(2)).showEventOverview(event);
+    }
+
+
 
 }
