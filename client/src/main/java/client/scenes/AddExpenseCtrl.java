@@ -1,6 +1,5 @@
 package client.scenes;
 
-import client.language.Language;
 import client.language.Text;
 import client.language.TextPage;
 import client.language.Translator;
