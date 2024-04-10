@@ -425,14 +425,25 @@ public class StartUpCtrl extends TextPage implements Initializable {
         return yourEvents;
     }
 
+    /**
+     *
+     * @param events
+     */
     public void setEvents(List<Event> events) {
         this.currentEvents = events;
     }
-
+    /**
+     * used for testing purposes
+     * @param alertWrapper
+     */
     public void setAlertWrapper(AlertWrapper alertWrapper) {
         this.alertWrapper = alertWrapper;
     }
 
+    /**
+     * used for testing purposes
+     * @param server
+     */
     public void setServer(ServerUtils server) {
         this.server = server;
     }
