@@ -257,7 +257,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
      */
     public Transaction updateTransactions(Transaction transaction) {
         transaction.setEvent(event);
-        if(!event.getTransactions().getLast().getName().equals(transaction.getName())) {
+        if(event.getTransactions().isEmpty() || !event.getTransactions().getLast().getName().equals(transaction.getName())) {
             event.addTransaction(transaction);
        }
 //        transactions.add(transaction);
@@ -495,9 +495,15 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     public void setEvent(Event event) {
         this.event = event;
         server.registerForUpdates(t -> {
-            Platform.runLater(() -> updateTransactions(t));
-            Platform.runLater(this::refresh);
-            System.out.println("Received transaction: " + t.getName());
+            try {
+                Platform.runLater(() -> updateTransactions(t));
+               Platform.runLater(this::refresh);
+                System.out.println("Received transaction: " + t.getName());
+            }
+            catch (Exception e) {
+                System.err.println("An error occurred: " + e.getMessage());
+                e.printStackTrace();
+            }
         }, event);
     }
 

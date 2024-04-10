@@ -410,18 +410,24 @@ public class ServerUtils {
 
         future = EXEC.submit(() -> {
             while (!Thread.interrupted()) {
-                var res = client.target(server)
-                        .path("api/event/" + event.getId()
-                                + "/transactions/updates")
-                        .request(APPLICATION_JSON)
-                        .accept(APPLICATION_JSON)
-                        .get(Response.class);
+                try{
+                    var res = client.target(server)
+                            .path("api/event/" + event.getId()
+                                    + "/transactions/updates")
+                            .request(APPLICATION_JSON)
+                            .accept(APPLICATION_JSON)
+                            .get(Response.class);
 
-                if(res.getStatus() == 204){
-                    continue;
-                };
-                var t = res.readEntity(Transaction.class);
-                consumer.accept(t);
+                    if(res.getStatus() == 204){
+                        continue;
+                    };
+                    var t = res.readEntity(Transaction.class);
+                    consumer.accept(t);
+                } catch (Exception e) {
+                    System.err.println("An error occurred in the thread: " + e.getMessage());
+                    e.printStackTrace();
+                    //Thread.currentThread().interrupt();
+                }
             }
         });
 
