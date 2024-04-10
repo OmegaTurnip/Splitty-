@@ -380,7 +380,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         loadPayers();
         loadParticipants();
         loadTags();
-        loadCurrencies();
         if (expenseToOverwrite != null) {
             payer.getSelectionModel().select(expenseToOverwrite.getPayer());
             expenseType.getSelectionModel().select(expenseToOverwrite.getTag());
@@ -398,15 +397,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             date.setValue(LocalDate.now());
         }
         System.out.println("Page has been refreshed!");
-    }
-
-    private void loadCurrencies() {
-        currency.setItems(FXCollections.observableArrayList(
-                server.getAvailableCurrencies().stream()
-                        .map(Currency::getCurrencyCode)
-                        .sorted()
-                        .toList()));
-        currency.getSelectionModel().select("EUR");
     }
 
     /**
@@ -661,8 +651,10 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         BigDecimal b = new BigDecimal(price.getText().replace(",", "."));
         return event.registerDebt(expensePayer,
                 expenseName.getText(),
-                new Money(b, Currency.getInstance(currency.getValue())),
-                participantList, date.getValue(), expenseTag);
+                new Money(b,
+                        Currency.getInstance("EUR")), //placeholder
+//                        Currency.getInstance(currency.getValue())),
+                participantList, expenseTag);
     }
 
     /**
@@ -670,6 +662,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
      *
      * @param price price
      */
+
     public void setPrice(TextField price) {
         this.price = price;
     }
