@@ -353,12 +353,13 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         }
     }
 
-
+    @SuppressWarnings("checkstyle")
     private boolean verifyInput() {
         if (!verifyPrice(price.getText())) {
             return false;
         }
-        if (expenseName.getText().isEmpty() || expenseName.getText().isBlank()) {
+        if (expenseName.getText().isEmpty()
+                || expenseName.getText().isBlank()) {
             showAlert(Translator.getTranslation(
                             Text.AddExpense.Alert.noNameTitle),
                     Translator.getTranslation(
@@ -368,13 +369,9 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         }
         if (expensePayer == null
                 || !expensePayer.getClass().equals(Participant.class)) {
-            showAlert(Translator.getTranslation(
-                            Text.AddExpense.Alert.noPayerTitle),
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.noPayerContent));
+            noPayer();
             return false;
         }
-
         try {
             if (date.getValue() == null || date.getPromptText().isEmpty() ||
                     date.getPromptText().isBlank()) {
@@ -382,11 +379,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                         date.getPromptText(), 0);
             }
         } catch (DateTimeParseException e) {
-            alertWrapper.showAlert(Alert.AlertType.ERROR,
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.dateFormatTitle),
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.dateFormatContent));
+            wrongDate();
             return false;
         }
         if (participantList.isEmpty()) {
@@ -397,6 +390,22 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             return false;
         }
         return true;
+    }
+
+    private void noPayer() {
+        alertWrapper.showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.noPayerTitle),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.noPayerContent));
+    }
+
+    private void wrongDate() {
+        alertWrapper.showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.dateFormatTitle),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.dateFormatContent));
     }
 
     /**
