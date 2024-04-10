@@ -1,16 +1,17 @@
 package server.api;
 
-import commons.Event;
-import commons.Participant;
-import commons.Transaction;
+import commons.*;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
+import server.Config;
 import server.database.EventRepository;
 import server.database.TransactionRepository;
+import server.financial.ExchangeRateFactory;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -20,18 +21,28 @@ public class TransactionController {
     private final TransactionRepository repo;
     private final EventRepository eventRepository;
 
+    private final ExchangeRateFactory exchangeRateFactory;
+
     private Map<Object, Consumer<Transaction>> listeners;
 
+
     /**
-     * Constructor for the EventController
-     * @param repo the transaction repository
-     * @param eventRepository The event repository
+     * Constructor for the EventController.
+     *
+     * @param   repo
+     *          The transaction repository.
+     * @param   eventRepository
+     *          The event repository.
+     * @param   exchangeRateFactory
+     *          The {@link ExchangeRateFactory} used in this controller.
      */
     public TransactionController(TransactionRepository repo,
-                                 EventRepository eventRepository) {
+                                 EventRepository eventRepository,
+                                 ExchangeRateFactory exchangeRateFactory) {
         this.eventRepository = eventRepository;
         this.repo = repo;
         this.listeners = new HashMap<>();
+        this.exchangeRateFactory = exchangeRateFactory;
     }
 
     /**
@@ -39,7 +50,6 @@ public class TransactionController {
      * @param eventId eventId
      * @return List of transactions
      */
-
     @GetMapping("/")
     @ResponseBody
     public ResponseEntity<List<Transaction>> getAllTransactions(
@@ -49,6 +59,45 @@ public class TransactionController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(event.getTransactions());
+    }
+
+    /**
+     * Get all transactions of the event in a certain currency.
+     *
+     * @param   eventId
+     *          Event of which needs to be returned
+     * @param   currency
+     *          The currency of the transactions.
+     *
+     * @return  List of pairs of transactions and converted amounts.
+     */
+    @GetMapping("/currency/{currency}")
+    @ResponseBody
+    public ResponseEntity<List<TransactionConversionPair>> getAllTransactions(
+            @PathVariable("eventId") Long eventId,
+            @PathVariable("currency") Currency currency) {
+        if (currency == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Event event = eventRepository.findById(eventId).orElse(null);
+
+        if (event == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<TransactionConversionPair> pairs = new LinkedList<>();;
+
+        for (Transaction transaction : event.getTransactions()) {
+            pairs.add(new TransactionConversionPair(transaction,
+                    exchangeRateFactory.getExchangeRate(
+                            transaction.getDate(),
+                            transaction.getAmount().getCurrency(),
+                            currency
+                    ).convert(transaction.getAmount())));
+        }
+
+        return ResponseEntity.ok(pairs);
     }
 
     /**
