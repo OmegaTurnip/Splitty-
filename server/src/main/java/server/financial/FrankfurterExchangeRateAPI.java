@@ -123,6 +123,17 @@ public class FrankfurterExchangeRateAPI implements ExchangeRateAPI {
         }
     }
 
+    /**
+     * Makes a request to the API, returning the exchange rates.
+     *
+     * @param   con
+     *          The connection to the API. Should already be opened.
+     *
+     * @return  The exchange rates.
+     *
+     * @throws  IOException
+     *          If an I/O error occurs.
+     */
     private Optional<Map<Currency, Double>> makeRequest(URLConnection con)
             throws IOException {
         con.setConnectTimeout(5_000);

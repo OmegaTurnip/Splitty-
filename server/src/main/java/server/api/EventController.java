@@ -180,7 +180,7 @@ public class EventController {
      */
     @PostMapping("/convert/{currency}/{date}")
     @ResponseBody
-    public ResponseEntity<Money> getTransaction(
+    public ResponseEntity<Money> convertMoney(
             @RequestBody Money money,
             @PathVariable("currency") Currency currency,
             @PathVariable("date") LocalDate date) {

@@ -402,7 +402,7 @@ public class ServerUtils {
      */
     public Money convertMoney(Money money, Currency currency, LocalDate date) {
         return client.target(server)
-                .path("api/event/convert/" + currency.toString() + "/" + date)
+                .path("api/event/convert/" + currency + "/" + date)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(money, APPLICATION_JSON),
