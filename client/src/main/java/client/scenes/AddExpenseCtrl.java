@@ -163,6 +163,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
         public MyLocalDateStringConverter(String pattern) {
             this.dateFormatter = DateTimeFormatter.ofPattern(pattern);
+            alertWrapper = new AlertWrapper();
         }
 
         @Override
@@ -357,17 +358,36 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         if (!verifyPrice(price.getText())) {
             return false;
         }
-        if (expensePayer == null
-                || !expensePayer.getClass().equals(Participant.class))
+        if (expenseName.getText().isEmpty() || expenseName.getText().isBlank()) {
+            showAlert(Translator.getTranslation(
+                            Text.AddExpense.Alert.noNameTitle),
+                    Translator.getTranslation(
+                            Text.AddExpense.Alert.noNameContent));
             return false;
+
+        }
+        if (expensePayer == null
+                || !expensePayer.getClass().equals(Participant.class)) {
+            showAlert(Translator.getTranslation(
+                            Text.AddExpense.Alert.noPayerTitle),
+                    Translator.getTranslation(
+                            Text.AddExpense.Alert.noPayerContent));
+            return false;
+        }
+
         try {
-            if (date.getValue() == null) return false;
+            if (date.getValue() == null || date.getPromptText().isEmpty() ||
+                    date.getPromptText().isBlank()) {
+                throw new DateTimeParseException("",
+                        date.getPromptText(), 0);
+            }
         } catch (DateTimeParseException e) {
             alertWrapper.showAlert(Alert.AlertType.ERROR,
                     Translator.getTranslation(
                             Text.AddExpense.Alert.dateFormatTitle),
                     Translator.getTranslation(
                             Text.AddExpense.Alert.dateFormatContent));
+            return false;
         }
         if (participantList.isEmpty()) {
             showAlert(Translator.getTranslation(

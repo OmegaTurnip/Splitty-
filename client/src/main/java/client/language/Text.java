@@ -290,9 +290,17 @@ public class Text {
             public static final String dateFormatContent = level +
                     "FormatContent";
             public static final String noParticipantsTitle = level +
-                    "noParticipants";
+                    "noParticipantsTitle";
             public static final String noParticipantsContent = level +
                     "noParticipantsContent";
+            public static final String noPayerTitle = level +
+                    "noPayerTitle";
+            public static final String noPayerContent = level +
+                    "noPayerContent";
+            public static final String noNameTitle = level +
+                    "noNameTitle";
+            public static final String noNameContent = level +
+                    "noNameContent";
         }
 
     }
