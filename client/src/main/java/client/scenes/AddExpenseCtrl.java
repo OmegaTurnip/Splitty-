@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.language.Language;
 import client.language.Text;
 import client.language.TextPage;
 import client.language.Translator;
@@ -555,7 +556,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                 Translator.getTranslation(Text.AddExpense.expensePricePrompt));
         date.setPromptText(
                 Translator.getTranslation(Text.AddExpense.expenseDatePrompt));
-
         int index = payer.getSelectionModel().getSelectedIndex();
         loadPayers();
         payer.getSelectionModel().select(index);
