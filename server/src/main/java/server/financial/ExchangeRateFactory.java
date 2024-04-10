@@ -174,7 +174,7 @@ public class ExchangeRateFactory {
      * Gets the {@link ExchangeRate} specified by the parameters. Returns {@code
      * null} if no {@code ExchangeRate} was found. Only considers already loaded
      * {@code ExchangeRate}s. If no {@code ExchangeRate} is found for the
-     * specific date, it will return the closest {@code ExchangeRate} after that
+     * specific date, it will return the closest {@code ExchangeRate} to that
      * date.
      *
      * @param   date
@@ -190,16 +190,23 @@ public class ExchangeRateFactory {
      *          it is not found.
      */
     public ExchangeRate getClosest(LocalDate date, Currency from, Currency to) {
+        // readability is optional
         return exchangeRates.stream()
-                .filter(er -> Objects.equals(from, er.getFrom())
+            .filter(er -> Objects.equals(from, er.getFrom())
                         && Objects.equals(to, er.getTo()))
-                .max(Comparator.comparing(ExchangeRate::getDate))
-                .orElse(exchangeRates.stream()
-                        .filter(er -> Objects.equals(from, er.getFrom())
-                                && Objects.equals(to, er.getTo()))
-                        .filter(er -> er.getDate().isAfter(date))
-                        .max(Comparator.comparing(ExchangeRate::getDate))
-                        .orElse(null));
+            .filter(er -> er.getDate().equals(date))
+            .findFirst().orElse(
+                exchangeRates.stream()
+                    .filter(er -> Objects.equals(from, er.getFrom())
+                        && Objects.equals(to, er.getTo()))
+                    .filter(er -> er.getDate().isBefore(date))
+                    .max(Comparator.comparing(ExchangeRate::getDate))
+                    .orElse(exchangeRates.stream()
+                         .filter(er -> Objects.equals(from, er.getFrom())
+                             && Objects.equals(to, er.getTo()))
+                         .filter(er -> er.getDate().isAfter(date))
+                         .min(Comparator.comparing(ExchangeRate::getDate))
+                         .orElse(null)));
     }
 
     /**
