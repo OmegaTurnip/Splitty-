@@ -193,6 +193,8 @@ public class Text {
         public static final String cancel = level + "cancel";
         public static final String confirm = level + "confirm";
 
+        public static final String copy = level + "copy";
+
         public static final class Alert {
             public static final String level = EditName.level + "Alert.";
             public static final String confirmTitle = level + "confirmTitle";
