@@ -37,6 +37,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.util.Currency;
 import java.util.List;
 import java.util.Set;
@@ -390,24 +391,22 @@ public class ServerUtils {
     /**
      * Get the amount of a transaction in a certain currency.
      *
-     * @param   eventId
-     *          The id of the event.
-     * @param   transactionId
-     *          The id of the transaction.
+     * @param   money
+     *          The amount to convert.
      * @param   currency
      *          The currency of the result.
+     * @param   date
+     *          The date of the exchange rate.
      *
      * @return  The resulting amount in the specified currency.
      */
-    public Money getTransactionAmountInCurrency(long eventId,
-                                                long transactionId,
-                                                Currency currency) {
+    public Money convertMoney(Money money, Currency currency, LocalDate date) {
         return client.target(server)
-                .path("api/event/" + eventId + "/transactions/" +
-                        transactionId + "/amount/" + currency.getCurrencyCode())
+                .path("api/event/convert/" + currency.toString() + "/" + date)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<>() {});
+                .post(Entity.entity(money, APPLICATION_JSON),
+                        Money.class);
     }
 
     /**

@@ -9,6 +9,7 @@ import server.database.EventRepository;
 import server.financial.ExchangeRateFactory;
 import server.financial.DebtSimplifier;
 
+import java.time.LocalDate;
 import java.util.*;
 
 
@@ -167,54 +168,40 @@ public class EventController {
     }
 
     /**
-     * Get amount of the transaction in a specified currency.
-     * @param   eventId
-     *          The id of the event.
-     * @param   transactionId
-     *          The id of the transaction.
+     * Convert an amount to a different currency.
+     * @param   money
+     *          The amount to convert.
      * @param   currency
      *          The currency of the result.
+     * @param   date
+     *          The date of the exchange rate.
      *
-     * @return  Transaction
+     * @return  Money object with the converted amount.
      */
-    @GetMapping("/{eventId}/transaction/{transactionId}/amount/{currency}")
+    @PostMapping("/convert/{currency}/{date}")
     @ResponseBody
     public ResponseEntity<Money> getTransaction(
-            @PathVariable("eventId") Long eventId,
-            @PathVariable("transactionId") Long transactionId,
-            @PathVariable("currency") String currency) {
-        Event event = eventRepository.findById(eventId).orElse(null);
+            @RequestBody Money money,
+            @PathVariable("currency") Currency currency,
+            @PathVariable("date") LocalDate date) {
 
-        if (event == null) {
-            return ResponseEntity.notFound().build();
-        }
-        Transaction transaction = event.getTransactions().stream()
-                .filter(t -> t.getTransactionId().equals(transactionId))
-                .findFirst().orElse(null);
-
-        if (transaction == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        if (!Money.isValidCurrencyCode(currency)) {
+        if (money == null || currency == null || date == null) {
             return ResponseEntity.badRequest().build();
         }
-
-        Currency currencyObj = Currency.getInstance(currency);
 
         ExchangeRateFactory exchangeRateFactory = debtSimplifier
                 .getExchangeRateFactory();
 
-        if (!exchangeRateFactory.getKnownCurrencies().contains(currencyObj)) {
+        if (!exchangeRateFactory.getKnownCurrencies().contains(currency)) {
             return ResponseEntity.badRequest().build();
         }
 
         return ResponseEntity.ok(
-                exchangeRateFactory.getClosest(
-                        transaction.getDate(),
-                        transaction.getAmount().getCurrency(),
-                        currencyObj
-                ).convert(transaction.getAmount())
+                exchangeRateFactory.getExchangeRate(
+                        date,
+                        money.getCurrency(),
+                        currency
+                ).convert(money)
         );
     }
 
