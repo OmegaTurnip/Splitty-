@@ -353,7 +353,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         }
     }
 
-    @SuppressWarnings("checkstyle")
+
     private boolean verifyInput() {
         if (!verifyPrice(price.getText())) {
             return false;
