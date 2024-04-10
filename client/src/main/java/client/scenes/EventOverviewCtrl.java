@@ -326,6 +326,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                                      Participant participant,
                                      ObservableList<Transaction> transactions){
         String choice = selected.getId();
+        setEvents(transactions);
         switch (choice) {
             case "AllExpenses":
                 System.out.println("all clicked");
@@ -337,9 +338,11 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                         FXCollections.observableArrayList();
                 for (Transaction transaction : transactions) {
                     for(Participant p : transaction.getParticipants()) {
-                        p.setEvent(event);
                         if (p.equals(participant)) {
                             transactionsParticipant.add(transaction);
+                        }
+                        if (transaction.getPayer().equals(participant)) {
+                            transactionsPayer.add(transaction);
                         }
                     }
                 }
@@ -350,13 +353,21 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 transactionsPayer =
                         FXCollections.observableArrayList();
                 for (Transaction transaction : transactions) {
-                    transaction.getPayer().setEvent(event);
                     if (transaction.getPayer().equals(participant)) {
                         transactionsPayer.add(transaction);
                     }
                 }
                 expensesListView.setItems(transactionsPayer);
                 break;
+        }
+    }
+
+    private void setEvents(ObservableList<Transaction> transactions) {
+        for (Transaction transaction : transactions) {
+            for(Participant p : transaction.getParticipants()) {
+                p.setEvent(event);
+            }
+            transaction.getPayer().setEvent(event);
         }
     }
 
@@ -485,6 +496,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 transactionCellController.setTransactionData(transaction);
                 transactionCellController.setEvent(event);
                 transactionCellController.setServer(server);
+                transactionCellController.setMainCtrl(mainCtrl);
                 transactionCellController.setTransaction(transaction);
                 transactionCellController.setEventOverviewCtrl(
                         EventOverviewCtrl.this);

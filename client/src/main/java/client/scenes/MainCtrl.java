@@ -20,6 +20,7 @@ import client.language.Translator;
 import client.utils.ServerUtils;
 import commons.Event;
 import commons.Participant;
+import commons.Transaction;
 import jakarta.ws.rs.NotAuthorizedException;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -169,6 +170,7 @@ public class MainCtrl {
         showParticipant(event);
     }
 
+
     private void showParticipant(Event event) {
         addParticipantCtrl.setEvent(event);
         addParticipantCtrl.refresh();
@@ -234,8 +236,20 @@ public class MainCtrl {
      */
     public void showAddExpense(Event event) {
         addExpenseCtrl.setEvent(event);
+        addExpenseCtrl.setExpenseToOverwrite(null);
         addExpenseCtrl.refresh();
-        primaryStage.setTitle("Splitty!");
+        primaryStage.setScene(addExpense);
+    }
+
+    /**
+     * Go to the edit expense page.
+     * @param event the event the participant is a part of.
+     * @param transaction the transaction to edit
+     */
+    public void showEditExpense(Event event, Transaction transaction) {
+        addExpenseCtrl.setEvent(event);
+        addExpenseCtrl.setExpenseToOverwrite(transaction);
+        addExpenseCtrl.refresh();
         primaryStage.setScene(addExpense);
     }
 
