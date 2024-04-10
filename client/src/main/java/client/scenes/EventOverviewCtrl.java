@@ -522,7 +522,13 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 ClipboardContent content = new ClipboardContent();
                 content.putString(event.getInviteCode());
                 clipboard.setContent(content);
+                mainCtrl.showEventOverview(event);
             }
+            return null;
+        });
+        dialog.setResultConverter(buttonType -> {
+            if (buttonType == cancelButtonType) {
+                mainCtrl.showEventOverview(event);}
             return null;
         });
         dialog.showAndWait();
