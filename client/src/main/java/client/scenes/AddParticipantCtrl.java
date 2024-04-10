@@ -225,7 +225,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
                         bicTextField.getText());
         Participant returnedP = server.saveParticipant(participant);
         participant.setParticipantId(returnedP.getParticipantId());
-        System.out.println("Created " + participant);
+        System.out.println("Created " + participant.toString());
         event.removeParticipant(participant);
         event.addParticipant(returnedP);
     }

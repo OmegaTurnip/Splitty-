@@ -88,7 +88,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     }
 
     /**
-<<<<<<< HEAD
      * Setter
      * @param server the server to set
      */
@@ -99,9 +98,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     /**
      * Sets alertWrapper
      *
-=======
-     * Sets alertWrapper
->>>>>>> 6b44806791296d276a07ac204883fdfe2897260c
      * @param alertWrapper alertWrapper
      */
     public void setAlertWrapper(AlertWrapper alertWrapper) {
@@ -123,6 +119,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         fetchLanguages();
         payerSelection();
         tagSelection();
+        participantSelection();
         addExpense.setOnAction(event -> {
             getCheckedParticipants();
             try {
@@ -379,7 +376,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
      * Refreshes the page and updates the list view.
      */
     public void refresh() {
-        participantSelection();
         refreshText();
         loadPayers();
         loadParticipants();

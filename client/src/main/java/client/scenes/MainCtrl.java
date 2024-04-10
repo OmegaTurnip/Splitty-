@@ -169,17 +169,7 @@ public class MainCtrl {
         addParticipantCtrl.setParticipant(null);
         showParticipant(event);
     }
-    /**
-     * Go to the edit expense page.
-     * @param event the event the participant is a part of.
-     * @param transaction the transaction to edit
-     */
-    public void showEditExpense(Event event, Transaction transaction) {
-        addExpenseCtrl.setEvent(event);
-        addExpenseCtrl.setExpenseToOverwrite(transaction);
-        addExpenseCtrl.refresh();
-        primaryStage.setScene(addExpense);
-    }
+
 
     private void showParticipant(Event event) {
         addParticipantCtrl.setEvent(event);
@@ -246,8 +236,20 @@ public class MainCtrl {
      */
     public void showAddExpense(Event event) {
         addExpenseCtrl.setEvent(event);
-        addExpenseCtrl.refresh();
         addExpenseCtrl.setExpenseToOverwrite(null);
+        addExpenseCtrl.refresh();
+        primaryStage.setScene(addExpense);
+    }
+
+    /**
+     * Go to the edit expense page.
+     * @param event the event the participant is a part of.
+     * @param transaction the transaction to edit
+     */
+    public void showEditExpense(Event event, Transaction transaction) {
+        addExpenseCtrl.setEvent(event);
+        addExpenseCtrl.setExpenseToOverwrite(transaction);
+        addExpenseCtrl.refresh();
         primaryStage.setScene(addExpense);
     }
 
