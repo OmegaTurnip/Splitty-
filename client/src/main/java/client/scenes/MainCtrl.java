@@ -143,6 +143,7 @@ public class MainCtrl {
         primaryStage.setScene(overview);
         overview.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
+                overviewCtrl.getActionHistory().clear();
                 showStartUp();
                 e.consume();
             }
