@@ -405,7 +405,7 @@ public class ServerUtils {
                 .path("api/event/convert/" + currency + "/" + date)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .post(Entity.entity(money, APPLICATION_JSON),
+                .put(Entity.entity(money, APPLICATION_JSON),
                         Money.class);
     }
 
