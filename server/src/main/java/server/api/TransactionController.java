@@ -58,7 +58,6 @@ public class TransactionController {
      * @param eventId eventId
      * @return deferred result of response-entity transaction
      */
-
     @GetMapping("/updates")
     @ResponseBody
     public DeferredResult<ResponseEntity<Transaction>> getUpdates(
@@ -99,7 +98,6 @@ public class TransactionController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(transaction);
-
     }
 
     /**
