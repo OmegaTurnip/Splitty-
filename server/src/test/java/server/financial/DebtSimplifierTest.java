@@ -557,19 +557,19 @@ class DebtSimplifierTest {
 
         assertEquals(new Money(new BigDecimal(0), EUR), debtSimplifier.sumOfExpenses(event, EUR));
 
-        event.addTransaction(Transaction.createDebt(participants.get(0), "thee", new Money(new BigDecimal(10), EUR), participants, event, null, null));
+        event.addTransaction(Transaction.createDebt(participants.get(0), "thee", new Money(new BigDecimal(10), EUR), participants, event, today, null));
 
         assertEquals(new Money(new BigDecimal(10), EUR), debtSimplifier.sumOfExpenses(event, EUR));
 
-        event.addTransaction(Transaction.createPayoff(participants.get(0), new Money(new BigDecimal(10), EUR), participants.get(2), event, null));
+        event.addTransaction(Transaction.createPayoff(participants.get(0), new Money(new BigDecimal(10), EUR), participants.get(2), event, today));
 
         assertEquals(new Money(new BigDecimal(10), EUR), debtSimplifier.sumOfExpenses(event, EUR));
 
-        event.addTransaction(Transaction.createDebt(participants.get(0), "coffee", new Money(new BigDecimal(5), EUR), participants, event, null, null));
+        event.addTransaction(Transaction.createDebt(participants.get(0), "coffee", new Money(new BigDecimal(5), EUR), participants, event, today, null));
 
         assertEquals(new Money(new BigDecimal(15), EUR), debtSimplifier.sumOfExpenses(event, EUR));
 
-        event.addTransaction(Transaction.createDebt(participants.get(0), "coffee", new Money(new BigDecimal(5), Currency.getInstance("IDR")), participants, event, null, null));
+        event.addTransaction(Transaction.createDebt(participants.get(0), "coffee", new Money(new BigDecimal(5), Currency.getInstance("IDR")), participants, event, today, null));
 
         assertNull(debtSimplifier.sumOfExpenses(event, EUR));
     }
