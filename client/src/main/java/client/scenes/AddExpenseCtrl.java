@@ -133,6 +133,14 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                 .getPreferredCurrency().getCurrencyCode());
     }
 
+    /**
+     * Setter
+     * @param choiceBox the currency choicebox
+     */
+    public void setCurrency(ChoiceBox<String> choiceBox) {
+        currency = choiceBox;
+    }
+
     static class MyLocalDateStringConverter extends StringConverter<LocalDate> {
 
         private final DateTimeFormatter dateFormatter;

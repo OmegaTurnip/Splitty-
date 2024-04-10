@@ -34,6 +34,7 @@ import org.testfx.framework.junit5.ApplicationTest;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -60,6 +61,7 @@ public class AddExpenseCtrlTest extends ApplicationTest {
                 UserConfig userConfig = Mockito.mock(UserConfig.class);
                 userConfigMockedStatic.when(UserConfig::get).thenReturn(userConfig);
                 Mockito.when(userConfig.getUserLanguage()).thenReturn("eng");
+                Mockito.when(userConfig.getPreferredCurrency()).thenReturn(Currency.getInstance("EUR"));
                 Language.fromLanguageFile(
                         "eng", new File("../includedLanguages/eng.properties")
                 );

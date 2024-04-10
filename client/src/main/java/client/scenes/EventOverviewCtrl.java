@@ -69,7 +69,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     private MenuItem returnToOverview;
     @FXML
     private Menu rtoButton;
-    private final ServerUtils server;
+    private ServerUtils server;
     private MainCtrl mainCtrl;
 
     private AlertWrapper alertWrapper;
@@ -181,6 +181,14 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
      */
     public MainCtrl getMainCtrl() {
         return mainCtrl;
+    }
+
+    /**
+     * Setter
+     * @param server the server to set
+     */
+    public void setServer(ServerUtils server) {
+        this.server = server;
     }
 
     public static class ParticipantStringConverter

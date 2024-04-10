@@ -12,8 +12,10 @@ import commons.Event;
 import commons.Money;
 import commons.Participant;
 import commons.Transaction;
+import javafx.collections.FXCollections;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -27,6 +29,7 @@ import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -53,6 +56,8 @@ public class EventOverviewCtrlTest extends ApplicationTest {
                 UserConfig userConfig = Mockito.mock(UserConfig.class);
                 userConfigMockedStatic.when(UserConfig::get).thenReturn(userConfig);
                 Mockito.when(userConfig.getUserLanguage()).thenReturn("eng");
+                Mockito.when(userConfig.getPreferredCurrency())
+                        .thenReturn(Currency.getInstance("EUR"));
                 Language.fromLanguageFile(
                         "eng", new File("../includedLanguages/eng.properties")
                 );
@@ -66,7 +71,6 @@ public class EventOverviewCtrlTest extends ApplicationTest {
                 this.sut = eventOverview.getKey();
                 MockitoAnnotations.openMocks(this).close();
                 Mockito.when(server.connect(Mockito.anyString())).thenReturn(Mockito.mock(StompSession.class));
-
                 event = new Event("testEvent");
                 Scene scene = new Scene(eventOverview.getValue());
                 stage.setScene(scene);
@@ -85,7 +89,7 @@ public class EventOverviewCtrlTest extends ApplicationTest {
     }
     @AfterEach
     void breakDown() {
-        Mockito.reset(server );
+        Mockito.reset(server);
         Mockito.reset(mainCtrl);
     }
 
@@ -101,6 +105,10 @@ public class EventOverviewCtrlTest extends ApplicationTest {
 
     @Test
     void testAddExpense()  {
+        sut.setServer(server);
+        UserConfig mockUserconfig = mock(UserConfig.class);
+        UserConfig.dependencyInject(mockUserconfig);
+        when(mockUserconfig.getPreferredCurrency()).thenReturn(Currency.getInstance("EUR"));
         sut.setEvent(event);
         event.addParticipant("testParticipant1");
         Participant participant1 = event.getParticipants().get(0);
@@ -121,10 +129,15 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         addExpenseCtrlMock.setDate(new DatePicker());
         addExpenseCtrlMock.setPrice(new TextField("5"));
         addExpenseCtrlMock.setExpenseTag(null);
+        ChoiceBox<String> mockCurrency = mock(ChoiceBox.class);
+        addExpenseCtrlMock.setCurrency(mockCurrency);
+        when(mockCurrency.getValue()).thenReturn("EUR");
+        Money amount = new Money(new BigDecimal(5),  Currency.getInstance("EUR"));
+        when(server.convertMoney(any(Money.class), any(Currency.class), any(LocalDate.class))).thenReturn(amount);
+
         Transaction transaction = addExpenseCtrlMock.getExpense();
         server.saveEvent(event);
         sut.refresh();
-        Money amount = new Money(new BigDecimal(5),  Currency.getInstance("EUR"));
         Transaction equalTransaction = new Transaction(participant1, name.getText(), amount, participantList,event, null, false);
         transaction.setTransactionId(1L);
         equalTransaction.setTransactionId(1L);
