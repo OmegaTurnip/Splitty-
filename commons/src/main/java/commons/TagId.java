@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class TagId implements Serializable {
-    private Long id;
+    private Long tagId;
     private Long event;
 
     /**
@@ -18,7 +18,7 @@ public class TagId implements Serializable {
      * @param event the id of the Event
      */
     public TagId(Long id, Long event) {
-        this.id = id;
+        this.tagId = id;
         this.event = event;
     }
 
@@ -26,8 +26,8 @@ public class TagId implements Serializable {
      * Getter for id
      * @return the id
      */
-    public Long getId() {
-        return id;
+    public Long getTagId() {
+        return tagId;
     }
 
     /**
@@ -42,8 +42,8 @@ public class TagId implements Serializable {
      * Setter for id
      * @param id the new id
      */
-    public void setId(Long id) {
-        this.id = id;
+    public void setTagId(Long id) {
+        this.tagId = id;
     }
 
     /**
@@ -64,7 +64,20 @@ public class TagId implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TagId that = (TagId) o;
-        return Objects.equals(id, that.id) && Objects.equals(event, that.event);
+        return Objects.equals(tagId, that.tagId)
+                && Objects.equals(event, that.event);
+    }
+
+    /**
+     * To string method of Tagid
+     * @return String
+     */
+    @Override
+    public String toString() {
+        return "TagId{" +
+                "id=" + tagId +
+                ", event=" + event +
+                '}';
     }
 
     /**
@@ -73,6 +86,8 @@ public class TagId implements Serializable {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(id, event);
+        return Objects.hash(tagId, event);
     }
 }
+
+

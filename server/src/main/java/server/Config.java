@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import server.financial.DebtSimplifier;
 import server.financial.ExchangeRateFactory;
+import server.financial.FrankfurterExchangeRateAPI;
 
 
 @Configuration
@@ -41,7 +42,8 @@ public class Config {
      */
     @Bean
     public ExchangeRateFactory getExchangeRateFactory() {
-        return new ExchangeRateFactory(ExchangeRateFactory.DEFAULT_DIR);
+        return new ExchangeRateFactory(ExchangeRateFactory.DEFAULT_DIR,
+                new FrankfurterExchangeRateAPI());
     }
 
     /**

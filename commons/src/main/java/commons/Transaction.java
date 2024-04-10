@@ -2,6 +2,7 @@ package commons;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -11,24 +12,26 @@ import java.util.*;
 
 @Entity
 @IdClass(TransactionId.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Transaction {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long id;
+    private Long transactionId;
     @Id
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
     @JsonBackReference
     private Event event;
-    @OneToOne
+    @ManyToOne
     private Participant payer;
     private String name;
     private LocalDate date;
+    @Column(name = "amount", length = 1024)
     private Money amount;
     private boolean isPayoff;
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     private List<Participant> participants;
-    @OneToOne
+    @ManyToOne
     private Tag tag;
 
     /**
@@ -50,9 +53,9 @@ public class Transaction {
      *          Whether this transaction is a payoff or a debt.
      */
     @SuppressWarnings("checkstyle:ParameterNumber") // no other option really
-    private Transaction(Participant payer, String name, Money amount,
-                        List<Participant> participants, Event event, Tag tag,
-                        boolean isPayoff) {
+    public Transaction(Participant payer, String name, Money amount,
+                       List<Participant> participants, Event event, Tag tag,
+                       boolean isPayoff) {
         this.payer = payer;
         this.name = name;
         this.date = LocalDate.now();
@@ -260,7 +263,7 @@ public class Transaction {
         if (this == other) return true;
         if (other == null || getClass() != other.getClass()) return false;
         Transaction that = (Transaction) other;
-        return Objects.equals(id, that.id)
+        return Objects.equals(transactionId, that.transactionId)
                 && Objects.equals(event, that.event);
     }
 
@@ -271,23 +274,23 @@ public class Transaction {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(event, id);
+        return Objects.hash(event, transactionId);
     }
 
     /**
      * Setter for id
      * @param id the id
      */
-    public void setId(Long id) {
-        this.id = id;
+    public void setTransactionId(Long id) {
+        this.transactionId = id;
     }
 
     /**
      * Getter for id
      * @return the id
      */
-    public Long getId() {
-        return id;
+    public Long getTransactionId() {
+        return transactionId;
     }
 
     /**
@@ -304,5 +307,32 @@ public class Transaction {
      */
     public void setParticipants(List<Participant> participants) {
         this.participants = participants;
+    }
+
+    /**
+     * Setter for event
+     * @param event the event to set
+     */
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
+    /**
+     * Turns a transaction into a human-readable string
+     * @return the string
+     */
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "transactionId=" + transactionId +
+                ", event=" + event +
+                ", payer=" + payer +
+                ", name='" + name + '\'' +
+                ", date=" + date +
+                ", amount=" + amount +
+                ", isPayoff=" + isPayoff +
+                ", participants=" + participants +
+                ", tag=" + tag +
+                '}';
     }
 }

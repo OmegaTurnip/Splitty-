@@ -1,21 +1,16 @@
 package server.api;
 
-import commons.Debt;
-import commons.Event;
-import commons.Money;
+import commons.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
-import server.financial.ExchangeRateAPI;
-import server.financial.FrankfurterExchangeRateAPI;
+
+import server.financial.ExchangeRateFactory;
 import server.financial.DebtSimplifier;
 
 import java.time.LocalDate;
-import java.util.Currency;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 @RestController
@@ -24,10 +19,6 @@ public class EventController {
 
     private final EventRepository eventRepository;
     private final DebtSimplifier debtSimplifier;
-    private final Currency baseCurrency = Currency.getInstance("EUR");
-    private final ExchangeRateAPI exchangeRateAPI =
-            new FrankfurterExchangeRateAPI(baseCurrency);
-
     private final SimpMessagingTemplate messagingTemplate;
 
 
@@ -99,12 +90,45 @@ public class EventController {
         if (event.getEventName().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        eventRepository.save(event);
-        messagingTemplate.convertAndSend("/topic/admin", event);
-        return ResponseEntity.ok(event);
-        //tbf this might not be the proper way to do PUT.
-        // PUT methods should specify the URI exactly,
-        // so a proper pathing would be /{id}
+        for(Tag tag : event.getTags()){
+            tag.setEvent(event);
+        }
+// checks that the participants that are equal become the same instance
+        for (Participant participant : event.getParticipants()) {
+            participant.setEvent(event);
+        }
+
+        for (Transaction transaction : event.getTransactions()) {
+            transaction.setEvent(event);
+            transaction.setPayer(event.getParticipantById(
+                    transaction.getPayer().getParticipantId()
+            ));
+            List<Participant> participants = new ArrayList<>();
+            for (Participant participant : transaction.getParticipants()) {
+
+                participants.add(event.getParticipantById(
+                        participant.getParticipantId()
+                ));
+            }
+            transaction.setParticipants(participants);
+            setTagInstances(event, transaction);
+
+        }
+
+        Event dbEvent = eventRepository.save(event);
+        messagingTemplate.convertAndSend("/topic/admin", dbEvent);
+        return ResponseEntity.ok(dbEvent);
+    }
+    //tbf this might not be the proper way to do PUT.
+    // PUT methods should specify the URI exactly,
+    // so a proper pathing would be /{id}
+
+    private static void setTagInstances(Event event, Transaction transaction) {
+        if (transaction.getTag() != null) {
+            transaction.setTag(event.getTagById(
+                    transaction.getTag().getTagId()
+            ));
+        }
     }
 
     /**
@@ -144,6 +168,44 @@ public class EventController {
     }
 
     /**
+     * Convert an amount to a different currency.
+     * @param   money
+     *          The amount to convert.
+     * @param   currency
+     *          The currency of the result.
+     * @param   date
+     *          The date of the exchange rate.
+     *
+     * @return  Money object with the converted amount.
+     */
+    @PutMapping("/convert/{amount}/{currency}/{date}")
+    @ResponseBody
+    public ResponseEntity<Money> convertMoney(
+            @PathVariable("amount") Money money,
+            @PathVariable("currency") Currency currency,
+            @PathVariable("date") LocalDate date) {
+
+        if (money == null || currency == null || date == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        ExchangeRateFactory exchangeRateFactory = debtSimplifier
+                .getExchangeRateFactory();
+
+        if (!exchangeRateFactory.getKnownCurrencies().contains(currency)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok(
+                exchangeRateFactory.getExchangeRate(
+                        date,
+                        money.getCurrency(),
+                        currency
+                ).convert(money)
+        );
+    }
+
+    /**
      * Get the simplified version of the debts of an event.
      *
      * @param   id
@@ -173,13 +235,48 @@ public class EventController {
 
         debtSimplifier.setup(base, event.getParticipants());
 
-        refreshExchangeRates();
-
         debtSimplifier.addDebts(event);
 
         Set<Debt> result = debtSimplifier.simplify();
 
         return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Get the sum of the debts of an event.
+     *
+     * @param   id
+     *          The id of the event.
+     * @param   currency
+     *          The currency of the result.
+     *
+     * @return  The sum of the debts of an event.
+     */
+    @GetMapping("/{id}/sum/{currency}")
+    @ResponseBody
+    public ResponseEntity<Money> getSumOfExpenses(
+            @PathVariable("id") Long id,
+            @PathVariable("currency") String currency) {
+
+        if (!Money.isValidCurrencyCode(currency)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Optional<Event> event = eventRepository.findById(id);
+
+        if (event.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Currency base = Currency.getInstance(currency);
+
+        if (!debtSimplifier.getExchangeRateFactory().getKnownCurrencies()
+                .contains(base)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok(
+                debtSimplifier.sumOfExpenses(event.get(), base));
     }
 
     /**
@@ -190,24 +287,9 @@ public class EventController {
     @GetMapping("/currencies")
     @ResponseBody
     public ResponseEntity<Set<Currency>> getCurrencies() {
-        refreshExchangeRates();
+        debtSimplifier.getExchangeRateFactory().retrieveExchangeRates();
         return ResponseEntity.ok(debtSimplifier.getExchangeRateFactory()
                 .getKnownCurrencies());
     }
 
-
-    private void refreshExchangeRates() {
-        boolean ratesAreUpToDate = exchangeRateAPI.lastRequestDate().isPresent()
-                && !exchangeRateAPI.lastRequestDate().get()
-                .isBefore(LocalDate.now());
-
-        if (!ratesAreUpToDate) {
-            exchangeRateAPI.getExchangeRates().ifPresent(exchangeRates ->
-                    debtSimplifier.getExchangeRateFactory()
-                            .generateExchangeRates(
-                                    baseCurrency, exchangeRates
-                            )
-            );
-        }
-    }
 }

@@ -54,8 +54,8 @@ class EventTest {
     testTransaction2 = Transaction.createDebt(testParticipant2, "Lunch", Money.fromLong(2, "EUR"),
 
             testParticipants2, testEvent, new Tag("food", "blue"));
-    testTransaction1.setId(1L);
-    testTransaction2.setId(2L);
+    testTransaction1.setTransactionId(1L);
+    testTransaction2.setTransactionId(2L);
 
     testTransaction1.setDate(testDate1);
     testTransaction2.setDate(testDate1);
@@ -65,8 +65,8 @@ class EventTest {
     testTransactions1.add(testTransaction1);
     testTransactions1.add(testTransaction2);
 
-    testTransaction1.setId(1L);
-    testTransaction2.setId(2L);
+    testTransaction1.setTransactionId(1L);
+    testTransaction2.setTransactionId(2L);
 
     testEvent.setTransactions(testTransactions1);
   }
@@ -127,5 +127,13 @@ class EventTest {
     void deleteTransaction() {
       assertTrue(testEvent.deleteTransaction(testTransaction1));
       assertFalse(testEvent.getTransactions().contains(testTransaction1));
+    }
+
+    @Test
+    void getTagById(){
+      Tag tag = new Tag("school", "green");
+      tag.setTagId(2L);
+      testEvent.addTag(tag);
+      assertSame(tag, testEvent.getTagById(2L));
     }
 }

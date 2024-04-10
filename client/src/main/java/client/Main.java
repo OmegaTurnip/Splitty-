@@ -87,9 +87,11 @@ public class Main extends Application {
                 "AddExpense.fxml");
         var admin = FXML.load(AdminCtrl.class, "client", "scenes",
                 "Admin.fxml");
+        var editName = FXML.load(EditEventNameCtrl.class, "client", "scenes",
+                "EditEventName.fxml");
         var server = INJECTOR.getInstance(ServerUtils.class);
         mainCtrl.initialize(overview, add,
-                startUp, addExpense, admin);
+                startUp, addExpense, editName, admin);
         mainCtrl.setUtils(server, primaryStage);
         primaryStage.setOnCloseRequest(e -> overview.getKey().stop());
     }

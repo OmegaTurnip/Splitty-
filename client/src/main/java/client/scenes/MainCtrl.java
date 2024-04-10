@@ -20,6 +20,7 @@ import client.language.Translator;
 import client.utils.ServerUtils;
 import commons.Event;
 import commons.Participant;
+import commons.Transaction;
 import jakarta.ws.rs.NotAuthorizedException;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -36,6 +37,8 @@ public class MainCtrl {
     private EventOverviewCtrl overviewCtrl;
     private Scene overview;
 
+    private EditEventNameCtrl editEventNameCtrl;
+    private Scene editName;
     private AddParticipantCtrl addParticipantCtrl;
     private Scene add;
     private StartUpCtrl startUpCtrl;
@@ -48,18 +51,22 @@ public class MainCtrl {
 
     private ServerUtils server;
 
+    private AlertWrapper alertWrapper;
+
     /**
      * @param overview the fx for the event overview page.
      * @param add the fx for the add participant page.
      * @param startUp The fx for the start-up page.
      * @param addExpense The fx for the add expense page.
      * @param adminPage The fx for the admin page.
+     * @param editName The fx for the edit name page.
      */
     public void initialize(
             Pair<EventOverviewCtrl, Parent> overview,
             Pair<AddParticipantCtrl, Parent> add,
             Pair<StartUpCtrl, Parent> startUp,
             Pair<AddExpenseCtrl, Parent> addExpense,
+            Pair<EditEventNameCtrl, Parent> editName,
             Pair<AdminCtrl, Parent> adminPage) {
 
         this.startUpCtrl = startUp.getKey();
@@ -77,8 +84,16 @@ public class MainCtrl {
 
         this.addExpenseCtrl = addExpense.getKey();
         this.addExpense = new Scene(addExpense.getValue());
+
+        this.editEventNameCtrl = editName.getKey();
+        this.editName = new Scene(editName.getValue());
+        this.editName.getStylesheets().add(getClass()
+                .getResource("style.css").toExternalForm());
+
         this.adminCtrl = adminPage.getKey();
         this.admin = new Scene(adminPage.getValue());
+
+        this.alertWrapper = new AlertWrapper();
 
 
 
@@ -109,6 +124,14 @@ public class MainCtrl {
         primaryStage.setScene(new Scene(lang.getValue()));
 
         primaryStage.show();
+    }
+
+    /**
+     * Sets the alertWrapper
+     * @param alertWrapper sets the alertWrapper
+     */
+    public void setAlertWrapper(AlertWrapper alertWrapper) {
+        this.alertWrapper = alertWrapper;
     }
 
     /**
@@ -147,6 +170,7 @@ public class MainCtrl {
         showParticipant(event);
     }
 
+
     private void showParticipant(Event event) {
         addParticipantCtrl.setEvent(event);
         addParticipantCtrl.refresh();
@@ -168,6 +192,17 @@ public class MainCtrl {
     public void showEditParticipant(Event event, Participant participant) {
         addParticipantCtrl.setParticipant(participant);
         showParticipant(event);
+    }
+
+    /**
+     * Sets the scene to the page where the name of the event can be edited
+     * @param event event for which the name needs to be changed
+     */
+    public void showEditName(Event event) {
+        editEventNameCtrl.setEvent(event);
+        this.editEventNameCtrl.refreshText();
+        primaryStage.setTitle("Event Overview: Editing name");
+        primaryStage.setScene(editName);
     }
 
 
@@ -201,8 +236,20 @@ public class MainCtrl {
      */
     public void showAddExpense(Event event) {
         addExpenseCtrl.setEvent(event);
+        addExpenseCtrl.setExpenseToOverwrite(null);
         addExpenseCtrl.refresh();
-        primaryStage.setTitle("Splitty!");
+        primaryStage.setScene(addExpense);
+    }
+
+    /**
+     * Go to the edit expense page.
+     * @param event the event the participant is a part of.
+     * @param transaction the transaction to edit
+     */
+    public void showEditExpense(Event event, Transaction transaction) {
+        addExpenseCtrl.setEvent(event);
+        addExpenseCtrl.setExpenseToOverwrite(transaction);
+        addExpenseCtrl.refresh();
         primaryStage.setScene(addExpense);
     }
 
@@ -223,15 +270,11 @@ public class MainCtrl {
                 }
             });
         } catch (NotAuthorizedException e) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle(Translator.getTranslation(Text
-                    .Admin
-                    .Alert.unauthorisedTitle));
-            alert.setHeaderText(null);
-            alert.setContentText(Translator.getTranslation(Text
-                    .Admin
-                    .Alert.unauthorisedContent));
-            alert.showAndWait();
+            alertWrapper.showAlert(Alert.AlertType.INFORMATION,
+                    Translator.getTranslation(Text.Admin
+                            .Alert.unauthorisedTitle),
+                    Translator.getTranslation(Text.Admin
+                            .Alert.unauthorisedContent));
         }
     }
 

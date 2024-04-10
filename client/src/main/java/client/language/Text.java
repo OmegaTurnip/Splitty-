@@ -10,45 +10,16 @@ public class Text {
     public static final String NativeLanguageName = "NativeLanguageName";
     static final String Locale = "Locale";
 
-    /**
-     * General language class for the common messagebox texts.
-     * This class is to be used throughout the entire program (unlike most that
-     * will be added later on down the line).
-     */
-    public static final class MessageBox {
 
-        private static final String level = "MessageBox.";
-
-        /**
-         * General language class for the common messagebox options.
-         */
-        public static final class Options {
-
-            private static final String level = MessageBox.level + "Options.";
-
-            // Ok is an example of a text id that will be used to select the
-            // sentence we want.
-            public static final String Ok = level + "Ok";
-            public static final String Cancel = level + "Cancel";
-            public static final String Abort = level + "Abort";
-            public static final String Continue = level + "Continue";
-            public static final String Retry = level + "Retry";
-            public static final String Ignore = level + "Ignore";
-            public static final String Yes = level + "Yes";
-            public static final String No = level + "No";
-            public static final String Help = level + "Help";
-        }
-    }
-
-    public static final class Menu{
+    public static final class Menu {
         private static final String level = "Menu.";
 
         public static final String Languages = level + "Languages";
+
+        public static final String AddLanguage = level + "AddLanguage";
+
         public static final String ReturnToOverview = level +
                 "ReturnToOverview";
-        public static final String English = level + "English";
-        public static final String Dutch = level + "Dutch";
-        public static final String German = level + "German";
         public static final String Close = level + "Close";
 
     }
@@ -64,6 +35,13 @@ public class Text {
         public static final String expensesDropDown = level
                 + "expensesDropDown";
 
+        public static final class ExpenseListing {
+            private static final String level = EventOverview.level +
+                    "ExpenseListing.";
+
+            public static final String paid = level + "paid";
+        }
+
         public static final class Alert {
             private static final String level = EventOverview.level +
                     "Alert.";
@@ -71,6 +49,12 @@ public class Text {
                     "deletedEventTitle";
             public static final String deletedEventContent = level +
                     "deletedEventContent";
+
+            public static final String notSelectedTitle = level +
+                    "notSelectedTitle";
+
+            public static final String notSelectedContent = level +
+                    "notSelectedContent";
         }
 
 
@@ -106,9 +90,24 @@ public class Text {
 
             }
         }
+
+        public static class TransactionCellController {
+            public static final String level = EventOverview.level +
+                    "TransactionCellController.";
+
+            public static final class Alert {
+                public static final String level = TransactionCellController
+                        .level + "Alert.";
+                public static final String deleteExpenseTitle = level +
+                        "deleteExpenseTitle";
+                public static final String deleteExpenseContent = level +
+                        "deleteExpenseContent";
+
+            }
+        }
     }
 
-    public static final class AddParticipant{
+    public static final class AddParticipant {
         private static final String level = "AddParticipant.";
 
         public static final String Username = level + "Username";
@@ -120,13 +119,21 @@ public class Text {
         public static final String Title = level + "Title";
         public static final String EditTitle = level + "EditTitle";
 
-        public static final class Alert{
+        public static final class Alert {
             public static final String level = AddParticipant.level + "Alert.";
             public static final String NoName = level + "NoName";
 
             public static final String InvalidMail = level + "InvalidMail";
             public static final String InvalidIBAN = level + "InvalidIBAN";
             public static final String InvalidBIC = level + "InvalidBIC";
+
+            public static final String DuplicateError = level +
+                    "DuplicateError";
+            public static final String EmptyError = level + "EmptyError";
+            public static final String FormatError = level + "FormatError";
+
+            public static final String DuplicateErrorContent = level +
+                    "DuplicateErrorContent";
         }
 
 
@@ -144,11 +151,14 @@ public class Text {
 
         public static final String languagesMenu = level + "languagesMenu";
 
+        public static final String currencyMenu = level + "currencyMenu";
+
         public static final class Menu {
             public static final String level = StartUp.level + "Menu.";
             public static final String removeYourEvents =
                     level + "removeYourEvents";
         }
+
         public static final class Buttons {
             public static final String level = StartUp.level + "Buttons.";
             public static final String NewEventButton =
@@ -162,12 +172,39 @@ public class Text {
             public static final String level = StartUp.level + "Alert.";
             public static final String noEventWritten =
                     level + "noEventWritten";
+            public static final String noEventWrittenTitle =
+                    level + "noEventWrittenTitle";
             public static final String alreadyInEvent =
                     level + "alreadyInEvent";
+            public static final String alreadyInEventTitle =
+                    level + "alreadyInEventTitle";
             public static final String removeEventHeader =
                     level + "removeEventHeader";
             public static final String removeEventContent =
                     level + "removeEventContent";
+        }
+    }
+
+    public static final class EditName {
+        private static final String level = "EditName.";
+
+        public static final String inputName = level + "inputName";
+
+        public static final String cancel = level + "cancel";
+        public static final String confirm = level + "confirm";
+
+        public static final String copy = level + "copy";
+
+        public static final class Alert {
+            public static final String level = EditName.level + "Alert.";
+            public static final String confirmTitle = level + "confirmTitle";
+            public static final String confirmContent = level
+                    + "confirmContent";
+            public static final String showInviteTitle = level +
+                    "showInviteTitle";
+
+            public static final String showInviteContent = level +
+                    "showInviteContent";
         }
     }
 
@@ -236,10 +273,12 @@ public class Text {
                 level + "participantsPrompt";
         public static final String expenseTypePrompt = level + "typePrompt";
         public static final String participantsEveryone = level + "everyone";
+
         public static final class Button {
             public static final String level = AddExpense.level + "Buttons.";
             public static final String addExpenseButton = level + "addExpense";
         }
+
 
         public static final class Alert {
             public static final String level = AddExpense.level + "Alert.";
@@ -252,6 +291,11 @@ public class Text {
                     "onlyOnePeriodOrCommaAllowed";
             public static final String generallyInvalid = level +
                     "generallyInvalid";
+
+            public static final String dateFormatTitle = level + "FormatTitle";
+
+            public static final String dateFormatContent = level +
+                    "FormatContent";
         }
 
     }

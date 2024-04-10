@@ -2,6 +2,7 @@ package client.scenes;
 
 
 
+import client.language.Language;
 import client.language.Text;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -19,6 +20,10 @@ import commons.Transaction;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.StringConverter;
 
@@ -27,7 +32,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 
-public class EventOverviewCtrl implements TextPage, Initializable {
+public class EventOverviewCtrl extends TextPage implements Initializable {
 
     private Event event;
 
@@ -41,8 +46,6 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     private Label participantsLabel;
     @FXML
     private Label expensesLabel;
-    @FXML
-    private Menu languages;
     @FXML
     private Button addParticipantButton;
     @FXML
@@ -72,6 +75,11 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     private final ServerUtils server;
     private MainCtrl mainCtrl;
 
+    private AlertWrapper alertWrapper;
+
+    private TransactionCellController transactionCellController;
+
+
 
     /**
      * Initializes the controller
@@ -82,6 +90,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     public EventOverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+        this.alertWrapper = new AlertWrapper();
     }
 
     /**
@@ -96,12 +105,16 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        fetchLanguages(languages);
+        fetchLanguages();
         participantsListView.setCellFactory(param ->
                 new ParticipantCellFactory());
         expensesListView.setCellFactory(param ->
                 new TransactionCellFactory());
-        server.registerForUpdates(t -> updateTransactions(t), event);
+        server.registerForUpdates(t -> {
+            updateTransactions(t);
+            Platform.runLater(this::refresh);
+            System.out.println("Received transaction: " + t.getName());
+        }, event);
         server.registerForMessages("/topic/admin", Event.class, e -> {
             if (event.equals(e)) event = e; //Overwrite current event
             System.out.println("Received event: " + event.getEventName());
@@ -111,19 +124,25 @@ public class EventOverviewCtrl implements TextPage, Initializable {
             if (event.equals(e)) {
                 Platform.runLater(() -> {
                     mainCtrl.showStartUp();
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle(Translator
-                            .getTranslation(Text.EventOverview
-                            .Alert.deletedEventTitle));
-                    alert.setHeaderText(null);
-                    alert.setContentText(Translator
-                            .getTranslation(Text.EventOverview
-                            .Alert.deletedEventContent));
-                    alert.showAndWait();
+                    alertWrapper.showAlert(Alert.AlertType.ERROR,
+                            Translator.getTranslation(
+                                    Text.EventOverview.Alert.deletedEventTitle),
+                            Translator.getTranslation(
+                                    Text.EventOverview.Alert.
+                                            deletedEventContent)
+                    );
                 });
             }
         });
         refresh();
+    }
+
+    /**
+     * Sets the alertWrapper
+     * @param alertWrapper alertWrapper
+     */
+    public void setAlertWrapper(AlertWrapper alertWrapper) {
+        this.alertWrapper = alertWrapper;
     }
 
     /**
@@ -170,8 +189,8 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     public static class ParticipantStringConverter
             extends StringConverter<Object> {
 
-        private StringConverter<Object> participantStringConverter =
-                new StringConverter<Object>() {
+        private final StringConverter<Object> participantStringConverter =
+                new StringConverter<>() {
 
         /**
          * Converts the given object to its string representation.
@@ -229,6 +248,7 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
             setFont(Font.font("Arial", 14));
+            setTextFill(Color.WHITESMOKE);
 
             if (empty || item == null) {
                 setText("");
@@ -242,8 +262,9 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     /**
      * This method adds the transaction to the correct list.
      * @param transaction The transaction that was added.
+     * @return Transaction that is added
      */
-    public void updateTransactions(Transaction transaction) {
+    public Transaction updateTransactions(Transaction transaction) {
         transactions.add(transaction);
         Participant participant = (Participant) expensesDropDown.getValue();
         if (participant != null &&
@@ -253,7 +274,10 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         if (transaction.getPayer().equals(participant)) {
             transactionsPayer.add(transaction);
         }
+
+        return transaction;
     }
+
 
     /**
      * Makes sure that the all threads stop
@@ -279,10 +303,11 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         if (selected != null) {
             String choice = selected.getId();
             if(!choice.equals("AllExpenses") && participant == null){
-                showAlert("Participant Not Selected",
-                        "Please select a participant " +
-                                "first within the expense menu.");
-
+                alertWrapper.showAlert(Alert.AlertType.ERROR,
+                        Translator.getTranslation(
+                                Text.EventOverview.Alert.notSelectedTitle),
+                        Translator.getTranslation(
+                                Text.EventOverview.Alert.notSelectedContent));
             }
             transactions =
                     FXCollections.observableArrayList(event.getTransactions());
@@ -296,10 +321,12 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      * @param participant The participant.
      * @param transactions The transactions.
      */
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     public void showSelectedExpenses(ToggleButton selected,
                                      Participant participant,
                                      ObservableList<Transaction> transactions){
         String choice = selected.getId();
+        setEvents(transactions);
         switch (choice) {
             case "AllExpenses":
                 System.out.println("all clicked");
@@ -310,8 +337,13 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                 transactionsParticipant =
                         FXCollections.observableArrayList();
                 for (Transaction transaction : transactions) {
-                    if (transaction.getParticipants().contains(participant)) {
-                        transactionsParticipant.add(transaction);
+                    for(Participant p : transaction.getParticipants()) {
+                        if (p.equals(participant)) {
+                            transactionsParticipant.add(transaction);
+                        }
+                        if (transaction.getPayer().equals(participant)) {
+                            transactionsPayer.add(transaction);
+                        }
                     }
                 }
                 expensesListView.setItems(transactionsParticipant);
@@ -330,18 +362,23 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         }
     }
 
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    private void setEvents(ObservableList<Transaction> transactions) {
+        for (Transaction transaction : transactions) {
+            for(Participant p : transaction.getParticipants()) {
+                p.setEvent(event);
+            }
+            transaction.getPayer().setEvent(event);
+        }
     }
+
+
     /**
      * Refreshes the text of EventOverview
      */
-
+    @Override
     public void refreshText() {
+        languageMenu.setText(
+                Translator.getTranslation(Text.Menu.Languages));
         participantsLabel.setText(Translator
                 .getTranslation(client.language
                         .Text.EventOverview.participantsLabel));
@@ -366,8 +403,13 @@ public class EventOverviewCtrl implements TextPage, Initializable {
         expensesDropDown.setPromptText(Translator
                     .getTranslation(client.language
                             .Text.EventOverview.expensesDropDown));
-
+        if(transactionCellController != null){
+            transactionCellController.refreshText();
+            expensesListView.refresh();
+        }
         if (event != null ) eventNameLabel.setText(event.getEventName());
+        refreshIcon(Translator.getCurrentLanguage().getLanguageCode(),
+                languageMenu, Language.languages);
     }
     /**
      * Add participant to event
@@ -382,6 +424,9 @@ public class EventOverviewCtrl implements TextPage, Initializable {
     public void addExpense() {
         mainCtrl.showAddExpense(event);
     }
+
+
+    public void editName() {mainCtrl.showEditName(event);}
 
     private class ParticipantCellFactory extends ListCell<Participant> {
 
@@ -437,7 +482,9 @@ public class EventOverviewCtrl implements TextPage, Initializable {
             } else {
                 if (loader == null) {
                     loader = new FXMLLoader(getClass()
-                            .getResource("client/scenes/TransactionCell.fxml"));
+                            .getResource(
+                                    "/client/scenes/TransactionCell.fxml"
+                            ));
                     try {
                         Parent root = loader.load();
                         loader.setRoot(root);
@@ -445,15 +492,62 @@ public class EventOverviewCtrl implements TextPage, Initializable {
                         e.printStackTrace();
                     }
                 }
-                TransactionCellController controller = loader.getController();
-                controller.setTransactionData(transaction);
-
-                setText(null);
+                transactionCellController = loader.getController();
+                transactionCellController.setTransactionData(transaction);
+                transactionCellController.setEvent(event);
+                transactionCellController.setServer(server);
+                transactionCellController.setMainCtrl(mainCtrl);
+                transactionCellController.setTransaction(transaction);
+                transactionCellController.setEventOverviewCtrl(
+                        EventOverviewCtrl.this);
                 setGraphic(loader.getRoot());
             }
         }
     }
 
+    /**
+     * Shows the invite code of the event
+     */
+    public void showInviteCode(){
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle(Translator.getTranslation(client.language.
+                Text.EditName.Alert.showInviteTitle));
+        ButtonType cancelButtonType = new ButtonType(
+                Translator.getTranslation(Text.EditName.cancel),
+                ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType copyButtonType = new ButtonType(
+                Translator.getTranslation(Text.EditName.copy),
+                ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(copyButtonType,
+                cancelButtonType);
+        Label label = new Label(Translator.getTranslation(
+                Text.EditName.Alert.showInviteContent));
+        TextField textField = new TextField();
+        textField.setText(event.getInviteCode());
+        textField.setEditable(false);
+        textField.setPrefWidth(275);
+        GridPane grid = new GridPane();
+        grid.add(label, 1, 1);
+        grid.add(textField, 2, 1);
+        dialog.getDialogPane().setContent(grid);
+        dialog.getDialogPane().setMinWidth(450);
+        dialog.setResultConverter(buttonType -> {
+            if (buttonType == copyButtonType) {
+                Clipboard clipboard = Clipboard.getSystemClipboard();
+                ClipboardContent content = new ClipboardContent();
+                content.putString(event.getInviteCode());
+                clipboard.setContent(content);
+                mainCtrl.showEventOverview(event);
+            }
+            return null;
+        });
+        dialog.setResultConverter(buttonType -> {
+            if (buttonType == cancelButtonType) {
+                mainCtrl.showEventOverview(event);}
+            return null;
+        });
+        dialog.showAndWait();
+    }
 
 
     /**
@@ -469,5 +563,13 @@ public class EventOverviewCtrl implements TextPage, Initializable {
      */
     public void returnToOverview() {
         mainCtrl.showStartUp();
+    }
+
+    /**
+     * Getter for expenseListView
+     * @return the ListView of expenses
+     */
+    public ListView<Transaction> getExpensesListView() {
+        return expensesListView;
     }
 }

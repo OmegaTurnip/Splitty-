@@ -1,8 +1,10 @@
 package client.scenes;
 
+import client.language.Language;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
+import client.utils.UserConfig;
 import commons.Event;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
@@ -21,19 +23,23 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
+
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
 
-public class StartUpCtrl implements Initializable, TextPage {
+public class StartUpCtrl extends TextPage implements Initializable {
 
     private List<Event> currentEvents;
 
     private final MenuItem removeFromYourEvents =
             new MenuItem("Remove from your events");
     private ContextMenu contextMenu;
+
+    @FXML
+    private Menu currencyMenu1;
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
@@ -94,12 +100,12 @@ public class StartUpCtrl implements Initializable, TextPage {
     }
 
     @FXML
-    private Menu languages;
-    @FXML
     private Menu adminLogin;
     @FXML
     private MenuItem loginButton;
     private String password;
+
+    private AlertWrapper alertWrapper;
 
     /**
      * Constructor
@@ -111,6 +117,7 @@ public class StartUpCtrl implements Initializable, TextPage {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.currentEvents = new ArrayList<>();
+        this.alertWrapper = new AlertWrapper();
     }
 
     /**
@@ -118,8 +125,13 @@ public class StartUpCtrl implements Initializable, TextPage {
      */
     private void fetchYourEvents() {
         this.currentEvents = new ArrayList<>();
-        List<String> codes = server.getUserSettings().getEventCodes();
-        currentEvents.addAll(server.getMyEvents());
+        try {
+            currentEvents.addAll(server.getMyEvents());
+        } catch (Exception e) {
+            System.out.println("Event codes are " +
+                    "empty so it throws 404 exception");
+        }
+
     }
 
     /**
@@ -136,7 +148,8 @@ public class StartUpCtrl implements Initializable, TextPage {
     public void initialize(URL location, ResourceBundle resources) {
         contextMenu = new ContextMenu();
         fetchYourEvents();
-        fetchLanguages(languages);
+        fetchLanguages();
+        loadCurrencyMenu();
         newEvent1.setOnAction(event -> createEvent());
         joinEvent1.setOnAction(event -> joinEvent());
         yourEvents.setCellFactory(param -> new EventListCell());
@@ -190,6 +203,7 @@ public class StartUpCtrl implements Initializable, TextPage {
         server.registerForMessages("/topic/admin", Event.class,
                 event -> refresh());
     }
+
     private void registerForDeleteMessages() {
         server.registerForMessages("/topic/admin/delete", Event.class,
                 event -> {
@@ -221,16 +235,23 @@ public class StartUpCtrl implements Initializable, TextPage {
         try {
             List<String> eventCodes = server.getUserSettings().getEventCodes();
             if (eventCodes.contains(code)) {
-                throw new WebApplicationException(
-                        Translator
-                                .getTranslation(
-                                        client.language.Text.StartUp
-                                        .Alert.alreadyInEvent), 422);
-            } else if (code.isEmpty()) {
-                throw new WebApplicationException(
+                alertWrapper.showAlert(Alert.AlertType.ERROR,
                         Translator.getTranslation(
-                                client.language.Text
-                                        .StartUp.Alert.noEventWritten), 422);
+                                client.language.Text.StartUp
+                                        .Alert.alreadyInEventTitle),
+                        Translator.getTranslation(
+                                client.language.Text.StartUp
+                                        .Alert.alreadyInEvent)
+                );
+            } else if (code.isEmpty()) {
+                alertWrapper.showAlert(Alert.AlertType.ERROR,
+                        Translator.getTranslation(
+                                client.language.Text.StartUp
+                                        .Alert.noEventWrittenTitle),
+                        Translator.getTranslation(
+                                client.language.Text.StartUp
+                                        .Alert.noEventWritten)
+                );
             }
             Event result = server.joinEvent(code);
             currentEvents.add(result);
@@ -239,15 +260,10 @@ public class StartUpCtrl implements Initializable, TextPage {
             System.out.println("Event: "+ result.getEventName() + " joined!");
         } catch (WebApplicationException e) {
             e.printStackTrace();
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
             return;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         clearFields();
         refresh();
     }
@@ -262,10 +278,13 @@ public class StartUpCtrl implements Initializable, TextPage {
         try {
             Event e = getEvent();
             if (e.getEventName().isEmpty()) {
-                throw new WebApplicationException(
+                alertWrapper.showAlert(Alert.AlertType.ERROR,
                         Translator.getTranslation(
-                                client.language.Text
-                                        .StartUp.Alert.noEventWritten), 422);
+                                client.language.Text.StartUp
+                                        .Alert.noEventWrittenTitle),
+                        Translator.getTranslation(
+                                client.language.Text.StartUp
+                                        .Alert.noEventWritten));
             }
             Event result = server.createEvent(e);
             List<String> eventCodes = server.getUserSettings().getEventCodes();
@@ -277,10 +296,6 @@ public class StartUpCtrl implements Initializable, TextPage {
                     " Time of last edit: " + result.getLastActivity());
         } catch (WebApplicationException e) {
             e.printStackTrace();
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
             return;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -313,6 +328,8 @@ public class StartUpCtrl implements Initializable, TextPage {
         return null;
     }
 
+
+
     /**
      * Refreshes the page and updates the list view.
      */
@@ -329,14 +346,15 @@ public class StartUpCtrl implements Initializable, TextPage {
             yourEvents.setItems(sortedEvents);
 
             refreshText();
-
             System.out.println("Page has been refreshed!");
         });
+
     }
 
     /**
      * Refreshes the text on the page.
      */
+    @Override
     public void refreshText() {
         newEventButton1.setText(Translator
                 .getTranslation(client.language
@@ -347,9 +365,11 @@ public class StartUpCtrl implements Initializable, TextPage {
         yourEventsLabel.setText(Translator
                 .getTranslation(client.language
                         .Text.StartUp.yourEventsLabel));
-        languages.setText(Translator
+        languageMenu.setText(Translator
                 .getTranslation(client.language
                         .Text.StartUp.languagesMenu));
+        currencyMenu1.setText(UserConfig.get().getPreferredCurrency()
+                .getCurrencyCode());
         removeFromYourEvents.setText(Translator.
                 getTranslation(client.language
                         .Text.StartUp.Menu.removeYourEvents));
@@ -359,6 +379,8 @@ public class StartUpCtrl implements Initializable, TextPage {
         joinEvent1.setPromptText(Translator
                 .getTranslation(client.language
                         .Text.StartUp.joinEventLabel));
+        refreshIcon(Translator.getCurrentLanguage().getLanguageCode(),
+                languageMenu, Language.languages);
     }
 
     /**
@@ -367,16 +389,15 @@ public class StartUpCtrl implements Initializable, TextPage {
      */
     public void undoEventJoin(Event selected) {
         if (selected != null) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle(Translator
-                    .getTranslation(client.language
-                            .Text.StartUp.Alert.removeEventHeader));
-            alert.setHeaderText(null);
-            alert.setContentText(Translator
-                    .getTranslation(client.language
-                            .Text.StartUp.Alert.removeEventContent));
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
+            ButtonType result = alertWrapper.showAlertButton(
+                    Alert.AlertType.CONFIRMATION,
+                    Translator
+                            .getTranslation(client.language
+                                    .Text.StartUp.Alert.removeEventHeader),
+                    Translator
+                            .getTranslation(client.language
+                                    .Text.StartUp.Alert.removeEventContent));
+            if (result == ButtonType.OK) {
                 try {
                     List<String> eventCodes =
                             server.getUserSettings().getEventCodes();
@@ -441,5 +462,27 @@ public class StartUpCtrl implements Initializable, TextPage {
         }
     }
 
+    private void loadCurrencyMenu() {
+        currencyMenu1.getItems().clear();
+        for (Currency currency : server.getAvailableCurrencies()) {
+            MenuItem item = new MenuItem(currency.getCurrencyCode());
+            item.setOnAction(event ->
+                setCurrency(currency)
+            );
+            currencyMenu1.getItems().add(item);
+        }
+        currencyMenu1.setText(UserConfig.get().getPreferredCurrency()
+                .getCurrencyCode());
+    }
+
+    private void setCurrency(Currency currency) {
+        try {
+            server.getUserSettings().setPreferredCurrency(currency);
+            currencyMenu1.setText(UserConfig.get().getPreferredCurrency()
+                    .getCurrencyCode());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

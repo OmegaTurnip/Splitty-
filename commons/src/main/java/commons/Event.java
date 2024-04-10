@@ -255,6 +255,21 @@ public class Event {
     }
 
     /**
+     * Adds a transaction
+     * @param transaction transaction to be added
+     */
+    public void addTransaction(Transaction transaction){
+        this.transactions.add(transaction);
+    }
+    /**
+     * Removes a transaction from the transactions
+     * @param transaction transaction
+     */
+    public void removeTransaction(Transaction transaction){
+        this.transactions.remove(transaction);
+    }
+
+    /**
      * Edit transactions (with updateLastActivity)
      * @param transactions The transactions
      */
@@ -287,7 +302,7 @@ public class Event {
                 Transaction.createDebt(
                         creditor, name, price, participants, this, tag
                 );
-        transactions.add(t);
+        this.transactions.add(t);
         updateLastActivity();
         return t;
     }
@@ -416,6 +431,34 @@ public class Event {
      */
     public boolean deleteTransaction(Transaction transaction) {
         return transactions.remove(transaction);
+    }
+
+    /**
+     * Gets the participant from participants that has the same id, used for
+     * making sure the same participant instance is used across an event
+     * @param id the id
+     * @return the participant of the same id
+     */
+    public Participant getParticipantById(Long id) {
+        for (Participant participant : participants) {
+            if (id != null && id.equals(participant.getParticipantId()))
+                return participant;
+        }
+        return null;
+    }
+
+    /**
+     * Get the Tag by its id
+     * @param id Tag id
+     * @return the tag
+     */
+    public Tag getTagById(Long id) {
+        for (Tag tag : tags) {
+            if (id != null && id.equals(tag.getTagId())) {
+                return tag;
+            }
+        }
+        return null;
     }
 
     /**
