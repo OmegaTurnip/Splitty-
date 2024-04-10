@@ -41,7 +41,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
     @FXML
     private Menu currencyMenu1;
 
-    private final ServerUtils server;
+    private ServerUtils server;
     private final MainCtrl mainCtrl;
 
     @FXML
@@ -277,7 +277,8 @@ public class StartUpCtrl extends TextPage implements Initializable {
     public void createEvent() throws WebApplicationException {
         try {
             Event e = getEvent();
-            if (e.getEventName().isEmpty()) {
+            if (e.getEventName() == null || e.getEventName().isEmpty() ||
+                    e.getEventName().isBlank()) {
                 alertWrapper.showAlert(Alert.AlertType.ERROR,
                         Translator.getTranslation(
                                 client.language.Text.StartUp
@@ -285,6 +286,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
                         Translator.getTranslation(
                                 client.language.Text.StartUp
                                         .Alert.noEventWritten));
+                return; //Do not create event if no name is given
             }
             Event result = server.createEvent(e);
             List<String> eventCodes = server.getUserSettings().getEventCodes();
@@ -421,6 +423,18 @@ public class StartUpCtrl extends TextPage implements Initializable {
      */
     public ListView<Event> getYourEvents() {
         return yourEvents;
+    }
+
+    public void setEvents(List<Event> events) {
+        this.currentEvents = events;
+    }
+
+    public void setAlertWrapper(AlertWrapper alertWrapper) {
+        this.alertWrapper = alertWrapper;
+    }
+
+    public void setServer(ServerUtils server) {
+        this.server = server;
     }
 
     private class EventListCell extends ListCell<Event> {
