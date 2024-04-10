@@ -293,7 +293,8 @@ public class DebtSimplifier {
         // Will raise a NullPointerException if an exchange rate is unavailable,
         // but that (throwing an exception) is expected behaviour
         return new Money(
-                exchangeRateFactory.getClosest(date, amount.getCurrency(), base)
+                exchangeRateFactory
+                        .getExchangeRate(date, amount.getCurrency(), base)
                         .convert(amount)
                         .getAmount(),
                 base
