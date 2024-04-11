@@ -43,7 +43,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
     @FXML
     private Menu currencyMenu1;
 
-    private final ServerUtils server;
+    private ServerUtils server;
     private final MainCtrl mainCtrl;
 
     @FXML
@@ -305,7 +305,8 @@ public class StartUpCtrl extends TextPage implements Initializable {
     public void createEvent() throws WebApplicationException {
         try {
             Event e = getEvent();
-            if (e.getEventName().isEmpty()) {
+            if (e.getEventName() == null || e.getEventName().isEmpty() ||
+                    e.getEventName().isBlank()) {
                 alertWrapper.showAlert(Alert.AlertType.ERROR,
                         Translator.getTranslation(
                                 client.language.Text.StartUp
@@ -313,6 +314,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
                         Translator.getTranslation(
                                 client.language.Text.StartUp
                                         .Alert.noEventWritten));
+                return; //Do not create event if no name is given
             }
             Event result = server.createEvent(e);
             List<String> eventCodes = server.getUserSettings().getEventCodes();
@@ -451,6 +453,29 @@ public class StartUpCtrl extends TextPage implements Initializable {
         return yourEvents;
     }
 
+    /**
+     *
+     * @param events
+     */
+    public void setEvents(List<Event> events) {
+        this.currentEvents = events;
+    }
+    /**
+     * used for testing purposes
+     * @param alertWrapper
+     */
+    public void setAlertWrapper(AlertWrapper alertWrapper) {
+        this.alertWrapper = alertWrapper;
+    }
+
+    /**
+     * used for testing purposes
+     * @param server
+     */
+    public void setServer(ServerUtils server) {
+        this.server = server;
+    }
+
     private class EventListCell extends ListCell<Event> {
         private final StackPane stackPane = new StackPane();
         private final Text text = new Text();
@@ -504,10 +529,14 @@ public class StartUpCtrl extends TextPage implements Initializable {
 
     private void loadCurrencyMenu() {
         currencyMenu1.getItems().clear();
-        for (Currency currency : server.getAvailableCurrencies()) {
-            MenuItem item = new MenuItem(currency.getCurrencyCode());
+        List<String> currencies = server.getAvailableCurrencies().stream()
+                .map(Currency::getCurrencyCode)
+                .sorted()
+                .toList();
+        for (String currency : currencies) {
+            MenuItem item = new MenuItem(currency);
             item.setOnAction(event ->
-                setCurrency(currency)
+                setCurrency(Currency.getInstance(currency))
             );
             currencyMenu1.getItems().add(item);
         }

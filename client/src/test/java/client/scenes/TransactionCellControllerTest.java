@@ -65,7 +65,7 @@ class TransactionCellControllerTest {
         List<Participant> list = new ArrayList<>();
         list.add(participant1);
         list.add(participant2);
-        Transaction transaction = event.registerDebt(participant1, "test debt", amount, list, null);
+        Transaction transaction = event.registerDebt(participant1, "test debt", amount, list, null, null);
         sut.setTransaction(transaction);
         doNothing().when(eventOverviewCtrl).refresh();
         when(alertWrapper.showAlertButton(any(Alert.AlertType.class), anyString(), anyString())).thenReturn(ButtonType.OK);
