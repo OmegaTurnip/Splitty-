@@ -595,6 +595,10 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         }
     }
 
+    /**
+     * sets mainCtrl
+     * @param mainCtrl mainCtrl
+     */
     public void setMainCtrl(MainCtrl mainCtrl){
         this.mainCtrl = mainCtrl;
     }
