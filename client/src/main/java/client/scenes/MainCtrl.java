@@ -20,6 +20,7 @@ import client.language.Translator;
 import client.utils.ServerUtils;
 import commons.Event;
 import commons.Participant;
+import commons.Transaction;
 import jakarta.ws.rs.NotAuthorizedException;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -28,6 +29,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+
+import java.time.LocalDate;
 
 public class MainCtrl {
 
@@ -42,6 +45,7 @@ public class MainCtrl {
     private Scene add;
     private StartUpCtrl startUpCtrl;
     private Scene startUp;
+    private LocalDate startUpDate;
 
     private AddExpenseCtrl addExpenseCtrl;
     private Scene addExpense;
@@ -68,6 +72,7 @@ public class MainCtrl {
             Pair<EditEventNameCtrl, Parent> editName,
             Pair<AdminCtrl, Parent> adminPage) {
 
+        startUpDate = LocalDate.now();
         this.startUpCtrl = startUp.getKey();
         this.startUp = new Scene(startUp.getValue());
         this.startUp.getStylesheets().add(getClass()
@@ -169,6 +174,7 @@ public class MainCtrl {
         showParticipant(event);
     }
 
+
     private void showParticipant(Event event) {
         addParticipantCtrl.setEvent(event);
         addParticipantCtrl.refresh();
@@ -229,13 +235,33 @@ public class MainCtrl {
     }
 
     /**
+     * Getter
+     * @return start up date
+     */
+    public LocalDate getStartUpDate() {
+        return startUpDate;
+    }
+
+    /**
      * go to the add expense page (by changing the content of the window).
      * @param event the event the expense is a part of.
      */
     public void showAddExpense(Event event) {
         addExpenseCtrl.setEvent(event);
+        addExpenseCtrl.setExpenseToOverwrite(null);
         addExpenseCtrl.refresh();
-        primaryStage.setTitle("Splitty!");
+        primaryStage.setScene(addExpense);
+    }
+
+    /**
+     * Go to the edit expense page.
+     * @param event the event the participant is a part of.
+     * @param transaction the transaction to edit
+     */
+    public void showEditExpense(Event event, Transaction transaction) {
+        addExpenseCtrl.setEvent(event);
+        addExpenseCtrl.setExpenseToOverwrite(transaction);
+        addExpenseCtrl.refresh();
         primaryStage.setScene(addExpense);
     }
 

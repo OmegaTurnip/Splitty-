@@ -35,6 +35,7 @@ public class TransactionCellController {
     @FXML
     private Button deleteTransactionButton;
     private AlertWrapper alertWrapper;
+    private MainCtrl mainCtrl;
 
 
     /**
@@ -45,7 +46,7 @@ public class TransactionCellController {
         refreshText();
         alertWrapper = new AlertWrapper();
         editTransactionButton.setOnAction(event ->
-                System.out.println("Edit transaction button clicked"));
+                mainCtrl.showEditExpense(this.event, transaction));
         deleteTransactionButton.setOnAction(event -> removeTransaction());
     }
 
@@ -69,7 +70,7 @@ public class TransactionCellController {
             if (result == ButtonType.OK) {
                 server.removeTransaction(transaction);
                 event.deleteTransaction(transaction);
-                eventOverviewCtrl.refresh();
+                server.saveEvent(event);
                 System.out.println("Delete transaction button clicked");
             }
         }
@@ -156,4 +157,11 @@ public class TransactionCellController {
         this.alertWrapper = alertWrapper;
     }
 
+    /**
+     * Setter
+     * @param mainCtrl the mainCtrl to set
+     */
+    public void setMainCtrl(MainCtrl mainCtrl) {
+        this.mainCtrl = mainCtrl;
+    }
 }
