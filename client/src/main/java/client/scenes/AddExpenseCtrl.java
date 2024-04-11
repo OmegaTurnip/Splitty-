@@ -67,7 +67,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     private Event event;
     private ServerUtils server;
-    private final MainCtrl mainCtrl;
+    private MainCtrl mainCtrl;
     private final Pattern pricePattern;
     private Transaction expenseToOverwrite;
     private AlertWrapper alertWrapper;
@@ -595,13 +595,10 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         }
     }
 
-    void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    public void setMainCtrl(MainCtrl mainCtrl){
+        this.mainCtrl = mainCtrl;
     }
+
 
     boolean verifyPrice(String input) {
         Matcher matcher = pricePattern.matcher(input);
@@ -615,31 +612,36 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     private void choosePriceAlert(String input) {
         if (input.isEmpty()) {
-            showAlert(Translator.getTranslation(
+            alertWrapper.showAlert(Alert.AlertType.ERROR,
+                    Translator.getTranslation(
                             Text.AddExpense.Alert.invalidPrice),
                     Translator.getTranslation(
                             Text.AddExpense.Alert.emptyString));
         } else if (input.matches("[a-zA-Z]")) {
-            showAlert(Translator.getTranslation(
+            alertWrapper.showAlert(Alert.AlertType.ERROR,
+                    Translator.getTranslation(
                             Text.AddExpense.Alert.invalidPrice),
                     Translator.getTranslation(Text.AddExpense.Alert.noLetters));
         } else if (input.chars().filter(ch -> ch == ',').count() > 1
                 || input.chars().filter(ch -> ch == '.').count() > 1
                 || (input.chars().filter(ch -> ch == ',').count() > 0
                 && input.chars().filter(ch -> ch == '.').count() > 0)) {
-            showAlert(Translator.getTranslation(
+            alertWrapper.showAlert(Alert.AlertType.ERROR,
+                    Translator.getTranslation(
                             Text.AddExpense.Alert.invalidPrice),
                     Translator.getTranslation(
                             Text.AddExpense.Alert.onlyOnePeriodOrComma));
         } else if (!Character.isDigit(input.charAt(0))
                 || !Character.isDigit(input.charAt(input.length() - 1))) {
-            showAlert(Translator.getTranslation(
+            alertWrapper.showAlert(Alert.AlertType.ERROR,
+                    Translator.getTranslation(
                             Text.AddExpense.Alert.invalidPrice),
                     Translator.getTranslation(
                             Text.AddExpense.Alert.startWithDigit));
             // If none of the above, consider it as general invalid format
         } else {
-            showAlert(Translator.getTranslation(
+            alertWrapper.showAlert(Alert.AlertType.ERROR,
+                    Translator.getTranslation(
                             Text.AddExpense.Alert.invalidPrice),
                     Translator.getTranslation(
                             Text.AddExpense.Alert.generallyInvalid));
