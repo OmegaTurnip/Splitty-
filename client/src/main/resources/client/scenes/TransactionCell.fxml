@@ -13,14 +13,14 @@
          <children>
             <Label id="transactionInfoLabel" fx:id="transactionInfoLabel" alignment="CENTER" graphicTextGap="0.0" prefHeight="22.0" prefWidth="318.0" styleClass="list-cell" stylesheets="@style.css" text="Label" textFill="#fefdfd" wrapText="true" HBox.hgrow="ALWAYS">
                <font>
-                  <Font name="Garamond" size="10.0" />
+                  <Font name="Arial" size="10.0" />
                </font>
             </Label>
             <HBox alignment="CENTER" prefHeight="35.0" prefWidth="110.0">
                <children>
                   <Button id="editTransactionButton" fx:id="editTransactionButton" mnemonicParsing="false" prefHeight="27.0" prefWidth="38.0" styleClass="button-edit">
                      <font>
-                        <Font name="Garamond" size="12.0" />
+                        <Font name="Arial" size="12.0" />
                      </font>
                   </Button>
                   <Button id="deleteTransactionButton" fx:id="deleteTransactionButton" alignment="CENTER" mnemonicParsing="false" prefHeight="27.0" prefWidth="38.0" styleClass="button-delete">
@@ -28,7 +28,7 @@
                         <Insets left="10.0" />
                      </HBox.margin>
                      <font>
-                        <Font name="Garamond" size="12.0" />
+                        <Font name="Arial" size="12.0" />
                      </font>
                   </Button>
                </children>
