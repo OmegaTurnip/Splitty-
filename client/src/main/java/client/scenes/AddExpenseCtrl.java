@@ -138,7 +138,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         date.setConverter(new MyLocalDateStringConverter("dd/MM/yyyy"));
         refresh();
     }
-
     private void loadCurrencies() {
         List<String> currencies = new ArrayList<>();
         for (Currency currency : server.getAvailableCurrencies()) {
@@ -161,6 +160,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Setter
+<<<<<<< HEAD
      *
      * @param choiceBox the currency choicebox
      */
@@ -177,7 +177,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     public void setParticipants(CheckComboBox<Object> participants) {
         this.participants = participants;
     }
-
 
     static class MyLocalDateStringConverter extends StringConverter<LocalDate> {
 
@@ -198,8 +197,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                 return "";
             }
         }
-
-
 
         @Override
         public LocalDate fromString(String string) {
@@ -434,6 +431,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             expenseName.clear();
             price.clear();
             date.setValue(mainCtrl.getStartUpDate());
+            date.setValue(LocalDate.now());
         }
         System.out.println("Page has been refreshed!");
     }
