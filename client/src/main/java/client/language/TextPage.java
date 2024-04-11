@@ -55,7 +55,7 @@ public abstract class TextPage {
         Image image = new Image(languages
                 .get(langKey).getIconFile().toURI().toString());
         ImageView imageView = new ImageView(image);
-        imageView.setFitHeight(20);
+        imageView.setFitHeight(15);
         imageView.setFitWidth(20);
         languagesMenu.setGraphic(imageView);
     }
@@ -79,7 +79,7 @@ public abstract class TextPage {
             Image image = new Image(languages
                     .get(langKey).getIconFile().toURI().toString());
             ImageView imageView = new ImageView(image);
-            imageView.setFitHeight(20);
+            imageView.setFitHeight(15);
             imageView.setFitWidth(20);
             item.setGraphic(imageView);
             languageMenu.getItems().add(item);

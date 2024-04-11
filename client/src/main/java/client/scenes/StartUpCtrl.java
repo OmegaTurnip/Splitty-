@@ -22,6 +22,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 
 
@@ -29,6 +30,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class StartUpCtrl extends TextPage implements Initializable {
 
@@ -153,6 +155,8 @@ public class StartUpCtrl extends TextPage implements Initializable {
         newEvent1.setOnAction(event -> createEvent());
         joinEvent1.setOnAction(event -> joinEvent());
         yourEvents.setCellFactory(param -> new EventListCell());
+        yourEventsFocusing();
+
         yourEvents.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case DELETE -> {
@@ -173,6 +177,30 @@ public class StartUpCtrl extends TextPage implements Initializable {
         createLogin();
         registerForDeleteMessages();
         registerForSaveEvents();
+    }
+
+    private void yourEventsFocusing() {
+        AtomicReference<Integer> previousIndex = new AtomicReference<>();
+
+        yourEvents.focusedProperty()
+                .addListener((observable, oldValue, newValue) -> {
+                    if (newValue) {
+                        if (previousIndex.get() != null
+                                && previousIndex.get() >= 0
+                                && previousIndex.get() <
+                                yourEvents.getItems().size()) {
+                            yourEvents.getSelectionModel()
+                                    .select(previousIndex.get());
+                        } else {
+                            yourEvents.getSelectionModel()
+                                    .selectFirst();
+                        }
+                    } else {
+                        previousIndex.set(yourEvents
+                                .getSelectionModel().getSelectedIndex());
+                        yourEvents.getSelectionModel().clearSelection();
+                    }
+                });
     }
 
     /**
@@ -453,11 +481,23 @@ public class StartUpCtrl extends TextPage implements Initializable {
         private final Text text = new Text();
         {
             setContextMenu(contextMenu);
-
+            text.setFill(Paint.valueOf("#0d0d0d"));
             stackPane.getStyleClass().add("event-cell");
             setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
             stackPane.getChildren().addAll(text);
-
+            focusedProperty()
+                    .addListener((observable, oldValue, newValue) -> {
+                        if (newValue) {
+                            text.setFill(Paint.valueOf("#fefdfd"));
+                        } else {
+                            text.setFill(Paint.valueOf("#0d0d0d"));
+                        }
+                    });
+            setOnMouseEntered(event ->
+                    text.setFill(Paint.valueOf("#fefdfd")));
+            setOnMouseExited(event -> {
+                if (!isFocused()) text.setFill(Paint.valueOf("#0d0d0d"));
+            });
             setOnMouseClicked(event -> {
                 if (event.getButton()  == MouseButton.PRIMARY) {
                     Event selected = getItem();
