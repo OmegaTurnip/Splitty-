@@ -11,6 +11,7 @@ import server.database.TransactionRepository;
 import server.financial.ExchangeRateFactory;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 @RestController
@@ -39,8 +40,8 @@ public class TransactionController {
                                  ExchangeRateFactory exchangeRateFactory) {
         this.eventRepository = eventRepository;
         this.repo = repo;
-        this.listeners = new HashMap<>();
         this.exchangeRateFactory = exchangeRateFactory;
+        this.listeners = new ConcurrentHashMap<>();
     }
 
     /**
@@ -217,8 +218,9 @@ public class TransactionController {
                     transaction.getTag().getTagId()
             ));
         }
-        listeners.forEach((k, l) -> l.accept(transaction));
-        return ResponseEntity.ok(repo.save(transaction));
+        Transaction response = repo.save(transaction);
+        listeners.forEach((k, l) -> l.accept(response));
+        return ResponseEntity.ok(response);
     }
 
 
