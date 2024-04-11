@@ -178,10 +178,10 @@ public class EventController {
      *
      * @return  Money object with the converted amount.
      */
-    @PutMapping("/convert/{amount}/{currency}/{date}")
+    @PutMapping("/convert/{currency}/{date}")
     @ResponseBody
     public ResponseEntity<Money> convertMoney(
-            @PathVariable("amount") Money money,
+            @RequestBody Money money,
             @PathVariable("currency") Currency currency,
             @PathVariable("date") LocalDate date) {
 

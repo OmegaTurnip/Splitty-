@@ -30,6 +30,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.time.LocalDate;
+
 public class MainCtrl {
 
     private Stage primaryStage;
@@ -43,6 +45,7 @@ public class MainCtrl {
     private Scene add;
     private StartUpCtrl startUpCtrl;
     private Scene startUp;
+    private LocalDate startUpDate;
 
     private AddExpenseCtrl addExpenseCtrl;
     private Scene addExpense;
@@ -69,6 +72,7 @@ public class MainCtrl {
             Pair<EditEventNameCtrl, Parent> editName,
             Pair<AdminCtrl, Parent> adminPage) {
 
+        startUpDate = LocalDate.now();
         this.startUpCtrl = startUp.getKey();
         this.startUp = new Scene(startUp.getValue());
         this.startUp.getStylesheets().add(getClass()
@@ -234,6 +238,14 @@ public class MainCtrl {
      */
     public Scene getOverviewScene() {
         return overview;
+    }
+
+    /**
+     * Getter
+     * @return start up date
+     */
+    public LocalDate getStartUpDate() {
+        return startUpDate;
     }
 
     /**
