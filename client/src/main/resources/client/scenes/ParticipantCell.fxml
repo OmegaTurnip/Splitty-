@@ -7,11 +7,11 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<StackPane prefHeight="17.0" prefWidth="179.0" styleClass="event-cell" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ParticipantCellController">
+<StackPane prefHeight="17.0" prefWidth="179.0" styleClass="participant-cell" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ParticipantCellController">
    <children>
       <HBox alignment="CENTER" prefHeight="54.0" prefWidth="155.0">
          <children>
-            <Label fx:id="participantCellLabel" alignment="CENTER" prefHeight="34.0" prefWidth="106.0" text="Label" textFill="#fefdfd">
+            <Label fx:id="participantCellLabel" alignment="CENTER" prefHeight="34.0" prefWidth="106.0" text="Label">
                <font>
                   <Font name="Arial" size="17.0" />
                </font>
