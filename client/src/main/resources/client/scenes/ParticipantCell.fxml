@@ -13,14 +13,14 @@
          <children>
             <Label fx:id="participantCellLabel" alignment="CENTER" prefHeight="34.0" prefWidth="106.0" text="Label" textFill="#fefdfd">
                <font>
-                  <Font name="Garamond" size="17.0" />
+                  <Font name="Arial" size="17.0" />
                </font>
             </Label>
             <HBox alignment="CENTER" prefHeight="35.0" prefWidth="110.0">
                <children>
                   <Button fx:id="editParticipantButton" mnemonicParsing="false" prefHeight="27.0" prefWidth="38.0" styleClass="button-edit">
                      <font>
-                        <Font name="Garamond" size="12.0" />
+                        <Font name="Arial" size="12.0" />
                      </font>
                   </Button>
                   <Button fx:id="deleteParticipantButton" alignment="CENTER" mnemonicParsing="false" prefHeight="27.0" prefWidth="38.0" styleClass="button-delete">
@@ -28,7 +28,7 @@
                         <Insets left="10.0" />
                      </HBox.margin>
                      <font>
-                        <Font name="Garamond" size="12.0" />
+                        <Font name="Arial" size="12.0" />
                      </font>
                   </Button>
                </children>

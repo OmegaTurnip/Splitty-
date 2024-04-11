@@ -1,9 +1,44 @@
+/*Start-up*/
+.menu-bar {
+    -fx-background-color: #fefdfd;
+    -fx-font-family: Arial;
+}
+.blackButton {
+    -fx-background-radius: 5pt;
+    -fx-background-color: #0d0d0d;
+    -fx-font-weight: bold;
+    -fx-text-fill: #fefdfd;
+    -fx-cursor: hand;
+}
+
+.text-field {
+    -fx-background-color: transparent;
+    -fx-prompt-text-fill: #fefdfd;
+    -fx-border-color: #e0ddf2;
+    -fx-border-radius: 5pt;
+    -fx-border-width: 1.5pt;
+    -fx-text-fill: #fefdfd;
+    -fx-font-size: 12pt;
+}
+.text-field:focused {
+    -fx-font-size: 13pt;
+}
+
+/*Event overview*/
+.borderPane {
+    -fx-background-color: #8e3edd;
+}
+.title {
+    -fx-background-color: #8e3edd;
+    -fx-text-fill: #fefdfd;
+    -fx-font-weight: bold;
+}
 .event-cell {
-    -fx-background-color: #9370DB;
+    -fx-background-color: #E0DDF2;
     -fx-border-color: transparent;
     -fx-padding: 10;
     -fx-background-radius: 12;
-    -fx-font-family: Garamond;
+    -fx-font-family: Arial;
     -fx-font-size: 18px;
 }
 
@@ -24,12 +59,12 @@
     -fx-background-color: radial-gradient(center 96.2% 89.9%, radius 100%,  rgb(142, 62, 221)  0%, rgb(51, 21, 117) 92%);
 }
 
-.button {
+.purpleButton {
     -fx-background-color: #9370DB;
     -fx-cursor: hand;
 }
 
-.button:hover, .button:focused {
+.purpleButton:hover, .purpleButton:focused {
     -fx-background-color: #8A2BE2;
 }
 
@@ -67,7 +102,7 @@
 
 .choice-box {
     -fx-background-color: #B89AE1;
-    -fx-font-family: Garamond;
+    -fx-font-family: Arial;
     -fx-cursor: hand;
 }
 
