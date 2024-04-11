@@ -163,11 +163,11 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         if (actionHistory.hasRedoActions()) {
             actionHistory.redo();
         } else {
-            alertWrapper.showAlert(Alert.AlertType.INFORMATION,
-                    Translator.getTranslation(
-                            Text.EventOverview.Alert.noRedoTitle),
-                    Translator.getTranslation(
-                            Text.EventOverview.Alert.noRedoContent));
+//            alertWrapper.showAlert(Alert.AlertType.INFORMATION,
+//                    Translator.getTranslation(
+//                            Text.EventOverview.Alert.noRedoTitle),
+//                    Translator.getTranslation(
+//                            Text.EventOverview.Alert.noRedoContent));
         }
     }
 
