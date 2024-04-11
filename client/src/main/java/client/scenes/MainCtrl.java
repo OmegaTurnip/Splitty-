@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import client.history.ActionHistory;
 import client.language.Text;
 import client.language.Translator;
 import client.utils.ServerUtils;
@@ -261,10 +262,14 @@ public class MainCtrl {
      * Go to the edit expense page.
      * @param event the event the participant is a part of.
      * @param transaction the transaction to edit
+     * @param actionHistory the action history
      */
-    public void showEditExpense(Event event, Transaction transaction) {
+    public void showEditExpense(Event event, Transaction transaction,
+                                ActionHistory actionHistory) {
         addExpenseCtrl.setEvent(event);
         addExpenseCtrl.setExpenseToOverwrite(transaction);
+        addExpenseCtrl.setActionHistory(actionHistory);
+        addExpenseCtrl.setEventOverviewCtrl(overviewCtrl);
         addExpenseCtrl.refresh();
         primaryStage.setScene(addExpense);
     }

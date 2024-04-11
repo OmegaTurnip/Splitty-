@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.history.ActionHistory;
+import client.history.NoRedoActionsLeftException;
 import client.language.Language;
 import client.language.Translator;
 import client.utils.ServerUtils;
@@ -57,10 +58,7 @@ class TransactionCellControllerTest {
                 "eng", new File("../includedLanguages/eng.properties")
         );
         Translator.setCurrentLanguage(Language.languages.get("eng"));
-    }
 
-    @Test
-    void removeTransactionTest() {
         Money amount = new Money(new BigDecimal(5), Currency.getInstance("EUR"));
         Participant participant1 = event.addParticipant("Test 1");
         Participant participant2 = event.addParticipant("Test 2");
@@ -72,7 +70,30 @@ class TransactionCellControllerTest {
         doNothing().when(eventOverviewCtrl).refresh();
         when(alertWrapper.showAlertButton(any(Alert.AlertType.class), anyString(), anyString())).thenReturn(ButtonType.OK);
         when(server.removeTransaction(any(Transaction.class))).thenReturn(transaction);
+    }
+
+    @Test
+    void removeTransactionTest() {
         sut.removeTransaction();
         assertEquals(0, event.getTransactions().size());
+    }
+
+    @Test
+    void undoAndRedoRemoveTransactionTest() {
+        sut.removeTransaction();
+        ActionHistory actionHistory = sut.getActionHistory();
+        assertEquals(0, event.getTransactions().size());
+        actionHistory.undo();
+        assertEquals(1, event.getTransactions().size());
+        actionHistory.redo();
+        assertEquals(0, event.getTransactions().size());
+        assertThrows(NoRedoActionsLeftException.class, () -> sut.getActionHistory().redo());
+    }
+
+    @Test
+    void setMainCtrlTest() {
+        MainCtrl mainCtrl = new MainCtrl();
+        sut.setMainCtrl(mainCtrl);
+        assertEquals(mainCtrl, sut.getMainCtrl());
     }
 }

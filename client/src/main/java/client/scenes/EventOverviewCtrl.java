@@ -148,11 +148,11 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         if (actionHistory.hasUndoActions()) {
             actionHistory.undo();
         } else {
-            alertWrapper.showAlert(Alert.AlertType.INFORMATION,
-                    Translator.getTranslation(
-                            Text.EventOverview.Alert.noUndoTitle),
-                    Translator.getTranslation(
-                            Text.EventOverview.Alert.noUndoContent));
+//            alertWrapper.showAlert(Alert.AlertType.INFORMATION,
+//                    Translator.getTranslation(
+//                            Text.EventOverview.Alert.noUndoTitle),
+//                    Translator.getTranslation(
+//                            Text.EventOverview.Alert.noUndoContent));
         }
     }
 

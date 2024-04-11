@@ -48,7 +48,9 @@ public class TransactionCellController {
         refreshText();
         alertWrapper = new AlertWrapper();
         editTransactionButton.setOnAction(event ->
-                mainCtrl.showEditExpense(this.event, transaction));
+                mainCtrl.showEditExpense(this.event,
+                        transaction, actionHistory)
+        );
         deleteTransactionButton.setOnAction(event -> removeTransaction());
     }
 
@@ -177,6 +179,23 @@ public class TransactionCellController {
     public void setMainCtrl(MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
     }
+
+    /**
+     * Getter
+     * @return the actionHistory
+     */
+    public ActionHistory getActionHistory() {
+        return actionHistory;
+    }
+
+    /**
+     * Getter
+     * @return the mainCtrl
+     */
+    public MainCtrl getMainCtrl() {
+        return mainCtrl;
+    }
+
     private static class ExpenseDeleteAction implements Action {
         private Transaction transaction;
         private ServerUtils server;
