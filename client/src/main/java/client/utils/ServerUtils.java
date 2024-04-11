@@ -425,9 +425,7 @@ public class ServerUtils {
     /**
      * Registers for updates (adding of transactions)
      * In case of no content, the rest of the loop is skipped (continue)
-     * Still needs to be fixed: now only 1 EXEC at the time
-     * Needs to be solved by creating a set of listeners,
-     * add all consumers to the set, iterate over all consumers
+     * Future should enable the stopping of the long-polling
      * @param consumer consumer of the transaction
      * @param event current event
      */
@@ -451,11 +449,11 @@ public class ServerUtils {
                     };
                     var t = res.readEntity(Transaction.class);
                     consumer.accept(t);
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     System.err.println("An error occurred in the thread: " +
                             e.getMessage());
                     e.printStackTrace();
-                    //Thread.currentThread().interrupt();
                 }
             }
         });
