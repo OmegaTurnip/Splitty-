@@ -571,7 +571,7 @@ class DebtSimplifierTest {
 
         event.addTransaction(Transaction.createDebt(participants.get(0), "coffee", new Money(new BigDecimal(5), Currency.getInstance("IDR")), participants, event, today, null));
 
-        assertNull(debtSimplifier.sumOfExpenses(event, EUR));
+        assertThrows(NullPointerException.class, () -> debtSimplifier.sumOfExpenses(event, EUR));
     }
 
 }
