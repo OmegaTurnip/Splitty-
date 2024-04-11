@@ -92,7 +92,7 @@ public class Formatter {
                 );
 
             result = result.replaceAll(toTextParameter(parameter.getKey()),
-                    parameter.getValue());
+                    Matcher.quoteReplacement(parameter.getValue()));
         }
 
         return result;
