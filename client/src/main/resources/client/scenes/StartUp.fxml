@@ -53,17 +53,7 @@
             </menus>
           </MenuBar>
          </top>
-         <bottom>
-            <ListView fx:id="yourEvents" pickOnBounds="false" prefHeight="531.0" prefWidth="640.0" BorderPane.alignment="CENTER">
-               <padding>
-                  <Insets bottom="15.0" left="50.0" right="50.0" top="15.0" />
-               </padding>
-               <styleClass>
-                  <String fx:value="bottom-BG" />
-                  <String fx:value="list-view" />
-               </styleClass>
-            </ListView>
-         </bottom>
+
          <center>
             <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <center>
@@ -117,6 +107,17 @@
                </center>
             </BorderPane>
          </center>
+         <bottom>
+            <ListView fx:id="yourEvents" pickOnBounds="false" prefHeight="531.0" prefWidth="640.0" BorderPane.alignment="CENTER">
+               <padding>
+                  <Insets bottom="15.0" left="50.0" right="50.0" top="15.0" />
+               </padding>
+               <styleClass>
+                  <String fx:value="bottom-BG" />
+                  <String fx:value="list-view" />
+               </styleClass>
+            </ListView>
+         </bottom>
       </BorderPane>
   </children>
 </VBox>
