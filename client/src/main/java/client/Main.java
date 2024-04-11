@@ -90,8 +90,10 @@ public class Main extends Application {
         var editName = FXML.load(EditEventNameCtrl.class, "client", "scenes",
                 "EditEventName.fxml");
         var server = INJECTOR.getInstance(ServerUtils.class);
+        var openDebts = FXML.load(DebtPageCtrl.class, "client", "scenes",
+                "DebtsPage.fxml");
         mainCtrl.initialize(overview, add,
-                startUp, addExpense, editName, admin);
+                startUp, addExpense, editName, admin, openDebts);
         mainCtrl.setUtils(server, primaryStage);
         primaryStage.setOnCloseRequest(e -> overview.getKey().stop());
     }

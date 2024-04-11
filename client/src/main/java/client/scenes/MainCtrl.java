@@ -55,6 +55,8 @@ public class MainCtrl {
     private ServerUtils server;
 
     private AlertWrapper alertWrapper;
+    private Scene debtPage;
+    private DebtPageCtrl debtPageCtrl;
 
     /**
      * @param overview the fx for the event overview page.
@@ -63,14 +65,17 @@ public class MainCtrl {
      * @param addExpense The fx for the add expense page.
      * @param adminPage The fx for the admin page.
      * @param editName The fx for the edit name page.
+     * @param debtPage The fx for the open debts page.
      */
+    @SuppressWarnings({"checkstyle:ParameterNumber", "checkstyle:MethodLength"})
     public void initialize(
             Pair<EventOverviewCtrl, Parent> overview,
             Pair<AddParticipantCtrl, Parent> add,
             Pair<StartUpCtrl, Parent> startUp,
             Pair<AddExpenseCtrl, Parent> addExpense,
             Pair<EditEventNameCtrl, Parent> editName,
-            Pair<AdminCtrl, Parent> adminPage) {
+            Pair<AdminCtrl, Parent> adminPage,
+            Pair<DebtPageCtrl, Parent> debtPage) {
 
         startUpDate = LocalDate.now();
         this.startUpCtrl = startUp.getKey();
@@ -103,9 +108,12 @@ public class MainCtrl {
         this.admin.getStylesheets().add(getClass()
                 .getResource("style.css").toExternalForm());
 
+        this.debtPageCtrl = debtPage.getKey();
+        this.debtPage = new Scene(debtPage.getValue());
+        this.debtPage.getStylesheets().add(getClass()
+                .getResource("style.css").toExternalForm());
+
         this.alertWrapper = new AlertWrapper();
-
-
 
         showStartUp();
         primaryStage.show();
@@ -294,6 +302,12 @@ public class MainCtrl {
                     Translator.getTranslation(Text.Admin
                             .Alert.unauthorisedContent));
         }
+    }
+
+    public void showOpenDebts(Event event) {
+        debtPageCtrl.setEvent(event);
+        debtPageCtrl.refresh();
+        primaryStage.setScene(debtPage);
     }
 
 }
