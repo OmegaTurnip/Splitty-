@@ -480,6 +480,26 @@ public class ServerUtils {
     }
 
     /**
+     * Gets the shares of the participants in the specified event in the
+     * specified currency.
+     *
+     * @param   event
+     *          The event.
+     * @param   currency
+     *          The currency of the shares.
+     *
+     * @return  The shares of the participants in the event.
+     */
+    public Set<ParticipantValuePair> getSharesOfParticipants(
+            Event event, Currency currency) {
+        return client.target(server)
+                .path("api/event/" + event.getId() + "/shares/" + currency)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Set<ParticipantValuePair>>() {});
+    }
+
+    /**
      * Get the amount of a transaction in a certain currency.
      *
      * @param   money

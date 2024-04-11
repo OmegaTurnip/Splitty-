@@ -307,6 +307,37 @@ public class EventController {
                 debtSimplifier.toBalances());
     }
 
+    /**
+     * Get the shares of the participants of an event.
+     *
+     * @param   id
+     *          The id of the event.
+     * @param   currency
+     *          The currency of the result.
+     *
+     * @return  The shares of the participants of the event.
+     */
+    @GetMapping("/{id}/share/{currency}")
+    @ResponseBody
+    public ResponseEntity<Set<ParticipantValuePair>> getShareOfParticipants(
+            @PathVariable("id") Long id,
+            @PathVariable("currency") Currency currency) {
+
+        if (currency == null || !debtSimplifier.getExchangeRateFactory()
+                .getKnownCurrencies().contains(currency)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Optional<Event> event = eventRepository.findById(id);
+
+        if (event.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(
+                debtSimplifier.shareOfExpenses(event.get(), currency));
+    }
+
 
     /**
      * Returns all available currencies.
