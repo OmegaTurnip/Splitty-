@@ -66,9 +66,10 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     private Tag expenseTag;
 
     private Event event;
-    private final ServerUtils server;
+    private ServerUtils server;
     private final MainCtrl mainCtrl;
     private final Pattern pricePattern;
+    private Transaction expenseToOverwrite;
     private AlertWrapper alertWrapper;
 
     /**
@@ -87,7 +88,16 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     }
 
     /**
+     * Setter
+     * @param server the server to set
+     */
+    public void setServer(ServerUtils server) {
+        this.server = server;
+    }
+
+    /**
      * Sets alertWrapper
+     *
      * @param alertWrapper alertWrapper
      */
     public void setAlertWrapper(AlertWrapper alertWrapper) {
@@ -111,14 +121,40 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         tagSelection();
         participantSelection();
         addExpense.setOnAction(event -> {
-            if (registerExpense()) {
-                this.mainCtrl.showEventOverview(this.event);
+            getCheckedParticipants();
+            try {
+                if (verifyInput()) {
+                    Transaction expense = getExpense();
+                    registerExpense(expense);
+                    this.mainCtrl.showEventOverview(this.event);
+                }
+            } catch (WebApplicationException e) {
+                e.printStackTrace();
             }
         });
         date.setValue(LocalDate.now());
         date.setConverter(new MyLocalDateStringConverter("dd/MM/yyyy"));
         refresh();
     }
+
+    /**
+     * Setter
+     *
+     * @param expenseToOverwrite the expense to set
+     */
+    public void setExpenseToOverwrite(Transaction expenseToOverwrite) {
+        this.expenseToOverwrite = expenseToOverwrite;
+    }
+
+    /**
+     * Setter
+     * @param participants the combobox to set
+     */
+    public void setParticipants(CheckComboBox<Object> participants) {
+        this.participants = participants;
+    }
+
+    ;
 
     static class MyLocalDateStringConverter extends StringConverter<LocalDate> {
 
@@ -138,7 +174,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             }
         }
 
-        public void setAlertWrapper(AlertWrapper alertWrapper){
+        public void setAlertWrapper(AlertWrapper alertWrapper) {
             this.alertWrapper = alertWrapper;
         }
 
@@ -176,6 +212,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Sets the items of the payer choice box for testing
+     *
      * @param participants the items to set
      */
     public void setPayerItems(List<Object> participants) {
@@ -184,6 +221,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Getter for expensePayer
+     *
      * @return the expensePayer
      */
     public Participant getExpensePayer() {
@@ -205,6 +243,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Sets the items of the expenseType choicebox for testing
+     *
      * @param list the items to set
      */
     public void setExpenseTypeItems(List<Object> list) {
@@ -213,6 +252,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Gets the selected expenseTag
+     *
      * @return the selected expense tag
      */
     public Tag getExpenseTag() {
@@ -294,22 +334,21 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Register the expense added.
+     * @param expense the expense to register
      */
-    private boolean registerExpense() {
-        getCheckedParticipants();
-        try {
-            if (verifyInput()) {
-                Transaction expense = getExpense();
-                Transaction returnedE = server.saveTransaction(expense);
-                event.removeTransaction(expense);
-                event.addTransaction(returnedE);
-//                server.saveEvent(event);
-                System.out.println("Added expense " + expense);
-                return true;
-            } return false;
-        } catch (WebApplicationException e) {
-            e.printStackTrace();
-            return false;
+    public void registerExpense(Transaction expense) {
+        if (expenseToOverwrite == null) {
+            Transaction returnedE = server.saveTransaction(expense);
+            event.removeTransaction(expense);
+            expense.setTransactionId(returnedE.getTransactionId());
+            event.addTransaction(expense);
+            System.out.println("Added expense " + expense);
+        } else {
+            expense.setTransactionId(
+                    expenseToOverwrite.getTransactionId());
+            event.removeTransaction(expenseToOverwrite);
+            server.saveEvent(event);
+            System.out.println("Edited expense " + expense);
         }
     }
 
@@ -339,11 +378,24 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     public void refresh() {
         refreshText();
         loadPayers();
-        payer.getSelectionModel().select(0);
         loadParticipants();
         loadTags();
-        expenseType.getSelectionModel().select(0);
-        //TODO: Connect to back-end
+        if (expenseToOverwrite != null) {
+            payer.getSelectionModel().select(expenseToOverwrite.getPayer());
+            expenseType.getSelectionModel().select(expenseToOverwrite.getTag());
+            addExpense.setText("Edit expense");
+            expenseName.setText(expenseToOverwrite.getName());
+            price.setText(expenseToOverwrite.getAmount()
+                    .getAmount().toString());
+            date.setValue(expenseToOverwrite.getDate());
+        } else {
+            expenseType.getSelectionModel().select(0);
+            addExpense.setText("Add expense");
+            payer.getSelectionModel().select(0);
+            expenseName.clear();
+            price.clear();
+            date.setValue(LocalDate.now());
+        }
         System.out.println("Page has been refreshed!");
     }
 
@@ -477,7 +529,10 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         }
         ObservableList<Object> participantObservableList =
                 FXCollections.observableArrayList(participantChoiceBoxList);
+        participants.getCheckModel().clearChecks();
         participants.getItems().clear();
+        participants.setTitle(Translator.getTranslation(
+                Text.AddExpense.expenseParticipantsPrompt));
         participants.getItems().addAll(participantObservableList);
     }
 
@@ -500,26 +555,13 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                 Translator.getTranslation(Text.AddExpense.expensePricePrompt));
         date.setPromptText(
                 Translator.getTranslation(Text.AddExpense.expenseDatePrompt));
-        participants.setTitle(
-                Translator.getTranslation(
-                        Text.AddExpense.expenseParticipantsPrompt));
-        System.out.println(participants.getTitle());
-
         int index = payer.getSelectionModel().getSelectedIndex();
         loadPayers();
         payer.getSelectionModel().select(index);
         index = expenseType.getSelectionModel().getSelectedIndex();
         loadTags();
         expenseType.getSelectionModel().select(index);
-
-//        the following lines don't work as expected,
-//        but I don't think it is worth fixing
-        ArrayList<Integer> indices = new ArrayList<>(
-                participants.getCheckModel().getCheckedIndices());
-        loadParticipants(); // this works
-        for (Integer i : indices) {
-            participants.getCheckModel().check(i);
-        }
+        loadParticipants();
     }
 
     /**
@@ -574,7 +616,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     private void choosePriceAlert(String input) {
         if (input.isEmpty()) {
             showAlert(Translator.getTranslation(
-                    Text.AddExpense.Alert.invalidPrice),
+                            Text.AddExpense.Alert.invalidPrice),
                     Translator.getTranslation(
                             Text.AddExpense.Alert.emptyString));
         } else if (input.matches("[a-zA-Z]")) {
@@ -590,7 +632,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                     Translator.getTranslation(
                             Text.AddExpense.Alert.onlyOnePeriodOrComma));
         } else if (!Character.isDigit(input.charAt(0))
-                || !Character.isDigit(input.charAt(input.length()-1))){
+                || !Character.isDigit(input.charAt(input.length() - 1))) {
             showAlert(Translator.getTranslation(
                             Text.AddExpense.Alert.invalidPrice),
                     Translator.getTranslation(
@@ -606,7 +648,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
 
     Transaction getExpense() {
-        BigDecimal b = new BigDecimal(price.getText());
+        BigDecimal b = new BigDecimal(price.getText().replace(",", "."));
         return event.registerDebt(expensePayer,
                 expenseName.getText(),
                 new Money(b,
@@ -617,6 +659,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Price to set
+     *
      * @param price price
      */
 
@@ -626,6 +669,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Payer of the expense
+     *
      * @param expensePayer the person that has paid for the expense
      */
     public void setExpensePayer(Participant expensePayer) {
@@ -634,15 +678,24 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Sets the participantlist
+     *
      * @param participantList the participantlist to be set
      */
-
     public void setParticipantList(List<Participant> participantList) {
         this.participantList = participantList;
     }
 
     /**
+     * Getter
+     * @return the participantList
+     */
+    public List<Participant> getParticipantList() {
+        return participantList;
+    }
+
+    /**
      * Sets the date
+     *
      * @param date date to be set
      */
     public void setDate(DatePicker date) {
@@ -651,6 +704,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Sets the name of the expense
+     *
      * @param expenseName the exspenseName
      */
     public void setExpenseName(TextField expenseName) {
@@ -659,6 +713,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Sets the expenseTag
+     *
      * @param expenseTag the tag to be set
      */
 

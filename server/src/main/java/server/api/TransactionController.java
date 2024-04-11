@@ -12,6 +12,7 @@ import server.database.EventRepository;
 import server.database.TransactionRepository;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 @RestController
@@ -31,7 +32,7 @@ public class TransactionController {
                                  EventRepository eventRepository) {
         this.eventRepository = eventRepository;
         this.repo = repo;
-        this.listeners = new HashMap<>();
+        this.listeners = new ConcurrentHashMap<>();
     }
 
     /**
@@ -58,7 +59,6 @@ public class TransactionController {
      * @param eventId eventId
      * @return deferred result of response-entity transaction
      */
-
     @GetMapping("/updates")
     @ResponseBody
     public DeferredResult<ResponseEntity<Transaction>> getUpdates(
@@ -99,7 +99,6 @@ public class TransactionController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(transaction);
-
     }
 
     /**
@@ -172,8 +171,9 @@ public class TransactionController {
                     transaction.getTag().getTagId()
             ));
         }
-        listeners.forEach((k, l) -> l.accept(transaction));
-        return ResponseEntity.ok(repo.save(transaction));
+        Transaction response = repo.save(transaction);
+        listeners.forEach((k, l) -> l.accept(response));
+        return ResponseEntity.ok(response);
     }
 
 

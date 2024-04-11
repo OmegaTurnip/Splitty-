@@ -6,15 +6,11 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
 
-import server.financial.ExchangeRateAPI;
-import server.financial.FrankfurterExchangeRateAPI;
+import server.financial.ExchangeRateFactory;
 import server.financial.DebtSimplifier;
 
 import java.time.LocalDate;
-import java.util.Currency;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 @RestController
@@ -23,10 +19,6 @@ public class EventController {
 
     private final EventRepository eventRepository;
     private final DebtSimplifier debtSimplifier;
-    private final Currency baseCurrency = Currency.getInstance("EUR");
-    private final ExchangeRateAPI exchangeRateAPI =
-            new FrankfurterExchangeRateAPI(baseCurrency);
-
     private final SimpMessagingTemplate messagingTemplate;
 
 
@@ -176,6 +168,44 @@ public class EventController {
     }
 
     /**
+     * Convert an amount to a different currency.
+     * @param   money
+     *          The amount to convert.
+     * @param   currency
+     *          The currency of the result.
+     * @param   date
+     *          The date of the exchange rate.
+     *
+     * @return  Money object with the converted amount.
+     */
+    @PutMapping("/convert/{amount}/{currency}/{date}")
+    @ResponseBody
+    public ResponseEntity<Money> convertMoney(
+            @PathVariable("amount") Money money,
+            @PathVariable("currency") Currency currency,
+            @PathVariable("date") LocalDate date) {
+
+        if (money == null || currency == null || date == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        ExchangeRateFactory exchangeRateFactory = debtSimplifier
+                .getExchangeRateFactory();
+
+        if (!exchangeRateFactory.getKnownCurrencies().contains(currency)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok(
+                exchangeRateFactory.getExchangeRate(
+                        date,
+                        money.getCurrency(),
+                        currency
+                ).convert(money)
+        );
+    }
+
+    /**
      * Get the simplified version of the debts of an event.
      *
      * @param   id
@@ -205,13 +235,48 @@ public class EventController {
 
         debtSimplifier.setup(base, event.getParticipants());
 
-        refreshExchangeRates();
-
         debtSimplifier.addDebts(event);
 
         Set<Debt> result = debtSimplifier.simplify();
 
         return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Get the sum of the debts of an event.
+     *
+     * @param   id
+     *          The id of the event.
+     * @param   currency
+     *          The currency of the result.
+     *
+     * @return  The sum of the debts of an event.
+     */
+    @GetMapping("/{id}/sum/{currency}")
+    @ResponseBody
+    public ResponseEntity<Money> getSumOfExpenses(
+            @PathVariable("id") Long id,
+            @PathVariable("currency") String currency) {
+
+        if (!Money.isValidCurrencyCode(currency)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Optional<Event> event = eventRepository.findById(id);
+
+        if (event.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Currency base = Currency.getInstance(currency);
+
+        if (!debtSimplifier.getExchangeRateFactory().getKnownCurrencies()
+                .contains(base)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok(
+                debtSimplifier.sumOfExpenses(event.get(), base));
     }
 
     /**
@@ -222,24 +287,9 @@ public class EventController {
     @GetMapping("/currencies")
     @ResponseBody
     public ResponseEntity<Set<Currency>> getCurrencies() {
-        refreshExchangeRates();
+        debtSimplifier.getExchangeRateFactory().retrieveExchangeRates();
         return ResponseEntity.ok(debtSimplifier.getExchangeRateFactory()
                 .getKnownCurrencies());
     }
 
-
-    private void refreshExchangeRates() {
-        boolean ratesAreUpToDate = exchangeRateAPI.lastRequestDate().isPresent()
-                && !exchangeRateAPI.lastRequestDate().get()
-                .isBefore(LocalDate.now());
-
-        if (!ratesAreUpToDate) {
-            exchangeRateAPI.getExchangeRates().ifPresent(exchangeRates ->
-                    debtSimplifier.getExchangeRateFactory()
-                            .generateExchangeRates(
-                                    baseCurrency, exchangeRates
-                            )
-            );
-        }
-    }
 }

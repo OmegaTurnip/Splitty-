@@ -18,6 +18,7 @@ package client.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import commons.Event;
+import commons.Money;
 import commons.Participant;
 import commons.Transaction;
 import jakarta.ws.rs.client.Client;
@@ -36,12 +37,14 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.util.Currency;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -93,12 +96,7 @@ public class ServerUtils {
      * @return The web socket URL.
      */
     public String generateWsURL(String url) {
-        String[] split = url.split(":", 2);
-        StringBuilder ws = new StringBuilder();
-        ws.append("ws:");
-        ws.append(split[1]);
-        ws.append("websocket");
-        return ws.toString();
+        return "ws:" + url.split(":", 2)[1] + "websocket";
     }
 
     /**
@@ -199,12 +197,31 @@ public class ServerUtils {
      */
     public List<Event> getMyEvents() {
         List<String> invCodes = userSettings.getEventCodes();
-        String commaSeparatedInvCodes = String.join(",", invCodes);
+        String commaSeparatedInvCodes = "";
+        if (!invCodes.isEmpty()) {
+            commaSeparatedInvCodes = String.join(",", invCodes);
+        }
         return client.target(server)
                 .path("api/event/invite/" + commaSeparatedInvCodes)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<>() {});
+    }
+
+    /**
+     * Request to get an updated version of the event.
+     *
+     * @param   event
+     *          The event to get the updated version of.
+     *
+     * @return  The updated event.
+     */
+    public Event getUpdatedEvent(Event event) {
+        return client
+                .target(server).path("api/event/" + event.getId())
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Event.class);
     }
 
     /**
@@ -380,7 +397,6 @@ public class ServerUtils {
      * @param event Event of which needs to be returned
      * @return list of transactions
      */
-
     public List<Transaction> getTransactionsOfEvent(Event event){
         return client.target(server)
                 .path("api/event/" + event.getId() + "/transactions")
@@ -388,34 +404,77 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Transaction>>() {});
     }
+
+    /**
+     * Get the amount of a transaction in a certain currency.
+     *
+     * @param   money
+     *          The amount to convert.
+     * @param   currency
+     *          The currency of the result.
+     * @param   date
+     *          The date of the exchange rate.
+     *
+     * @return  The resulting amount in the specified currency.
+     */
+    public Money convertMoney(Money money, Currency currency, LocalDate date) {
+        return client.target(server)
+                .path("api/event/convert/" + currency + "/" + date)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(money, APPLICATION_JSON),
+                        Money.class);
+    }
+
+
     private static final ExecutorService EXEC =
             Executors.newSingleThreadExecutor();
+
+    private Future<?> future;
+
+    /**
+     * Stops the long polling.
+     */
+    public void stopLongPolling() {
+        if (future != null) {
+            future.cancel(true);
+        }
+        future = null;
+    }
 
     /**
      * Registers for updates (adding of transactions)
      * In case of no content, the rest of the loop is skipped (continue)
-     * Still needs to be fixed: now only 1 EXEC at the time
-     * Needs to be solved by creating a set of listeners,
-     * add all consumers to the set, iterate over all consumers
+     * Future should enable the stopping of the long-polling
      * @param consumer consumer of the transaction
      * @param event current event
      */
     public void registerForUpdates(Consumer<Transaction> consumer, Event event){
+        if (future != null) {
+            future.cancel(true);
+        }
 
-        EXEC.submit(() -> {
+        future = EXEC.submit(() -> {
             while (!Thread.interrupted()) {
-                var res = client.target(server)
-                        .path("api/event/" + event.getId()
-                                + "/transactions/updates")
-                        .request(APPLICATION_JSON)
-                        .accept(APPLICATION_JSON)
-                        .get(Response.class);
+                try{
+                    var res = client.target(server)
+                            .path("api/event/" + event.getId()
+                                    + "/transactions/updates")
+                            .request(APPLICATION_JSON)
+                            .accept(APPLICATION_JSON)
+                            .get(Response.class);
 
-                if(res.getStatus() == 204){
-                    continue;
-                };
-                var t = res.readEntity(Transaction.class);
-                consumer.accept(t);
+                    if(res.getStatus() == 204){
+                        continue;
+                    };
+                    var t = res.readEntity(Transaction.class);
+                    consumer.accept(t);
+                }
+                catch (Exception e) {
+                    System.err.println("An error occurred in the thread: " +
+                            e.getMessage());
+                    e.printStackTrace();
+                }
             }
         });
 

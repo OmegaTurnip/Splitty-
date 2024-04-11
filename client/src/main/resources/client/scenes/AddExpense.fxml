@@ -8,18 +8,18 @@
 
 <VBox prefHeight="687.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddExpenseCtrl">
     <children>
-        <MenuBar style="-fx-background-color: #fefdfd;" VBox.vgrow="NEVER">
+        <MenuBar styleClass="menu-bar" VBox.vgrow="NEVER">
             <menus>
                 <Menu fx:id="languageMenu" mnemonicParsing="false" text="Languages" />
             </menus>
         </MenuBar>
-        <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="238.0" prefWidth="287.0" style="-fx-background-color: #8E3EDD;" VBox.vgrow="ALWAYS">
+        <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="238.0" prefWidth="287.0" styleClass="backGround" VBox.vgrow="ALWAYS">
             <children>
-                <TextField fx:id="expenseName" layoutX="86.0" layoutY="45.0" prefHeight="40.0" prefWidth="306.0" promptText="Enter name of the expense..." style="-fx-background-color: #8E3EDD; -fx-background-radius: 5pt; -fx-border-width: 1.5pt; -fx-border-color: #E0DDF2; -fx-border-radius: 5pt; -fx-prompt-text-fill: #fefdfd;">
+                <TextField fx:id="expenseName" layoutX="86.0" layoutY="45.0" prefHeight="40.0" prefWidth="306.0" promptText="Enter name of the expense..." styleClass="text-field-splitty">
                <font>
                   <Font name="Arial" size="16.0" />
                </font></TextField>
-                <Button fx:id="cancel" cancelButton="true" layoutX="86.0" layoutY="342.0" mnemonicParsing="false" onAction="#cancel" prefHeight="40.0" prefWidth="109.0" style="-fx-background-color: #0d0d0d; -fx-background-radius: 5pt;" text="Cancel" textFill="#fefdfd">
+                <Button fx:id="cancel" cancelButton="true" layoutX="86.0" layoutY="342.0" mnemonicParsing="false" onAction="#cancel" prefHeight="40.0" prefWidth="109.0">
                     <font>
                         <Font name="Arial" size="18.0" />
                     </font>
@@ -28,24 +28,24 @@
                </cursor>
                 </Button>
 <!--                <Button fx:id="addExpense" cancelButton="true" layoutX="217.0" layoutY="208.0" mnemonicParsing="false" onAction="#addExpense" prefHeight="26.0" prefWidth="55.0" style="-fx-background-color: #0d0d0d;" text="Add" textFill="#fefdfd" />-->
-                <TextField fx:id="price" layoutX="86.0" layoutY="95.0" prefHeight="40.0" prefWidth="229.0" promptText="Enter price..." style="-fx-background-color: #8E3EDD; -fx-background-radius: 5pt; -fx-border-width: 1.5pt; -fx-border-color: #E0DDF2; -fx-border-radius: 5pt; -fx-prompt-text-fill: #fefdfd;">
+                <TextField fx:id="price" layoutX="86.0" layoutY="95.0" prefHeight="40.0" prefWidth="229.0" promptText="Enter price..." styleClass="text-field-splitty">
                <font>
                   <Font name="Arial" size="16.0" />
                </font></TextField>
-            <ChoiceBox fx:id="currency" layoutX="323.0" layoutY="95.0" prefHeight="40.0" prefWidth="69.0" style="-fx-background-color: #0d0d0d; -fx-background-radius: 5pt;">
+            <ChoiceBox fx:id="currency" layoutX="323.0" layoutY="95.0" prefHeight="40.0" prefWidth="69.0" styleClass="blackButton">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ChoiceBox>
-            <ChoiceBox fx:id="payer" layoutX="86.0" layoutY="145.0" prefHeight="40.0" prefWidth="306.0" style="-fx-background-color: #8E3EDD; -fx-background-radius: 5pt; -fx-border-color: #E0DDF2; -fx-border-radius: 5pt; -fx-border-width: 1.5pt;">
+            <ChoiceBox fx:id="payer" layoutX="86.0" layoutY="145.0" prefHeight="40.0" prefWidth="306.0" styleClass="text-field-splitty">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></ChoiceBox>
-            <DatePicker fx:id="date" layoutX="86.0" layoutY="195.0" prefHeight="40.0" prefWidth="306.0" promptText="Date of the expense" style="-fx-background-color: #8E3EDD; -fx-control-inner-background: #8E3EDD; -fx-border-color: #E0DDF2; -fx-border-radius: 5pt; -fx-border-width: 1.5pt; -fx-prompt-text-fill: #fefdfd;">
+            <DatePicker fx:id="date" layoutX="86.0" layoutY="195.0" prefHeight="40.0" prefWidth="306.0" promptText="Date of the expense" styleClass="date-picker">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></DatePicker>
-            <Button fx:id="addExpense" layoutX="205.0" layoutY="342.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="187.0" style="-fx-background-color: #0d0d0d; -fx-prompt-text-fill: #fefdfd; -fx-background-radius: 5pt;" text="Add Expense" textFill="#fefdfd">
+            <Button fx:id="addExpense" layoutX="205.0" layoutY="342.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="187.0" styleClass="blackButton" text="Add Expense">
                <font>
                   <Font name="Arial" size="18.0" />
                </font>
@@ -53,11 +53,11 @@
                   <Cursor fx:constant="HAND" />
                </cursor></Button>
 <!--            <ComboBox fx:id="participants" layoutX="86.0" layoutY="245.0" prefHeight="40.0" prefWidth="306.0" promptText="Select participants to split between" style="-fx-background-color: #8e3edd; -fx-border-color: #e0ddf2; -fx-border-radius: 5pt; -fx-border-width: 1.5pt; -fx-prompt-text-fill: #fefdfd;" />-->
-            <ComboBox fx:id="expenseType" layoutX="86.0" layoutY="295.0" prefHeight="40.0" prefWidth="306.0" promptText="Set expense type" style="-fx-background-color: #8e3edd; -fx-border-color: #e0ddf2; -fx-border-radius: 5pt; -fx-border-width: 1.5pt; -fx-prompt-text-fill: #fefdfd;">
+            <ComboBox fx:id="expenseType" layoutX="86.0" layoutY="295.0" prefHeight="40.0" prefWidth="306.0" promptText="Set expense type" styleClass="text-field-splitty">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></ComboBox>
-            <CheckComboBox fx:id="participants" layoutX="86.0" layoutY="245.0" prefHeight="40.0" prefWidth="306.0" style="-fx-background-color: #8e3edd; -fx-border-color: #e0ddf2; -fx-border-radius: 5pt; -fx-border-width: 1.5pt;">
+            <CheckComboBox fx:id="participants" layoutX="86.0" layoutY="245.0" prefHeight="40.0" prefWidth="306.0" styleClass="text-field-splitty">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></CheckComboBox>

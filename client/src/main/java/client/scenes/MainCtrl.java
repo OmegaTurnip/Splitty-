@@ -20,6 +20,7 @@ import client.language.Translator;
 import client.utils.ServerUtils;
 import commons.Event;
 import commons.Participant;
+import commons.Transaction;
 import jakarta.ws.rs.NotAuthorizedException;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -80,9 +81,13 @@ public class MainCtrl {
 
         this.addParticipantCtrl = add.getKey();
         this.add = new Scene(add.getValue());
+        this.add.getStylesheets().add(getClass()
+                .getResource("style.css").toExternalForm());
 
         this.addExpenseCtrl = addExpense.getKey();
         this.addExpense = new Scene(addExpense.getValue());
+        this.addExpense.getStylesheets().add(getClass()
+                .getResource("style.css").toExternalForm());
 
         this.editEventNameCtrl = editName.getKey();
         this.editName = new Scene(editName.getValue());
@@ -91,6 +96,8 @@ public class MainCtrl {
 
         this.adminCtrl = adminPage.getKey();
         this.admin = new Scene(adminPage.getValue());
+        this.admin.getStylesheets().add(getClass()
+                .getResource("style.css").toExternalForm());
 
         this.alertWrapper = new AlertWrapper();
 
@@ -138,7 +145,7 @@ public class MainCtrl {
      * @param event the event to show.
      */
     public void showEventOverview(Event event) {
-        overviewCtrl.setEvent(event);
+        overviewCtrl.setEvent(server.getUpdatedEvent(event));
         primaryStage.setTitle("Splitty!");
         primaryStage.setScene(overview);
         overview.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
@@ -178,6 +185,7 @@ public class MainCtrl {
         addParticipantCtrl.setParticipant(null);
         showParticipant(event);
     }
+
 
     private void showParticipant(Event event) {
         addParticipantCtrl.setEvent(event);
@@ -244,8 +252,20 @@ public class MainCtrl {
      */
     public void showAddExpense(Event event) {
         addExpenseCtrl.setEvent(event);
+        addExpenseCtrl.setExpenseToOverwrite(null);
         addExpenseCtrl.refresh();
-        primaryStage.setTitle("Splitty!");
+        primaryStage.setScene(addExpense);
+    }
+
+    /**
+     * Go to the edit expense page.
+     * @param event the event the participant is a part of.
+     * @param transaction the transaction to edit
+     */
+    public void showEditExpense(Event event, Transaction transaction) {
+        addExpenseCtrl.setEvent(event);
+        addExpenseCtrl.setExpenseToOverwrite(transaction);
+        addExpenseCtrl.refresh();
         primaryStage.setScene(addExpense);
     }
 

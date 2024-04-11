@@ -76,4 +76,16 @@ public class TransactionId implements Serializable {
     public int hashCode() {
         return Objects.hash(transactionId, event);
     }
+
+    /**
+     * Turns a transaction id into a human-readable string
+     * @return the string
+     */
+    @Override
+    public String toString() {
+        return "TransactionId{" +
+                "transactionId=" + transactionId +
+                ", event=" + event +
+                '}';
+    }
 }

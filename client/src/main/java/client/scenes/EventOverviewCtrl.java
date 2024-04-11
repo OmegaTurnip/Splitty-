@@ -3,6 +3,7 @@ package client.scenes;
 
 
 import client.history.ActionHistory;
+import client.language.Language;
 import client.language.Text;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -20,6 +21,9 @@ import commons.Transaction;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.StringConverter;
@@ -107,11 +111,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 new ParticipantCellFactory());
         expensesListView.setCellFactory(param ->
                 new TransactionCellFactory());
-        server.registerForUpdates(t -> {
-            updateTransactions(t);
-            Platform.runLater(this::refresh);
-            System.out.println("Received transaction: " + t.getName());
-        }, event);
         server.registerForMessages("/topic/admin", Event.class, e -> {
             if (event.equals(e)) event = e; //Overwrite current event
             System.out.println("Received event: " + event.getEventName());
@@ -131,7 +130,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 });
             }
         });
-
         refresh();
     }
 
@@ -301,16 +299,13 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
      * @return Transaction that is added
      */
     public Transaction updateTransactions(Transaction transaction) {
-        transactions.add(transaction);
-        Participant participant = (Participant) expensesDropDown.getValue();
-        if (participant != null &&
-                transaction.getParticipants().contains(participant)) {
-            transactionsParticipant.add(transaction);
+        transaction.setEvent(event);
+        if (event.getTransactions().isEmpty() ||
+                !event.getTransactions().getLast().getTransactionId()
+                        .equals(transaction.getTransactionId())) {
+            event.addTransaction(transaction);
         }
-        if (transaction.getPayer().equals(participant)) {
-            transactionsPayer.add(transaction);
-        }
-
+        getExpenses();
         return transaction;
     }
 
@@ -362,6 +357,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                                      Participant participant,
                                      ObservableList<Transaction> transactions){
         String choice = selected.getId();
+        setEvents(transactions);
         switch (choice) {
             case "AllExpenses":
                 System.out.println("all clicked");
@@ -373,9 +369,11 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                         FXCollections.observableArrayList();
                 for (Transaction transaction : transactions) {
                     for(Participant p : transaction.getParticipants()) {
-                        p.setEvent(event);
                         if (p.equals(participant)) {
                             transactionsParticipant.add(transaction);
+                        }
+                        if (transaction.getPayer().equals(participant)) {
+                            transactionsPayer.add(transaction);
                         }
                     }
                 }
@@ -386,13 +384,21 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 transactionsPayer =
                         FXCollections.observableArrayList();
                 for (Transaction transaction : transactions) {
-                    transaction.getPayer().setEvent(event);
                     if (transaction.getPayer().equals(participant)) {
                         transactionsPayer.add(transaction);
                     }
                 }
                 expensesListView.setItems(transactionsPayer);
                 break;
+        }
+    }
+
+    private void setEvents(ObservableList<Transaction> transactions) {
+        for (Transaction transaction : transactions) {
+            for(Participant p : transaction.getParticipants()) {
+                p.setEvent(event);
+            }
+            transaction.getPayer().setEvent(event);
         }
     }
 
@@ -433,6 +439,8 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
             expensesListView.refresh();
         }
         if (event != null ) eventNameLabel.setText(event.getEventName());
+        refreshIcon(Translator.getCurrentLanguage().getLanguageCode(),
+                languageMenu, Language.languages);
     }
     /**
      * Add participant to event
@@ -519,6 +527,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 transactionCellController.setTransactionData(transaction);
                 transactionCellController.setEvent(event);
                 transactionCellController.setServer(server);
+                transactionCellController.setMainCtrl(mainCtrl);
                 transactionCellController.setTransaction(transaction);
                 transactionCellController.setEventOverviewCtrl(
                         EventOverviewCtrl.this);
@@ -527,18 +536,76 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
             }
         }
     }
+
+    /**
+     * Shows the invite code of the event
+     */
+    public void showInviteCode(){
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle(Translator.getTranslation(client.language.
+                Text.EditName.Alert.showInviteTitle));
+        ButtonType cancelButtonType = new ButtonType(
+                Translator.getTranslation(Text.EditName.cancel),
+                ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType copyButtonType = new ButtonType(
+                Translator.getTranslation(Text.EditName.copy),
+                ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(copyButtonType,
+                cancelButtonType);
+        Label label = new Label(Translator.getTranslation(
+                Text.EditName.Alert.showInviteContent));
+        TextField textField = new TextField();
+        textField.setText(event.getInviteCode());
+        textField.setEditable(false);
+        textField.setPrefWidth(275);
+        GridPane grid = new GridPane();
+        grid.add(label, 1, 1);
+        grid.add(textField, 2, 1);
+        dialog.getDialogPane().setContent(grid);
+        dialog.getDialogPane().setMinWidth(450);
+        dialog.setResultConverter(buttonType -> {
+            if (buttonType == copyButtonType) {
+                Clipboard clipboard = Clipboard.getSystemClipboard();
+                ClipboardContent content = new ClipboardContent();
+                content.putString(event.getInviteCode());
+                clipboard.setContent(content);
+                mainCtrl.showEventOverview(event);
+            }
+            return null;
+        });
+        dialog.setResultConverter(buttonType -> {
+            if (buttonType == cancelButtonType) {
+                mainCtrl.showEventOverview(event);}
+            return null;
+        });
+        dialog.showAndWait();
+    }
+
+
     /**
      * Setter.
      * @param event Event to be set.
      */
     public void setEvent(Event event) {
         this.event = event;
+        server.registerForUpdates(t -> {
+            try {
+                Platform.runLater(() -> updateTransactions(t));
+                Platform.runLater(this::refresh);
+                System.out.println("Received transaction: " + t.getName());
+            }
+            catch (Exception e) {
+                System.err.println("An error occurred: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }, event);
     }
 
     /**
      * Shows the startUpWindow
      */
     public void returnToOverview() {
+        server.stopLongPolling();
         mainCtrl.showStartUp();
     }
 

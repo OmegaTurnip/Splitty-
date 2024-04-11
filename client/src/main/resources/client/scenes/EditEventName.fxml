@@ -9,26 +9,26 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="158.0" prefWidth="396.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EditEventNameCtrl">
+<VBox prefHeight="158.0" prefWidth="396.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EditEventNameCtrl">
     <children>
-        <MenuBar style="-fx-background-color: #fefdfd;" VBox.vgrow="NEVER">
+        <MenuBar styleClass="menu-bar" VBox.vgrow="NEVER">
             <menus>
                 <Menu fx:id="languageMenu" mnemonicParsing="false" text="Languages" />
             </menus>
         </MenuBar>
-        <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="288.0" prefWidth="445.0" style="-fx-background-color: #8E3EDD;" VBox.vgrow="ALWAYS">
+        <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="288.0" prefWidth="445.0" styleClass="backGround" VBox.vgrow="ALWAYS">
             <children>
-                <TextField fx:id="eventName" layoutX="38.0" layoutY="52.0" prefHeight="40.0" prefWidth="306.0" style="-fx-background-color: #8E3EDD; -fx-background-radius: 5pt; -fx-border-width: 1.5pt; -fx-border-color: #E0DDF2; -fx-border-radius: 5pt; -fx-prompt-text-fill: #fefdfd;">
+                <TextField fx:id="eventName" layoutX="38.0" layoutY="52.0" prefHeight="40.0" prefWidth="306.0" styleClass="text-field-splitty">
                <font>
                   <Font name="Arial" size="16.0" />
                </font></TextField>
-            <Label fx:id="eventInput" alignment="CENTER" layoutX="-7.0" prefHeight="58.0" prefWidth="231.0" text="Name of event:" textFill="#fefdfd">
+            <Label fx:id="eventInput" alignment="CENTER" layoutX="-7.0" prefHeight="58.0" prefWidth="231.0" text="Name of event:" styleClass="title-transparent-bg">
                <font>
-                  <Font name="Garamond" size="23.0" />
+                  <Font name="Arial" size="23.0" />
                </font>
             </Label>
-            <Button fx:id="cancelButton" layoutX="198.0" layoutY="99.0" mnemonicParsing="false" onAction="#cancel" prefHeight="26.0" prefWidth="93.0" text="Cancel" />
-            <Button fx:id="confirmButton" layoutX="298.0" layoutY="99.0" mnemonicParsing="false" onAction="#changeName" prefHeight="26.0" prefWidth="93.0" text="Confirm" />
+            <Button fx:id="cancelButton" layoutX="198.0" layoutY="99.0" mnemonicParsing="false" onAction="#cancel" prefHeight="26.0" prefWidth="93.0" text="Cancel" styleClass="blackButton"/>
+            <Button fx:id="confirmButton" layoutX="298.0" layoutY="99.0" mnemonicParsing="false" onAction="#changeName" prefHeight="26.0" prefWidth="93.0" text="Confirm" styleClass="blackButton"/>
             </children></AnchorPane>
     </children>
 </VBox>
