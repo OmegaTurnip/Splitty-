@@ -468,7 +468,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             expenseName.clear();
             price.clear();
             date.setValue(mainCtrl.getStartUpDate());
-            date.setValue(LocalDate.now());
+//            date.setValue(LocalDate.now());
         }
         System.out.println("Page has been refreshed!");
     }
