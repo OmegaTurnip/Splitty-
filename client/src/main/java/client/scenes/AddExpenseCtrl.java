@@ -386,6 +386,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                             Text.AddExpense.Alert.futureDateTitle),
                     Translator.getTranslation(
                             Text.AddExpense.Alert.futureDateContent));
+            return false;
         } else if (date.getValue().isBefore(
                 LocalDate.of(2000, 1, 1))) {
             alertWrapper.showAlert(Alert.AlertType.ERROR,
@@ -393,6 +394,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
                             Text.AddExpense.Alert.oldDateTitle),
                     Translator.getTranslation(
                             Text.AddExpense.Alert.oldDateContent));
+            return false;
         }
         try {
             if (date.getValue() == null) return false;
