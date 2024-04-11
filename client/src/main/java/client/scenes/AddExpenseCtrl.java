@@ -160,7 +160,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Setter
-<<<<<<< HEAD
      *
      * @param choiceBox the currency choicebox
      */
