@@ -110,11 +110,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 new ParticipantCellFactory());
         expensesListView.setCellFactory(param ->
                 new TransactionCellFactory());
-        server.registerForUpdates(t -> {
-            updateTransactions(t);
-            Platform.runLater(this::refresh);
-            System.out.println("Received transaction: " + t.getName());
-        }, event);
         server.registerForMessages("/topic/admin", Event.class, e -> {
             if (event.equals(e)) event = e; //Overwrite current event
             System.out.println("Received event: " + event.getEventName());
@@ -265,16 +260,13 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
      * @return Transaction that is added
      */
     public Transaction updateTransactions(Transaction transaction) {
-        transactions.add(transaction);
-        Participant participant = (Participant) expensesDropDown.getValue();
-        if (participant != null &&
-                transaction.getParticipants().contains(participant)) {
-            transactionsParticipant.add(transaction);
+        transaction.setEvent(event);
+        if (event.getTransactions().isEmpty() ||
+                !event.getTransactions().getLast().getTransactionId()
+                        .equals(transaction.getTransactionId())) {
+            event.addTransaction(transaction);
         }
-        if (transaction.getPayer().equals(participant)) {
-            transactionsPayer.add(transaction);
-        }
-
+        getExpenses();
         return transaction;
     }
 
@@ -556,12 +548,24 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
      */
     public void setEvent(Event event) {
         this.event = event;
+        server.registerForUpdates(t -> {
+            try {
+                Platform.runLater(() -> updateTransactions(t));
+                Platform.runLater(this::refresh);
+                System.out.println("Received transaction: " + t.getName());
+            }
+            catch (Exception e) {
+                System.err.println("An error occurred: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }, event);
     }
 
     /**
      * Shows the startUpWindow
      */
     public void returnToOverview() {
+        server.stopLongPolling();
         mainCtrl.showStartUp();
     }
 
