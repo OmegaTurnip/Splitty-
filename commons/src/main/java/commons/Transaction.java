@@ -219,7 +219,6 @@ public class Transaction {
      * @return  Whether this transaction is a payoff or a 'debt'.
      */
     public boolean isPayoff() {
-        System.out.println(payoff);
         return payoff;
     }
 

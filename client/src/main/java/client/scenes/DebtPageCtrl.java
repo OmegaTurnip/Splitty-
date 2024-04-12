@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.language.Language;
+import client.language.Text;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
@@ -15,8 +16,11 @@ import javafx.scene.layout.AnchorPane;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.Currency;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DebtPageCtrl extends TextPage implements Initializable {
 
@@ -41,6 +45,7 @@ public class DebtPageCtrl extends TextPage implements Initializable {
     private MainCtrl mainCtrl;
     private ServerUtils server;
     private AlertWrapper alertWrapper;
+    private final Pattern pricePattern;
 
     /**
      * Initializes the controller
@@ -52,6 +57,7 @@ public class DebtPageCtrl extends TextPage implements Initializable {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.alertWrapper = new AlertWrapper();
+        pricePattern = Pattern.compile("^[0-9]+(?:[.,][0-9]+)?$");
     }
 
     /**
@@ -111,12 +117,7 @@ public class DebtPageCtrl extends TextPage implements Initializable {
             Button mark = new Button();
             mark.setVisible(true);
             mark.setText("Settle debt");
-            mark.setOnAction(x ->
-            {
-                addPayoff(event, debt.from(), debt.amount(),
-                        debt.to(), mainCtrl.getStartUpDate());
-                mark.setText("Settled");
-            });
+            mark.setOnAction(x -> payOff(event, debt, mark));
             if (debt.to().getBic()==null ||
                     debt.to().getIban() == null) {
                 info.setText("Payment instructions unavailable");
@@ -145,6 +146,78 @@ public class DebtPageCtrl extends TextPage implements Initializable {
         }
     }
 
+    private void payOff(Event event, Debt debt, Button mark) {
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Money transfer");
+        ButtonType settleTransfer = new ButtonType("Settle transfer",
+                ButtonBar.ButtonData.APPLY);
+        dialog.getDialogPane().getButtonTypes()
+                .addAll(ButtonType.CANCEL, settleTransfer);
+        TextField amount = new TextField();
+        amount.setPromptText("Enter amount to pay off in " +
+                UserConfig.get().getPreferredCurrency().getCurrencyCode());
+        dialog.getDialogPane().setContent(amount);
+        dialog.setResultConverter(button -> {
+            if (button == settleTransfer) {
+                String payment = amount.getText();
+                if (verifyPrice(payment)) {
+                    Money paymentAmount = new Money(new BigDecimal(payment),
+                            Currency.getInstance(UserConfig.get()
+                                    .getPreferredCurrency().getCurrencyCode()));
+                    if (isValidPayoffAmount(debt.amount(), paymentAmount,
+                            mainCtrl.getStartUpDate())) {
+                        addPayoff(event, debt.from(), paymentAmount, debt.to(),
+                                mainCtrl.getStartUpDate());
+                        mark.setText("Settled");
+                    } else alertWrapper.showAlert(Alert.AlertType.ERROR, "Not valid", "Not vailid");
+                }
+            }
+            return null;
+        });
+        dialog.showAndWait();
+    }
+    boolean verifyPrice(String input) {
+        Matcher matcher = pricePattern.matcher(input);
+
+        if (!matcher.matches()) {
+            choosePriceAlert(input);
+            return false;
+        } else return true;
+
+    }
+
+    private void choosePriceAlert(String input) {
+        if (input.isEmpty()) {
+            alertWrapper.showAlert(Alert.AlertType.ERROR, Translator.getTranslation(
+                            Text.AddExpense.Alert.invalidPrice),
+                    Translator.getTranslation(
+                            Text.AddExpense.Alert.emptyString));
+        } else if (input.matches("[a-zA-Z]")) {
+            alertWrapper.showAlert(Alert.AlertType.ERROR, Translator.getTranslation(
+                            Text.AddExpense.Alert.invalidPrice),
+                    Translator.getTranslation(Text.AddExpense.Alert.noLetters));
+        } else if (input.chars().filter(ch -> ch == ',').count() > 1
+                || input.chars().filter(ch -> ch == '.').count() > 1
+                || (input.chars().filter(ch -> ch == ',').count() > 0
+                && input.chars().filter(ch -> ch == '.').count() > 0)) {
+            alertWrapper.showAlert(Alert.AlertType.ERROR, Translator.getTranslation(
+                            Text.AddExpense.Alert.invalidPrice),
+                    Translator.getTranslation(
+                            Text.AddExpense.Alert.onlyOnePeriodOrComma));
+        } else if (!Character.isDigit(input.charAt(0))
+                || !Character.isDigit(input.charAt(input.length() - 1))) {
+            alertWrapper.showAlert(Alert.AlertType.ERROR, Translator.getTranslation(
+                            Text.AddExpense.Alert.invalidPrice),
+                    Translator.getTranslation(
+                            Text.AddExpense.Alert.startWithDigit));
+            // If none of the above, consider it as general invalid format
+        } else {
+            alertWrapper.showAlert(Alert.AlertType.ERROR, Translator.getTranslation(
+                            Text.AddExpense.Alert.invalidPrice),
+                    Translator.getTranslation(
+                            Text.AddExpense.Alert.generallyInvalid));
+        }
+    }
 
     /**
      * Check whether the payoff amount is valid. Aka if {@code 0 < payoffAmount
