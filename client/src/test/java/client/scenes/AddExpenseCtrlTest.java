@@ -106,15 +106,15 @@ public class AddExpenseCtrlTest extends ApplicationTest {
         String testPrice2 = "67.89";
         String testPrice3 = ".67";
         String testPrice4 = "67,935.99";
-        assertTrue(sut.verifyPrice(testPrice1));
-        assertTrue(sut.verifyPrice(testPrice2));
+        assertTrue(sut.verifyPrice(testPrice1, alertWrapper));
+        assertTrue(sut.verifyPrice(testPrice2, alertWrapper));
 
         AddExpenseCtrl addExpenseCtrl = spy(sut);
 
         doNothing().when(addExpenseCtrl).showAlert(
                 Translator.getTranslation(Text.AddExpense.Alert.invalidPrice),
                 Translator.getTranslation(Text.AddExpense.Alert.startWithDigit));
-        addExpenseCtrl.verifyPrice(testPrice3);
+        addExpenseCtrl.verifyPrice(testPrice3, alertWrapper);
         verify(addExpenseCtrl, times(1)).showAlert(
                 Translator.getTranslation(Text.AddExpense.Alert.invalidPrice),
                 Translator.getTranslation(Text.AddExpense.Alert.startWithDigit));
@@ -122,7 +122,7 @@ public class AddExpenseCtrlTest extends ApplicationTest {
         doNothing().when(addExpenseCtrl).showAlert(
                 Translator.getTranslation(Text.AddExpense.Alert.invalidPrice),
                 Translator.getTranslation(Text.AddExpense.Alert.onlyOnePeriodOrComma));
-        addExpenseCtrl.verifyPrice(testPrice4);
+        addExpenseCtrl.verifyPrice(testPrice4, alertWrapper);
         verify(addExpenseCtrl, times(1)).showAlert(
                 Translator.getTranslation(Text.AddExpense.Alert.invalidPrice),
                 Translator.getTranslation(Text.AddExpense.Alert.onlyOnePeriodOrComma));

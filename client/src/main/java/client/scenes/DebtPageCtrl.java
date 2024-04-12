@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.Callback;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -19,10 +20,11 @@ import java.time.LocalDate;
 import java.util.Currency;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DebtPageCtrl extends TextPage implements Initializable {
+public class DebtPageCtrl extends TextPage implements Initializable, PriceHandler {
 
     /*
      * ServerUtils:
@@ -45,7 +47,6 @@ public class DebtPageCtrl extends TextPage implements Initializable {
     private MainCtrl mainCtrl;
     private ServerUtils server;
     private AlertWrapper alertWrapper;
-    private final Pattern pricePattern;
 
     /**
      * Initializes the controller
@@ -57,7 +58,6 @@ public class DebtPageCtrl extends TextPage implements Initializable {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.alertWrapper = new AlertWrapper();
-        pricePattern = Pattern.compile("^[0-9]+(?:[.,][0-9]+)?$");
     }
 
     /**
@@ -154,13 +154,13 @@ public class DebtPageCtrl extends TextPage implements Initializable {
         dialog.getDialogPane().getButtonTypes()
                 .addAll(ButtonType.CANCEL, settleTransfer);
         TextField amount = new TextField();
-        amount.setPromptText("Enter amount to pay off in " +
-                UserConfig.get().getPreferredCurrency().getCurrencyCode());
+        amount.setText(debt.amount().getAmount().toString());
         dialog.getDialogPane().setContent(amount);
+        AtomicBoolean doNotAllowClose = new AtomicBoolean(true);
         dialog.setResultConverter(button -> {
             if (button == settleTransfer) {
                 String payment = amount.getText();
-                if (verifyPrice(payment)) {
+                if (verifyPrice(payment, alertWrapper)) {
                     Money paymentAmount = new Money(new BigDecimal(payment),
                             Currency.getInstance(UserConfig.get()
                                     .getPreferredCurrency().getCurrencyCode()));
@@ -168,55 +168,22 @@ public class DebtPageCtrl extends TextPage implements Initializable {
                             mainCtrl.getStartUpDate())) {
                         addPayoff(event, debt.from(), paymentAmount, debt.to(),
                                 mainCtrl.getStartUpDate());
-                        mark.setText("Settled");
-                    } else alertWrapper.showAlert(Alert.AlertType.ERROR, "Not valid", "Not vailid");
+                        doNotAllowClose.set(false);
+                    } else {
+                        alertWrapper.showAlert(Alert.AlertType.ERROR, "Not valid", "Not vailid");
+                        return null;
+                    }
                 }
+                return null;
             }
             return null;
         });
+        dialog.setOnCloseRequest(e -> {
+            if (doNotAllowClose.get()) {
+                e.consume(); // Prevent the dialog from closing
+            }
+        });
         dialog.showAndWait();
-    }
-    boolean verifyPrice(String input) {
-        Matcher matcher = pricePattern.matcher(input);
-
-        if (!matcher.matches()) {
-            choosePriceAlert(input);
-            return false;
-        } else return true;
-
-    }
-
-    private void choosePriceAlert(String input) {
-        if (input.isEmpty()) {
-            alertWrapper.showAlert(Alert.AlertType.ERROR, Translator.getTranslation(
-                            Text.AddExpense.Alert.invalidPrice),
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.emptyString));
-        } else if (input.matches("[a-zA-Z]")) {
-            alertWrapper.showAlert(Alert.AlertType.ERROR, Translator.getTranslation(
-                            Text.AddExpense.Alert.invalidPrice),
-                    Translator.getTranslation(Text.AddExpense.Alert.noLetters));
-        } else if (input.chars().filter(ch -> ch == ',').count() > 1
-                || input.chars().filter(ch -> ch == '.').count() > 1
-                || (input.chars().filter(ch -> ch == ',').count() > 0
-                && input.chars().filter(ch -> ch == '.').count() > 0)) {
-            alertWrapper.showAlert(Alert.AlertType.ERROR, Translator.getTranslation(
-                            Text.AddExpense.Alert.invalidPrice),
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.onlyOnePeriodOrComma));
-        } else if (!Character.isDigit(input.charAt(0))
-                || !Character.isDigit(input.charAt(input.length() - 1))) {
-            alertWrapper.showAlert(Alert.AlertType.ERROR, Translator.getTranslation(
-                            Text.AddExpense.Alert.invalidPrice),
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.startWithDigit));
-            // If none of the above, consider it as general invalid format
-        } else {
-            alertWrapper.showAlert(Alert.AlertType.ERROR, Translator.getTranslation(
-                            Text.AddExpense.Alert.invalidPrice),
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.generallyInvalid));
-        }
     }
 
     /**
