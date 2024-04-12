@@ -69,7 +69,9 @@ public class AddExpenseCtrlTest extends ApplicationTest {
             try (MockedConstruction<ServerUtils> mockPaymentService = Mockito.mockConstruction(ServerUtils.class, (mock, context) -> {
                 when(mock.connect(Mockito.anyString())).thenReturn(Mockito.mock(StompSession.class));
             })) {
+                MockitoAnnotations.openMocks(this);
                 UserConfig userConfig = Mockito.mock(UserConfig.class);
+                doNothing().when(mainCtrl).showEventOverview(any(Event.class));
                 userConfigMockedStatic.when(UserConfig::get).thenReturn(userConfig);
                 Mockito.when(userConfig.getUserLanguage()).thenReturn("eng");
                 Mockito.when(userConfig.getPreferredCurrency()).thenReturn(Currency.getInstance("EUR"));
@@ -86,8 +88,8 @@ public class AddExpenseCtrlTest extends ApplicationTest {
                 this.sut = editExpense.getKey();
                 this.sut.setEventOverviewCtrl(eventOverviewCtrl);
                 this.sut.setActionHistory(new ActionHistory());
+                this.sut.setMainCtrl(mainCtrl);
                 sut.setAlertWrapper(Mockito.mock(AlertWrapper.class));
-                MockitoAnnotations.openMocks(this).close();
                 Mockito.when(server.connect(Mockito.anyString())).thenReturn(Mockito.mock(StompSession.class));
 
                 event = new Event("testEvent");

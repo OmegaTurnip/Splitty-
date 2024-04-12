@@ -70,7 +70,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     private Event event;
     private ServerUtils server;
-    private final MainCtrl mainCtrl;
+    private MainCtrl mainCtrl;
     private final Pattern pricePattern;
     private Transaction expenseToOverwrite;
     private AlertWrapper alertWrapper;
@@ -83,6 +83,14 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
      */
     public void setActionHistory(ActionHistory actionHistory) {
         this.actionHistory = actionHistory;
+    }
+
+    /**
+     * Setter
+     * @param mainCtrl the mainCtrl to set
+     */
+    public void setMainCtrl(MainCtrl mainCtrl) {
+        this.mainCtrl = mainCtrl;
     }
 
     /**
