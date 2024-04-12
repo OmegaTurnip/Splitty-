@@ -223,7 +223,6 @@ public class TransactionCellController {
         public void undo() {
             Transaction returnedE = server.saveTransaction(transaction);
             transaction = returnedE;
-            event.addTransaction(returnedE);
             server.saveEvent(event);
             mainCtrl.showEventOverview(event);
         }
