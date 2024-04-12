@@ -67,6 +67,7 @@ public class AddExpenseCtrlTest extends ApplicationTest {
                 UserConfig userConfig = Mockito.mock(UserConfig.class);
                 userConfigMockedStatic.when(UserConfig::get).thenReturn(userConfig);
                 Mockito.when(userConfig.getUserLanguage()).thenReturn("eng");
+                Mockito.when(userConfig.getPreferredCurrency()).thenReturn(Currency.getInstance("EUR"));
                 Language.fromLanguageFile(
                         "eng", new File("../includedLanguages/eng.properties")
                 );
@@ -245,10 +246,10 @@ public class AddExpenseCtrlTest extends ApplicationTest {
         participantList.add(participant2);
         Money amount = new Money(new BigDecimal(5), Currency.getInstance("EUR"));
         Transaction test = event.registerDebt
-                (participant1, "Test", amount, participantList, event.getTags().get(0));
+                (participant1, "Test", amount, participantList, null, event.getTags().get(0));
 
         Transaction expectedResult = event.registerDebt
-                (participant1, "Test", amount, participantList, event.getTags().get(0));
+                (participant1, "Test", amount, participantList, null, event.getTags().get(0));
         event.removeTransaction(expectedResult);
         expectedResult.setTransactionId(1L);
 
@@ -266,11 +267,11 @@ public class AddExpenseCtrlTest extends ApplicationTest {
         participantList.add(participant2);
         Money amount = new Money(new BigDecimal(5), Currency.getInstance("EUR"));
         Transaction test = event.registerDebt
-                (participant1, "Test", amount, participantList, event.getTags().get(0));
+                (participant1, "Test", amount, participantList, null, event.getTags().get(0));
         test.setTransactionId(1L);
 
         Transaction expectedResult = event.registerDebt
-                (participant2, "Test 1", amount, participantList, event.getTags().get(0));
+                (participant2, "Test 1", amount, participantList, null, event.getTags().get(0));
 
         sut.setExpenseToOverwrite(test);
         sut.setEvent(event);

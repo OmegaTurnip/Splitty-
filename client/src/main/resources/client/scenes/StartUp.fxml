@@ -32,26 +32,18 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<?import java.lang.String?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.Cursor?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StartUpCtrl">
+<VBox prefHeight="400.0" prefWidth="640.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StartUpCtrl">
   <children>
       <BorderPane prefHeight="687.0" prefWidth="640.0">
          <top>
-          <MenuBar prefHeight="0.0" prefWidth="758.0" style="-fx-background-color: #fefdfd;" BorderPane.alignment="CENTER">
+          <MenuBar prefHeight="0.0" prefWidth="758.0" styleClass="menu-bar" BorderPane.alignment="CENTER">
             <menus>
                <Menu fx:id="languageMenu" mnemonicParsing="false" text="Languages" />
                   <Menu fx:id="currencyMenu1" mnemonicParsing="false" text="Currency" />
@@ -61,10 +53,64 @@
             </menus>
           </MenuBar>
          </top>
+
+         <center>
+            <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <center>
+                  <AnchorPane prefHeight="262.0" prefWidth="598.0" styleClass="borderPane" BorderPane.alignment="CENTER">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <padding>
+                        <Insets top="15.0" />
+                     </padding>
+                     <TextField fx:id="newEvent1" layoutX="68.0" layoutY="48.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" prefWidth="306.0" promptText="Choose a name for a new event..." styleClass="text-field-splitty">
+
+                     <cursor>
+                        <Cursor fx:constant="TEXT" />
+                     </cursor>
+                        <font>
+                           <Font name="Arial" size="16.0" />
+                        </font>
+                     </TextField>
+                     <Button fx:id="newEventButton1" layoutX="398.0" layoutY="46.0" mnemonicParsing="false" onAction="#createEvent" prefHeight="40.0" prefWidth="173.0" styleClass="blackButton">
+                        <font>
+                           <Font name="Arial" size="18.0" />
+                        </font>
+                        <cursor>
+                           <Cursor fx:constant="HAND" />
+                        </cursor>
+                     </Button>
+                     <TextField fx:id="joinEvent1" layoutX="68.0" layoutY="103.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" prefWidth="306.0" promptText="Enter an event invite code..." styleClass="text-field-splitty">
+                        <cursor>
+                           <Cursor fx:constant="TEXT" />
+                        </cursor>
+                        <font>
+                           <Font name="Arial" size="16.0" />
+                        </font>
+                     </TextField>
+                     <Button fx:id="joinEventButton1" layoutX="398.0" layoutY="103.0" maxHeight="-Infinity" minHeight="-Infinity" mnemonicParsing="false" onAction="#joinEvent" prefHeight="40.0" prefWidth="173.0" styleClass="blackButton">
+
+                     <font>
+                        <Font name="Arial" size="18.0" />
+                     </font>
+                        <cursor>
+                           <Cursor fx:constant="HAND" />
+                        </cursor>
+                     </Button>
+                     <Label fx:id="yourEventsLabel" layoutX="68.0" layoutY="188.0" prefHeight="58.0" prefWidth="269.0" styleClass="title" text="Your Events">
+                        <font>
+                           <Font name="Arial" size="36.0" />
+                        </font>
+                     </Label>
+                  </AnchorPane>
+               </center>
+            </BorderPane>
+         </center>
          <bottom>
-            <ListView fx:id="yourEvents" prefHeight="531.0" prefWidth="640.0" BorderPane.alignment="CENTER">
+            <ListView fx:id="yourEvents" pickOnBounds="false" prefHeight="531.0" prefWidth="640.0" BorderPane.alignment="CENTER">
                <padding>
-                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                  <Insets bottom="15.0" left="50.0" right="50.0" top="15.0" />
                </padding>
                <styleClass>
                   <String fx:value="bottom-BG" />
@@ -72,66 +118,6 @@
                </styleClass>
             </ListView>
          </bottom>
-         <center>
-            <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-               <center>
-                  <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="262.0" prefWidth="598.0" style="-fx-background-color: #8e3edd;" BorderPane.alignment="CENTER">
-                     <children>
-                        <Label alignment="CENTER" layoutX="155.0" layoutY="177.0" style="&#10;" textAlignment="CENTER" textFill="#e0ddf2" wrapText="false">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                        </Label>
-                        <Button fx:id="newEventButton1" layoutX="398.0" layoutY="46.0" mnemonicParsing="false" onAction="#createEvent" prefHeight="40.0" prefWidth="173.0" style="-fx-background-radius: 5pt; -fx-background-color: #0d0d0d; -fx-font-weight: bold;" text="Create event" textFill="#fefdfd">
-                           <font>
-                              <Font name="Arial" size="18.0" />
-                           </font>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </Button>
-                        <TextField fx:id="newEvent1" layoutX="68.0" layoutY="48.0" prefHeight="40.0" prefWidth="306.0" promptText="Choose a name for a new event..." style="-fx-background-color: #8f3ede; -fx-prompt-text-fill: #fefdfd; -fx-border-color: #e0ddf2; -fx-border-radius: 5pt; -fx-border-width: 1.5pt;">
-
-                        <cursor>
-                              <Cursor fx:constant="TEXT" />
-                           </cursor>
-                           <font>
-                              <Font size="16.0" />
-                           </font>
-                        </TextField>
-                        <Button fx:id="joinEventButton1" layoutX="398.0" layoutY="103.0" mnemonicParsing="false" onAction="#joinEvent" prefHeight="40.0" prefWidth="173.0" style="-fx-background-color: #0d0d0d; -fx-font-weight: bold; -fx-background-radius: 5pt;" text="Join event" textFill="#fefdfd">
-
-                        <font>
-                              <Font name="Arial" size="18.0" />
-                           </font>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </Button>
-                        <TextField fx:id="joinEvent1" layoutX="68.0" layoutY="103.0" prefHeight="40.0" prefWidth="306.0" promptText="Enter an event invite code..." style="-fx-background-color: #8E3EDD; -fx-border-color: #E0DDF2; -fx-prompt-text-fill: #fefdfd; -fx-border-radius: 5pt; -fx-border-width: 1.5pt;">
-                           <cursor>
-                              <Cursor fx:constant="TEXT" />
-                           </cursor>
-                           <font>
-                              <Font size="16.0" />
-                           </font>
-                        </TextField>
-                        <Label fx:id="yourEventsLabel" layoutX="68.0" layoutY="188.0" prefHeight="58.0" prefWidth="269.0" style="-fx-font-weight: bold;" text="Your Events" textFill="#fefdfd">
-                           <font>
-                              <Font name="Arial" size="36.0" />
-                           </font>
-                        </Label>
-                     </children>
-                     <opaqueInsets>
-                        <Insets />
-                     </opaqueInsets>
-                     <padding>
-                        <Insets top="15.0" />
-                     </padding>
-                  </AnchorPane>
-               </center>
-            </BorderPane>
-         </center>
       </BorderPane>
   </children>
 </VBox>

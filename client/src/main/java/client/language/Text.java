@@ -193,11 +193,18 @@ public class Text {
         public static final String cancel = level + "cancel";
         public static final String confirm = level + "confirm";
 
+        public static final String copy = level + "copy";
+
         public static final class Alert {
             public static final String level = EditName.level + "Alert.";
             public static final String confirmTitle = level + "confirmTitle";
             public static final String confirmContent = level
                     + "confirmContent";
+            public static final String showInviteTitle = level +
+                    "showInviteTitle";
+
+            public static final String showInviteContent = level +
+                    "showInviteContent";
         }
     }
 
@@ -301,6 +308,18 @@ public class Text {
                     "noNameTitle";
             public static final String noNameContent = level +
                     "noNameContent";
+            public static final String futureDateTitle = level +
+                    "futureDateTitle";
+            public static final String futureDateContent = level +
+                    "futureDateContent";
+            public static final String oldDateTitle = level +
+                    "oldDateTitle";
+            public static final String oldDateContent = level +
+                    "oldDateContent";
+            public static final String noCurrencyTitle = level +
+                    "noCurrencyTitle";
+            public static final String noCurrencyContent = level +
+                    "noCurrencyContent";
         }
 
     }

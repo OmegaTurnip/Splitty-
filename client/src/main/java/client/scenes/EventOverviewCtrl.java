@@ -20,6 +20,9 @@ import commons.Transaction;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.StringConverter;
@@ -69,7 +72,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     private MenuItem returnToOverview;
     @FXML
     private Menu rtoButton;
-    private final ServerUtils server;
+    private ServerUtils server;
     private MainCtrl mainCtrl;
 
     private AlertWrapper alertWrapper;
@@ -107,11 +110,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 new ParticipantCellFactory());
         expensesListView.setCellFactory(param ->
                 new TransactionCellFactory());
-        server.registerForUpdates(t -> {
-            updateTransactions(t);
-            Platform.runLater(this::refresh);
-            System.out.println("Received transaction: " + t.getName());
-        }, event);
         server.registerForMessages("/topic/admin", Event.class, e -> {
             if (event.equals(e)) event = e; //Overwrite current event
             System.out.println("Received event: " + event.getEventName());
@@ -183,38 +181,47 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         return mainCtrl;
     }
 
+    /**
+     * Setter
+     * @param server the server to set
+     */
+    public void setServer(ServerUtils server) {
+        this.server = server;
+    }
+
     public static class ParticipantStringConverter
             extends StringConverter<Object> {
 
         private final StringConverter<Object> participantStringConverter =
                 new StringConverter<>() {
 
-        /**
-         * Converts the given object to its string representation.
-         * @param o The object to convert.
-         * @return The string representation of the object's name,
-         * or an empty string if the object is null.
-         */
-                @Override
-                public String toString(Object o) {
-                    if (o == null) {
-                        return "";
-                    } else {
-                        return ((Participant) o).getName();
+                    /**
+                     * Converts the given object to its string representation.
+                     * @param o The object to convert.
+                     * @return The string representation of the object's name,
+                     * or an empty string if the object is null.
+                     */
+                    @Override
+                    public String toString(Object o) {
+                        if (o == null) {
+                            return "";
+                        } else {
+                            return ((Participant) o).getName();
+                        }
                     }
-                }
 
-            /**
-             * Converts the given string to an object.
-             * @param s The string to convert.
-             * @return Always returns null,
-             * as the conversion from string to object is not implemented.
-             */
-                @Override
-                public Object fromString(String s) {
-                    return null;
-                }
-            };
+                    /**
+                     * Converts the given string to an object.
+                     * @param s The string to convert.
+                     * @return Always returns null,
+                     * as the conversion from string to object is
+                     * not implemented.
+                     */
+                    @Override
+                    public Object fromString(String s) {
+                        return null;
+                    }
+                };
 
         /**
          * Converts the given object to its string
@@ -262,16 +269,13 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
      * @return Transaction that is added
      */
     public Transaction updateTransactions(Transaction transaction) {
-        transactions.add(transaction);
-        Participant participant = (Participant) expensesDropDown.getValue();
-        if (participant != null &&
-                transaction.getParticipants().contains(participant)) {
-            transactionsParticipant.add(transaction);
+        transaction.setEvent(event);
+        if (event.getTransactions().isEmpty() ||
+                !event.getTransactions().getLast().getTransactionId()
+                        .equals(transaction.getTransactionId())) {
+            event.addTransaction(transaction);
         }
-        if (transaction.getPayer().equals(participant)) {
-            transactionsPayer.add(transaction);
-        }
-
+        getExpenses();
         return transaction;
     }
 
@@ -398,8 +402,8 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 .getTranslation(client.language
                         .Text.EventOverview.Buttons.fromExpensesButton));
         expensesDropDown.setPromptText(Translator
-                    .getTranslation(client.language
-                            .Text.EventOverview.expensesDropDown));
+                .getTranslation(client.language
+                        .Text.EventOverview.expensesDropDown));
         if(transactionCellController != null){
             transactionCellController.refreshText();
             expensesListView.refresh();
@@ -490,9 +494,9 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                     }
                 }
                 transactionCellController = loader.getController();
+                transactionCellController.setServer(server);
                 transactionCellController.setTransactionData(transaction);
                 transactionCellController.setEvent(event);
-                transactionCellController.setServer(server);
                 transactionCellController.setMainCtrl(mainCtrl);
                 transactionCellController.setTransaction(transaction);
                 transactionCellController.setEventOverviewCtrl(
@@ -502,6 +506,49 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         }
     }
 
+    /**
+     * Shows the invite code of the event
+     */
+    public void showInviteCode(){
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle(Translator.getTranslation(client.language.
+                Text.EditName.Alert.showInviteTitle));
+        ButtonType cancelButtonType = new ButtonType(
+                Translator.getTranslation(Text.EditName.cancel),
+                ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType copyButtonType = new ButtonType(
+                Translator.getTranslation(Text.EditName.copy),
+                ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(copyButtonType,
+                cancelButtonType);
+        Label label = new Label(Translator.getTranslation(
+                Text.EditName.Alert.showInviteContent));
+        TextField textField = new TextField();
+        textField.setText(event.getInviteCode());
+        textField.setEditable(false);
+        textField.setPrefWidth(275);
+        GridPane grid = new GridPane();
+        grid.add(label, 1, 1);
+        grid.add(textField, 2, 1);
+        dialog.getDialogPane().setContent(grid);
+        dialog.getDialogPane().setMinWidth(450);
+        dialog.setResultConverter(buttonType -> {
+            if (buttonType == copyButtonType) {
+                Clipboard clipboard = Clipboard.getSystemClipboard();
+                ClipboardContent content = new ClipboardContent();
+                content.putString(event.getInviteCode());
+                clipboard.setContent(content);
+                mainCtrl.showEventOverview(event);
+            }
+            return null;
+        });
+        dialog.setResultConverter(buttonType -> {
+            if (buttonType == cancelButtonType) {
+                mainCtrl.showEventOverview(event);}
+            return null;
+        });
+        dialog.showAndWait();
+    }
 
 
     /**
@@ -510,12 +557,24 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
      */
     public void setEvent(Event event) {
         this.event = event;
+        server.registerForUpdates(t -> {
+            try {
+                Platform.runLater(() -> updateTransactions(t));
+                Platform.runLater(this::refresh);
+                System.out.println("Received transaction: " + t.getName());
+            }
+            catch (Exception e) {
+                System.err.println("An error occurred: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }, event);
     }
 
     /**
      * Shows the startUpWindow
      */
     public void returnToOverview() {
+        server.stopLongPolling();
         mainCtrl.showStartUp();
     }
 

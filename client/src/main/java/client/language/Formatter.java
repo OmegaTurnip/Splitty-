@@ -92,7 +92,7 @@ public class Formatter {
                 );
 
             result = result.replaceAll(toTextParameter(parameter.getKey()),
-                    parameter.getValue());
+                    Matcher.quoteReplacement(parameter.getValue()));
         }
 
         return result;
@@ -135,7 +135,7 @@ public class Formatter {
      * @param   format
      *          The format string containing the parameters.
      *
-     * @return  the amount of times each parameter is found as a
+     * @return  The amount of times each parameter is found as a
      *          key value relation.
      */
     public static HashMap<String, Integer> getParameterOccurrences(

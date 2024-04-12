@@ -3,6 +3,7 @@ package client.scenes;
 import client.MyFXML;
 import client.MyModule;
 import client.language.Language;
+import client.language.Text;
 import client.language.Translator;
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
@@ -14,6 +15,9 @@ import commons.Participant;
 import commons.Transaction;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ChoiceBox;
+import javafx.application.Platform;
+import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -24,9 +28,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.testfx.framework.junit5.ApplicationTest;
+
 import org.testfx.util.WaitForAsyncUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -34,6 +40,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+import static org.testfx.api.FxAssert.verifyThat;
 
 public class EventOverviewCtrlTest extends ApplicationTest {
     @InjectMocks
@@ -42,6 +49,8 @@ public class EventOverviewCtrlTest extends ApplicationTest {
     private MainCtrl mainCtrl;
     @Mock
     private ServerUtils server;
+
+
     Event event;
 
     @Override
@@ -53,6 +62,8 @@ public class EventOverviewCtrlTest extends ApplicationTest {
                 UserConfig userConfig = Mockito.mock(UserConfig.class);
                 userConfigMockedStatic.when(UserConfig::get).thenReturn(userConfig);
                 Mockito.when(userConfig.getUserLanguage()).thenReturn("eng");
+                Mockito.when(userConfig.getPreferredCurrency())
+                        .thenReturn(Currency.getInstance("EUR"));
                 Language.fromLanguageFile(
                         "eng", new File("../includedLanguages/eng.properties")
                 );
@@ -66,7 +77,6 @@ public class EventOverviewCtrlTest extends ApplicationTest {
                 this.sut = eventOverview.getKey();
                 MockitoAnnotations.openMocks(this).close();
                 Mockito.when(server.connect(Mockito.anyString())).thenReturn(Mockito.mock(StompSession.class));
-
                 event = new Event("testEvent");
                 Scene scene = new Scene(eventOverview.getValue());
                 stage.setScene(scene);
@@ -85,7 +95,7 @@ public class EventOverviewCtrlTest extends ApplicationTest {
     }
     @AfterEach
     void breakDown() {
-        Mockito.reset(server );
+        Mockito.reset(server);
         Mockito.reset(mainCtrl);
     }
 
@@ -101,6 +111,10 @@ public class EventOverviewCtrlTest extends ApplicationTest {
 
     @Test
     void testAddExpense()  {
+        sut.setServer(server);
+        UserConfig mockUserconfig = mock(UserConfig.class);
+        UserConfig.dependencyInject(mockUserconfig);
+        when(mockUserconfig.getPreferredCurrency()).thenReturn(Currency.getInstance("EUR"));
         sut.setEvent(event);
         event.addParticipant("testParticipant1");
         Participant participant1 = event.getParticipants().get(0);
@@ -121,11 +135,16 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         addExpenseCtrlMock.setDate(new DatePicker());
         addExpenseCtrlMock.setPrice(new TextField("5"));
         addExpenseCtrlMock.setExpenseTag(null);
+        ChoiceBox<String> mockCurrency = mock(ChoiceBox.class);
+        addExpenseCtrlMock.setCurrency(mockCurrency);
+        when(mockCurrency.getValue()).thenReturn("EUR");
+        Money amount = new Money(new BigDecimal(5),  Currency.getInstance("EUR"));
+        when(server.convertMoney(any(Money.class), any(Currency.class), any(LocalDate.class))).thenReturn(amount);
+
         Transaction transaction = addExpenseCtrlMock.getExpense();
         server.saveEvent(event);
         sut.refresh();
-        Money amount = new Money(new BigDecimal(5),  Currency.getInstance("EUR"));
-        Transaction equalTransaction = new Transaction(participant1, name.getText(), amount, participantList,event, null, false);
+        Transaction equalTransaction = new Transaction(participant1, name.getText(), amount, participantList,event, null, null, false);
         transaction.setTransactionId(1L);
         equalTransaction.setTransactionId(1L);
         assertEquals(transaction, equalTransaction);
@@ -147,7 +166,7 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         sut.refresh();
         WaitForAsyncUtils.waitForFxEvents();
         List<Transaction> ExspenseListView = sut.getExpensesListView().getItems();
-        Transaction equalTransaction2 = new Transaction(participant1, name.getText(), amount, participantList,event, null, false);
+        Transaction equalTransaction2 = new Transaction(participant1, name.getText(), amount, participantList,event, null, null, false);
         transaction2.setTransactionId(2L);
         equalTransaction2.setTransactionId(2L);
         assertEquals(transaction2, equalTransaction2);
@@ -159,5 +178,28 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         sut.setMainCtrl(mainCtrl);
         assertEquals(sut.getMainCtrl(), mainCtrl);
     }
+
+    @Test
+    public void testShowInviteCodeCopy() {
+        sut.setEvent(event);
+        Platform.runLater(() -> sut.showInviteCode());
+        WaitForAsyncUtils.waitForFxEvents();
+        Button copyButton = lookup(Translator.getTranslation(Text.EditName.copy)).queryButton();
+        clickOn(copyButton);
+        verify(mainCtrl, times(1)).showEventOverview(event);
+
+    }
+
+    @Test
+    public void testShowInviteCodeCancel() {
+        sut.setEvent(event);
+        Platform.runLater(() -> sut.showInviteCode());
+        WaitForAsyncUtils.waitForFxEvents();
+        Button cancelButton = lookup(Translator.getTranslation(Text.EditName.cancel)).queryButton();
+        clickOn(cancelButton);
+        verify(mainCtrl, times(2)).showEventOverview(event);
+    }
+
+
 
 }

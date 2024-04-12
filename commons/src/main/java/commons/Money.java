@@ -1,6 +1,7 @@
 package commons;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serial;
@@ -16,6 +17,8 @@ public class Money implements java.io.Serializable, Comparable<Money> {
     @Serial
     private static final long serialVersionUID = -5942679521526989754L;
 
+    // otherwise it still gets converted to a double during serialization...
+    @JsonFormat(shape=JsonFormat.Shape.STRING)
     private BigDecimal amount;
     private final Currency currency;
 
@@ -121,13 +124,17 @@ public class Money implements java.io.Serializable, Comparable<Money> {
 
     /**
      * Compares {@code this} to {@code other}. Throws {@link
-     * IllegalArgumentException} if {@link Money#currency this.currency}
-     * {@code != other.currency}.
+     * IllegalArgumentException} if
+     * {@code !this.currency.equals(other.currency)}.
      *
      * @param   other
      *          The object to be compared.
      *
-     * @return  An {@code int} representing the natural ordering.
+     * @return  -1, 0, or 1 as this {@code Money} object is numerically less
+     *          than, equal to, or greater than {@code other}.
+     *
+     * @throws  IllegalArgumentException
+     *          If {@code !this.currency.equals(other.currency)}.
      */
     @Override
     public int compareTo(Money other) {

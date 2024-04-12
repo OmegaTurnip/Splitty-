@@ -36,7 +36,7 @@ public class TransactionControllerTest {
     void setup() {
         eventRepo = new TestEventRepository();
         transactionRepo = new TestTransactionRepository();
-        sut = new TransactionController(transactionRepo, eventRepo);
+        sut = new TransactionController(transactionRepo, eventRepo, null);
         testEvent1 = new Event("testEvent1");
         testEvent1.setId(100L);
         testEvent1.addParticipant("testP1");
@@ -45,9 +45,9 @@ public class TransactionControllerTest {
         group = new ArrayList<>();
         group.add(testP1);
         transaction = testEvent1.registerDebt(testP1, "testTransaction1", new Money(new BigDecimal(100), Currency.getInstance("EUR")),
-                group, testEvent1.getTags().get(0));
+                group, null, testEvent1.getTags().get(0));
         transaction.setTransactionId(600L);
-        editTransaction = Transaction.createDebt(testP1, "editTransaction",  new Money(new BigDecimal(100), Currency.getInstance("EUR")), group, testEvent1,testEvent1.getTags().get(0));
+        editTransaction = Transaction.createDebt(testP1, "editTransaction",  new Money(new BigDecimal(100), Currency.getInstance("EUR")), group, testEvent1, null, testEvent1.getTags().get(0));
 
     }
 

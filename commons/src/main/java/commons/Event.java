@@ -290,17 +290,20 @@ public class Event {
      * @param   participants
      *          The {@code participant}s over which the {@code Transaction}
      *          should be divided.
+     * @param   date
+     *          The date of the expense.
      * @param   tag
      *          The {@link Tag}.
+     *
      *
      * @return  The registered {@code Transaction}.
      */
     public Transaction registerDebt(Participant creditor, String name,
                                     Money price, List<Participant> participants,
-                                    Tag tag) {
+                                    LocalDate date, Tag tag) {
         Transaction t =
                 Transaction.createDebt(
-                        creditor, name, price, participants, this, tag
+                        creditor, name, price, participants, this, date, tag
                 );
         this.transactions.add(t);
         updateLastActivity();
@@ -312,23 +315,20 @@ public class Event {
      *
      * @param   payer
      *          The {@link Participant} that paid.
-     * @param   name
-     *          The name of the {@link Transaction} to be registered.
      * @param   amount
      *          The money paid.
      * @param   receiver
      *          The {@code participant} receiving the money.
-     * @param   tag
-     *          The {@link Tag}.
+     * @param   date
+     *          The date of the payoff.
      *
      * @return  The registered {@code Transaction}.
      */
-    public Transaction registerPayoff(Participant payer, String name,
-                                      Money amount, Participant receiver,
-                                      Tag tag) {
+    public Transaction registerPayoff(Participant payer, Money amount,
+                                      Participant receiver, LocalDate date) {
         Transaction t =
                 Transaction.createPayoff(
-                        payer, name, amount, receiver, this, tag
+                        payer, amount, receiver, this, date
                 );
         transactions.add(t);
         updateLastActivity();

@@ -29,11 +29,11 @@ class TransactionTest {
         testParticipants.add(testParticipant2);
 
         testTransaction1 = Transaction.createDebt(testParticipant1, "Drinks", Money.fromLong(400, "EUR"),
-                testParticipants, testEvent, new Tag("food", "blue"));
+                testParticipants, testEvent, null, new Tag("food", "blue"));
         testTransaction2 = Transaction.createDebt(testParticipant2, "Bowling", Money.fromLong(200, "EUR"),
-                testEvent.getParticipants(), testEvent, new Tag("activities", "red"));
+                testEvent.getParticipants(), testEvent, null, new Tag("activities", "red"));
         testTransaction3 = Transaction.createDebt(testParticipant1, "Drinks", Money.fromLong(400, "EUR"),
-                testParticipants, testEvent, new Tag("food", "blue"));
+                testParticipants, testEvent, null, new Tag("food", "blue"));
     }
 
     @Test
