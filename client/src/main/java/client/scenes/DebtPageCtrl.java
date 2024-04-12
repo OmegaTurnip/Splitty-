@@ -45,10 +45,12 @@ public class DebtPageCtrl extends TextPage
     private MainCtrl mainCtrl;
     private ServerUtils server;
     private AlertWrapper alertWrapper;
+    private LocalDate startUpDate;
 
     /**
      * Initializes the controller
-     * @param server the serverUtils
+     *
+     * @param server   the serverUtils
      * @param mainCtrl the mainctrl
      */
     @Inject
@@ -60,13 +62,13 @@ public class DebtPageCtrl extends TextPage
 
     /**
      * Initialise the page.
-     * @param location
-     * The location used to resolve relative paths for the root object, or
-     * {@code null} if the location is not known.
      *
-     * @param resources
-     * The resources used to localize the root object, or {@code null} if
-     * the root object was not localized.
+     * @param location  The location used to resolve relative paths
+     *                  for the root object, or
+     *                  {@code null} if the location is not known.
+     * @param resources The resources used to localize the root
+     *                  object, or {@code null} if
+     *                  the root object was not localized.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -80,7 +82,7 @@ public class DebtPageCtrl extends TextPage
         Set<Debt> debts = server
                 .simplifyDebts(event, UserConfig.get().getPreferredCurrency());
         openDebtsList.getPanes().clear();
-        for(Debt debt : debts) {
+        for (Debt debt : debts) {
             populateAccordion(event, debt);
         }
         refreshText();
@@ -97,13 +99,13 @@ public class DebtPageCtrl extends TextPage
 
     /**
      * Populates the accordion with a debt
+     *
      * @param event the event
-     * @param debt the debt
+     * @param debt  the debt
      */
-    @SuppressWarnings("checkstyle:MethodLength")
     private void populateAccordion(Event event, Debt debt) {
         if (!debt.from().getName().equals(debt.to().getName())) {
-            String title = String.format("%s: %.2f %s => %s",
+            String title = String.format("%s owes %.2f %s to %s",
                     debt.from().getName(),
                     debt.amount().getAmount(),
                     debt.amount().getCurrency(),
@@ -112,32 +114,30 @@ public class DebtPageCtrl extends TextPage
             openDebtsList.getPanes().add(tp);
             AnchorPane anchorPane = new AnchorPane();
             Label info = new Label();
-            Button mark = new Button();
-            mark.setVisible(true);
-            mark.setText("Settle debt");
-            mark.setOnAction(x -> payOff(event, debt, mark));
-            if (debt.to().getBic()==null ||
-                    debt.to().getIban() == null) {
+            Button settle = new Button();
+            settle.setVisible(true);
+            settle.setText("Settle debt");
+            settle.setOnAction(x -> payOff(event, debt, settle));
+            if (debt.to().getBic().isEmpty() ||
+                    debt.to().getIban().isEmpty()) {
                 info.setText("Payment instructions unavailable");
             } else {
                 String data = debt.to().getName() + "\nIBAN: " +
                         debt.to().getIban() + "\nBIC: " +
                         debt.to().getBic();
-
                 info.setText(data);
-
             }
 
             anchorPane.getChildren().add(info);
-            anchorPane.getChildren().add(mark);
+            anchorPane.getChildren().add(settle);
 
             anchorPane.setTopAnchor(info, 10.0);
             anchorPane.setLeftAnchor(info, 10.0);
 
-            anchorPane.setTopAnchor(mark,
+            anchorPane.setTopAnchor(settle,
                     AnchorPane.getTopAnchor(info) +
                             info.getPrefHeight() + 30.0);
-            anchorPane.setLeftAnchor(mark,
+            anchorPane.setLeftAnchor(settle,
                     AnchorPane.getLeftAnchor(info) +
                             info.getPrefWidth() + 300.0);
             tp.setContent(anchorPane);
@@ -163,9 +163,9 @@ public class DebtPageCtrl extends TextPage
                             Currency.getInstance(UserConfig.get()
                                     .getPreferredCurrency().getCurrencyCode()));
                     if (isValidPayoffAmount(debt.amount(), paymentAmount,
-                            mainCtrl.getStartUpDate())) {
+                            startUpDate)) {
                         addPayoff(event, debt.from(), paymentAmount, debt.to(),
-                                mainCtrl.getStartUpDate());
+                                startUpDate);
                         doNotAllowClose.set(false);
                     } else {
                         alertWrapper.showAlert(Alert.AlertType.ERROR,
@@ -244,6 +244,7 @@ public class DebtPageCtrl extends TextPage
 
     /**
      * Setter
+     *
      * @param event the event
      */
     public void setEvent(Event event) {
@@ -261,6 +262,7 @@ public class DebtPageCtrl extends TextPage
 
     /**
      * Setter
+     *
      * @param mainCtrl the mainCtrl
      */
     public void setMainCtrl(MainCtrl mainCtrl) {
@@ -269,6 +271,7 @@ public class DebtPageCtrl extends TextPage
 
     /**
      * Setter
+     *
      * @param server the server
      */
     public void setServer(ServerUtils server) {
@@ -277,9 +280,18 @@ public class DebtPageCtrl extends TextPage
 
     /**
      * Setter
+     *
      * @param alertWrapper the alertWrapper
      */
     public void setAlertWrapper(AlertWrapper alertWrapper) {
         this.alertWrapper = alertWrapper;
+    }
+
+    /**
+     * Setter
+     * @param now date of the page load
+     */
+    public void setStartUpDate(LocalDate now) {
+        this.startUpDate = now;
     }
 }
