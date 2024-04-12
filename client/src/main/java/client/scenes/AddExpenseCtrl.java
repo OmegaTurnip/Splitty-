@@ -374,39 +374,20 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         }
     }
 
-
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     private boolean verifyInput() {
         if (!verifyPrice(price.getText())) {
             return false;
         }
         if (expenseName.getText().isEmpty()
                 || expenseName.getText().isBlank()) {
-            showAlert(Translator.getTranslation(
-                            Text.AddExpense.Alert.noNameTitle),
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.noNameContent));
+            noName();
             return false;
 
         }
         if (expensePayer == null
                 || !expensePayer.getClass().equals(Participant.class)) {
             noPayer();
-            return false;
-        }
-        if (date.getValue().isAfter(mainCtrl.getStartUpDate())) {
-            alertWrapper.showAlert(Alert.AlertType.ERROR,
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.futureDateTitle),
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.futureDateContent));
-            return false;
-        } else if (date.getValue().isBefore(
-                LocalDate.of(2000, 1, 1))) {
-            alertWrapper.showAlert(Alert.AlertType.ERROR,
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.oldDateTitle),
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.oldDateContent));
             return false;
         }
         try {
@@ -419,14 +400,50 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             wrongDate();
             return false;
         }
+        if (date.getValue().isAfter(mainCtrl.getStartUpDate())) {
+            dateTooFarAhead();
+            return false;
+        } else if (date.getValue().isBefore(
+                LocalDate.of(2000, 1, 1))) {
+            dateTooFarBehind();
+            return false;
+        }
+
         if (participantList.isEmpty()) {
-            showAlert(Translator.getTranslation(
-                            Text.AddExpense.Alert.noParticipantsTitle),
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.noParticipantsContent));
+            noParticipants();
             return false;
         }
         return true;
+    }
+
+    private void noName() {
+        showAlert(Translator.getTranslation(
+                        Text.AddExpense.Alert.noNameTitle),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.noNameContent));
+    }
+
+    private void noParticipants() {
+        showAlert(Translator.getTranslation(
+                        Text.AddExpense.Alert.noParticipantsTitle),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.noParticipantsContent));
+    }
+
+    private void dateTooFarBehind() {
+        alertWrapper.showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.oldDateTitle),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.oldDateContent));
+    }
+
+    private void dateTooFarAhead() {
+        alertWrapper.showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.futureDateTitle),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.futureDateContent));
     }
 
     private void noPayer() {
