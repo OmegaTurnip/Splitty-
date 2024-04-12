@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import client.history.ActionHistory;
 import client.language.Text;
 import client.language.Translator;
 import client.utils.ServerUtils;
@@ -162,7 +163,17 @@ public class MainCtrl {
         primaryStage.setScene(overview);
         overview.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
+                overviewCtrl.getActionHistory().clear();
                 showStartUp();
+                e.consume();
+            }
+        });
+        overview.setOnKeyPressed(e -> {
+            if (e.isControlDown() && e.getCode() == KeyCode.Z) {
+                overviewCtrl.undo();
+                e.consume();
+            } else if (e.isControlDown() && e.getCode() == KeyCode.Y) {
+                overviewCtrl.redo();
                 e.consume();
             }
         });
@@ -206,8 +217,11 @@ public class MainCtrl {
      * Go to the edit participant page.
      * @param event the event the participant is a part of.
      * @param participant the participant to edit.
+     * @param actionHistory the action history.
      */
-    public void showEditParticipant(Event event, Participant participant) {
+    public void showEditParticipant(Event event, Participant participant,
+                                    ActionHistory actionHistory) {
+        addParticipantCtrl.setActionHistory(actionHistory);
         addParticipantCtrl.setParticipant(participant);
         showParticipant(event);
     }
@@ -271,10 +285,14 @@ public class MainCtrl {
      * Go to the edit expense page.
      * @param event the event the participant is a part of.
      * @param transaction the transaction to edit
+     * @param actionHistory the action history
      */
-    public void showEditExpense(Event event, Transaction transaction) {
+    public void showEditExpense(Event event, Transaction transaction,
+                                ActionHistory actionHistory) {
         addExpenseCtrl.setEvent(event);
         addExpenseCtrl.setExpenseToOverwrite(transaction);
+        addExpenseCtrl.setActionHistory(actionHistory);
+        addExpenseCtrl.setEventOverviewCtrl(overviewCtrl);
         addExpenseCtrl.refresh();
         primaryStage.setScene(addExpense);
     }

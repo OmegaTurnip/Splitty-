@@ -2,6 +2,8 @@ package client.scenes;
 
 import client.MyFXML;
 import client.MyModule;
+import client.history.ActionHistory;
+import client.history.NoRedoActionsLeftException;
 import client.language.Language;
 import client.language.Text;
 import client.language.Translator;
@@ -30,6 +32,7 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.mockito.*;
@@ -56,6 +59,8 @@ public class AddExpenseCtrlTest extends ApplicationTest {
 
     @Mock
     private AlertWrapper alertWrapper;
+    @Mock
+    private EventOverviewCtrl eventOverviewCtrl;
     Event event;
 
     @Override
@@ -64,7 +69,9 @@ public class AddExpenseCtrlTest extends ApplicationTest {
             try (MockedConstruction<ServerUtils> mockPaymentService = Mockito.mockConstruction(ServerUtils.class, (mock, context) -> {
                 when(mock.connect(Mockito.anyString())).thenReturn(Mockito.mock(StompSession.class));
             })) {
+                MockitoAnnotations.openMocks(this);
                 UserConfig userConfig = Mockito.mock(UserConfig.class);
+                doNothing().when(mainCtrl).showEventOverview(any(Event.class));
                 userConfigMockedStatic.when(UserConfig::get).thenReturn(userConfig);
                 Mockito.when(userConfig.getUserLanguage()).thenReturn("eng");
                 Mockito.when(userConfig.getPreferredCurrency()).thenReturn(Currency.getInstance("EUR"));
@@ -79,8 +86,10 @@ public class AddExpenseCtrlTest extends ApplicationTest {
                         "client", "scenes", "AddExpense.fxml");
 
                 this.sut = editExpense.getKey();
+                this.sut.setEventOverviewCtrl(eventOverviewCtrl);
+                this.sut.setActionHistory(new ActionHistory());
+                this.sut.setMainCtrl(mainCtrl);
                 sut.setAlertWrapper(Mockito.mock(AlertWrapper.class));
-                MockitoAnnotations.openMocks(this).close();
                 Mockito.when(server.connect(Mockito.anyString())).thenReturn(Mockito.mock(StompSession.class));
 
                 event = new Event("testEvent");
@@ -283,5 +292,39 @@ public class AddExpenseCtrlTest extends ApplicationTest {
         assertEquals(expectedResult, event.getTransactions().getLast());
         assertEquals(expectedResult.getName(), event.getTransactions().getLast().getName());
         verify(server, times(1)).saveEvent(any(Event.class));
+    }
+
+    @Test
+    void editExpenseUndoAndRedoTest() {
+        Participant participant1 = event.addParticipant("Test 1");
+        Participant participant2 = event.addParticipant("Test 2");
+        List<Participant> participantList = new ArrayList<>();
+        participantList.add(participant1);
+        participantList.add(participant2);
+        Money amount = new Money(new BigDecimal(5), Currency.getInstance("EUR"));
+        Transaction test = event.registerDebt
+                (participant1, "Test", amount, participantList, event.getTags().get(0));
+        test.setTransactionId(1L);
+
+        Transaction expectedResult = event.registerDebt
+                (participant2, "Test 1", amount, participantList, event.getTags().get(0));
+
+        event.removeTransaction(expectedResult); //has null id but still removes it
+
+        sut.setExpenseToOverwrite(test);
+        sut.setEvent(event);
+        sut.setServer(server);
+
+        when(server.saveEvent(any(Event.class))).thenReturn(event);
+        ActionHistory actionHistory = sut.getActionHistory();
+        sut.registerExpense(expectedResult);
+        expectedResult.setTransactionId(1L);
+        assertEquals(1, actionHistory.totalSize());
+        actionHistory.undo();
+        assertEquals(test, event.getTransactions().getFirst());
+        actionHistory.redo();
+        assertEquals(expectedResult, event.getTransactions().getFirst());
+        assertThrows(NoRedoActionsLeftException.class, actionHistory::redo);
+
     }
 }
