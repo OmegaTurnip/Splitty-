@@ -371,6 +371,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                                      ObservableList<Transaction> transactions){
         String choice = selected.getId();
         setEvents(transactions);
+        expensesListView.getItems().clear();
         switch (choice) {
             case "AllExpenses":
                 System.out.println("all clicked");

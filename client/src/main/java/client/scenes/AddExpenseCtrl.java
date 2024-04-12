@@ -205,8 +205,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         return actionHistory;
     }
 
-    ;
-
     static class MyLocalDateStringConverter extends StringConverter<LocalDate> {
 
         private final DateTimeFormatter dateFormatter;
@@ -388,9 +386,9 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     public void registerExpense(Transaction expense) {
         if (expenseToOverwrite == null) {
             Transaction returnedE = server.saveTransaction(expense);
-            event.removeTransaction(expense);
+//            event.removeTransaction(expense);
             expense.setTransactionId(returnedE.getTransactionId());
-            event.addTransaction(expense);
+//            event.addTransaction(expense);
             System.out.println("Added expense " + expense);
         } else {
             event.removeTransaction(expenseToOverwrite);
