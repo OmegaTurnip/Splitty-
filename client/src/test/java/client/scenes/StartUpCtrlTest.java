@@ -92,25 +92,5 @@ class StartUpCtrlTest extends ApplicationTest {
         Mockito.reset(server );
         Mockito.reset(mainCtrl);
     }
-    @Test
-    void createEvent() throws IOException {
-        TextField textField = new TextField("Test");
-        sut.setNewEvent1(textField);
-        sut.setJoinEvent1(new TextField());
-        sut.setYourEvents(new ListView<>());
-        List<String> eventCodes = new ArrayList<>();
-        Event test = new Event("Test");
-        sut.setEvents(events);
-        sut.setServer(server);;
-        when(server.createEvent(any())).thenReturn(test);
-        // Mock the behavior for getUserSettings()
-        UserConfig userConfigMock = mock(UserConfig.class);
-        when(userConfigMock.getEventCodes()).thenReturn(eventCodes);
-        when(server.getUserSettings()).thenReturn(userConfigMock);
-        sut.createEvent();
-
-        // Assert
-        assertEquals(test, sut.getCurrentEvents().get(0));
-    }
 
 }

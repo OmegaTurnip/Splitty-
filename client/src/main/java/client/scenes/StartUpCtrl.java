@@ -357,6 +357,10 @@ public class StartUpCtrl extends TextPage implements Initializable {
         return null;
     }
 
+    /**
+     * Setter for yourEvents
+     * @param yourEvents The list view of your events
+     */
     public void setYourEvents(ListView<Event> yourEvents) {
         this.yourEvents = yourEvents;
     }

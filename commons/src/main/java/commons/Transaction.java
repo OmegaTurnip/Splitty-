@@ -325,6 +325,7 @@ public class Transaction {
 
     /**
      * getter for EventId
+     * @return the eventId
      */
     public Long getLongPollingEventId() {
         return longPollingEventId;
