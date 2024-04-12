@@ -28,10 +28,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class AddExpenseCtrl extends TextPage implements Initializable, PriceHandler {
+public class AddExpenseCtrl extends TextPage
+        implements Initializable, PriceHandler {
 
     @FXML
     private Button cancel;

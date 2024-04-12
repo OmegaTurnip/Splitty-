@@ -1,18 +1,17 @@
 package client.scenes;
 
 import client.language.Language;
-import client.language.Text;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.*;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.util.Callback;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -21,10 +20,9 @@ import java.util.Currency;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class DebtPageCtrl extends TextPage implements Initializable, PriceHandler {
+public class DebtPageCtrl extends TextPage
+        implements Initializable, PriceHandler {
 
     /*
      * ServerUtils:
@@ -170,7 +168,8 @@ public class DebtPageCtrl extends TextPage implements Initializable, PriceHandle
                                 mainCtrl.getStartUpDate());
                         doNotAllowClose.set(false);
                     } else {
-                        alertWrapper.showAlert(Alert.AlertType.ERROR, "Not valid", "Not vailid");
+                        alertWrapper.showAlert(Alert.AlertType.ERROR,
+                                "Not valid", "Not vailid");
                         return null;
                     }
                 }
@@ -249,6 +248,15 @@ public class DebtPageCtrl extends TextPage implements Initializable, PriceHandle
      */
     public void setEvent(Event event) {
         this.event = event;
+        server.registerForUpdates(t -> {
+            try {
+                Platform.runLater(this::refresh);
+                System.out.println("Received transaction: " + t.getName());
+            } catch (Exception e) {
+                System.err.println("An error occurred: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }, event);
     }
 
     /**
