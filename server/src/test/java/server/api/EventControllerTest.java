@@ -128,70 +128,149 @@ public class EventControllerTest {
     @Test
     public void testSaveEvent() {
         EventRepository db = Mockito.mock(EventRepository.class);
-        EventController eventController = new EventController(db, null, sim);
-        Event eventMock = Mockito.mock(Event.class);
-        when(eventMock.getEventName()).thenReturn("Test Event");
+        EventController sut = new EventController(db, null, sim);
+        Event event = Mockito.mock(Event.class);
+        when(event.getEventName()).thenReturn("Test Event");
 
         List<Tag> tagList = new ArrayList<>();
         Tag tagMock = Mockito.mock(Tag.class);
         tagList.add(tagMock);
-        when(eventMock.getTags()).thenReturn(tagList);
+        when(event.getTags()).thenReturn(tagList);
 
         List<Participant> participantList = new ArrayList<>();
         Participant participant = Mockito.mock(Participant.class);
         participantList.add(participant);
-        when(eventMock.getParticipants()).thenReturn(participantList);
+        when(event.getParticipants()).thenReturn(participantList);
 
         List<Transaction> transactionList = new ArrayList<>();
         Transaction transaction = Mockito.mock(Transaction.class);
         transactionList.add(transaction);
-        when(eventMock.getTransactions()).thenReturn(transactionList);
+        when(event.getTransactions()).thenReturn(transactionList);
 
         when(transaction.getPayer()).thenReturn(participant);
         when(participant.getParticipantId()).thenReturn(1L);
-        when(eventMock.getParticipantById(1L)).thenReturn(participant);
+        when(event.getParticipantById(1L)).thenReturn(participant);
 
         List<Participant> transactionParticipants = new ArrayList<>();
         transactionParticipants.add(participant);
         when(transaction.getParticipants()).thenReturn(transactionParticipants);
 
-        when(db.save(eventMock)).thenReturn(eventMock);
-        ResponseEntity<Event> result = eventController.saveEvent(eventMock);
+        when(db.save(event)).thenReturn(event);
+        ResponseEntity<Event> result = sut.saveEvent(event);
 
-        assertEquals(ResponseEntity.ok(eventMock), result);
-        verify(sim, times(1)).convertAndSend("/topic/admin", eventMock);
+        assertEquals(ResponseEntity.ok(event), result);
+        verify(sim, times(1)).convertAndSend("/topic/admin", event);
     }
 
     @Test
     public void testGetCurrencies() {
-        when(ds.getExchangeRateFactory()).thenReturn(exchangeRateFactory);
-        EventController eventController = new EventController(null, ds, null);
+        EventController sut = new EventController(eventRepository, ds, sim);
 
         Set<Currency> expectedCurrencies = new HashSet<>();
         expectedCurrencies.add(Currency.getInstance("USD"));
         expectedCurrencies.add(Currency.getInstance("EUR"));
         when(exchangeRateFactory.getKnownCurrencies()).thenReturn(expectedCurrencies);
-        ResponseEntity<Set<Currency>> result = eventController.getCurrencies();
+        ResponseEntity<Set<Currency>> result = sut.getCurrencies();
         assertEquals(ResponseEntity.ok(expectedCurrencies), result);
     }
 
     @Test
     public void testGetSumOfExpenses() {
-        // Arrange
         EventRepository eventRepository = Mockito.mock(EventRepository.class);
-        EventController eventController = new EventController(eventRepository, ds, null);
+        EventController sut = new EventController(eventRepository, ds, sim);
+
         Long eventId = 1L;
         Event event = Mockito.mock(Event.class);
         when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+
         String currencyCode = "USD";
         Currency currency = Currency.getInstance(currencyCode);
         BigDecimal amount = new BigDecimal(100);
         Money expected = new Money(amount, currency);
         when(ds.sumOfExpenses(event, currency)).thenReturn(expected);
+
         Set<Currency> knownCurrencies = new HashSet<>();
         knownCurrencies.add(currency);
         when(exchangeRateFactory.getKnownCurrencies()).thenReturn(knownCurrencies);
-        ResponseEntity<Money> result = eventController.getSumOfExpenses(eventId, currencyCode);
+
+        ResponseEntity<Money> result = sut.getSumOfExpenses(eventId, currencyCode);
         assertEquals(ResponseEntity.ok(expected), result);
+    }
+
+    @Test
+    public void testGetSumOfExpensesErrorCases() {
+        EventRepository eventRepositoryMock = Mockito.mock(EventRepository.class);
+        EventController sut = new EventController(eventRepositoryMock, ds, null);
+
+        Long eventId = 1L;
+        String invalidCurrencyCode = "invalid";
+        String validCurrencyCode = "USD";
+
+        ResponseEntity<Money> result = sut.getSumOfExpenses(eventId, invalidCurrencyCode);
+        assertEquals(ResponseEntity.badRequest().build(), result);
+
+        when(eventRepositoryMock.findById(eventId)).thenReturn(Optional.empty());
+        ResponseEntity<Money> result2 = sut.getSumOfExpenses(eventId, validCurrencyCode);
+        assertEquals(ResponseEntity.notFound().build(), result2);
+
+        when(eventRepositoryMock.findById(eventId)).thenReturn(Optional.of(Mockito.mock(Event.class)));
+        when(ds.getExchangeRateFactory().getKnownCurrencies()).thenReturn(new HashSet<>());
+        ResponseEntity<Money> result3 = sut.getSumOfExpenses(eventId, validCurrencyCode);
+        assertEquals(ResponseEntity.badRequest().build(), result3);
+    }
+
+    @Test
+    public void testGetSimplification() {
+        EventRepository eventRepository = Mockito.mock(EventRepository.class);
+        EventController sut = new EventController(eventRepository, ds, null);
+
+        Long eventId = 1L;
+        Event event = Mockito.mock(Event.class);
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+
+        String currencyCode = "invalid";
+        ResponseEntity<Set<Debt>> intResult = ResponseEntity.badRequest().build();
+        assertEquals(sut.getSimplification(eventId, currencyCode), intResult);
+        currencyCode = "USD";
+        Currency currency = Currency.getInstance(currencyCode);
+
+        ArrayList<Participant> participants = new ArrayList<>();
+        participants.add(Mockito.mock(Participant.class));
+        ResponseEntity<Set<Debt>> intResult2 = ResponseEntity.notFound().build();
+        assertEquals(sut.getSimplification(eventId, currencyCode), intResult2);
+        when(event.getParticipants()).thenReturn(participants);
+        when(ds.getExchangeRateFactory().getKnownCurrencies()).thenReturn(new HashSet<>(List.of(currency)));
+
+        Set<Debt> expectedDebts = new HashSet<>();
+        Debt debt = Mockito.mock(Debt.class);
+        expectedDebts.add(debt);
+        when(ds.simplify()).thenReturn(expectedDebts);
+
+        ResponseEntity<Set<Debt>> result = sut.getSimplification(eventId, currencyCode);
+        assertEquals(ResponseEntity.ok(expectedDebts), result);
+    }
+
+    @Test
+    public void testConvertMoney() {
+        EventController sut = new EventController(null, ds, null);
+
+        Money moneyMock = Mockito.mock(Money.class);
+        Currency currency = Currency.getInstance("USD");
+        LocalDate date = LocalDate.now();
+
+        Money expectedMoney = Mockito.mock(Money.class);
+        ExchangeRate exchangeRate = Mockito.mock(ExchangeRate.class);
+        when(exchangeRateFactory.getExchangeRate(date, moneyMock.getCurrency(), currency)).thenReturn(exchangeRate);
+        when(exchangeRate.convert(moneyMock)).thenReturn(expectedMoney);
+        ResponseEntity<Set<Debt>> intResult = ResponseEntity.badRequest().build();
+        assertEquals(sut.convertMoney(moneyMock, currency, date), intResult);
+        assertEquals(sut.convertMoney(null, currency, date), intResult);
+
+        Set<Currency> knownCurrencies = new HashSet<>();
+        knownCurrencies.add(currency);
+        when(exchangeRateFactory.getKnownCurrencies()).thenReturn(knownCurrencies);
+
+        ResponseEntity<Money> result = sut.convertMoney(moneyMock, currency, date);
+        assertEquals(ResponseEntity.ok(expectedMoney), result);
     }
 }
