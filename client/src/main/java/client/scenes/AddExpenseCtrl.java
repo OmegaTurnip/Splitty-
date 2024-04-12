@@ -85,13 +85,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         this.actionHistory = actionHistory;
     }
 
-    /**
-     * Setter
-     * @param mainCtrl the mainCtrl to set
-     */
-    public void setMainCtrl(MainCtrl mainCtrl) {
-        this.mainCtrl = mainCtrl;
-    }
 
     /**
      * Initializes the controller
@@ -460,17 +453,20 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     }
 
     private void noName() {
-        showAlert(Translator.getTranslation(
+        alertWrapper.showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
                         Text.AddExpense.Alert.noNameTitle),
                 Translator.getTranslation(
                         Text.AddExpense.Alert.noNameContent));
     }
 
     private void noParticipants() {
-        showAlert(Translator.getTranslation(
+        alertWrapper.showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
                         Text.AddExpense.Alert.noParticipantsTitle),
                 Translator.getTranslation(
                         Text.AddExpense.Alert.noParticipantsContent));
+
     }
 
     private void dateTooFarBehind() {

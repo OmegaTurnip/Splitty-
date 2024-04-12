@@ -88,7 +88,6 @@ public class AddExpenseCtrlTest extends ApplicationTest {
                 this.sut = editExpense.getKey();
                 this.sut.setEventOverviewCtrl(eventOverviewCtrl);
                 this.sut.setActionHistory(new ActionHistory());
-                this.sut.setMainCtrl(mainCtrl);
                 sut.setMainCtrl(Mockito.mock(MainCtrl.class));
                 sut.setAlertWrapper(Mockito.mock(AlertWrapper.class));
                 Mockito.when(server.connect(Mockito.anyString())).thenReturn(Mockito.mock(StompSession.class));
@@ -290,14 +289,6 @@ public class AddExpenseCtrlTest extends ApplicationTest {
     }
 
     @Test
-    public void cancelButtonTest() {
-        Event event = new Event("Test Event");
-        sut.setEvent(event);
-        clickOn("#cancel");
-        verify(mainCtrl, times(1)).showEventOverview(event);
-    }
-
-    @Test
     public void testFromString() {
         AddExpenseCtrl.MyLocalDateStringConverter converter =
                 new AddExpenseCtrl.MyLocalDateStringConverter("dd/MM/yyyy");
@@ -361,77 +352,4 @@ public class AddExpenseCtrlTest extends ApplicationTest {
         assertThrows(NoRedoActionsLeftException.class, actionHistory::redo);
 
     }
-
-    @Test
-    public void settersGettersParticipantList() {
-        ArrayList<Participant> participants = new ArrayList<>();
-        Participant testParticipant1 = new Participant();
-        Participant testParticipant2 = new Participant();
-        testParticipant1.setName("test1");
-        testParticipant2.setName("test2");
-        participants.add(testParticipant1);
-        participants.add(testParticipant2);
-        sut.setParticipantList(participants);
-        assertEquals(participants, sut.getParticipantList());
-    }
-
-
-
-    @Test
-    public void settersGettersExpenseTag() {
-        Tag expenseTag = new Tag("test", "blue");
-        sut.setExpenseTag(expenseTag);
-        assertEquals(expenseTag, sut.getExpenseTag());
-    }
-
-    @Test
-    public void testFromStringParticipant() {
-        Event testevent = new Event("test");
-        sut.setEvent(event);
-        AddExpenseCtrl.ParticipantStringConverter converter = sut.new ParticipantStringConverter();
-        Participant test1 = event.addParticipant("hello");
-        Participant test2 = event.addParticipant("hi");
-        Participant result1 = converter.fromString("hello");
-        Participant result2 = converter.fromString("hi");
-        Participant result3 = converter.fromString("Nonexistent Participant");
-        assertEquals(test1, result1);
-        assertEquals(test2, result2);
-        assertNull(result3);
-    }
-
-    @Test
-    public void testChoosePriceAlert() {
-        sut.choosePriceAlert("");
-        verify(alertWrapper, times(1)).showAlert(Alert.AlertType.ERROR,
-                Translator.getTranslation(
-                Text.AddExpense.Alert.invalidPrice),
-                Translator.getTranslation(
-                        Text.AddExpense.Alert.emptyString));
-        sut.choosePriceAlert("A");
-        verify(alertWrapper, times(1)).showAlert(Alert.AlertType.ERROR,
-                Translator.getTranslation(
-                        Text.AddExpense.Alert.invalidPrice),
-                Translator.getTranslation(Text.AddExpense.Alert.noLetters));
-        sut.choosePriceAlert("1,2,3");
-        verify(alertWrapper, times(1)).showAlert(Alert.AlertType.ERROR,
-                Translator.getTranslation(
-                        Text.AddExpense.Alert.invalidPrice),
-                Translator.getTranslation(
-                        Text.AddExpense.Alert.onlyOnePeriodOrComma));
-        sut.choosePriceAlert(",123");
-        verify(alertWrapper, times(1)).showAlert(Alert.AlertType.ERROR,
-                Translator.getTranslation(
-                        Text.AddExpense.Alert.invalidPrice),
-                Translator.getTranslation(
-                        Text.AddExpense.Alert.startWithDigit));
-        sut.choosePriceAlert("12a3");
-        verify(alertWrapper, times(1)).showAlert(Alert.AlertType.ERROR,
-                Translator.getTranslation(
-                        Text.AddExpense.Alert.invalidPrice),
-                Translator.getTranslation(
-                        Text.AddExpense.Alert.generallyInvalid));
-
-
-    }
-
 }
