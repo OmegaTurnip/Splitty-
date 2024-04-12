@@ -57,7 +57,7 @@ public class MainCtrl {
 
     private AlertWrapper alertWrapper;
 
-    boolean filterAdded;
+    private boolean filterAdded;
 
     /**
      * @param overview the fx for the event overview page.
@@ -74,9 +74,7 @@ public class MainCtrl {
             Pair<AddExpenseCtrl, Parent> addExpense,
             Pair<EditEventNameCtrl, Parent> editName,
             Pair<AdminCtrl, Parent> adminPage) {
-
         filterAdded = false;
-
         startUpDate = LocalDate.now();
         this.startUpCtrl = startUp.getKey();
         this.startUp = new Scene(startUp.getValue());
