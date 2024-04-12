@@ -35,6 +35,8 @@ class TransactionCellControllerTest {
     @Mock
     EventOverviewCtrl eventOverviewCtrl;
     @Mock
+    MainCtrl mainCtrl;
+    @Mock
     ServerUtils server;
     @Mock
     AlertWrapper alertWrapper;
@@ -53,6 +55,8 @@ class TransactionCellControllerTest {
         sut.setAlertWrapper(alertWrapper);
         sut.setEventOverviewCtrl(eventOverviewCtrl);
         sut.setActionHistory(new ActionHistory());
+        sut.setMainCtrl(mainCtrl);
+        doNothing().when(mainCtrl).showEventOverview(any(Event.class));
 
         Language.fromLanguageFile(
                 "eng", new File("../includedLanguages/eng.properties")
