@@ -181,11 +181,10 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
         private final DateTimeFormatter dateFormatter;
         private AlertWrapper alertWrapper;
-        public void setAlertWrapper(AlertWrapper alertWrapper) {
-            this.alertWrapper = alertWrapper;
-        }
+
         public MyLocalDateStringConverter(String pattern) {
             this.dateFormatter = DateTimeFormatter.ofPattern(pattern);
+            alertWrapper = new AlertWrapper();
         }
 
         @Override
@@ -195,6 +194,10 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             } else {
                 return "";
             }
+        }
+
+        public void setAlertWrapper(AlertWrapper alertWrapper) {
+            this.alertWrapper = alertWrapper;
         }
 
         @Override
@@ -371,40 +374,92 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         }
     }
 
-
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     private boolean verifyInput() {
         if (!verifyPrice(price.getText())) {
             return false;
         }
+        if (expenseName.getText().isEmpty()
+                || expenseName.getText().isBlank()) {
+            noName();
+            return false;
+
+        }
         if (expensePayer == null
-                || !expensePayer.getClass().equals(Participant.class))
-            return false;
-        if (date.getValue().isAfter(mainCtrl.getStartUpDate())) {
-            alertWrapper.showAlert(Alert.AlertType.ERROR,
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.futureDateTitle),
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.futureDateContent));
-            return false;
-        } else if (date.getValue().isBefore(
-                LocalDate.of(2000, 1, 1))) {
-            alertWrapper.showAlert(Alert.AlertType.ERROR,
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.oldDateTitle),
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.oldDateContent));
+                || !expensePayer.getClass().equals(Participant.class)) {
+            noPayer();
             return false;
         }
         try {
-            if (date.getValue() == null) return false;
+            if (date.getValue() == null || date.getPromptText().isEmpty() ||
+                    date.getPromptText().isBlank()) {
+                throw new DateTimeParseException("",
+                        date.getPromptText(), 0);
+            }
         } catch (DateTimeParseException e) {
-            alertWrapper.showAlert(Alert.AlertType.ERROR,
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.dateFormatTitle),
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.dateFormatContent));
+            wrongDate();
+            return false;
         }
-        return !participantList.isEmpty();
+        if (date.getValue().isAfter(mainCtrl.getStartUpDate())) {
+            dateTooFarAhead();
+            return false;
+        } else if (date.getValue().isBefore(
+                LocalDate.of(2000, 1, 1))) {
+            dateTooFarBehind();
+            return false;
+        }
+
+        if (participantList.isEmpty()) {
+            noParticipants();
+            return false;
+        }
+        return true;
+    }
+
+    private void noName() {
+        showAlert(Translator.getTranslation(
+                        Text.AddExpense.Alert.noNameTitle),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.noNameContent));
+    }
+
+    private void noParticipants() {
+        showAlert(Translator.getTranslation(
+                        Text.AddExpense.Alert.noParticipantsTitle),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.noParticipantsContent));
+    }
+
+    private void dateTooFarBehind() {
+        alertWrapper.showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.oldDateTitle),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.oldDateContent));
+    }
+
+    private void dateTooFarAhead() {
+        alertWrapper.showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.futureDateTitle),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.futureDateContent));
+    }
+
+    private void noPayer() {
+        alertWrapper.showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.noPayerTitle),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.noPayerContent));
+    }
+
+    private void wrongDate() {
+        alertWrapper.showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.dateFormatTitle),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.dateFormatContent));
     }
 
     /**
@@ -432,7 +487,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             expenseName.clear();
             price.clear();
             date.setValue(mainCtrl.getStartUpDate());
-            date.setValue(LocalDate.now());
+//            date.setValue(LocalDate.now());
         }
         System.out.println("Page has been refreshed!");
     }
