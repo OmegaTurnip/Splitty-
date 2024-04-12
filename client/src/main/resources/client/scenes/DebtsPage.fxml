@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AdminCtrl">
+   <children>
+      <VBox prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #8E3EDD;" VBox.vgrow="ALWAYS">
+         <children>
+            <MenuBar maxWidth="1.7976931348623157E308" style="-fx-background-color: #fefdfd;" VBox.vgrow="NEVER">
+              <menus>
+                <Menu fx:id="languages" mnemonicParsing="false" text="Languages" />
+                  <Menu fx:id="rtoHeader" mnemonicParsing="false" text="Return to overview">
+                    <items>
+                      <MenuItem fx:id="rto" mnemonicParsing="false" text="Return to overview" />
+                    </items>
+                  </Menu>
+              </menus>
+            </MenuBar>
+            <TabPane fx:id="tabPane" prefHeight="1600.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
+              <tabs>
+                <Tab fx:id="currentDebtsTab" text="Current Debts">
+                     <content>
+                        <BorderPane prefHeight="554.0" prefWidth="600.0">
+                           <top>
+                              <Label fx:id="currentDebtsLabel" text="Current Debts" textFill="#fefdfd" BorderPane.alignment="CENTER">
+                                 <font>
+                                    <Font name="Arial Bold" size="24.0" />
+                                 </font>
+                                 <BorderPane.margin>
+                                    <Insets top="20.0" />
+                                 </BorderPane.margin>
+                              </Label>
+                           </top>
+                           <center>
+                              <TableView fx:id="currentDebtsTable" prefHeight="527.0" prefWidth="600.0" style="-fx-background-color: #E0DDF2; -fx-background-radius: 5pt; -fx-alignment: center;" BorderPane.alignment="CENTER">
+                                <columns>
+                                  <TableColumn fx:id="currentDebtPrice" prefWidth="241.9999796152115" text="Current Price" />
+                                  <TableColumn fx:id="currentDebtFrom" prefWidth="158.33335876464844" text="From" />
+                                    <TableColumn fx:id="currentDebtTo" minWidth="0.0" prefWidth="170.4000244140625" text="To" />
+                                </columns>
+                                 <columnResizePolicy>
+                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                 </columnResizePolicy>
+                                 <BorderPane.margin>
+                                    <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+                                 </BorderPane.margin>
+                              </TableView>
+                           </center>
+                        </BorderPane>
+                     </content>
+                </Tab>
+                <Tab fx:id="settledDebtsTab" text="Settled Debts">
+                     <content>
+                        <BorderPane prefHeight="554.0" prefWidth="600.0">
+                           <top>
+                              <Label fx:id="settledDebtsLabel" text="Settled Debts" textFill="#fefdfd" BorderPane.alignment="CENTER">
+                                 <font>
+                                    <Font name="Arial Bold" size="24.0" />
+                                 </font>
+                                 <BorderPane.margin>
+                                    <Insets top="30.0" />
+                                 </BorderPane.margin>
+                              </Label>
+                           </top>
+                           <center>
+                              <TableView fx:id="settledDebtsTable" prefHeight="527.0" prefWidth="600.0" style="-fx-background-color: #E0DDF2; -fx-background-radius: 5pt; -fx-alignment: center;" BorderPane.alignment="CENTER">
+                                 <columns>
+                                    <TableColumn fx:id="totalDebtPrice" prefWidth="241.9999796152115" text="Total Price" />
+                                    <TableColumn fx:id="totalDebtFrom" prefWidth="158.33335876464844" text="From" />
+                                    <TableColumn fx:id="totalDebtTo" minWidth="0.0" prefWidth="170.4000244140625" text="To" />
+                                 </columns>
+                                 <columnResizePolicy>
+                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                 </columnResizePolicy>
+                                 <BorderPane.margin>
+                                    <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+                                 </BorderPane.margin>
+                              </TableView>
+                           </center>
+                        </BorderPane>
+                     </content>
+                </Tab>
+              </tabs>
+            </TabPane>
+         </children>
+      </VBox>
+   </children>
+</VBox>

@@ -17,10 +17,7 @@ package client.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import commons.Event;
-import commons.Money;
-import commons.Participant;
-import commons.Transaction;
+import commons.*;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -44,6 +41,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -205,6 +203,22 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<>() {});
+    }
+
+    /**
+     * Request to get an updated version of the event.
+     *
+     * @param   event
+     *          The event to get the updated version of.
+     *
+     * @return  The updated event.
+     */
+    public Event getUpdatedEvent(Event event) {
+        return client
+                .target(server).path("api/event/" + event.getId())
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Event.class);
     }
 
     /**
@@ -389,6 +403,103 @@ public class ServerUtils {
     }
 
     /**
+     * Simplify debts of an event in a certain currency. Aka get the payment
+     * instructions.
+     *
+     * @param   event
+     *          The event of which the debts need to be simplified.
+     * @param   currency
+     *          The currency of the resulting payment instructions.
+     *
+     * @return  The payment instructions.
+     */
+    public Set<Debt> simplifyDebts(Event event, Currency currency) {
+        return client.target(server)
+                .path("api/event/" + event.getId() + "/simplify/" + currency)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Set<Debt>>() {});
+    }
+
+    /**
+     * Gets all transactions of the event in a certain currency.
+     *
+     * @param   event
+     *          Event of which the transactions need to be converted.
+     * @param   currency
+     *          The currency of the transactions.
+     *
+     * @return  List of pairs of transactions and converted amounts.
+     */
+    public List<TransactionConversionPair> getTransactionsOfEvent(
+            Event event, Currency currency){
+        return client.target(server)
+                .path("api/event/" + event.getId() + "/transactions/currency/"
+                        + currency)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<TransactionConversionPair>>() {});
+    }
+
+    /**
+     * Gets the sum of all expenses of the event in a certain currency.
+     *
+     * @param   event
+     *          Event which expenses need to be summed.
+     * @param   currency
+     *          The currency of the sum.
+     *
+     * @return  The sum of all expenses of the event in the specified currency.
+     */
+    public Money getSumOfAllExpenses(Event event, Currency currency) {
+        return client.target(server)
+                .path("api/event/" + event.getId() + "/sum/" + currency)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Money>() {});
+    }
+
+    /**
+     * Gets the balance of the participants in the specified event in the
+     * specified currency.
+     *
+     * @param   event
+     *          The event.
+     * @param   currency
+     *          The currency of the balance.
+     *
+     * @return  The balance of the participants in the event.
+     */
+    public Set<ParticipantValuePair> getBalanceOfParticipants(
+            Event event, Currency currency) {
+        return client.target(server)
+                .path("api/event/" + event.getId() + "/balance/" + currency)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Set<ParticipantValuePair>>() {});
+    }
+
+    /**
+     * Gets the shares of the participants in the specified event in the
+     * specified currency.
+     *
+     * @param   event
+     *          The event.
+     * @param   currency
+     *          The currency of the shares.
+     *
+     * @return  The shares of the participants in the event.
+     */
+    public Set<ParticipantValuePair> getSharesOfParticipants(
+            Event event, Currency currency) {
+        return client.target(server)
+                .path("api/event/" + event.getId() + "/shares/" + currency)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Set<ParticipantValuePair>>() {});
+    }
+
+    /**
      * Get the amount of a transaction in a certain currency.
      *
      * @param   money
@@ -413,31 +524,51 @@ public class ServerUtils {
     private static final ExecutorService EXEC =
             Executors.newSingleThreadExecutor();
 
+    private Future<?> future;
+
+    /**
+     * Stops the long polling.
+     */
+    public void stopLongPolling() {
+        if (future != null) {
+            future.cancel(true);
+        }
+        future = null;
+    }
+
     /**
      * Registers for updates (adding of transactions)
      * In case of no content, the rest of the loop is skipped (continue)
-     * Still needs to be fixed: now only 1 EXEC at the time
-     * Needs to be solved by creating a set of listeners,
-     * add all consumers to the set, iterate over all consumers
+     * Future should enable the stopping of the long-polling
      * @param consumer consumer of the transaction
      * @param event current event
      */
     public void registerForUpdates(Consumer<Transaction> consumer, Event event){
+        if (future != null) {
+            future.cancel(true);
+        }
 
-        EXEC.submit(() -> {
+        future = EXEC.submit(() -> {
             while (!Thread.interrupted()) {
-                var res = client.target(server)
-                        .path("api/event/" + event.getId()
-                                + "/transactions/updates")
-                        .request(APPLICATION_JSON)
-                        .accept(APPLICATION_JSON)
-                        .get(Response.class);
+                try{
+                    var res = client.target(server)
+                            .path("api/event/" + event.getId()
+                                    + "/transactions/updates")
+                            .request(APPLICATION_JSON)
+                            .accept(APPLICATION_JSON)
+                            .get(Response.class);
 
-                if(res.getStatus() == 204){
-                    continue;
-                };
-                var t = res.readEntity(Transaction.class);
-                consumer.accept(t);
+                    if(res.getStatus() == 204){
+                        continue;
+                    };
+                    var t = res.readEntity(Transaction.class);
+                    consumer.accept(t);
+                }
+                catch (Exception e) {
+                    System.err.println("An error occurred in the thread: " +
+                            e.getMessage());
+                    e.printStackTrace();
+                }
             }
         });
 

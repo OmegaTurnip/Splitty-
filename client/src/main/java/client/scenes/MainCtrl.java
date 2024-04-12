@@ -30,6 +30,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.time.LocalDate;
+
 public class MainCtrl {
 
     private Stage primaryStage;
@@ -43,6 +45,7 @@ public class MainCtrl {
     private Scene add;
     private StartUpCtrl startUpCtrl;
     private Scene startUp;
+    private LocalDate startUpDate;
 
     private AddExpenseCtrl addExpenseCtrl;
     private Scene addExpense;
@@ -69,6 +72,7 @@ public class MainCtrl {
             Pair<EditEventNameCtrl, Parent> editName,
             Pair<AdminCtrl, Parent> adminPage) {
 
+        startUpDate = LocalDate.now();
         this.startUpCtrl = startUp.getKey();
         this.startUp = new Scene(startUp.getValue());
         this.startUp.getStylesheets().add(getClass()
@@ -81,9 +85,13 @@ public class MainCtrl {
 
         this.addParticipantCtrl = add.getKey();
         this.add = new Scene(add.getValue());
+        this.add.getStylesheets().add(getClass()
+                .getResource("style.css").toExternalForm());
 
         this.addExpenseCtrl = addExpense.getKey();
         this.addExpense = new Scene(addExpense.getValue());
+        this.addExpense.getStylesheets().add(getClass()
+                .getResource("style.css").toExternalForm());
 
         this.editEventNameCtrl = editName.getKey();
         this.editName = new Scene(editName.getValue());
@@ -92,6 +100,8 @@ public class MainCtrl {
 
         this.adminCtrl = adminPage.getKey();
         this.admin = new Scene(adminPage.getValue());
+        this.admin.getStylesheets().add(getClass()
+                .getResource("style.css").toExternalForm());
 
         this.alertWrapper = new AlertWrapper();
 
@@ -139,7 +149,7 @@ public class MainCtrl {
      * @param event the event to show.
      */
     public void showEventOverview(Event event) {
-        overviewCtrl.setEvent(event);
+        overviewCtrl.setEvent(server.getUpdatedEvent(event));
         primaryStage.setTitle("Splitty!");
         primaryStage.setScene(overview);
         overview.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
@@ -228,6 +238,14 @@ public class MainCtrl {
      */
     public Scene getOverviewScene() {
         return overview;
+    }
+
+    /**
+     * Getter
+     * @return start up date
+     */
+    public LocalDate getStartUpDate() {
+        return startUpDate;
     }
 
     /**

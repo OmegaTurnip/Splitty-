@@ -50,7 +50,7 @@ public class AdminAuthConfig {
                         .roles("ADMIN")
                         .build();
         System.out.println("user: "+admin.getUsername());
-        System.out.println("password: "+admin.getPassword());
+        System.out.println("password: "+admin.getPassword().substring(6));
         return new InMemoryUserDetailsManager(admin);
     }
 }
