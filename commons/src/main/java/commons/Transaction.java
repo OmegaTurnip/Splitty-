@@ -2,7 +2,6 @@ package commons;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -12,7 +11,7 @@ import java.util.*;
 
 @Entity
 @IdClass(TransactionId.class)
-@JsonIgnoreProperties(ignoreUnknown = true)
+//@JsonIgnoreProperties(ignoreUnknown = true)
 public class Transaction {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -28,7 +27,7 @@ public class Transaction {
     private LocalDate date;
     @Column(name = "amount", length = 1024)
     private Money amount;
-    private boolean isPayoff;
+    private Boolean payoff;
     @ManyToMany
     private List<Participant> participants;
     @ManyToOne
@@ -66,7 +65,7 @@ public class Transaction {
         this.event = event;
 //        event.updateLastActivity();
         this.tag = tag;
-        this.isPayoff = isPayoff;
+        this.payoff = isPayoff;
         event.updateLastActivity();
     }
 
@@ -167,7 +166,6 @@ public class Transaction {
      */
     public void setDate(LocalDate date) {
         this.date = date;
-//        event.updateLastActivity();
     }
 
     /**
@@ -221,7 +219,8 @@ public class Transaction {
      * @return  Whether this transaction is a payoff or a 'debt'.
      */
     public boolean isPayoff() {
-        return isPayoff;
+        System.out.println(payoff);
+        return payoff;
     }
 
     /**
@@ -246,12 +245,11 @@ public class Transaction {
      *
      * @return  Whether this {@code Transaction} is valid.
      */
-    public boolean isValid() {
+    public boolean validate() {
         return event != null && name != null && !name.isEmpty() && payer != null
                 && amount != null && participants != null
                 && !participants.isEmpty();
     }
-
 
     /**
      * Checks if {@code this} is equal to {@code other}.
@@ -333,7 +331,7 @@ public class Transaction {
                 ", name='" + name + '\'' +
                 ", date=" + date +
                 ", amount=" + amount +
-                ", isPayoff=" + isPayoff +
+                ", isPayoff=" + payoff +
                 ", participants=" + participants +
                 ", tag=" + tag +
                 '}';

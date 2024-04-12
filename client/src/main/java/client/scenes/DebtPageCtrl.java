@@ -7,10 +7,7 @@ import client.language.Translator;
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
 import com.google.inject.Inject;
-import commons.Debt;
-import commons.Event;
-import commons.Money;
-import commons.Participant;
+import commons.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -172,7 +169,7 @@ public class DebtPageCtrl extends TextPage implements Initializable {
      */
     public Event addPayoff(Event event, Participant payer, Money amount,
                            Participant receiver, LocalDate date) {
-        event.registerPayoff(payer, amount, receiver, date);
+        Transaction t = event.registerPayoff(payer, amount, receiver, date);
         return server.saveEvent(event);
     }
 
