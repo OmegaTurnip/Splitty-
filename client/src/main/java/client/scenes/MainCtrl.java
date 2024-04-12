@@ -209,8 +209,11 @@ public class MainCtrl {
      * Go to the edit participant page.
      * @param event the event the participant is a part of.
      * @param participant the participant to edit.
+     * @param actionHistory the action history.
      */
-    public void showEditParticipant(Event event, Participant participant) {
+    public void showEditParticipant(Event event, Participant participant,
+                                    ActionHistory actionHistory) {
+        addParticipantCtrl.setActionHistory(actionHistory);
         addParticipantCtrl.setParticipant(participant);
         showParticipant(event);
     }

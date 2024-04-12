@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.history.ActionHistory;
 import client.language.*;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
@@ -44,7 +45,15 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     private Participant participantToOverwrite;
     private AlertWrapper alertWrapper;
+    private ActionHistory actionHistory;
 
+    /**
+     * Setter.
+     * @param actionHistory The action history to set.
+     */
+    public void setActionHistory(ActionHistory actionHistory) {
+        this.actionHistory = actionHistory;
+    }
     /**
      * Initializes the controller
      * @param server .
@@ -230,6 +239,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
     }
 
     private void overwriteParticipant() {
+        server.send("/topic/actionHistory", "Cleared Action history");
         participantToOverwrite.setName(usernameTextField.getText());
         participantToOverwrite.setEmail(emailTextField.getText());
         participantToOverwrite.setIban(ibanTextField.getText());

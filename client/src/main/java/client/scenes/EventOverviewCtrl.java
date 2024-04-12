@@ -130,6 +130,10 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 });
             }
         });
+        server.registerForMessages("/topic/actionHistory", String.class, b -> {
+            actionHistory.clear();
+            System.out.println(b);
+        });
         refresh();
     }
 
@@ -501,6 +505,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 controller.setServer(server);
                 controller.setMainController(mainCtrl);
                 controller.setEventOverviewCtrl(EventOverviewCtrl.this);
+                controller.setActionHistory(actionHistory);
                 setText(null);
                 setGraphic(loader.getRoot());
             }
