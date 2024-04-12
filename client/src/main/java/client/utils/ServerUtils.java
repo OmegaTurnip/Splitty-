@@ -616,4 +616,15 @@ public class ServerUtils {
         }
         return returned;
     }
+
+    /**
+     * Send a message to a websocket destination.
+     * This is mainly going to be used to update action history
+     * across clients.
+     * @param dest The destination to send to.
+     * @param o The object to send.
+     */
+    public void send(String dest, Object o) {
+        session.send(dest, o);
+    }
 }

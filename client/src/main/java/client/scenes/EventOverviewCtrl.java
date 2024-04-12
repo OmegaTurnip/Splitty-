@@ -2,6 +2,7 @@ package client.scenes;
 
 
 
+import client.history.ActionHistory;
 import client.language.Language;
 import client.language.Text;
 import javafx.application.Platform;
@@ -78,8 +79,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     private AlertWrapper alertWrapper;
 
     private TransactionCellController transactionCellController;
-
-
+    private ActionHistory actionHistory;
 
     /**
      * Initializes the controller
@@ -91,6 +91,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.alertWrapper = new AlertWrapper();
+        this.actionHistory = new ActionHistory();
     }
 
     /**
@@ -129,7 +130,49 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 });
             }
         });
+        server.registerForMessages("/topic/actionHistory", String.class, b -> {
+            actionHistory.clear();
+            System.out.println(b);
+        });
         refresh();
+    }
+
+    /**
+     * Getter.
+     * @return Get action history.
+     */
+    public ActionHistory getActionHistory() {
+        return actionHistory;
+    }
+
+    /**
+     * Undo the last expense action.
+     */
+    public void undo() {
+        if (actionHistory.hasUndoActions()) {
+            actionHistory.undo();
+        } else {
+//            alertWrapper.showAlert(Alert.AlertType.INFORMATION,
+//                    Translator.getTranslation(
+//                            Text.EventOverview.Alert.noUndoTitle),
+//                    Translator.getTranslation(
+//                            Text.EventOverview.Alert.noUndoContent));
+        }
+    }
+
+    /**
+     * Redo the last expense action.
+     */
+    public void redo() {
+        if (actionHistory.hasRedoActions()) {
+            actionHistory.redo();
+        } else {
+//            alertWrapper.showAlert(Alert.AlertType.INFORMATION,
+//                    Translator.getTranslation(
+//                            Text.EventOverview.Alert.noRedoTitle),
+//                    Translator.getTranslation(
+//                            Text.EventOverview.Alert.noRedoContent));
+        }
     }
 
     /**
@@ -328,6 +371,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                                      ObservableList<Transaction> transactions){
         String choice = selected.getId();
         setEvents(transactions);
+        expensesListView.getItems().clear();
         switch (choice) {
             case "AllExpenses":
                 System.out.println("all clicked");
@@ -462,6 +506,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 controller.setServer(server);
                 controller.setMainController(mainCtrl);
                 controller.setEventOverviewCtrl(EventOverviewCtrl.this);
+                controller.setActionHistory(actionHistory);
                 setText(null);
                 setGraphic(loader.getRoot());
             }
@@ -501,6 +546,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 transactionCellController.setTransaction(transaction);
                 transactionCellController.setEventOverviewCtrl(
                         EventOverviewCtrl.this);
+                transactionCellController.setActionHistory(actionHistory);
                 setGraphic(loader.getRoot());
             }
         }
