@@ -1,22 +1,17 @@
 package client.scenes;
 
 import client.language.Language;
-import client.language.Text;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.*;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
@@ -46,10 +41,11 @@ public class DebtPageCtrl extends TextPage implements Initializable {
     private MainCtrl mainCtrl;
     private ServerUtils server;
     private AlertWrapper alertWrapper;
+
     /**
      * Initializes the controller
-     * @param server .
-     * @param mainCtrl .
+     * @param server the serverUtils
+     * @param mainCtrl the mainctrl
      */
     @Inject
     public DebtPageCtrl(ServerUtils server, MainCtrl mainCtrl) {
@@ -57,11 +53,25 @@ public class DebtPageCtrl extends TextPage implements Initializable {
         this.mainCtrl = mainCtrl;
         this.alertWrapper = new AlertWrapper();
     }
+
+    /**
+     * Initialise the page.
+     * @param location
+     * The location used to resolve relative paths for the root object, or
+     * {@code null} if the location is not known.
+     *
+     * @param resources
+     * The resources used to localize the root object, or {@code null} if
+     * the root object was not localized.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         fetchLanguages();
     }
 
+    /**
+     * Refreshes the contents of the page
+     */
     public void refresh() {
         Set<Debt> debts = server
                 .simplifyDebts(event, UserConfig.get().getPreferredCurrency());
@@ -72,12 +82,21 @@ public class DebtPageCtrl extends TextPage implements Initializable {
         refreshText();
     }
 
+    /**
+     * Refreshes the text of the page
+     */
     @Override
     public void refreshText() {
         refreshIcon(Translator.getCurrentLanguage().getLanguageCode(),
                 languageMenu, Language.languages);
     }
 
+    /**
+     * Populates the accordion with a debt
+     * @param event the event
+     * @param debt the debt
+     */
+    @SuppressWarnings("checkstyle:MethodLength")
     private void populateAccordion(Event event, Debt debt) {
         if (!debt.from().getName().equals(debt.to().getName())) {
             String title = String.format("%s: %.2f %s => %s",
@@ -116,11 +135,12 @@ public class DebtPageCtrl extends TextPage implements Initializable {
             anchorPane.setTopAnchor(info, 10.0);
             anchorPane.setLeftAnchor(info, 10.0);
 
-            // Position the button relative to the label
             anchorPane.setTopAnchor(mark,
-                    AnchorPane.getTopAnchor(info) + info.getPrefHeight() + 30.0);
+                    AnchorPane.getTopAnchor(info) +
+                            info.getPrefHeight() + 30.0);
             anchorPane.setLeftAnchor(mark,
-                    AnchorPane.getLeftAnchor(info) + info.getPrefWidth() + 300.0);
+                    AnchorPane.getLeftAnchor(info) +
+                            info.getPrefWidth() + 300.0);
             tp.setContent(anchorPane);
         }
     }
@@ -133,8 +153,10 @@ public class DebtPageCtrl extends TextPage implements Initializable {
      * </strong></em>
      *
      * @param debt         The debt to be paid off.
-     * @param payoffAmount The amount the participants want to pay off the debt with.
-     * @param date         The date of the payoff. SHOULD BE THE DATE OF THE PAGE LOAD.
+     * @param payoffAmount The amount the participants
+     *                     want to pay off the debt with.
+     * @param date         The date of the payoff. SHOULD
+     *                     BE THE DATE OF THE PAGE LOAD.
      * @return Whether the payoff amount is valid.
      */
     private boolean isValidPayoffAmount(Money debt, Money payoffAmount,
@@ -164,7 +186,8 @@ public class DebtPageCtrl extends TextPage implements Initializable {
      * @param payer    The payer of the payoff.
      * @param amount   The amount of the payoff.
      * @param receiver The receiver of the payoff.
-     * @param date     The date of the payoff. SHOULD BE THE DATE OF THE PAGE LOAD.
+     * @param date     The date of the payoff.
+     *                 SHOULD BE THE DATE OF THE PAGE LOAD.
      * @return The resulting event.
      */
     public Event addPayoff(Event event, Participant payer, Money amount,
@@ -173,22 +196,41 @@ public class DebtPageCtrl extends TextPage implements Initializable {
         return server.saveEvent(event);
     }
 
+    /**
+     * Changes the page to event overview
+     */
     public void returnToOverview() {
         mainCtrl.showEventOverview(event);
     }
 
+    /**
+     * Setter
+     * @param event the event
+     */
     public void setEvent(Event event) {
         this.event = event;
     }
 
+    /**
+     * Setter
+     * @param mainCtrl the mainCtrl
+     */
     public void setMainCtrl(MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
     }
 
+    /**
+     * Setter
+     * @param server the server
+     */
     public void setServer(ServerUtils server) {
         this.server = server;
     }
 
+    /**
+     * Setter
+     * @param alertWrapper the alertWrapper
+     */
     public void setAlertWrapper(AlertWrapper alertWrapper) {
         this.alertWrapper = alertWrapper;
     }

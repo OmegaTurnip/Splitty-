@@ -304,6 +304,10 @@ public class MainCtrl {
         }
     }
 
+    /**
+     * CHanges the stage to show debtPage
+     * @param event the event
+     */
     public void showOpenDebts(Event event) {
         debtPageCtrl.setEvent(event);
         debtPageCtrl.refresh();

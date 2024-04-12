@@ -32,8 +32,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static java.util.Arrays.stream;
-
 
 public class EventOverviewCtrl extends TextPage implements Initializable {
 
@@ -592,6 +590,9 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         return expensesListView;
     }
 
+    /**
+     * Changes the page to open debts
+     */
     public void showSettleDebtsPage() {
         server.stopLongPolling();
         mainCtrl.showOpenDebts(event);

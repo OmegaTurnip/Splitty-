@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DebtSimplifier {
 
@@ -288,6 +289,11 @@ public class DebtSimplifier {
     }
 
     private Money convertToBase(Money amount, LocalDate date) {
+        return convertToBase(amount, date, base);
+    }
+
+
+    private Money convertToBase(Money amount, LocalDate date, Currency base) {
         // Will raise a NullPointerException if an exchange rate is unavailable,
         // but that (throwing an exception) is expected behaviour
         return new Money(
@@ -298,6 +304,7 @@ public class DebtSimplifier {
                 base
         );
     }
+
 
     private Set<Participant> validateParameters(Participant creditor,
                                                 Collection<Participant> debtors,
@@ -347,18 +354,58 @@ public class DebtSimplifier {
         );
         for (Transaction transaction : event.getTransactions()) {
             if (!transaction.isPayoff()) {
-                ExchangeRate exchangeRate = exchangeRateFactory.getExchangeRate(
-                        transaction.getDate(),
-                        transaction.getAmount().getCurrency(),
-                        currency
+                sum = sum.add(
+                        this.convertToBase(
+                                transaction.getAmount(),
+                                transaction.getDate(),
+                                currency
+                        ).getAmount()
                 );
-                if (exchangeRate == null)
-                    return null;
-                sum = sum.add(exchangeRate.convert(
-                        transaction.getAmount()).getAmount());
             }
         }
         return new Money(sum, currency);
+    }
+
+    /**
+     * Returns the share of all expenses for each participant in the specified
+     * event in the specified currency. The share does not include payoffs.
+     *
+     * @param   event
+     *          The event to calculate the shares for.
+     * @param   currency
+     *          The currency to calculate the sum in.
+     *
+     * @return  The shares.
+     */
+    public Set<ParticipantValuePair> shareOfExpenses(Event event,
+                                                     Currency currency) {
+        Objects.requireNonNull(event, "event is null");
+        Objects.requireNonNull(currency, "currency is null");
+
+        HashMap<Participant, Money> result = new HashMap<>();
+
+        for (Participant participant : event.getParticipants())
+            result.put(participant, new Money(BigDecimal.ZERO, currency));
+
+        for (Transaction transaction : event.getTransactions()) {
+            if (!transaction.isPayoff()) {
+                Money share = result.get(transaction.getPayer());
+
+                share.setAmount(
+                        share.getAmount().add(
+                            this.convertToBase(
+                                    transaction.getAmount(),
+                                    transaction.getDate(),
+                                    currency
+                            ).getAmount()
+                    )
+                );
+            }
+        }
+
+        return result.entrySet().stream()
+                .map(e -> new ParticipantValuePair(e.getKey(), e.getValue()))
+                .collect(Collectors.toSet());
     }
 
     /**

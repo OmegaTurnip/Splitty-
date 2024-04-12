@@ -88,10 +88,10 @@ public class EventOverviewCtrlTest extends ApplicationTest {
     @BeforeAll
     public static void setupSpec() throws Exception {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "true");
+        System.setProperty("testfx.headless", "false");
         System.setProperty("prism.order", "sw");
         System.setProperty("prism.text", "t2k");
-        System.setProperty("java.awt.headless", "true");
+        System.setProperty("java.awt.headless", "false");
     }
     @AfterEach
     void breakDown() {
@@ -132,7 +132,7 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         List<Participant> participantList = new ArrayList<Participant>();
         participantList.add(participant2);
         addExpenseCtrlMock.setParticipantList(participantList);
-        addExpenseCtrlMock.setDate(new DatePicker());
+        addExpenseCtrlMock.setDate(new DatePicker(LocalDate.now()));
         addExpenseCtrlMock.setPrice(new TextField("5"));
         addExpenseCtrlMock.setExpenseTag(null);
         ChoiceBox<String> mockCurrency = mock(ChoiceBox.class);
@@ -161,6 +161,8 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         addExpenseCtrlMock.setDate(new DatePicker());
         addExpenseCtrlMock.setPrice(new TextField("5"));
         addExpenseCtrlMock.setExpenseTag(null);
+        addExpenseCtrlMock.setDate(new DatePicker(LocalDate.now()));
+
         Transaction transaction2 = addExpenseCtrlMock.getExpense();
         server.saveEvent(event);
         sut.refresh();
