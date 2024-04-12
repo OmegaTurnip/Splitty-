@@ -1,12 +1,12 @@
 package server.financial;
 
 import commons.*;
-import server.financial.ExchangeRateFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DebtSimplifier {
 
@@ -16,14 +16,14 @@ public class DebtSimplifier {
     private final HashMap<Participant, Integer> centsPayedExtra;
 
     // these are automatically min-heaps, yay!
-    private final PriorityQueue<ParticipantMoneyPair> creditors =
+    private final PriorityQueue<ParticipantValuePair> creditors =
             new PriorityQueue<>();
-    private final PriorityQueue<ParticipantMoneyPair> debtors =
+    private final PriorityQueue<ParticipantValuePair> debtors =
             new PriorityQueue<>();
 
     private Currency base;
 
-    private ParticipantMoneyPair zeroMoneyInBaseCurrency;
+    private ParticipantValuePair zeroMoneyInBaseCurrency;
 
     private BigDecimal cent;
 
@@ -68,8 +68,6 @@ public class DebtSimplifier {
         Objects.requireNonNull(base, "base is null");
         Objects.requireNonNull(participants, "participants is null");
 
-        if (participants.isEmpty())
-            throw new IllegalArgumentException("participants is empty");
 
         isInitialized = true;
 
@@ -83,7 +81,7 @@ public class DebtSimplifier {
         }
 
         this.base = base;
-        this.zeroMoneyInBaseCurrency = new ParticipantMoneyPair(null,
+        this.zeroMoneyInBaseCurrency = new ParticipantValuePair(null,
                 new Money(BigDecimal.ZERO, base)
         );
         this.cent =
@@ -175,7 +173,8 @@ public class DebtSimplifier {
     public void addDebts(Event event) {
         Objects.requireNonNull(event, "event is null");
 
-        List<Transaction> transactions = event.getTransactions();
+        List<Transaction> transactions = new ArrayList<>(
+                event.getTransactions());
 
         // sort transactions by id to ensure deterministic results.
         // does make the assumption that the ids are generated in order.
@@ -290,6 +289,11 @@ public class DebtSimplifier {
     }
 
     private Money convertToBase(Money amount, LocalDate date) {
+        return convertToBase(amount, date, base);
+    }
+
+
+    private Money convertToBase(Money amount, LocalDate date, Currency base) {
         // Will raise a NullPointerException if an exchange rate is unavailable,
         // but that (throwing an exception) is expected behaviour
         return new Money(
@@ -300,6 +304,7 @@ public class DebtSimplifier {
                 base
         );
     }
+
 
     private Set<Participant> validateParameters(Participant creditor,
                                                 Collection<Participant> debtors,
@@ -349,18 +354,58 @@ public class DebtSimplifier {
         );
         for (Transaction transaction : event.getTransactions()) {
             if (!transaction.isPayoff()) {
-                ExchangeRate exchangeRate = exchangeRateFactory.getExchangeRate(
-                        transaction.getDate(),
-                        transaction.getAmount().getCurrency(),
-                        currency
+                sum = sum.add(
+                        this.convertToBase(
+                                transaction.getAmount(),
+                                transaction.getDate(),
+                                currency
+                        ).getAmount()
                 );
-                if (exchangeRate == null)
-                    return null;
-                sum = sum.add(exchangeRate.convert(
-                        transaction.getAmount()).getAmount());
             }
         }
         return new Money(sum, currency);
+    }
+
+    /**
+     * Returns the share of all expenses for each participant in the specified
+     * event in the specified currency. The share does not include payoffs.
+     *
+     * @param   event
+     *          The event to calculate the shares for.
+     * @param   currency
+     *          The currency to calculate the sum in.
+     *
+     * @return  The shares.
+     */
+    public Set<ParticipantValuePair> shareOfExpenses(Event event,
+                                                     Currency currency) {
+        Objects.requireNonNull(event, "event is null");
+        Objects.requireNonNull(currency, "currency is null");
+
+        HashMap<Participant, Money> result = new HashMap<>();
+
+        for (Participant participant : event.getParticipants())
+            result.put(participant, new Money(BigDecimal.ZERO, currency));
+
+        for (Transaction transaction : event.getTransactions()) {
+            if (!transaction.isPayoff()) {
+                Money share = result.get(transaction.getPayer());
+
+                share.setAmount(
+                        share.getAmount().add(
+                            this.convertToBase(
+                                    transaction.getAmount(),
+                                    transaction.getDate(),
+                                    currency
+                            ).getAmount()
+                    )
+                );
+            }
+        }
+
+        return result.entrySet().stream()
+                .map(e -> new ParticipantValuePair(e.getKey(), e.getValue()))
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -399,6 +444,9 @@ public class DebtSimplifier {
      *
      * @return  The simplified version of the debts.
      *
+     * @throws  IllegalStateException
+     *          If the {@code DebtSimplifier} is not initialized.
+     *
      * @author  Maurits Sloof
      * @author  Paras Khan
      */
@@ -412,15 +460,39 @@ public class DebtSimplifier {
         debtors.clear();
 
         for (Participant participant : participants.keySet())
-            enqueue(new ParticipantMoneyPair(
+            enqueue(reduce(
                     participant,
-                    reduce(
-                            participant,
-                            participants.get(participant)
-                    )
+                    participants.get(participant)
             ));
 
         return collapse(base);
+    }
+
+
+    /**
+     * Returns the balances of the participants in the specified currency. The
+     * balance is the amount of money that the participant has to pay or
+     * receive. If the value is negative, the participant has to pay the
+     * amount. If the value is positive, the participant has to receive the
+     * amount.
+     *
+     * @return  The balances of the participants.
+     */
+    public Set<ParticipantValuePair> toBalances() {
+        if (!isInitialized)
+            throw new IllegalStateException("DebtSimplifier not initialized");
+        // reinitialize before any new calls
+        isInitialized = false;
+
+        Set<ParticipantValuePair> result = new HashSet<>();
+
+        for (Participant participant : participants.keySet())
+            result.add(reduce(
+                    participant,
+                    participants.get(participant)
+            ));
+
+        return result;
     }
 
     /**
@@ -435,16 +507,16 @@ public class DebtSimplifier {
         Set<Debt> result = new HashSet<>();
 
         while (!creditors.isEmpty() && !debtors.isEmpty()) {
-            ParticipantMoneyPair creditor = creditors.poll();
-            ParticipantMoneyPair debtor = debtors.poll();
+            ParticipantValuePair creditor = creditors.poll();
+            ParticipantValuePair debtor = debtors.poll();
 
             if (creditor == null || debtor == null)
                 throw new NullPointerException("this shouldn't happen...");
 
             // simplify the cancel function
-            if (creditor.money.equals(debtor.money)) {
-                result.add(new Debt(debtor.participant, creditor.participant,
-                        creditor.money));
+            if (creditor.money().equals(debtor.money())) {
+                result.add(new Debt(debtor.participant(),
+                        creditor.participant(), creditor.money()));
                 continue;
             }
 
@@ -467,8 +539,8 @@ public class DebtSimplifier {
      *          The {@link List} in which the resulting simplified version of
      *          the debts are stored.
      */
-    private void cancel(Currency base, ParticipantMoneyPair creditor,
-                        ParticipantMoneyPair debtor, Set<Debt> result) {
+    private void cancel(Currency base, ParticipantValuePair creditor,
+                        ParticipantValuePair debtor, Set<Debt> result) {
         BigDecimal max = creditor.money().getAmount().max(
                 debtor.money().getAmount());
         BigDecimal min = creditor.money().getAmount().min(
@@ -477,15 +549,15 @@ public class DebtSimplifier {
         Money maxPayoffMoney = new Money(min, base);
         Money remainderMoney = new Money(max.subtract(min), base);
 
-        result.add(new Debt(debtor.participant, creditor.participant,
+        result.add(new Debt(debtor.participant(), creditor.participant(),
                 maxPayoffMoney));
 
         // re-enqueue undivided money
-        if (creditor.money.equals(maxPayoffMoney))
-            debtors.add(new ParticipantMoneyPair(debtor.participant,
+        if (creditor.money().equals(maxPayoffMoney))
+            debtors.add(new ParticipantValuePair(debtor.participant(),
                     remainderMoney));
         else
-            creditors.add(new ParticipantMoneyPair(creditor.participant,
+            creditors.add(new ParticipantValuePair(creditor.participant(),
                     remainderMoney));
     }
 
@@ -497,9 +569,10 @@ public class DebtSimplifier {
      * @param   transactions
      *          The transactions to and from the participant.
      *
-     * @return  The resulting monetary value as a {@link Money} object.
+     * @return  The resulting monetary value as a {@link ParticipantValuePair}
+     *          object.
      */
-    private Money reduce(Participant participant,
+    private ParticipantValuePair reduce(Participant participant,
                          LinkedList<Debt> transactions) {
         Money result = new Money(BigDecimal.ZERO, base);
 
@@ -514,36 +587,28 @@ public class DebtSimplifier {
                         transaction.amount().getAmount()));
         }
 
-        return result;
+        return new ParticipantValuePair(participant, result);
     }
 
     /**
      * Enqueues a participant in the correct priority queue.
      *
-     * @param   participantMoneyPair
+     * @param   participantValuePair
      *          The participant to enqueue.
      */
-    private void enqueue(ParticipantMoneyPair participantMoneyPair) {
-        if (participantMoneyPair.compareTo(zeroMoneyInBaseCurrency) < 0) {
+    private void enqueue(ParticipantValuePair participantValuePair) {
+        if (participantValuePair.compareTo(zeroMoneyInBaseCurrency) < 0) {
             // result is negative, aka a debt.
             // also, make the debt positive
-            participantMoneyPair.money.setAmount(
-                    participantMoneyPair.money.getAmount().negate());
-            debtors.add(participantMoneyPair);
+            participantValuePair.money().setAmount(
+                    participantValuePair.money().getAmount().negate());
+            debtors.add(participantValuePair);
         }
-        else if (participantMoneyPair.compareTo(zeroMoneyInBaseCurrency) > 0) {
+        else if (participantValuePair.compareTo(zeroMoneyInBaseCurrency) > 0) {
             // result is positive, aka credits
-            creditors.add(participantMoneyPair);
+            creditors.add(participantValuePair);
         }
         // else, remove the participant from the calculation (everything cancels
         // out)
-    }
-
-    private record ParticipantMoneyPair(Participant participant, Money money)
-            implements Comparable<ParticipantMoneyPair> {
-        @Override
-        public int compareTo(ParticipantMoneyPair other) {
-            return this.money.compareTo(other.money());
-        }
     }
 }

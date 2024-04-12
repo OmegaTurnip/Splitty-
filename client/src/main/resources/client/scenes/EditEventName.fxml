@@ -16,7 +16,7 @@
                 <Menu fx:id="languageMenu" mnemonicParsing="false" text="Languages" />
             </menus>
         </MenuBar>
-        <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="288.0" prefWidth="445.0" styleClass="backGround" VBox.vgrow="ALWAYS">
+        <AnchorPane prefHeight="288.0" prefWidth="445.0" styleClass="backGround" VBox.vgrow="ALWAYS">
             <children>
                 <TextField fx:id="eventName" layoutX="38.0" layoutY="52.0" prefHeight="40.0" prefWidth="306.0" styleClass="text-field-splitty">
                <font>

@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import client.history.ActionHistory;
 import client.language.Text;
 import client.language.Translator;
 import client.utils.ServerUtils;
@@ -30,6 +31,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.time.LocalDate;
+
 public class MainCtrl {
 
     private Stage primaryStage;
@@ -43,6 +46,7 @@ public class MainCtrl {
     private Scene add;
     private StartUpCtrl startUpCtrl;
     private Scene startUp;
+    private LocalDate startUpDate;
 
     private AddExpenseCtrl addExpenseCtrl;
     private Scene addExpense;
@@ -69,6 +73,7 @@ public class MainCtrl {
             Pair<EditEventNameCtrl, Parent> editName,
             Pair<AdminCtrl, Parent> adminPage) {
 
+        startUpDate = LocalDate.now();
         this.startUpCtrl = startUp.getKey();
         this.startUp = new Scene(startUp.getValue());
         this.startUp.getStylesheets().add(getClass()
@@ -150,7 +155,17 @@ public class MainCtrl {
         primaryStage.setScene(overview);
         overview.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
+                overviewCtrl.getActionHistory().clear();
                 showStartUp();
+                e.consume();
+            }
+        });
+        overview.setOnKeyPressed(e -> {
+            if (e.isControlDown() && e.getCode() == KeyCode.Z) {
+                overviewCtrl.undo();
+                e.consume();
+            } else if (e.isControlDown() && e.getCode() == KeyCode.Y) {
+                overviewCtrl.redo();
                 e.consume();
             }
         });
@@ -194,8 +209,11 @@ public class MainCtrl {
      * Go to the edit participant page.
      * @param event the event the participant is a part of.
      * @param participant the participant to edit.
+     * @param actionHistory the action history.
      */
-    public void showEditParticipant(Event event, Participant participant) {
+    public void showEditParticipant(Event event, Participant participant,
+                                    ActionHistory actionHistory) {
+        addParticipantCtrl.setActionHistory(actionHistory);
         addParticipantCtrl.setParticipant(participant);
         showParticipant(event);
     }
@@ -237,6 +255,14 @@ public class MainCtrl {
     }
 
     /**
+     * Getter
+     * @return start up date
+     */
+    public LocalDate getStartUpDate() {
+        return startUpDate;
+    }
+
+    /**
      * go to the add expense page (by changing the content of the window).
      * @param event the event the expense is a part of.
      */
@@ -251,10 +277,14 @@ public class MainCtrl {
      * Go to the edit expense page.
      * @param event the event the participant is a part of.
      * @param transaction the transaction to edit
+     * @param actionHistory the action history
      */
-    public void showEditExpense(Event event, Transaction transaction) {
+    public void showEditExpense(Event event, Transaction transaction,
+                                ActionHistory actionHistory) {
         addExpenseCtrl.setEvent(event);
         addExpenseCtrl.setExpenseToOverwrite(transaction);
+        addExpenseCtrl.setActionHistory(actionHistory);
+        addExpenseCtrl.setEventOverviewCtrl(overviewCtrl);
         addExpenseCtrl.refresh();
         primaryStage.setScene(addExpense);
     }

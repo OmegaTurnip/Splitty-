@@ -2,6 +2,7 @@ package client.scenes;
 
 
 
+import client.history.ActionHistory;
 import client.language.Language;
 import client.language.Text;
 import javafx.application.Platform;
@@ -72,14 +73,13 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     private MenuItem returnToOverview;
     @FXML
     private Menu rtoButton;
-    private final ServerUtils server;
+    private ServerUtils server;
     private MainCtrl mainCtrl;
 
     private AlertWrapper alertWrapper;
 
     private TransactionCellController transactionCellController;
-
-
+    private ActionHistory actionHistory;
 
     /**
      * Initializes the controller
@@ -91,6 +91,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.alertWrapper = new AlertWrapper();
+        this.actionHistory = new ActionHistory();
     }
 
     /**
@@ -129,7 +130,49 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 });
             }
         });
+        server.registerForMessages("/topic/actionHistory", String.class, b -> {
+            actionHistory.clear();
+            System.out.println(b);
+        });
         refresh();
+    }
+
+    /**
+     * Getter.
+     * @return Get action history.
+     */
+    public ActionHistory getActionHistory() {
+        return actionHistory;
+    }
+
+    /**
+     * Undo the last expense action.
+     */
+    public void undo() {
+        if (actionHistory.hasUndoActions()) {
+            actionHistory.undo();
+        } else {
+//            alertWrapper.showAlert(Alert.AlertType.INFORMATION,
+//                    Translator.getTranslation(
+//                            Text.EventOverview.Alert.noUndoTitle),
+//                    Translator.getTranslation(
+//                            Text.EventOverview.Alert.noUndoContent));
+        }
+    }
+
+    /**
+     * Redo the last expense action.
+     */
+    public void redo() {
+        if (actionHistory.hasRedoActions()) {
+            actionHistory.redo();
+        } else {
+//            alertWrapper.showAlert(Alert.AlertType.INFORMATION,
+//                    Translator.getTranslation(
+//                            Text.EventOverview.Alert.noRedoTitle),
+//                    Translator.getTranslation(
+//                            Text.EventOverview.Alert.noRedoContent));
+        }
     }
 
     /**
@@ -181,38 +224,47 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         return mainCtrl;
     }
 
+    /**
+     * Setter
+     * @param server the server to set
+     */
+    public void setServer(ServerUtils server) {
+        this.server = server;
+    }
+
     public static class ParticipantStringConverter
             extends StringConverter<Object> {
 
         private final StringConverter<Object> participantStringConverter =
                 new StringConverter<>() {
 
-        /**
-         * Converts the given object to its string representation.
-         * @param o The object to convert.
-         * @return The string representation of the object's name,
-         * or an empty string if the object is null.
-         */
-                @Override
-                public String toString(Object o) {
-                    if (o == null) {
-                        return "";
-                    } else {
-                        return ((Participant) o).getName();
+                    /**
+                     * Converts the given object to its string representation.
+                     * @param o The object to convert.
+                     * @return The string representation of the object's name,
+                     * or an empty string if the object is null.
+                     */
+                    @Override
+                    public String toString(Object o) {
+                        if (o == null) {
+                            return "";
+                        } else {
+                            return ((Participant) o).getName();
+                        }
                     }
-                }
 
-            /**
-             * Converts the given string to an object.
-             * @param s The string to convert.
-             * @return Always returns null,
-             * as the conversion from string to object is not implemented.
-             */
-                @Override
-                public Object fromString(String s) {
-                    return null;
-                }
-            };
+                    /**
+                     * Converts the given string to an object.
+                     * @param s The string to convert.
+                     * @return Always returns null,
+                     * as the conversion from string to object is
+                     * not implemented.
+                     */
+                    @Override
+                    public Object fromString(String s) {
+                        return null;
+                    }
+                };
 
         /**
          * Converts the given object to its string
@@ -321,6 +373,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                                      ObservableList<Transaction> transactions){
         String choice = selected.getId();
         setEvents(transactions);
+        expensesListView.getItems().clear();
         switch (choice) {
             case "AllExpenses":
                 System.out.println("all clicked");
@@ -395,8 +448,8 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 .getTranslation(client.language
                         .Text.EventOverview.Buttons.fromExpensesButton));
         expensesDropDown.setPromptText(Translator
-                    .getTranslation(client.language
-                            .Text.EventOverview.expensesDropDown));
+                .getTranslation(client.language
+                        .Text.EventOverview.expensesDropDown));
         if(transactionCellController != null){
             transactionCellController.refreshText();
             expensesListView.refresh();
@@ -455,6 +508,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 controller.setServer(server);
                 controller.setMainController(mainCtrl);
                 controller.setEventOverviewCtrl(EventOverviewCtrl.this);
+                controller.setActionHistory(actionHistory);
                 setText(null);
                 setGraphic(loader.getRoot());
             }
@@ -487,13 +541,14 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                     }
                 }
                 transactionCellController = loader.getController();
+                transactionCellController.setServer(server);
                 transactionCellController.setTransactionData(transaction);
                 transactionCellController.setEvent(event);
-                transactionCellController.setServer(server);
                 transactionCellController.setMainCtrl(mainCtrl);
                 transactionCellController.setTransaction(transaction);
                 transactionCellController.setEventOverviewCtrl(
                         EventOverviewCtrl.this);
+                transactionCellController.setActionHistory(actionHistory);
                 setGraphic(loader.getRoot());
             }
         }

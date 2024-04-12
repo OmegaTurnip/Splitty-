@@ -1,9 +1,12 @@
 package client.scenes;
 
+import client.history.Action;
+import client.history.ActionHistory;
 import client.language.Text;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
+import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.*;
 import jakarta.ws.rs.WebApplicationException;
@@ -67,10 +70,28 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     private Event event;
     private ServerUtils server;
-    private final MainCtrl mainCtrl;
+    private MainCtrl mainCtrl;
     private final Pattern pricePattern;
     private Transaction expenseToOverwrite;
     private AlertWrapper alertWrapper;
+    private ActionHistory actionHistory;
+    private EventOverviewCtrl eventOverviewCtrl;
+
+    /**
+     * Setter
+     * @param actionHistory the actionHistory to set
+     */
+    public void setActionHistory(ActionHistory actionHistory) {
+        this.actionHistory = actionHistory;
+    }
+
+    /**
+     * Setter
+     * @param mainCtrl the mainCtrl to set
+     */
+    public void setMainCtrl(MainCtrl mainCtrl) {
+        this.mainCtrl = mainCtrl;
+    }
 
     /**
      * Initializes the controller
@@ -117,6 +138,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         fetchLanguages();
+        loadCurrencies();
         payerSelection();
         tagSelection();
         participantSelection();
@@ -136,6 +158,16 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         date.setConverter(new MyLocalDateStringConverter("dd/MM/yyyy"));
         refresh();
     }
+    private void loadCurrencies() {
+        List<String> currencies = new ArrayList<>();
+        for (Currency currency : server.getAvailableCurrencies()) {
+            currencies.add(currency.getCurrencyCode());
+        }
+        currencies.sort(Comparator.naturalOrder());
+        currency.setItems(FXCollections.observableArrayList(currencies));
+        currency.setValue(UserConfig.get()
+                .getPreferredCurrency().getCurrencyCode());
+    }
 
     /**
      * Setter
@@ -148,13 +180,38 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Setter
+     *
+     * @param choiceBox the currency choicebox
+     */
+    public void setCurrency(ChoiceBox<String> choiceBox) {
+        currency = choiceBox;
+    }
+
+
+    /**
+     * Setter
+     *
      * @param participants the combobox to set
      */
     public void setParticipants(CheckComboBox<Object> participants) {
         this.participants = participants;
     }
 
-    ;
+    /**
+     * Setter
+     * @param overviewCtrl The event overview controller to set.
+     */
+    public void setEventOverviewCtrl(EventOverviewCtrl overviewCtrl) {
+        this.eventOverviewCtrl = overviewCtrl;
+    }
+
+    /**
+     * Getter
+     * @return the actionHistory
+     */
+    public ActionHistory getActionHistory() {
+        return actionHistory;
+    }
 
     static class MyLocalDateStringConverter extends StringConverter<LocalDate> {
 
@@ -163,6 +220,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
         public MyLocalDateStringConverter(String pattern) {
             this.dateFormatter = DateTimeFormatter.ofPattern(pattern);
+            alertWrapper = new AlertWrapper();
         }
 
         @Override
@@ -339,37 +397,112 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     public void registerExpense(Transaction expense) {
         if (expenseToOverwrite == null) {
             Transaction returnedE = server.saveTransaction(expense);
-            event.removeTransaction(expense);
+//            event.removeTransaction(expense);
             expense.setTransactionId(returnedE.getTransactionId());
-            event.addTransaction(expense);
+//            event.addTransaction(expense);
             System.out.println("Added expense " + expense);
         } else {
+            event.removeTransaction(expenseToOverwrite);
+            // I reversed the order of this
+            // because it looked dangerous
             expense.setTransactionId(
                     expenseToOverwrite.getTransactionId());
-            event.removeTransaction(expenseToOverwrite);
             server.saveEvent(event);
+            ExpenseEditAction editAction = new ExpenseEditAction(
+                    expenseToOverwrite, expense,
+                    server, event, eventOverviewCtrl,
+                    mainCtrl);
+            actionHistory.addAction(editAction);
             System.out.println("Edited expense " + expense);
         }
     }
 
-
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     private boolean verifyInput() {
         if (!verifyPrice(price.getText())) {
             return false;
         }
-        if (expensePayer == null
-                || !expensePayer.getClass().equals(Participant.class))
+        if (expenseName.getText().isEmpty()
+                || expenseName.getText().isBlank()) {
+            noName();
             return false;
-        try {
-            if (date.getValue() == null) return false;
-        } catch (DateTimeParseException e) {
-            alertWrapper.showAlert(Alert.AlertType.ERROR,
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.dateFormatTitle),
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.dateFormatContent));
+
         }
-        return !participantList.isEmpty();
+        if (expensePayer == null
+                || !expensePayer.getClass().equals(Participant.class)) {
+            noPayer();
+            return false;
+        }
+        try {
+            if (date.getValue() == null || date.getPromptText().isEmpty() ||
+                    date.getPromptText().isBlank()) {
+                throw new DateTimeParseException("",
+                        date.getPromptText(), 0);
+            }
+        } catch (DateTimeParseException e) {
+            wrongDate();
+            return false;
+        }
+        if (date.getValue().isAfter(mainCtrl.getStartUpDate())) {
+            dateTooFarAhead();
+            return false;
+        } else if (date.getValue().isBefore(
+                LocalDate.of(2000, 1, 1))) {
+            dateTooFarBehind();
+            return false;
+        }
+
+        if (participantList.isEmpty()) {
+            noParticipants();
+            return false;
+        }
+        return true;
+    }
+
+    private void noName() {
+        showAlert(Translator.getTranslation(
+                        Text.AddExpense.Alert.noNameTitle),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.noNameContent));
+    }
+
+    private void noParticipants() {
+        showAlert(Translator.getTranslation(
+                        Text.AddExpense.Alert.noParticipantsTitle),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.noParticipantsContent));
+    }
+
+    private void dateTooFarBehind() {
+        alertWrapper.showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.oldDateTitle),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.oldDateContent));
+    }
+
+    private void dateTooFarAhead() {
+        alertWrapper.showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.futureDateTitle),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.futureDateContent));
+    }
+
+    private void noPayer() {
+        alertWrapper.showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.noPayerTitle),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.noPayerContent));
+    }
+
+    private void wrongDate() {
+        alertWrapper.showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.dateFormatTitle),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.dateFormatContent));
     }
 
     /**
@@ -377,6 +510,8 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
      */
     public void refresh() {
         refreshText();
+        currency.setValue(UserConfig.get()
+                .getPreferredCurrency().getCurrencyCode());
         loadPayers();
         loadParticipants();
         loadTags();
@@ -394,7 +529,8 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             payer.getSelectionModel().select(0);
             expenseName.clear();
             price.clear();
-            date.setValue(LocalDate.now());
+            date.setValue(mainCtrl.getStartUpDate());
+//            date.setValue(LocalDate.now());
         }
         System.out.println("Page has been refreshed!");
     }
@@ -651,10 +787,11 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         BigDecimal b = new BigDecimal(price.getText().replace(",", "."));
         return event.registerDebt(expensePayer,
                 expenseName.getText(),
-                new Money(b,
-                        Currency.getInstance("EUR")), //placeholder
-//                        Currency.getInstance(currency.getValue())),
-                participantList, expenseTag);
+                new Money(
+                        b,
+                        Currency.getInstance(currency.getValue())
+                ),
+                participantList, LocalDate.now(), expenseTag);
     }
 
     /**
@@ -705,7 +842,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     /**
      * Sets the name of the expense
      *
-     * @param expenseName the exspenseName
+     * @param expenseName the expenseName
      */
     public void setExpenseName(TextField expenseName) {
         this.expenseName = expenseName;
@@ -719,5 +856,46 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     public void setExpenseTag(Tag expenseTag) {
         this.expenseTag = expenseTag;
+    }
+
+    private static class ExpenseEditAction implements Action {
+        private Transaction oldTransaction;
+        private Transaction newTransaction;
+        private ServerUtils server;
+        private Event event;
+        private EventOverviewCtrl eventOverviewCtrl;
+        private MainCtrl mainCtrl;
+
+        public ExpenseEditAction(Transaction oldTransaction,
+                                 Transaction newTransaction,
+                                 ServerUtils server,
+                                 Event event,
+                                 EventOverviewCtrl eventOverviewCtrl,
+                                 MainCtrl mainCtrl) {
+            this.oldTransaction = oldTransaction;
+            this.newTransaction = newTransaction;
+            this.server = server;
+            this.event = event;
+            this.eventOverviewCtrl = eventOverviewCtrl;
+            this.mainCtrl = mainCtrl;
+        }
+
+        @Override
+        public void undo() {
+            oldTransaction.setTransactionId(newTransaction.getTransactionId());
+            event.removeTransaction(newTransaction);
+            event.addTransaction(oldTransaction);
+            server.saveEvent(event);
+            mainCtrl.showEventOverview(event);
+        }
+
+        @Override
+        public void redo() {
+            newTransaction.setTransactionId(oldTransaction.getTransactionId());
+            event.removeTransaction(oldTransaction);
+            event.addTransaction(newTransaction);
+            server.saveEvent(event);
+            mainCtrl.showEventOverview(event);
+        }
     }
 }

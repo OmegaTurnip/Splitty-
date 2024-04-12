@@ -1,10 +1,14 @@
 package client.scenes;
 
+import client.history.Action;
+import client.history.ActionHistory;
 import client.language.Formatter;
 import client.language.Text;
 import client.language.Translator;
 import client.utils.ServerUtils;
+import client.utils.UserConfig;
 import commons.Event;
+import commons.Money;
 import commons.Transaction;
 import commons.Participant;
 import javafx.fxml.FXML;
@@ -35,6 +39,8 @@ public class TransactionCellController {
     private AlertWrapper alertWrapper;
     private MainCtrl mainCtrl;
 
+    private ActionHistory actionHistory;
+
 
     /**
      * Initialize the controller.
@@ -44,7 +50,9 @@ public class TransactionCellController {
         refreshText();
         alertWrapper = new AlertWrapper();
         editTransactionButton.setOnAction(event ->
-                mainCtrl.showEditExpense(this.event, transaction));
+                mainCtrl.showEditExpense(this.event,
+                        transaction, actionHistory)
+        );
         deleteTransactionButton.setOnAction(event -> removeTransaction());
     }
 
@@ -64,12 +72,18 @@ public class TransactionCellController {
                             .EventOverview
                             .TransactionCellController
                             .Alert.deleteExpenseContent)
-                    );
+            );
             if (result == ButtonType.OK) {
                 server.removeTransaction(transaction);
                 event.deleteTransaction(transaction);
                 server.saveEvent(event);
+                eventOverviewCtrl.refresh();
                 System.out.println("Delete transaction button clicked");
+                Action deleteAction = new ExpenseDeleteAction(
+                        transaction, server,
+                        event, eventOverviewCtrl,
+                        mainCtrl);
+                actionHistory.addAction(deleteAction);
             }
         }
     }
@@ -98,8 +112,10 @@ public class TransactionCellController {
         HashMap<String, String> transactionInfo = new HashMap<>();
         transactionInfo.put("date", transaction.getDate().toString());
         transactionInfo.put("payer", transaction.getPayer().getName());
+        Money shownAmount = server.convertMoney(transaction.getAmount(),
+                UserConfig.get().getPreferredCurrency(), transaction.getDate());
         transactionInfo.put("amount",
-                transaction.getAmount().format(Translator.getLocale()));
+                shownAmount.format(Translator.getLocale()));
         transactionInfo.put("name",transaction.getName());
         transactionInfo.put("participants",
                 transaction.getParticipants().stream()
@@ -144,6 +160,14 @@ public class TransactionCellController {
         this.eventOverviewCtrl = eventOverviewCtrl;
     }
 
+    /**
+     * Setter
+     * @param actionHistory the actionHistory to set
+     */
+    public void setActionHistory(ActionHistory actionHistory) {
+        this.actionHistory = actionHistory;
+    }
+
 
     /**
      * Setter
@@ -160,4 +184,57 @@ public class TransactionCellController {
     public void setMainCtrl(MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
     }
+
+    /**
+     * Getter
+     * @return the actionHistory
+     */
+    public ActionHistory getActionHistory() {
+        return actionHistory;
+    }
+
+    /**
+     * Getter
+     * @return the mainCtrl
+     */
+    public MainCtrl getMainCtrl() {
+        return mainCtrl;
+    }
+
+    private static class ExpenseDeleteAction implements Action {
+        private Transaction transaction;
+        private ServerUtils server;
+        private Event event;
+        private EventOverviewCtrl eventOverviewCtrl;
+        private MainCtrl mainCtrl;
+
+        public ExpenseDeleteAction(Transaction transaction, ServerUtils server,
+                                   Event event,
+                                   EventOverviewCtrl eventOverviewCtrl,
+                                   MainCtrl mainCtrl) {
+            this.transaction = transaction;
+            this.server = server;
+            this.event = event;
+            this.eventOverviewCtrl = eventOverviewCtrl;
+            this.mainCtrl = mainCtrl;
+        }
+
+        @Override
+        public void undo() {
+            Transaction returnedE = server.saveTransaction(transaction);
+            transaction = returnedE;
+            event.addTransaction(returnedE);
+            server.saveEvent(event);
+            mainCtrl.showEventOverview(event);
+        }
+
+        @Override
+        public void redo() {
+            server.removeTransaction(transaction);
+            event.deleteTransaction(transaction);
+            server.saveEvent(event);
+            mainCtrl.showEventOverview(event);
+        }
+    }
+
 }
