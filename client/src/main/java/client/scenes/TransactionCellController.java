@@ -222,6 +222,7 @@ public class TransactionCellController {
         @Override
         public void undo() {
             Transaction returnedE = server.saveTransaction(transaction);
+            //Automatically adds to event thru longpolling
             transaction = returnedE;
             server.saveEvent(event);
             mainCtrl.showEventOverview(event);
