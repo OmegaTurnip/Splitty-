@@ -91,9 +91,7 @@ public class ParticipantCellController {
                 server.send("/topic/actionHistory", "Cleared action history");
                 //For telling users that actionHistory was updated
                 //by participant editing/deleting, so it has to be cleared
-                //for undo/redo on expenses to work. It's a lazy work-around
-                //but I need to study Linear Algebra not spend time doing
-                //this crap.
+                //for undo/redo on expenses to work.
                 server.removeParticipant(participant);
                 event.removeParticipant(participant);
             }
