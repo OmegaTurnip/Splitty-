@@ -587,4 +587,13 @@ public class UserConfig {
         }
         return String.join(entrySep, entries);
     }
+
+    /**
+     * Injects userConfig so it can be tested
+     *
+     * @param userConfig the userConfig to inject
+     */
+    public static void dependencyInject(UserConfig userConfig) {
+        userSettings = userConfig;
+    }
 }

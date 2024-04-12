@@ -4,6 +4,7 @@ import client.language.Text;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
+import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.*;
 import jakarta.ws.rs.WebApplicationException;
@@ -117,6 +118,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         fetchLanguages();
+        loadCurrencies();
         payerSelection();
         tagSelection();
         participantSelection();
@@ -136,6 +138,16 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         date.setConverter(new MyLocalDateStringConverter("dd/MM/yyyy"));
         refresh();
     }
+    private void loadCurrencies() {
+        List<String> currencies = new ArrayList<>();
+        for (Currency currency : server.getAvailableCurrencies()) {
+            currencies.add(currency.getCurrencyCode());
+        }
+        currencies.sort(Comparator.naturalOrder());
+        currency.setItems(FXCollections.observableArrayList(currencies));
+        currency.setValue(UserConfig.get()
+                .getPreferredCurrency().getCurrencyCode());
+    }
 
     /**
      * Setter
@@ -148,19 +160,30 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     /**
      * Setter
+     *
+     * @param choiceBox the currency choicebox
+     */
+    public void setCurrency(ChoiceBox<String> choiceBox) {
+        currency = choiceBox;
+    }
+
+
+    /**
+     * Setter
+     *
      * @param participants the combobox to set
      */
     public void setParticipants(CheckComboBox<Object> participants) {
         this.participants = participants;
     }
 
-    ;
-
     static class MyLocalDateStringConverter extends StringConverter<LocalDate> {
 
         private final DateTimeFormatter dateFormatter;
         private AlertWrapper alertWrapper;
-
+        public void setAlertWrapper(AlertWrapper alertWrapper) {
+            this.alertWrapper = alertWrapper;
+        }
         public MyLocalDateStringConverter(String pattern) {
             this.dateFormatter = DateTimeFormatter.ofPattern(pattern);
         }
@@ -172,10 +195,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             } else {
                 return "";
             }
-        }
-
-        public void setAlertWrapper(AlertWrapper alertWrapper) {
-            this.alertWrapper = alertWrapper;
         }
 
         @Override
@@ -360,6 +379,22 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         if (expensePayer == null
                 || !expensePayer.getClass().equals(Participant.class))
             return false;
+        if (date.getValue().isAfter(mainCtrl.getStartUpDate())) {
+            alertWrapper.showAlert(Alert.AlertType.ERROR,
+                    Translator.getTranslation(
+                            Text.AddExpense.Alert.futureDateTitle),
+                    Translator.getTranslation(
+                            Text.AddExpense.Alert.futureDateContent));
+            return false;
+        } else if (date.getValue().isBefore(
+                LocalDate.of(2000, 1, 1))) {
+            alertWrapper.showAlert(Alert.AlertType.ERROR,
+                    Translator.getTranslation(
+                            Text.AddExpense.Alert.oldDateTitle),
+                    Translator.getTranslation(
+                            Text.AddExpense.Alert.oldDateContent));
+            return false;
+        }
         try {
             if (date.getValue() == null) return false;
         } catch (DateTimeParseException e) {
@@ -377,6 +412,8 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
      */
     public void refresh() {
         refreshText();
+        currency.setValue(UserConfig.get()
+                .getPreferredCurrency().getCurrencyCode());
         loadPayers();
         loadParticipants();
         loadTags();
@@ -394,6 +431,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             payer.getSelectionModel().select(0);
             expenseName.clear();
             price.clear();
+            date.setValue(mainCtrl.getStartUpDate());
             date.setValue(LocalDate.now());
         }
         System.out.println("Page has been refreshed!");
@@ -658,8 +696,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         return event.registerDebt(expensePayer,
                 expenseName.getText(),
                 new Money(b,
-                        Currency.getInstance("EUR")), //placeholder
-//                        Currency.getInstance(currency.getValue())),
+                        Currency.getInstance(currency.getValue())),
                 participantList, expenseTag);
     }
 

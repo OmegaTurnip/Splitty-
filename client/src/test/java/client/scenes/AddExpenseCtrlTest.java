@@ -67,6 +67,7 @@ public class AddExpenseCtrlTest extends ApplicationTest {
                 UserConfig userConfig = Mockito.mock(UserConfig.class);
                 userConfigMockedStatic.when(UserConfig::get).thenReturn(userConfig);
                 Mockito.when(userConfig.getUserLanguage()).thenReturn("eng");
+                Mockito.when(userConfig.getPreferredCurrency()).thenReturn(Currency.getInstance("EUR"));
                 Language.fromLanguageFile(
                         "eng", new File("../includedLanguages/eng.properties")
                 );

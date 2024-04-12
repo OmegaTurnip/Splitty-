@@ -44,6 +44,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -205,6 +206,22 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<>() {});
+    }
+
+    /**
+     * Request to get an updated version of the event.
+     *
+     * @param   event
+     *          The event to get the updated version of.
+     *
+     * @return  The updated event.
+     */
+    public Event getUpdatedEvent(Event event) {
+        return client
+                .target(server).path("api/event/" + event.getId())
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Event.class);
     }
 
     /**
@@ -413,31 +430,51 @@ public class ServerUtils {
     private static final ExecutorService EXEC =
             Executors.newSingleThreadExecutor();
 
+    private Future<?> future;
+
+    /**
+     * Stops the long polling.
+     */
+    public void stopLongPolling() {
+        if (future != null) {
+            future.cancel(true);
+        }
+        future = null;
+    }
+
     /**
      * Registers for updates (adding of transactions)
      * In case of no content, the rest of the loop is skipped (continue)
-     * Still needs to be fixed: now only 1 EXEC at the time
-     * Needs to be solved by creating a set of listeners,
-     * add all consumers to the set, iterate over all consumers
+     * Future should enable the stopping of the long-polling
      * @param consumer consumer of the transaction
      * @param event current event
      */
     public void registerForUpdates(Consumer<Transaction> consumer, Event event){
+        if (future != null) {
+            future.cancel(true);
+        }
 
-        EXEC.submit(() -> {
+        future = EXEC.submit(() -> {
             while (!Thread.interrupted()) {
-                var res = client.target(server)
-                        .path("api/event/" + event.getId()
-                                + "/transactions/updates")
-                        .request(APPLICATION_JSON)
-                        .accept(APPLICATION_JSON)
-                        .get(Response.class);
+                try{
+                    var res = client.target(server)
+                            .path("api/event/" + event.getId()
+                                    + "/transactions/updates")
+                            .request(APPLICATION_JSON)
+                            .accept(APPLICATION_JSON)
+                            .get(Response.class);
 
-                if(res.getStatus() == 204){
-                    continue;
-                };
-                var t = res.readEntity(Transaction.class);
-                consumer.accept(t);
+                    if(res.getStatus() == 204){
+                        continue;
+                    };
+                    var t = res.readEntity(Transaction.class);
+                    consumer.accept(t);
+                }
+                catch (Exception e) {
+                    System.err.println("An error occurred in the thread: " +
+                            e.getMessage());
+                    e.printStackTrace();
+                }
             }
         });
 
