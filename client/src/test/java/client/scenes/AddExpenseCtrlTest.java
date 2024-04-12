@@ -356,4 +356,39 @@ public class AddExpenseCtrlTest extends ApplicationTest {
         assertNull(result3);
     }
 
+    @Test
+    public void testChoosePriceAlert() {
+        sut.choosePriceAlert("");
+        verify(alertWrapper, times(1)).showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
+                Text.AddExpense.Alert.invalidPrice),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.emptyString));
+        sut.choosePriceAlert("A");
+        verify(alertWrapper, times(1)).showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.invalidPrice),
+                Translator.getTranslation(Text.AddExpense.Alert.noLetters));
+        sut.choosePriceAlert("1,2,3");
+        verify(alertWrapper, times(1)).showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.invalidPrice),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.onlyOnePeriodOrComma));
+        sut.choosePriceAlert(",123");
+        verify(alertWrapper, times(1)).showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.invalidPrice),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.startWithDigit));
+        sut.choosePriceAlert("12a3");
+        verify(alertWrapper, times(1)).showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.invalidPrice),
+                Translator.getTranslation(
+                        Text.AddExpense.Alert.generallyInvalid));
+
+
+    }
+
 }

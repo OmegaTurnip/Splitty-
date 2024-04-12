@@ -652,7 +652,11 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     }
 
-    private void choosePriceAlert(String input) {
+    /**
+     * Puts out the alert for what the input breaks
+     * @param input string to check
+     */
+    public void choosePriceAlert(String input) {
         if (input.isEmpty()) {
             alertWrapper.showAlert(Alert.AlertType.ERROR,
                     Translator.getTranslation(
