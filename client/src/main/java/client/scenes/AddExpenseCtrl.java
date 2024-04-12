@@ -399,7 +399,8 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             server.saveEvent(event);
             ExpenseEditAction editAction = new ExpenseEditAction(
                     expenseToOverwrite, expense,
-                    server, event, eventOverviewCtrl);
+                    server, event, eventOverviewCtrl,
+                    mainCtrl);
             actionHistory.addAction(editAction);
             System.out.println("Edited expense " + expense);
         }
@@ -798,17 +799,20 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         private ServerUtils server;
         private Event event;
         private EventOverviewCtrl eventOverviewCtrl;
+        private MainCtrl mainCtrl;
 
         public ExpenseEditAction(Transaction oldTransaction,
                                  Transaction newTransaction,
                                  ServerUtils server,
                                  Event event,
-                                 EventOverviewCtrl eventOverviewCtrl) {
+                                 EventOverviewCtrl eventOverviewCtrl,
+                                 MainCtrl mainCtrl) {
             this.oldTransaction = oldTransaction;
             this.newTransaction = newTransaction;
             this.server = server;
             this.event = event;
             this.eventOverviewCtrl = eventOverviewCtrl;
+            this.mainCtrl = mainCtrl;
         }
 
         @Override
@@ -817,7 +821,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             event.removeTransaction(newTransaction);
             event.addTransaction(oldTransaction);
             server.saveEvent(event);
-            eventOverviewCtrl.refresh();
+            mainCtrl.showEventOverview(event);
         }
 
         @Override
@@ -826,7 +830,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             event.removeTransaction(oldTransaction);
             event.addTransaction(newTransaction);
             server.saveEvent(event);
-            eventOverviewCtrl.refresh();
+            mainCtrl.showEventOverview(event);
         }
     }
 }

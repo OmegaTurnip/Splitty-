@@ -81,7 +81,8 @@ public class TransactionCellController {
                 System.out.println("Delete transaction button clicked");
                 Action deleteAction = new ExpenseDeleteAction(
                         transaction, server,
-                        event, eventOverviewCtrl);
+                        event, eventOverviewCtrl,
+                        mainCtrl);
                 actionHistory.addAction(deleteAction);
             }
         }
@@ -205,14 +206,17 @@ public class TransactionCellController {
         private ServerUtils server;
         private Event event;
         private EventOverviewCtrl eventOverviewCtrl;
+        private MainCtrl mainCtrl;
 
         public ExpenseDeleteAction(Transaction transaction, ServerUtils server,
                                    Event event,
-                                   EventOverviewCtrl eventOverviewCtrl) {
+                                   EventOverviewCtrl eventOverviewCtrl,
+                                   MainCtrl mainCtrl) {
             this.transaction = transaction;
             this.server = server;
             this.event = event;
             this.eventOverviewCtrl = eventOverviewCtrl;
+            this.mainCtrl = mainCtrl;
         }
 
         @Override
@@ -221,7 +225,7 @@ public class TransactionCellController {
             transaction = returnedE;
             event.addTransaction(returnedE);
             server.saveEvent(event);
-            eventOverviewCtrl.refresh();
+            mainCtrl.showEventOverview(event);
         }
 
         @Override
@@ -229,7 +233,7 @@ public class TransactionCellController {
             server.removeTransaction(transaction);
             event.deleteTransaction(transaction);
             server.saveEvent(event);
-            eventOverviewCtrl.refresh();
+            mainCtrl.showEventOverview(event);
         }
     }
 
