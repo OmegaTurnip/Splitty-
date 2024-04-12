@@ -689,9 +689,11 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         BigDecimal b = new BigDecimal(price.getText().replace(",", "."));
         return event.registerDebt(expensePayer,
                 expenseName.getText(),
-                new Money(b,
-                        Currency.getInstance(currency.getValue())),
-                participantList, expenseTag);
+                new Money(
+                        b,
+                        Currency.getInstance(currency.getValue())
+                ),
+                participantList, LocalDate.now(), expenseTag);
     }
 
     /**

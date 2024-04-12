@@ -17,10 +17,7 @@ package client.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import commons.Event;
-import commons.Money;
-import commons.Participant;
-import commons.Transaction;
+import commons.*;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -403,6 +400,103 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Transaction>>() {});
+    }
+
+    /**
+     * Simplify debts of an event in a certain currency. Aka get the payment
+     * instructions.
+     *
+     * @param   event
+     *          The event of which the debts need to be simplified.
+     * @param   currency
+     *          The currency of the resulting payment instructions.
+     *
+     * @return  The payment instructions.
+     */
+    public Set<Debt> simplifyDebts(Event event, Currency currency) {
+        return client.target(server)
+                .path("api/event/" + event.getId() + "/simplify/" + currency)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Set<Debt>>() {});
+    }
+
+    /**
+     * Gets all transactions of the event in a certain currency.
+     *
+     * @param   event
+     *          Event of which the transactions need to be converted.
+     * @param   currency
+     *          The currency of the transactions.
+     *
+     * @return  List of pairs of transactions and converted amounts.
+     */
+    public List<TransactionConversionPair> getTransactionsOfEvent(
+            Event event, Currency currency){
+        return client.target(server)
+                .path("api/event/" + event.getId() + "/transactions/currency/"
+                        + currency)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<TransactionConversionPair>>() {});
+    }
+
+    /**
+     * Gets the sum of all expenses of the event in a certain currency.
+     *
+     * @param   event
+     *          Event which expenses need to be summed.
+     * @param   currency
+     *          The currency of the sum.
+     *
+     * @return  The sum of all expenses of the event in the specified currency.
+     */
+    public Money getSumOfAllExpenses(Event event, Currency currency) {
+        return client.target(server)
+                .path("api/event/" + event.getId() + "/sum/" + currency)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Money>() {});
+    }
+
+    /**
+     * Gets the balance of the participants in the specified event in the
+     * specified currency.
+     *
+     * @param   event
+     *          The event.
+     * @param   currency
+     *          The currency of the balance.
+     *
+     * @return  The balance of the participants in the event.
+     */
+    public Set<ParticipantValuePair> getBalanceOfParticipants(
+            Event event, Currency currency) {
+        return client.target(server)
+                .path("api/event/" + event.getId() + "/balance/" + currency)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Set<ParticipantValuePair>>() {});
+    }
+
+    /**
+     * Gets the shares of the participants in the specified event in the
+     * specified currency.
+     *
+     * @param   event
+     *          The event.
+     * @param   currency
+     *          The currency of the shares.
+     *
+     * @return  The shares of the participants in the event.
+     */
+    public Set<ParticipantValuePair> getSharesOfParticipants(
+            Event event, Currency currency) {
+        return client.target(server)
+                .path("api/event/" + event.getId() + "/shares/" + currency)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Set<ParticipantValuePair>>() {});
     }
 
     /**
