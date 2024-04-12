@@ -303,11 +303,11 @@ public class AddExpenseCtrlTest extends ApplicationTest {
         participantList.add(participant2);
         Money amount = new Money(new BigDecimal(5), Currency.getInstance("EUR"));
         Transaction test = event.registerDebt
-                (participant1, "Test", amount, participantList, event.getTags().get(0));
+                (participant1, "Test", amount, participantList, LocalDate.of(23,1,1), event.getTags().get(0));
         test.setTransactionId(1L);
 
         Transaction expectedResult = event.registerDebt
-                (participant2, "Test 1", amount, participantList, event.getTags().get(0));
+                (participant2, "Test 1", amount, participantList, LocalDate.of(23,1,1), event.getTags().get(0));
 
         event.removeTransaction(expectedResult); //has null id but still removes it
 
