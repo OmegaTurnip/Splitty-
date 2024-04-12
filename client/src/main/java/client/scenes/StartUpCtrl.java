@@ -529,10 +529,14 @@ public class StartUpCtrl extends TextPage implements Initializable {
 
     private void loadCurrencyMenu() {
         currencyMenu1.getItems().clear();
-        for (Currency currency : server.getAvailableCurrencies()) {
-            MenuItem item = new MenuItem(currency.getCurrencyCode());
+        List<String> currencies = server.getAvailableCurrencies().stream()
+                .map(Currency::getCurrencyCode)
+                .sorted()
+                .toList();
+        for (String currency : currencies) {
+            MenuItem item = new MenuItem(currency);
             item.setOnAction(event ->
-                setCurrency(currency)
+                setCurrency(Currency.getInstance(currency))
             );
             currencyMenu1.getItems().add(item);
         }

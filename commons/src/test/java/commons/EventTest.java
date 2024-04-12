@@ -50,10 +50,10 @@ class EventTest {
     testEvent.setParticipants(testAllParticipants1);
 
     testTransaction1 = Transaction.createDebt(testParticipant1, "Drinks", Money.fromLong(2, "EUR"),
-            testParticipants1, testEvent, new Tag("food", "blue"));
+            testParticipants1, testEvent, null, new Tag("food", "blue"));
     testTransaction2 = Transaction.createDebt(testParticipant2, "Lunch", Money.fromLong(2, "EUR"),
 
-            testParticipants2, testEvent, new Tag("food", "blue"));
+            testParticipants2, testEvent, null, new Tag("food", "blue"));
     testTransaction1.setTransactionId(1L);
     testTransaction2.setTransactionId(2L);
 
@@ -111,14 +111,24 @@ class EventTest {
 
     @Test
     void registerTransaction() {
-      Transaction testTransaction3 = Transaction.createDebt(testParticipant1,
+      Transaction testTransaction3 =
+              Transaction.createDebt(
+                      testParticipant1,
+                      "Movies",
+                      Money.fromLong(2, "EUR"),
+                      List.of(testParticipant1, testParticipant2, testParticipant3),
+                      testEvent,
+                      null,
+                      testEvent.getTags().getFirst()
+              );
+      testEvent.registerDebt(
+              testParticipant1,
               "Movies",
-                Money.fromLong(2, "EUR"), List.of(testParticipant1, testParticipant2, testParticipant3),
-              testEvent,testEvent.getTags().getFirst());
-      testEvent.registerDebt(testParticipant1,
-              "Movies",
-              Money.fromLong(200, "EUR"), List.of(testParticipant1, testParticipant2, testParticipant3),
-              testEvent.getTags().getFirst());
+              Money.fromLong(200, "EUR"),
+              List.of(testParticipant1, testParticipant2, testParticipant3),
+              null,
+              testEvent.getTags().getFirst()
+      );
 
       assertEquals(testEvent.getTransactions().get(2),  testTransaction3);
     }

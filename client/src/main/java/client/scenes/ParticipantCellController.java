@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.history.ActionHistory;
 import client.language.Text;
 import client.language.Translator;
 import client.utils.ServerUtils;
@@ -29,6 +30,15 @@ public class ParticipantCellController {
 
     private AlertWrapper alertWrapper;
 
+    private ActionHistory actionHistory;
+
+    /**
+     * Setter.
+     * @param actionHistory The action history to set.
+     */
+    public void setActionHistory(ActionHistory actionHistory) {
+        this.actionHistory = actionHistory;
+    }
 
     /**
      * Setter.
@@ -67,7 +77,7 @@ public class ParticipantCellController {
      * @param participant The participant to edit.
      */
     private void editParticipant(Participant participant) {
-        mainCtrl.showEditParticipant(event, participant);
+        mainCtrl.showEditParticipant(event, participant, actionHistory);
     }
 
     /**
@@ -78,6 +88,10 @@ public class ParticipantCellController {
         if (participant != null) {
             ButtonType result = showDeletionAlert();
             if (result == ButtonType.OK) {
+                server.send("/topic/actionHistory", "Cleared action history");
+                //For telling users that actionHistory was updated
+                //by participant editing/deleting, so it has to be cleared
+                //for undo/redo on expenses to work.
                 server.removeParticipant(participant);
                 event.removeParticipant(participant);
             }

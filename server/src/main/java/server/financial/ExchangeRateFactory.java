@@ -24,6 +24,26 @@ import java.util.stream.Collectors;
  */
 public class ExchangeRateFactory {
 
+    /*
+     * The cache is never cleared such that if the API drops a currency or is
+     * down for a while, the last known exchange rates should still be available
+     * to interpolate the missing data / directly read it.
+     *
+     * This means that the cache will grow indefinitely, but as the amount of
+     * currencies is limited and the amount of days is limited (in this project
+     * at least), this shouldn't be a problem.
+     *
+     * In a real world scenario, the cache would be stored in a propper database
+     * and the cache would be cleared after a certain amount of time.
+     *
+     * But as the requirements are different, "Requested exchange rates will be
+     * cached in a local file (e.g., rates/«date»/«from»/«to».txt)", this is the
+     * best solution.
+     *
+     * Also, connecting to multiple APIs to ensure that the data is available is
+     * out of the scope of this project.
+     */
+
     public static final File DEFAULT_DIR = new File("server/rates");
 
     /**
