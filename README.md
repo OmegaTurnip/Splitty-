@@ -16,4 +16,6 @@ The websockets can be seen implemented on the server side under the API folder, 
 
 Long Polling is done on the EventOverviewCtrl for adding/deleting expenses. registerForMessages is the method we use to communicate with websockets. registerForUpdates is for long-polling. Press ctrl+f on these methods in ServerUtils in a code editor and you can see all the usages of them.
 
+Whenever you update or delete a participant, it's going to clear the action history of all users. This is to avoid null-pointer bugs, but also to prevent the reverting of changes to participant when you redo/undo expenses. The alternative solution is to add undo/redo functionality to participants but this strays from the rubric.
+
 
