@@ -130,9 +130,12 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 });
             }
         });
-        server.registerForMessages("/topic/actionHistory", String.class, b -> {
-            actionHistory.clear();
-            System.out.println(b);
+        server.registerForMessages("/topic/actionHistory", Event.class, e -> {
+            if (event.equals(e)) {
+                actionHistory.clear();
+                System.out.println("Action history cleared");
+            }
+
         });
         refresh();
     }
