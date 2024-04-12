@@ -20,11 +20,21 @@
     -fx-background-color: #fefdfd;
     -fx-font-family: Arial;
 }
+
+.menu-bar .menu-item:focused, .menu:showing, .menu:hover {
+    -fx-background-color: #B89AE1;
+}
 #currency {
     -fx-background-radius: 5pt;
     -fx-background-color: #0d0d0d;
     -fx-text-fill: #fefdfd;
 }
+
+#currency .list-cell {
+    -fx-background-color: #0d0d0d;
+    -fx-text-fill: #fefdfd;
+}
+
 #payer {
     -fx-background-radius: 5pt;
     -fx-background-color: #8e3edd;
@@ -56,40 +66,31 @@
 }
 
 /*Event overview*/
-.participant-cell {
-    -fx-background-color: #E0DDF2;
-    -fx-border-color: transparent;
-    -fx-padding: 10;
-    -fx-background-radius: 12;
-    -fx-font-family: Arial;
-    -fx-font-size: 18px;
-}
 .borderPane {
     -fx-background-color: #8e3edd;
 }
-.title-transparent-bg {
-    -fx-text-fill: #fefdfd;
-    -fx-font-weight: bold;
-}
 .title {
-    -fx-background-color: #8e3edd;
     -fx-text-fill: #fefdfd;
     -fx-font-weight: bold;
 }
-.event-cell {
+.event-cell, .participant-cell {
     -fx-background-color: #E0DDF2;
     -fx-border-color: transparent;
     -fx-padding: 10;
-    -fx-background-radius: 12;
+    -fx-background-radius: 10;
     -fx-font-family: Arial;
     -fx-font-size: 18px;
 }
 
 .participant-cell:hover {
-    -fx-background-color: #8A2BE2;
+    -fx-background-color: #331575;
     -fx-cursor: hand;
+    -fx-text-fill: #fefdfd;
 }
-
+.combo-box {
+    /*-fx-selection-bar: "midnightblue";*/
+    -fx-selection-bar-text-fill: "white";
+}
 .event-cell:hover {
     -fx-background-color: #8A2BE2;
     -fx-cursor: hand;
@@ -156,8 +157,14 @@
     -fx-border-color: #e0ddf2;
     -fx-border-radius: 5pt;
     -fx-border-width: 1.5pt;
-    -fx-text-fill: #fefdfd;
+    -fx-text-fill: #0d0d0d;
     -fx-font-size: 12pt;
+}
+.choice-box>.list-cell {
+    -fx-text-fill: white;
+}
+.combo-box>.list-cell {
+    -fx-text-fill: white;
 }
 
 .choice-box-normal:hover, .choice-box-normal:focused {
@@ -168,12 +175,27 @@
 /*    -fx-background-color: radial-gradient(center 96.2% 89.9%, radius 100%,  rgb(184, 154, 225)  0%, rgb(51, 21, 117) 92%);*/
 /*}*/
 .toggle-button {
-    -fx-background-color: #9370DB;;
-    -fx-font-size: 8px;
+    -fx-background-color: #e0ddf2;
+    -fx-font-size: 16px;
+    -fx-background-radius: 5pt 5pt 0 0;
 }
 
-.toggle-button:hover, .toggle-button:focused {
-    -fx-background-color: #8A2BE2;
+.toggle-button:focused {
+    -fx-background-color: #CFBDFF;
     -fx-cursor: hand;
+    -fx-text-fill: #0d0d0d;
+    -fx-font-weight: bolder;
 }
+.toggle-button:hover {
+    -fx-background-color: #CFBDFF;
+    -fx-cursor: hand;
+    -fx-text-fill: #0d0d0d;
+}
+
+.toggle-button:selected {
+    -fx-background-color: #CFBDFF;
+    -fx-cursor: hand;
+    -fx-text-fill: #0d0d0d;
+}
+
 

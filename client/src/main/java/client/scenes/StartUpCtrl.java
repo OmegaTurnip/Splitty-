@@ -41,6 +41,8 @@ public class StartUpCtrl extends TextPage implements Initializable {
     private ContextMenu contextMenu;
 
     @FXML
+    private MenuBar menuBar;
+    @FXML
     private Menu currencyMenu1;
 
     private ServerUtils server;
@@ -63,6 +65,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
 
     /**
      * Setter for newEvent1 (for testing w dependency injection)
+     *
      * @param newEvent1 The new event text field
      */
     public void setNewEvent1(TextField newEvent1) {
@@ -71,6 +74,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
 
     /**
      * Setter for joinEvent1 (for testing w dependency injection)
+     *
      * @param joinEvent1 The join event text field
      */
     public void setJoinEvent1(TextField joinEvent1) {
@@ -79,6 +83,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
 
     /**
      * Getter for newEvent1 (for testing)
+     *
      * @return The new event text field
      */
     public TextField getNewEvent1() {
@@ -87,6 +92,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
 
     /**
      * Getter for currentEvents
+     *
      * @return The current events
      */
     public List<Event> getCurrentEvents() {
@@ -95,6 +101,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
 
     /**
      * Getter for joinEvent1 (for testing)
+     *
      * @return The join event text field
      */
     public TextField getJoinEvent1() {
@@ -111,7 +118,8 @@ public class StartUpCtrl extends TextPage implements Initializable {
 
     /**
      * Constructor
-     * @param server The server.
+     *
+     * @param server   The server.
      * @param mainCtrl The main controller.
      */
     @Inject
@@ -138,13 +146,11 @@ public class StartUpCtrl extends TextPage implements Initializable {
 
     /**
      * Initialise the start-up window.
-     * @param location
-     * The location used to resolve relative paths for the root object, or
-     * {@code null} if the location is not known.
      *
-     * @param resources
-     * The resources used to localize the root object, or {@code null} if
-     * the root object was not localized.
+     * @param location  The location used to resolve relative paths for the root object, or
+     *                  {@code null} if the location is not known.
+     * @param resources The resources used to localize the root object, or {@code null} if
+     *                  the root object was not localized.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -226,6 +232,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
             loginDialog.showAndWait();
         });
     }
+
     private void registerForSaveEvents() {
         List<String> userEvents = server.getUserSettings().getEventCodes();
         server.registerForMessages("/topic/admin", Event.class,
@@ -250,11 +257,13 @@ public class StartUpCtrl extends TextPage implements Initializable {
 
     /**
      * Getter for server
+     *
      * @return The server
      */
     public ServerUtils getServer() {
         return server;
     }
+
     /**
      * To add an event to the user's events using an invitation code.
      */
@@ -285,7 +294,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
             currentEvents.add(result);
             eventCodes.add(code);
             server.getUserSettings().setEventCodes(eventCodes);
-            System.out.println("Event: "+ result.getEventName() + " joined!");
+            System.out.println("Event: " + result.getEventName() + " joined!");
         } catch (WebApplicationException e) {
             e.printStackTrace();
             return;
@@ -298,9 +307,10 @@ public class StartUpCtrl extends TextPage implements Initializable {
 
     /**
      * Method for creating an event using the Create Event text field.
+     *
      * @throws WebApplicationException May throw errors for reasons
-     * such as internal server errors, the event name text field being empty,
-     * or other such issues.
+     *                                 such as internal server errors, the event name text field being empty,
+     *                                 or other such issues.
      */
     public void createEvent() throws WebApplicationException {
         try {
@@ -321,7 +331,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
             eventCodes.add(result.getInviteCode());
             server.getUserSettings().setEventCodes(eventCodes);
 //            currentEvents.add(result); //Might lead to bugs in the UI
-            System.out.println("Event: "+ result.getEventName() + " created!" +
+            System.out.println("Event: " + result.getEventName() + " created!" +
                     " Invite code: " + result.getInviteCode() + " added!" +
                     " Time of last edit: " + result.getLastActivity());
         } catch (WebApplicationException e) {
@@ -343,6 +353,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
 
     /**
      * Gets and constructs the event from the text field
+     *
      * @return The event
      */
     public Event getEvent() {
@@ -351,6 +362,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
 
     /**
      * Gets the invitation code from the text field
+     *
      * @return The invitation code
      */
     public String getJoinInvCode() {
@@ -359,13 +371,13 @@ public class StartUpCtrl extends TextPage implements Initializable {
     }
 
 
-
     /**
      * Refreshes the page and updates the list view.
      */
     public void refresh() {
         Platform.runLater(() -> {
             fetchYourEvents();
+            yourEvents.getSelectionModel().clearSelection();
             ObservableList<Event> observableEvents =
                     FXCollections.observableArrayList(currentEvents);
             SortedList<Event> sortedEvents = new SortedList<>(observableEvents);
@@ -376,6 +388,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
             yourEvents.setItems(sortedEvents);
 
             refreshText();
+            yourEvents.getSelectionModel().clearSelection();
             System.out.println("Page has been refreshed!");
         });
 
@@ -415,6 +428,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
 
     /**
      * Undo event joining
+     *
      * @param selected The event.
      */
     public void undoEventJoin(Event selected) {
@@ -447,6 +461,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
 
     /**
      * Getter for yourEvents (for testing)
+     *
      * @return yourEvents listview
      */
     public ListView<Event> getYourEvents() {
@@ -454,14 +469,15 @@ public class StartUpCtrl extends TextPage implements Initializable {
     }
 
     /**
-     *
      * @param events
      */
     public void setEvents(List<Event> events) {
         this.currentEvents = events;
     }
+
     /**
      * used for testing purposes
+     *
      * @param alertWrapper
      */
     public void setAlertWrapper(AlertWrapper alertWrapper) {
@@ -470,6 +486,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
 
     /**
      * used for testing purposes
+     *
      * @param server
      */
     public void setServer(ServerUtils server) {
@@ -479,6 +496,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
     private class EventListCell extends ListCell<Event> {
         private final StackPane stackPane = new StackPane();
         private final Text text = new Text();
+
         {
             setContextMenu(contextMenu);
             text.setFill(Paint.valueOf("#0d0d0d"));
@@ -499,7 +517,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
                 if (!isFocused()) text.setFill(Paint.valueOf("#0d0d0d"));
             });
             setOnMouseClicked(event -> {
-                if (event.getButton()  == MouseButton.PRIMARY) {
+                if (event.getButton() == MouseButton.PRIMARY) {
                     Event selected = getItem();
                     if (selected != null) {
                         mainCtrl.showEventOverview(selected);
@@ -507,6 +525,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
                 }
             });
         }
+
         @Override
         protected void updateItem(Event item, boolean empty) {
             super.updateItem(item, empty);
@@ -536,7 +555,7 @@ public class StartUpCtrl extends TextPage implements Initializable {
         for (String currency : currencies) {
             MenuItem item = new MenuItem(currency);
             item.setOnAction(event ->
-                setCurrency(Currency.getInstance(currency))
+                    setCurrency(Currency.getInstance(currency))
             );
             currencyMenu1.getItems().add(item);
         }
