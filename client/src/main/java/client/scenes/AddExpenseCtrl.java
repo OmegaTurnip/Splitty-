@@ -1,5 +1,7 @@
 package client.scenes;
 
+import client.history.Action;
+import client.history.ActionHistory;
 import client.language.Text;
 import client.language.TextPage;
 import client.language.Translator;
@@ -68,10 +70,28 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     private Event event;
     private ServerUtils server;
-    private final MainCtrl mainCtrl;
+    private MainCtrl mainCtrl;
     private final Pattern pricePattern;
     private Transaction expenseToOverwrite;
     private AlertWrapper alertWrapper;
+    private ActionHistory actionHistory;
+    private EventOverviewCtrl eventOverviewCtrl;
+
+    /**
+     * Setter
+     * @param actionHistory the actionHistory to set
+     */
+    public void setActionHistory(ActionHistory actionHistory) {
+        this.actionHistory = actionHistory;
+    }
+
+    /**
+     * Setter
+     * @param mainCtrl the mainCtrl to set
+     */
+    public void setMainCtrl(MainCtrl mainCtrl) {
+        this.mainCtrl = mainCtrl;
+    }
 
     /**
      * Initializes the controller
@@ -175,6 +195,22 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
      */
     public void setParticipants(CheckComboBox<Object> participants) {
         this.participants = participants;
+    }
+
+    /**
+     * Setter
+     * @param overviewCtrl The event overview controller to set.
+     */
+    public void setEventOverviewCtrl(EventOverviewCtrl overviewCtrl) {
+        this.eventOverviewCtrl = overviewCtrl;
+    }
+
+    /**
+     * Getter
+     * @return the actionHistory
+     */
+    public ActionHistory getActionHistory() {
+        return actionHistory;
     }
 
     static class MyLocalDateStringConverter extends StringConverter<LocalDate> {
@@ -361,15 +397,22 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     public void registerExpense(Transaction expense) {
         if (expenseToOverwrite == null) {
             Transaction returnedE = server.saveTransaction(expense);
-            event.removeTransaction(expense);
+//            event.removeTransaction(expense);
             expense.setTransactionId(returnedE.getTransactionId());
-            event.addTransaction(expense);
+//            event.addTransaction(expense);
             System.out.println("Added expense " + expense);
         } else {
+            event.removeTransaction(expenseToOverwrite);
+            // I reversed the order of this
+            // because it looked dangerous
             expense.setTransactionId(
                     expenseToOverwrite.getTransactionId());
-            event.removeTransaction(expenseToOverwrite);
             server.saveEvent(event);
+            ExpenseEditAction editAction = new ExpenseEditAction(
+                    expenseToOverwrite, expense,
+                    server, event, eventOverviewCtrl,
+                    mainCtrl);
+            actionHistory.addAction(editAction);
             System.out.println("Edited expense " + expense);
         }
     }
@@ -799,7 +842,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     /**
      * Sets the name of the expense
      *
-     * @param expenseName the exspenseName
+     * @param expenseName the expenseName
      */
     public void setExpenseName(TextField expenseName) {
         this.expenseName = expenseName;
@@ -813,5 +856,46 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     public void setExpenseTag(Tag expenseTag) {
         this.expenseTag = expenseTag;
+    }
+
+    private static class ExpenseEditAction implements Action {
+        private Transaction oldTransaction;
+        private Transaction newTransaction;
+        private ServerUtils server;
+        private Event event;
+        private EventOverviewCtrl eventOverviewCtrl;
+        private MainCtrl mainCtrl;
+
+        public ExpenseEditAction(Transaction oldTransaction,
+                                 Transaction newTransaction,
+                                 ServerUtils server,
+                                 Event event,
+                                 EventOverviewCtrl eventOverviewCtrl,
+                                 MainCtrl mainCtrl) {
+            this.oldTransaction = oldTransaction;
+            this.newTransaction = newTransaction;
+            this.server = server;
+            this.event = event;
+            this.eventOverviewCtrl = eventOverviewCtrl;
+            this.mainCtrl = mainCtrl;
+        }
+
+        @Override
+        public void undo() {
+            oldTransaction.setTransactionId(newTransaction.getTransactionId());
+            event.removeTransaction(newTransaction);
+            event.addTransaction(oldTransaction);
+            server.saveEvent(event);
+            mainCtrl.showEventOverview(event);
+        }
+
+        @Override
+        public void redo() {
+            newTransaction.setTransactionId(oldTransaction.getTransactionId());
+            event.removeTransaction(oldTransaction);
+            event.addTransaction(newTransaction);
+            server.saveEvent(event);
+            mainCtrl.showEventOverview(event);
+        }
     }
 }
