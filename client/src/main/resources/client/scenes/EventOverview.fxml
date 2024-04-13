@@ -23,7 +23,7 @@
                           <Font name="Arial" size="30.0" />
                       </font>
                   </Label>
-                    <Button mnemonicParsing="false" onAction="#editName" prefHeight="27.0" prefWidth="38.0" styleClass="button-edit">
+                    <Button mnemonicParsing="false" onAction="#editName" prefHeight="27.0" prefWidth="38.0" styleClass="button-edit-normal">
                   <cursor>
                      <Cursor fx:constant="HAND" />
                   </cursor></Button>

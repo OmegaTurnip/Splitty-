@@ -147,9 +147,11 @@ public class StartUpCtrl extends TextPage implements Initializable {
     /**
      * Initialise the start-up window.
      *
-     * @param location  The location used to resolve relative paths for the root object, or
+     * @param location  The location used to resolve relative
+     *                  paths for the root object, or
      *                  {@code null} if the location is not known.
-     * @param resources The resources used to localize the root object, or {@code null} if
+     * @param resources The resources used to localize the
+     *                  root object, or {@code null} if
      *                  the root object was not localized.
      */
     @Override
@@ -309,7 +311,8 @@ public class StartUpCtrl extends TextPage implements Initializable {
      * Method for creating an event using the Create Event text field.
      *
      * @throws WebApplicationException May throw errors for reasons
-     *                                 such as internal server errors, the event name text field being empty,
+     *                                 such as internal server errors,
+     *                                 the event name text field being empty,
      *                                 or other such issues.
      */
     public void createEvent() throws WebApplicationException {

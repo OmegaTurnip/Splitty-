@@ -4,8 +4,6 @@ package client.scenes;
 import client.history.ActionHistory;
 import client.language.Language;
 import client.language.Text;
-import com.sun.javafx.scene.traversal.Direction;
-import com.sun.javafx.scene.traversal.TraversalEngine;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -27,7 +25,6 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.util.StringConverter;
@@ -106,9 +103,11 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     /**
      * Initialise the page.
      *
-     * @param location  The location used to resolve relative paths for the root object, or
+     * @param location  The location used to resolve relative paths
+     *                  for the root object, or
      *                  {@code null} if the location is not known.
-     * @param resources The resources used to localize the root object, or {@code null} if
+     * @param resources The resources used to localize the root object,
+     *                  or {@code null} if
      *                  the root object was not localized.
      */
     @Override
@@ -118,18 +117,10 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 new ParticipantCellFactory());
         expensesListView.setCellFactory(param ->
                 new TransactionCellFactory());
-        buttonBar.getChildren().forEach(node -> {
-            if (node instanceof ToggleButton) {
-                node.focusedProperty().addListener((obs, oldVal, newVal) -> {
-                    if (!newVal) { // When the ToggleButton loses focus
-                        ((ToggleButton) node).setSelected(false); // Clear its selection
-                    }
-                });
-            }
-        });
-        for (Node node : buttonBar.getChildren()) {
-            toggleButtonHover((ToggleButton) node);
-        }
+        toggleButtonHover();
+        participantsListView.setFocusTraversable(false);
+        expensesListView.setFocusTraversable(false);
+        expensesListView.getSelectionModel().clearSelection();
         server.registerForMessages("/topic/admin", Event.class, e -> {
             if (event.equals(e)) event = e; //Overwrite current event
             System.out.println("Received event: " + event.getEventName());
@@ -157,18 +148,31 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         refresh();
     }
 
-    public void toggleButtonHover(ToggleButton toggleButton) {
-        AtomicReference<String> previousStyle = new AtomicReference<>();
-        toggleButton.setOnMouseEntered(event -> {
-            previousStyle.set(toggleButton.getStyle());
-            toggleButton.setStyle("-fx-background-color: #CFBDFF;"); // Set color to red on hover
+    private void toggleButtonHover() {
+        buttonBar.getChildren().forEach(node -> {
+            if (node instanceof ToggleButton) {
+                node.focusedProperty().addListener((obs, oldVal, newVal) -> {
+                    if (!newVal) {
+                        ((ToggleButton) node).setSelected(false);
+                    }
+                });
+            }
         });
 
-// Add listener for mouse exit event
-        toggleButton.setOnMouseExited(event -> {
-            toggleButton.setStyle(previousStyle.get()); // Remove inline style on mouse exit to revert to default style
-        });
+        for (Node node : buttonBar.getChildren()) {
+            AtomicReference<String> previousStyle = new AtomicReference<>();
+            ToggleButton toggleButton = (ToggleButton) node;
+            toggleButton.setOnMouseEntered(event -> {
+                previousStyle.set(toggleButton.getStyle());
+                toggleButton.setStyle("-fx-background-color: #CFBDFF;");
+            });
+
+            toggleButton.setOnMouseExited(event -> {
+                toggleButton.setStyle(previousStyle.get());
+            });
+        }
     }
+
     /**
      * Getter.
      *
@@ -231,8 +235,10 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 ObservableList<Object> participantsEvent =
                         FXCollections.observableArrayList(
                                 event.getParticipants());
+                participantsListView.getSelectionModel().clearSelection();
                 expensesDropDown.setItems(participantsEvent);
-                expensesDropDown.setStyle("-fx-selection-bar-text-fill: #fefdfd");
+                expensesDropDown
+                        .setStyle("-fx-selection-bar-text-fill: #fefdfd");
                 expensesDropDown.setCellFactory(lv ->
                         new ParticipantListCell());
                 expensesDropDown.setConverter(new ParticipantStringConverter());
@@ -447,6 +453,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                     }
                 }
                 expensesListView.setItems(transactionsParticipant);
+                expensesListView.getSelectionModel().clearSelection();
                 break;
             case "ExpensePaidParticipant":
                 System.out.println("Paid by participant clicked");
@@ -526,7 +533,9 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         mainCtrl.showAddExpense(event);
     }
 
-
+    /**
+     * Switches to edit name scene
+     */
     public void editName() {
         mainCtrl.showEditName(event);
     }
@@ -534,6 +543,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     private class ParticipantCellFactory extends ListCell<Participant> {
 
         private FXMLLoader loader;
+
 
         @Override
         protected void updateItem(Participant item, boolean empty) {
@@ -650,8 +660,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         dialog.setResultConverter(buttonType -> {
             if (buttonType == cancelButtonType) {
                 mainCtrl.showEventOverview(event);
-            }
-            return null;
+            } return null;
         });
         dialog.showAndWait();
     }

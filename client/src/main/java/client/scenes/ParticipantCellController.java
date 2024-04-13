@@ -8,6 +8,7 @@ import commons.Event;
 import commons.Participant;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.StackPane;
 
 public class ParticipantCellController {
 
@@ -18,6 +19,8 @@ public class ParticipantCellController {
 
     private ServerUtils server;
     private EventOverviewCtrl eventOverviewCtrl;
+    @FXML
+    private StackPane root;
 
     @FXML
     private Label participantCellLabel;
@@ -61,6 +64,7 @@ public class ParticipantCellController {
             deleteParticipant(participant);
             System.out.println("Delete participant button clicked");
         });
+        root.setFocusTraversable(false);
         this.alertWrapper = new AlertWrapper();
     }
 

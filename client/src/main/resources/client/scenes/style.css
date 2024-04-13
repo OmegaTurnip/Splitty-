@@ -82,11 +82,15 @@
     -fx-font-size: 18px;
 }
 
-.participant-cell:hover {
-    -fx-background-color: #331575;
-    -fx-cursor: hand;
-    -fx-text-fill: #fefdfd;
+.expense-cell {
+    -fx-background-color: #8A2BE2;
+    -fx-border-color: transparent;
+    -fx-padding: 10;
+    -fx-background-radius: 10;
+    -fx-font-family: Arial;
+    -fx-font-size: 18px;
 }
+
 .combo-box {
     /*-fx-selection-bar: "midnightblue";*/
     -fx-selection-bar-text-fill: "white";
@@ -107,23 +111,19 @@
 .bottom-BG {
     -fx-background-color: radial-gradient(center 96.2% 89.9%, radius 100%,  rgb(142, 62, 221)  0%, rgb(51, 21, 117) 92%);
 }
-
-.purpleButton {
-    -fx-background-color: #9370DB;
-    -fx-cursor: hand;
-}
-
-.purpleButton:hover, .purpleButton:focused {
-    -fx-background-color: #8A2BE2;
-}
-
-.button-add {
-    -fx-background-image: url('/client/scenes/plus.png');
+.button-edit-normal {
+    -fx-background-image: url('/client/scenes/editbutton-white.png');
     -fx-background-size: contain;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
     -fx-background-color: transparent;
-
+}
+.button-add {
+    -fx-background-image: url('/client/scenes/plus-white.png');
+    -fx-background-size: contain;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-color: transparent;
 }
 
 .button-edit {
@@ -140,11 +140,23 @@
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
     -fx-background-color: transparent;
-
+}
+.button-delete-normal {
+    -fx-background-image: url('/client/scenes/delete-white.png');
+    -fx-background-size: contain;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-color: transparent;
 }
 
-.button-add:hover, .button-edit:hover, .button-delete:hover,
-.button-add:focused, .button-edit:focused, .button-delete:focused {
+.button-edit:hover, .button-delete:hover, .button-edit:focused, .button-delete:focused {
+    -fx-background-color: #CFBDFF;
+    -fx-cursor: hand;
+}
+
+.button-add:focused, .button-add:hover,
+.button-edit-normal:hover, .button-edit-normal:focused,
+.button-delete-normal:hover, .button-delete-normal:focused {
     -fx-background-color: #9370DB;
     -fx-cursor: hand;
 }
