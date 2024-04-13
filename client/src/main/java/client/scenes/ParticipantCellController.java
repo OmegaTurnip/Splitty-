@@ -88,7 +88,7 @@ public class ParticipantCellController {
         if (participant != null) {
             ButtonType result = showDeletionAlert();
             if (result == ButtonType.OK) {
-                server.send("/topic/actionHistory", "Cleared action history");
+                server.send("/topic/actionHistory", event);
                 //For telling users that actionHistory was updated
                 //by participant editing/deleting, so it has to be cleared
                 //for undo/redo on expenses to work.

@@ -6,7 +6,10 @@ import commons.Participant;
 import commons.Transaction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -31,12 +34,15 @@ public class TransactionControllerTest {
     private Participant testP1;
 
     private List<Participant> group;
+    @Mock
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @BeforeEach
     void setup() {
+        MockitoAnnotations.openMocks(this);
         eventRepo = new TestEventRepository();
         transactionRepo = new TestTransactionRepository();
-        sut = new TransactionController(transactionRepo, eventRepo, null);
+        sut = new TransactionController(transactionRepo, eventRepo, null, simpMessagingTemplate);
         testEvent1 = new Event("testEvent1");
         testEvent1.setId(100L);
         testEvent1.addParticipant("testP1");
