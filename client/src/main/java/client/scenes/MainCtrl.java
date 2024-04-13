@@ -57,6 +57,8 @@ public class MainCtrl {
 
     private AlertWrapper alertWrapper;
 
+    private boolean filterAdded;
+
     /**
      * @param overview the fx for the event overview page.
      * @param add the fx for the add participant page.
@@ -72,7 +74,7 @@ public class MainCtrl {
             Pair<AddExpenseCtrl, Parent> addExpense,
             Pair<EditEventNameCtrl, Parent> editName,
             Pair<AdminCtrl, Parent> adminPage) {
-
+        filterAdded = false;
         startUpDate = LocalDate.now();
         this.startUpCtrl = startUp.getKey();
         this.startUp = new Scene(startUp.getValue());
@@ -153,13 +155,17 @@ public class MainCtrl {
         overviewCtrl.setEvent(server.getUpdatedEvent(event));
         primaryStage.setTitle("Splitty!");
         primaryStage.setScene(overview);
-        overview.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
-            if (e.getCode() == KeyCode.ESCAPE) {
-                overviewCtrl.getActionHistory().clear();
-                showStartUp();
-                e.consume();
-            }
-        });
+        if (!filterAdded) {
+            overview.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+                if (e.getCode() == KeyCode.ESCAPE) {
+                    overviewCtrl.getActionHistory().clear();
+                    showStartUp();
+                    e.consume();
+                }
+            });
+            filterAdded = true;
+        }
+
         overview.setOnKeyPressed(e -> {
             if (e.isControlDown() && e.getCode() == KeyCode.Z) {
                 overviewCtrl.undo();
