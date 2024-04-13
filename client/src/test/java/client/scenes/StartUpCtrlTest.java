@@ -1,56 +1,81 @@
 package client.scenes;
 
 import client.MyFXML;
+import client.MyModule;
 import client.language.Language;
 import client.language.Translator;
 import client.utils.ServerUtils;
+import client.utils.UserConfig;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import commons.Event;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+import javafx.util.Pair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.testfx.framework.junit5.ApplicationTest;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-class StartUpCtrlTest {
+class StartUpCtrlTest extends ApplicationTest {
 
     List<Event> events;
     StartUpCtrl sut;
     @Mock
     MainCtrl mainCtrl;
     @Mock
+    UserConfig userSettings;
+    @Mock
     ServerUtils server;
+
     @Mock
     AlertWrapper alertWrapper;
 
-    @BeforeEach
-    void setUp() throws IOException {
-        MockitoAnnotations.openMocks(this);
-//        server.setServer("http://localhost:8080");
-        server = mock(ServerUtils.class);
-        mainCtrl = mock(MainCtrl.class);
-        sut = new StartUpCtrl(server, mainCtrl);
-        events = new ArrayList<>();
-        alertWrapper = mock(AlertWrapper.class);
-        sut.setEvents(events);
-        sut.setServer(server);
-        sut.setAlertWrapper(alertWrapper);
-        sut.setEvents(new ArrayList<>());
-
-        Language.fromLanguageFile(
-                "eng", new File("../includedLanguages/eng.properties")
-        );
-        Translator.setCurrentLanguage(Language.languages.get("eng"));
+    @Override
+    public void start(Stage stage) throws Exception {
+        try (MockedStatic<UserConfig> userConfigMockedStatic = Mockito.mockStatic(UserConfig.class)) {
+            try (MockedConstruction<ServerUtils> mockPaymentService = Mockito.mockConstruction(ServerUtils.class, (mock, context) -> {
+                when(mock.connect(Mockito.anyString())).thenReturn(Mockito.mock(StompSession.class));
+            })) {
+                this.server = mock(ServerUtils.class);
+                this.mainCtrl = mock(MainCtrl.class);
+                UserConfig userConfig = Mockito.mock(UserConfig.class);
+                userConfigMockedStatic.when(UserConfig::get).thenReturn(userConfig);
+                Mockito.when(userConfig.getUserLanguage()).thenReturn("eng");
+                Language.fromLanguageFile(
+                        "eng", new File("../includedLanguages/eng.properties")
+                );
+                Translator.setCurrentLanguage(Language.languages.get("eng"));
+                Injector injector = Guice.createInjector(new MyModule());
+                MyFXML FXML = new MyFXML(injector);
+                Pair<StartUpCtrl, Parent> startUp = FXML.load(StartUpCtrl.class,
+                        "client", "scenes", "StartUp.fxml");
+                // sut = new StartUpCtrl(server, mainCtrl);
+                this.sut = startUp.getKey();
+                sut.setAlertWrapper(Mockito.mock(AlertWrapper.class));
+                MockitoAnnotations.openMocks(this).close();
+                Mockito.when(server.connect(Mockito.anyString())).thenReturn(Mockito.mock(StompSession.class));
+                Scene scene = new Scene(startUp.getValue());
+                stage.setScene(scene);
+                stage.show();
+            }
+        }
     }
 
     @BeforeAll
@@ -67,8 +92,5 @@ class StartUpCtrlTest {
         Mockito.reset(server );
         Mockito.reset(mainCtrl);
     }
-    @Test
-    void createEvent() {
-        // make sure that Textfield of newEvent 1 can be adjusted
-    }
+
 }
