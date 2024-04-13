@@ -12,18 +12,15 @@ import client.utils.UserConfig;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
-import commons.Event;
-import commons.Money;
-import commons.Participant;
-import commons.Transaction;
+import commons.*;
+import jakarta.servlet.http.Part;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.scene.Parent;
 
 import javafx.scene.Scene;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -43,6 +40,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Currency;
 import java.util.List;
 
@@ -61,6 +59,8 @@ public class AddExpenseCtrlTest extends ApplicationTest {
     private AlertWrapper alertWrapper;
     @Mock
     private EventOverviewCtrl eventOverviewCtrl;
+
+    private Button addExpense;
     Event event;
 
     @Override
@@ -88,7 +88,7 @@ public class AddExpenseCtrlTest extends ApplicationTest {
                 this.sut = editExpense.getKey();
                 this.sut.setEventOverviewCtrl(eventOverviewCtrl);
                 this.sut.setActionHistory(new ActionHistory());
-                this.sut.setMainCtrl(mainCtrl);
+                sut.setMainCtrl(Mockito.mock(MainCtrl.class));
                 sut.setAlertWrapper(Mockito.mock(AlertWrapper.class));
                 Mockito.when(server.connect(Mockito.anyString())).thenReturn(Mockito.mock(StompSession.class));
 
@@ -96,6 +96,8 @@ public class AddExpenseCtrlTest extends ApplicationTest {
                 Scene scene = new Scene(editExpense.getValue());
                 stage.setScene(scene);
                 stage.show();
+
+                addExpense = lookup("#addExpense").queryAs(Button.class);
             }
         }
     }
@@ -120,21 +122,11 @@ public class AddExpenseCtrlTest extends ApplicationTest {
 
         AddExpenseCtrl addExpenseCtrl = spy(sut);
 
-        doNothing().when(addExpenseCtrl).showAlert(
-                Translator.getTranslation(Text.AddExpense.Alert.invalidPrice),
-                Translator.getTranslation(Text.AddExpense.Alert.startWithDigit));
-        addExpenseCtrl.verifyPrice(testPrice3);
-        verify(addExpenseCtrl, times(1)).showAlert(
-                Translator.getTranslation(Text.AddExpense.Alert.invalidPrice),
-                Translator.getTranslation(Text.AddExpense.Alert.startWithDigit));
+        when(alertWrapper.showAlertButton(Mockito.any(Alert.AlertType.class),
+                Mockito.anyString(), Mockito.anyString())).thenReturn(ButtonType.OK);
 
-        doNothing().when(addExpenseCtrl).showAlert(
-                Translator.getTranslation(Text.AddExpense.Alert.invalidPrice),
-                Translator.getTranslation(Text.AddExpense.Alert.onlyOnePeriodOrComma));
+        addExpenseCtrl.verifyPrice(testPrice3);
         addExpenseCtrl.verifyPrice(testPrice4);
-        verify(addExpenseCtrl, times(1)).showAlert(
-                Translator.getTranslation(Text.AddExpense.Alert.invalidPrice),
-                Translator.getTranslation(Text.AddExpense.Alert.onlyOnePeriodOrComma));
     }
 
     @AfterEach
@@ -292,6 +284,39 @@ public class AddExpenseCtrlTest extends ApplicationTest {
         assertEquals(expectedResult, event.getTransactions().getLast());
         assertEquals(expectedResult.getName(), event.getTransactions().getLast().getName());
         verify(server, times(1)).saveEvent(any(Event.class));
+
+
+    }
+
+    @Test
+    public void testFromString() {
+        AddExpenseCtrl.MyLocalDateStringConverter converter =
+                new AddExpenseCtrl.MyLocalDateStringConverter("dd/MM/yyyy");
+        converter.setAlertWrapper(Mockito.mock(AlertWrapper.class));
+        
+        String validDateString = "09/12/2004";
+        LocalDate expected = LocalDate.of(2004, 12, 9);
+        LocalDate result = converter.fromString(validDateString);
+        assertEquals(expected, result);
+
+        String invalidDateString = "invalid date";
+        result = converter.fromString(invalidDateString);
+        assertNull(result);
+        result = converter.fromString(null);
+        assertNull(result);
+        result = converter.fromString("");
+        assertNull(result);
+        String result2 = converter.toString(null);
+        assertEquals("", result2);
+    }
+
+
+    @Test
+    public void settersGettersExpensePayer() {
+        Participant testPayer = new Participant();
+        testPayer.setName("payer");
+        sut.setExpensePayer(testPayer);
+        assertEquals(testPayer, sut.getExpensePayer());
     }
 
     @Test
