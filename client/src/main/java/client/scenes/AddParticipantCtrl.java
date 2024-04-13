@@ -239,7 +239,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
     }
 
     private void overwriteParticipant() {
-        server.send("/topic/actionHistory", "Cleared Action history");
+        server.send("/topic/actionHistory", event);
         participantToOverwrite.setName(usernameTextField.getText());
         participantToOverwrite.setEmail(emailTextField.getText());
         participantToOverwrite.setIban(ibanTextField.getText());

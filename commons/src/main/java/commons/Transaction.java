@@ -33,6 +33,9 @@ public class Transaction {
     @ManyToOne
     private Tag tag;
 
+    private Long longPollingEventId; // for serialization
+
+
     /**
      * General purpose constructor.
      *
@@ -315,6 +318,24 @@ public class Transaction {
      */
     public void setEvent(Event event) {
         this.event = event;
+    }
+
+    /**
+     * getter for EventId
+     * @return the eventId
+     */
+    public Long getLongPollingEventId() {
+        return longPollingEventId;
+    }
+    /**
+     * setter for EventId
+     * This allows for the long-polling
+     * to work properly by knowing to which event
+     * the transaction belongs
+     * @param eventId the eventId to set
+     */
+    public void setLongPollingEventId(Long eventId) {
+        this.longPollingEventId = eventId;
     }
 
     /**

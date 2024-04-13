@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 import java.io.File;
 import java.io.IOException;
@@ -88,9 +89,9 @@ class TransactionCellControllerTest {
         ActionHistory actionHistory = sut.getActionHistory();
         assertEquals(0, event.getTransactions().size());
         actionHistory.undo();
-        assertEquals(1, event.getTransactions().size());
+        verify(server, times(1)).undoDeleteTransaction(any(Transaction.class));
         actionHistory.redo();
-        assertEquals(0, event.getTransactions().size());
+        verify(server, times(1)).removeTransaction(any(Transaction.class));
         assertThrows(NoRedoActionsLeftException.class, () -> sut.getActionHistory().redo());
     }
 
