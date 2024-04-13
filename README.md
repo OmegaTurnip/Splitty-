@@ -20,5 +20,10 @@ Whenever you update or delete a participant, it's going to clear the action hist
 
 In StartUpCtrl, you can right-click or press DELETE on an event to try and delete it.
 
-In AdminCtrl, double click on the eventName column cell to go to that Event page.
+In AdminCtrl, double-click on the eventName column cell to go to that Event page.
+
+In add/edit page, you can press enter on the combo check box to add participants to the transaction, and then use
+space bar to check and uncheck the selected participant whilst also using arrow keys to navigate.
+You can press enter on the currency combo box to change currency.
+You can press up/down while hovered over the payer box to choose payer.
 
