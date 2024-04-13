@@ -222,18 +222,19 @@ public class TransactionCellController {
 
         @Override
         public void undo() {
-            Transaction returnedE = server.saveTransaction(transaction);
+//            Transaction returnedE = server.saveTransaction(transaction);
+            Transaction returnedE = server.undoDeleteTransaction(transaction);
+            //Automatically adds to event thru longpolling
             transaction = returnedE;
-            event.addTransaction(returnedE);
-            server.saveEvent(event);
+//            server.saveEvent(event);
             mainCtrl.showEventOverview(event);
         }
 
         @Override
         public void redo() {
             server.removeTransaction(transaction);
-            event.deleteTransaction(transaction);
-            server.saveEvent(event);
+//            event.deleteTransaction(transaction);
+//            server.saveEvent(event);
             mainCtrl.showEventOverview(event);
         }
     }

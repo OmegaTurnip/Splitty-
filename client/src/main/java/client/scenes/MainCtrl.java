@@ -58,6 +58,8 @@ public class MainCtrl {
     private Scene debtPage;
     private DebtPageCtrl debtPageCtrl;
 
+    private boolean filterAdded;
+
     /**
      * @param overview the fx for the event overview page.
      * @param add the fx for the add participant page.
@@ -76,7 +78,8 @@ public class MainCtrl {
             Pair<EditEventNameCtrl, Parent> editName,
             Pair<AdminCtrl, Parent> adminPage,
             Pair<DebtPageCtrl, Parent> debtPage) {
-
+        
+        filterAdded = false;
         this.startUpCtrl = startUp.getKey();
         this.startUp = new Scene(startUp.getValue());
         this.startUp.getStylesheets().add(getClass()
@@ -159,13 +162,17 @@ public class MainCtrl {
         overviewCtrl.setEvent(server.getUpdatedEvent(event));
         primaryStage.setTitle("Splitty!");
         primaryStage.setScene(overview);
-        overview.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
-            if (e.getCode() == KeyCode.ESCAPE) {
-                overviewCtrl.getActionHistory().clear();
-                showStartUp();
-                e.consume();
-            }
-        });
+        if (!filterAdded) {
+            overview.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+                if (e.getCode() == KeyCode.ESCAPE) {
+                    overviewCtrl.getActionHistory().clear();
+                    showStartUp();
+                    e.consume();
+                }
+            });
+            filterAdded = true;
+        }
+
         overview.setOnKeyPressed(e -> {
             if (e.isControlDown() && e.getCode() == KeyCode.Z) {
                 overviewCtrl.undo();

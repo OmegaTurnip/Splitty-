@@ -627,4 +627,25 @@ public class ServerUtils {
     public void send(String dest, Object o) {
         session.send(dest, o);
     }
+
+    /**
+     * Undo delete transaction
+     * @param transaction the transaction to undo delete
+     * @return the transaction that is undone
+     */
+    public Transaction undoDeleteTransaction(Transaction transaction) {
+        Transaction returned = client
+                .target(server).path("/api/event/" + transaction.getEvent()
+                        .getId() + "/transactions/undoDelete")
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(transaction, APPLICATION_JSON),
+                        Transaction.class);
+        returned.setEvent(transaction.getEvent());
+        returned.getPayer().setEvent(transaction.getEvent());
+        for (Participant participant : returned.getParticipants()) {
+            participant.setEvent(transaction.getEvent());
+        }
+        return returned;
+    }
 }
