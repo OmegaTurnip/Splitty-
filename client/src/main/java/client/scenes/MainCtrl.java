@@ -156,7 +156,8 @@ public class MainCtrl {
      * @param event the event to show.
      */
     public void showEventOverview(Event event) {
-        overviewCtrl.setEvent(server.getUpdatedEvent(event));
+        Event dbEvent = server.getUpdatedEvent(event);
+        overviewCtrl.setEvent(dbEvent);
         primaryStage.setTitle("Splitty!");
         primaryStage.setScene(overview);
         overview.addEventFilter(KeyEvent.KEY_PRESSED, e -> {

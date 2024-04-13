@@ -5,6 +5,7 @@ import client.history.ActionHistory;
 import client.language.Language;
 import client.language.Text;
 import client.utils.UserConfig;
+import commons.ParticipantValuePair;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -31,10 +32,9 @@ import javafx.scene.text.Font;
 import javafx.util.StringConverter;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
-import java.util.Currency;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 
@@ -92,6 +92,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
 
     private TransactionCellController transactionCellController;
     private ActionHistory actionHistory;
+    private Map<Participant, BigDecimal> participantBalances;
 
     /**
      * Initializes the controller
@@ -120,6 +121,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         fetchLanguages();
+        participantBalances = new HashMap<>();
         participantsListView.setCellFactory(param ->
                 new ParticipantCellFactory());
         expensesListView.setCellFactory(param ->
@@ -236,6 +238,8 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                         server.getSumOfAllExpenses(event,
                                 currency).getAmount().toString() +
                         " " + currency.getCurrencyCode());
+                setParticipantBalances(
+                        server.getBalanceOfParticipants(event, currency));
                 ObservableList<Participant> observableParticipants =
                         FXCollections.observableArrayList(
                                 event.getParticipants());
@@ -576,7 +580,12 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                     }
                 }
                 ParticipantCellController controller = loader.getController();
-                controller.setParticipantCellLabelText(item.getName());
+                String participantInfo = item.getName();
+                if (participantBalances.containsKey(item)) {
+                    participantInfo += " has paid " +
+                            participantBalances.get(item);
+                }
+                controller.setParticipantCellLabelText(participantInfo);
                 controller.setEvent(event);
                 controller.setParticipant(item);
                 controller.setServer(server);
@@ -590,6 +599,17 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         }
     }
 
+    /**
+     * Makes a map out of the balances for participants
+     * @param participantValuePairSet the set of participantvaluepairs
+     */
+    public void setParticipantBalances(Set<ParticipantValuePair>
+                                               participantValuePairSet) {
+        participantBalances.clear();
+        for (ParticipantValuePair p : participantValuePairSet) {
+            participantBalances.put(p.participant(), p.money().getAmount());
+        }
+    }
     private class TransactionCellFactory extends ListCell<Transaction> {
 
         private FXMLLoader loader;
