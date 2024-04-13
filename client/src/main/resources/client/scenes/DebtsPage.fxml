@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
@@ -19,25 +20,25 @@
                   </Menu>
               </menus>
             </MenuBar>
-            <VBox prefHeight="200.0" prefWidth="100.0">
-               <children>
-                  <BorderPane prefHeight="894.0" prefWidth="400.0">
-                     <top>
-                        <Label fx:id="openDebtsLabel" text="Open Debts" styleClass="title-transparent-bg" BorderPane.alignment="CENTER">
-                           <font>
-                              <Font name="Arial" size="24.0" />
-                           </font>
-                           <BorderPane.margin>
-                              <Insets bottom="20.0" top="20.0" />
-                           </BorderPane.margin>
-                        </Label>
-                     </top>
-                     <bottom>
-                        <Accordion fx:id="openDebtsList" BorderPane.alignment="CENTER"/>
-                     </bottom>
-                  </BorderPane>
-               </children>
-            </VBox>
+             <VBox alignment="TOP_CENTER" spacing="20.0">
+                 <padding>
+                     <Insets top="25.0" />
+                 </padding>
+                 <Label fx:id="openDebtsLabel" styleClass="title-transparent-bg" text="Open Debts">
+                    <font>
+                        <Font name="Arial" size="24.0" />
+                    </font>
+                 </Label>
+                 <Label fx:id="noOpenDebtsLabel" styleClass="title" text="There are no open debts currently.">
+                  <font>
+                     <Font name="Arial" size="18.0" />
+                  </font></Label>
+                 <Accordion fx:id="openDebtsList" VBox.vgrow="ALWAYS">
+                    <cursor>
+                        <Cursor fx:constant="HAND" />
+                    </cursor>
+                 </Accordion>
+             </VBox>
          </children>
       </VBox>
    </children>

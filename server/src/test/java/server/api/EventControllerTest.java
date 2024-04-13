@@ -240,7 +240,7 @@ public class EventControllerTest {
         ResponseEntity<Set<Debt>> intResult = ResponseEntity.badRequest().build();
         assertEquals(sut.getSimplification(eventId, currency2), intResult);
 
-        ResponseEntity<Set<Debt>> intResult2 = ResponseEntity.notFound().build();
+        ResponseEntity<Set<Debt>> intResult2 = ResponseEntity.ok(new HashSet<>());
         assertEquals(sut.getSimplification(eventId, currency), intResult2);
         when(event.getParticipants()).thenReturn(participants);
 

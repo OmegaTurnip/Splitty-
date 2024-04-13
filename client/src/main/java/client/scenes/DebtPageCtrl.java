@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.language.Language;
+import client.language.Text;
 import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
@@ -16,7 +17,6 @@ import javafx.scene.layout.AnchorPane;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.Currency;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -41,6 +41,8 @@ public class DebtPageCtrl extends TextPage
     private Accordion openDebtsList;
     @FXML
     private Label openDebtsLabel;
+    @FXML
+    private Label noOpenDebtsLabel;
     private Event event;
     private MainCtrl mainCtrl;
     private ServerUtils server;
@@ -73,18 +75,41 @@ public class DebtPageCtrl extends TextPage
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         fetchLanguages();
+        server.registerForMessages("/topic/admin", Event.class, e -> {
+            Platform.runLater(() -> {
+                if (event.equals(e)) event = e;
+                System.out.println("Received event: " + event.getEventName());
+                refresh();
+            });
+        });
+        server.registerForMessages("/topic/admin/delete", Event.class, e -> {
+            if (event.equals(e)) {
+                Platform.runLater(() -> {
+                    mainCtrl.showStartUp();
+                    alertWrapper.showAlert(Alert.AlertType.ERROR,
+                            Translator.getTranslation(
+                                    Text.EventOverview.Alert.deletedEventTitle),
+                            Translator.getTranslation(
+                                    Text.EventOverview.Alert.
+                                            deletedEventContent)
+                    );
+                });
+            }
+        });
     }
 
     /**
      * Refreshes the contents of the page
      */
     public void refresh() {
+
         Set<Debt> debts = server
                 .simplifyDebts(event, UserConfig.get().getPreferredCurrency());
         openDebtsList.getPanes().clear();
         for (Debt debt : debts) {
             populateAccordion(event, debt);
         }
+        noOpenDebtsLabel.setVisible(debts.isEmpty());
         refreshText();
     }
 
@@ -127,7 +152,6 @@ public class DebtPageCtrl extends TextPage
                         debt.to().getBic();
                 info.setText(data);
             }
-
             anchorPane.getChildren().add(info);
             anchorPane.getChildren().add(settle);
 
@@ -160,8 +184,7 @@ public class DebtPageCtrl extends TextPage
                 String payment = amount.getText();
                 if (verifyPrice(payment, alertWrapper)) {
                     Money paymentAmount = new Money(new BigDecimal(payment),
-                            Currency.getInstance(UserConfig.get()
-                                    .getPreferredCurrency().getCurrencyCode()));
+                            UserConfig.get().getPreferredCurrency());
                     if (isValidPayoffAmount(debt.amount(), paymentAmount,
                             startUpDate)) {
                         addPayoff(event, debt.from(), paymentAmount, debt.to(),
@@ -169,11 +192,11 @@ public class DebtPageCtrl extends TextPage
                         doNotAllowClose.set(false);
                     } else {
                         alertWrapper.showAlert(Alert.AlertType.ERROR,
-                                "Not valid", "Not vailid");
+                                "Invalid payoff amount",
+                                "You cannot pay off more money than you owe.");
                         return null;
                     }
                 }
-                return null;
             }
             return null;
         });
@@ -227,12 +250,12 @@ public class DebtPageCtrl extends TextPage
      * @param receiver The receiver of the payoff.
      * @param date     The date of the payoff.
      *                 SHOULD BE THE DATE OF THE PAGE LOAD.
-     * @return The resulting event.
      */
-    public Event addPayoff(Event event, Participant payer, Money amount,
-                           Participant receiver, LocalDate date) {
+    public void addPayoff(Event event, Participant payer, Money amount,
+                          Participant receiver, LocalDate date) {
         Transaction t = event.registerPayoff(payer, amount, receiver, date);
-        return server.saveEvent(event);
+        server.saveEvent(event);
+
     }
 
     /**
