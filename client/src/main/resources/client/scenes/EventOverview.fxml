@@ -16,19 +16,20 @@
     </MenuBar>
     <HBox minHeight="253.0" prefHeight="350.0">
         <VBox prefHeight="200.0" prefWidth="288.0" spacing="15.0" HBox.hgrow="ALWAYS">
-         <HBox alignment="CENTER_LEFT" spacing="20.0">
-            <children>
-                  <Label fx:id="eventNameLabel" alignment="CENTER" contentDisplay="CENTER" styleClass="title" text="Event Name">
-                      <font>
-                          <Font name="Arial" size="30.0" />
-                      </font>
-                  </Label>
-                    <Button mnemonicParsing="false" onAction="#editName" prefHeight="27.0" prefWidth="38.0" styleClass="button-edit-normal">
-                  <cursor>
-                     <Cursor fx:constant="HAND" />
-                  </cursor></Button>
-            </children>
-         </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="20.0">
+                <Label fx:id="eventNameLabel" alignment="CENTER" contentDisplay="CENTER" styleClass="title"
+                       text="Event Name">
+                    <font>
+                        <Font name="Arial" size="30.0"/>
+                    </font>
+                </Label>
+                <Button mnemonicParsing="false" onAction="#editName" prefHeight="27.0" prefWidth="38.0"
+                        styleClass="button-edit-normal">
+                    <cursor>
+                        <Cursor fx:constant="HAND"/>
+                    </cursor>
+                </Button>
+            </HBox>
              <Button fx:id="sendInviteButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showInviteCode" prefHeight="40.0" styleClass="blackButton" text="Send Invite">
             <font>
                <Font name="Arial" size="18.0" />
@@ -43,6 +44,11 @@
             <cursor>
                <Cursor fx:constant="HAND" />
             </cursor></Button>
+         <Label fx:id="sumOfExpenses" styleClass="title" text="Sum of expenses:">
+            <font>
+               <Font size="15.0" />
+            </font>
+         </Label>
           <HBox alignment="CENTER_LEFT" spacing="15.0" VBox.vgrow="ALWAYS">
              <Label fx:id="expensesLabel" alignment="CENTER" contentDisplay="CENTER" styleClass="title" text="Expenses" textAlignment="CENTER">
                  <font>

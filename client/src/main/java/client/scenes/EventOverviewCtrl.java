@@ -4,6 +4,7 @@ package client.scenes;
 import client.history.ActionHistory;
 import client.language.Language;
 import client.language.Text;
+import client.utils.UserConfig;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -31,6 +32,7 @@ import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Currency;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
@@ -54,6 +56,8 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     private Button addParticipantButton;
     @FXML
     private Button addExpenseButton;
+    @FXML
+    private Label sumOfExpenses;
     @FXML
     private ComboBox<Object> expensesDropDown;
     @FXML
@@ -227,6 +231,11 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         Platform.runLater(() -> {
             refreshText();
             if (event != null) {
+                Currency currency = UserConfig.get().getPreferredCurrency();
+                sumOfExpenses.setText("Sum of expenses: " +
+                        server.getSumOfAllExpenses(event,
+                                currency).getAmount().toString() +
+                        " " + currency.getCurrencyCode());
                 ObservableList<Participant> observableParticipants =
                         FXCollections.observableArrayList(
                                 event.getParticipants());
@@ -243,7 +252,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 expensesDropDown.setConverter(new ParticipantStringConverter());
                 getExpenses();
             }
-
         });
 
 
