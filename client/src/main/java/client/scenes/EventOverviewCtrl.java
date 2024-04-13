@@ -315,11 +315,13 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
      * @return Transaction that is added
      */
     public Transaction updateTransactions(Transaction transaction) {
-        transaction.setEvent(event);
-        if (event.getTransactions().isEmpty() ||
-                !event.getTransactions().getLast().getTransactionId()
-                        .equals(transaction.getTransactionId())) {
-            event.addTransaction(transaction);
+        if (transaction.getLongPollingEventId().equals(event.getId())){
+            transaction.setEvent(event);
+            if(event.getTransactions().isEmpty() ||
+                    !event.getTransactions().getLast().getTransactionId()
+                            .equals(transaction.getTransactionId())){
+                event.addTransaction(transaction);
+            }
         }
         getExpenses();
         return transaction;
