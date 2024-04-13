@@ -218,6 +218,7 @@ public class TransactionController {
                     transaction.getTag().getTagId()
             ));
         }
+        transaction.setLongPollingEventId(eventId);
         Transaction response = repo.save(transaction);
         listeners.forEach((k, l) -> l.accept(response));
         return ResponseEntity.ok(response);

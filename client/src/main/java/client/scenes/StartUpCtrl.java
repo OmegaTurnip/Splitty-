@@ -141,7 +141,6 @@ public class StartUpCtrl extends TextPage implements Initializable {
             System.out.println("Event codes are " +
                     "empty so it throws 404 exception");
         }
-
     }
 
     /**
@@ -372,7 +371,14 @@ public class StartUpCtrl extends TextPage implements Initializable {
         if (joinEvent1 != null) return joinEvent1.getText();
         return null;
     }
-
+    
+    /**
+     * Setter for yourEvents
+     * @param yourEvents The list view of your events
+     */
+    public void setYourEvents(ListView<Event> yourEvents) {
+        this.yourEvents = yourEvents;
+    }
 
     /**
      * Refreshes the page and updates the list view.
@@ -495,6 +501,8 @@ public class StartUpCtrl extends TextPage implements Initializable {
     public void setServer(ServerUtils server) {
         this.server = server;
     }
+
+
 
     private class EventListCell extends ListCell<Event> {
         private final StackPane stackPane = new StackPane();
