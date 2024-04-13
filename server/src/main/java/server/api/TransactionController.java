@@ -174,7 +174,7 @@ public class TransactionController {
         if(updateTransaction == null || event == null) {
             return ResponseEntity.notFound().build();
         }
-        if (!transaction.isValid()
+        if (!transaction.validate()
                 || !(transaction.getEvent().getId().equals(eventId))) {
             return ResponseEntity.badRequest().build();
         }
