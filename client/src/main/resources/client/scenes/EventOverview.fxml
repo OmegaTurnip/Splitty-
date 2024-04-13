@@ -14,36 +14,41 @@
             <MenuItem fx:id="returnToOverview" mnemonicParsing="false" onAction="#returnToOverview" text="Go to overview of events" />
         </Menu>
     </MenuBar>
-    <HBox minHeight="253.0" prefHeight="350.0">
-        <VBox prefHeight="200.0" prefWidth="288.0" spacing="15.0" HBox.hgrow="ALWAYS">
-         <HBox alignment="CENTER_LEFT" spacing="20.0">
-            <children>
-                  <Label fx:id="eventNameLabel" alignment="CENTER" contentDisplay="CENTER" styleClass="title" text="Event Name">
-                      <font>
-                          <Font name="Arial" size="30.0" />
-                      </font>
-                  </Label>
-                    <Button mnemonicParsing="false" onAction="#editName" prefHeight="27.0" prefWidth="38.0" styleClass="button-edit-normal">
-                  <cursor>
-                     <Cursor fx:constant="HAND" />
-                  </cursor></Button>
-            </children>
-         </HBox>
-             <Button fx:id="sendInviteButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showInviteCode" prefHeight="40.0" styleClass="blackButton" text="Send Invite">
+    <HBox minHeight="265.0" prefHeight="350.0">
+        <VBox prefHeight="200.0" prefWidth="288.0" spacing="10.0" HBox.hgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <Label fx:id="eventNameLabel" alignment="CENTER" contentDisplay="CENTER" styleClass="title" text="Event Name">
+                    <font>
+                        <Font name="Arial" size="30.0" />
+                    </font>
+                </Label>
+                <Button mnemonicParsing="false" onAction="#editName" prefHeight="27.0" prefWidth="38.0" styleClass="button-edit-normal">
+                    <cursor>
+                        <Cursor fx:constant="HAND" />
+                    </cursor>
+                </Button>
+            </HBox>
+             <Button fx:id="sendInviteButton" maxWidth="1.7976931348623157E308" minHeight="40.0" mnemonicParsing="false" onAction="#showInviteCode" prefHeight="40.0" styleClass="blackButton" text="Send Invite">
             <font>
                <Font name="Arial" size="18.0" />
             </font>
             <cursor>
                <Cursor fx:constant="HAND" />
-            </cursor></Button>
-             <Button fx:id="settleDebtsButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showSettleDebtsPage" prefHeight="40.0" styleClass="blackButton" text="Settle Debts">
+            </cursor>
+            <VBox.margin>
+               <Insets top="5.0" />
+            </VBox.margin></Button>
+             <Button fx:id="settleDebtsButton" maxWidth="1.7976931348623157E308" minHeight="40.0" mnemonicParsing="false" onAction="#showSettleDebtsPage" prefHeight="40.0" styleClass="blackButton" text="Settle Debts">
             <font>
                <Font name="Arial" size="18.0" />
             </font>
             <cursor>
                <Cursor fx:constant="HAND" />
-            </cursor></Button>
-          <HBox alignment="CENTER_LEFT" spacing="15.0" VBox.vgrow="ALWAYS">
+            </cursor>
+            <VBox.margin>
+               <Insets top="5.0" />
+            </VBox.margin></Button>
+          <HBox alignment="CENTER_LEFT" spacing="10.0" VBox.vgrow="ALWAYS">
              <Label fx:id="expensesLabel" alignment="CENTER" contentDisplay="CENTER" styleClass="title" text="Expenses" textAlignment="CENTER">
                  <font>
                      <Font name="Arial" size="23.0" />
@@ -51,15 +56,20 @@
              </Label>
               <Button fx:id="addExpenseButton" mnemonicParsing="false" onAction="#addExpense" prefHeight="27.0" prefWidth="38.0" styleClass="button-add" />
             <padding>
-               <Insets bottom="15.0" right="15.0" top="15.0" />
+               <Insets right="15.0" top="15.0" />
             </padding>
           </HBox>
+         <Label fx:id="sumOfExpenses" styleClass="text" text="Sum of expenses:">
+            <font>
+               <Font name="Arial" size="16.0" />
+            </font>
+         </Label>
          <padding>
-            <Insets left="20.0" right="20.0" top="20.0" />
+            <Insets bottom="12.0" left="20.0" right="20.0" top="20.0" />
          </padding>
         </VBox>
         <VBox minHeight="-Infinity" prefHeight="125.0" prefWidth="310.0" HBox.hgrow="ALWAYS">
-         <HBox prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+         <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
             <children>
                    <Label fx:id="participantsLabel" alignment="CENTER" styleClass="title" text="Participants">
                        <font>
@@ -96,7 +106,7 @@
             </cursor></ComboBox>
       </children>
       <padding>
-         <Insets left="21.0" right="20.0" />
+         <Insets left="20.0" right="20.0" />
       </padding>
    </HBox>
     <HBox fx:id="buttonBar" alignment="CENTER" minHeight="55.0" nodeOrientation="LEFT_TO_RIGHT" spacing="15.0">

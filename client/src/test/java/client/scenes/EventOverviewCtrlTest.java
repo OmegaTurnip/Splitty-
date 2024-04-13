@@ -146,6 +146,7 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         transaction.setTransactionId(1L);
         equalTransaction.setTransactionId(1L);
         assertEquals(transaction, equalTransaction);
+        when(server.getSumOfAllExpenses(any(Event.class), any(Currency.class))).thenReturn(amount);
         Thread.sleep(500);
         Transaction transaction1 = sut.getExpensesListView().getItems().getFirst();
         assertEquals(transaction1, transaction);

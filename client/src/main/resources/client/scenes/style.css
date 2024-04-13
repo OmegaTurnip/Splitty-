@@ -186,6 +186,9 @@
 /*.list-view:focused {*/
 /*    -fx-background-color: radial-gradient(center 96.2% 89.9%, radius 100%,  rgb(184, 154, 225)  0%, rgb(51, 21, 117) 92%);*/
 /*}*/
+.text {
+    -fx-text-fill: #fefdfd;
+}
 .toggle-button {
     -fx-background-color: #e0ddf2;
     -fx-font-size: 16px;

@@ -476,7 +476,7 @@ public class ServerUtils {
                 .path("api/event/" + event.getId() + "/balance/" + currency)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<Set<ParticipantValuePair>>() {});
+                .get(new GenericType<>() {});
     }
 
     /**
