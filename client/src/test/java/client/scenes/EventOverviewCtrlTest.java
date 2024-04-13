@@ -29,8 +29,6 @@ import org.mockito.*;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.testfx.framework.junit5.ApplicationTest;
 
-import org.testfx.util.WaitForAsyncUtils;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
@@ -110,7 +108,7 @@ public class EventOverviewCtrlTest extends ApplicationTest {
     }
 
     @Test
-    void testAddExpense()  {
+    void testAddExpense() throws InterruptedException {
         sut.setServer(server);
         UserConfig mockUserconfig = mock(UserConfig.class);
         UserConfig.dependencyInject(mockUserconfig);
@@ -148,7 +146,7 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         transaction.setTransactionId(1L);
         equalTransaction.setTransactionId(1L);
         assertEquals(transaction, equalTransaction);
-        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(500);
         Transaction transaction1 = sut.getExpensesListView().getItems().getFirst();
         assertEquals(transaction1, transaction);
 
@@ -166,7 +164,7 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         Transaction transaction2 = addExpenseCtrlMock.getExpense();
         server.saveEvent(event);
         sut.refresh();
-        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(500);
         List<Transaction> ExspenseListView = sut.getExpensesListView().getItems();
         Transaction equalTransaction2 = new Transaction(participant1, name.getText(), amount, participantList,event, null, null, false);
         transaction2.setTransactionId(2L);
@@ -182,10 +180,10 @@ public class EventOverviewCtrlTest extends ApplicationTest {
     }
 
     @Test
-    public void testShowInviteCodeCopy() {
+    public void testShowInviteCodeCopy() throws InterruptedException {
         sut.setEvent(event);
         Platform.runLater(() -> sut.showInviteCode());
-        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(500);
         Button copyButton = lookup(Translator.getTranslation(Text.EditName.copy)).queryButton();
         clickOn(copyButton);
         verify(mainCtrl, times(1)).showEventOverview(event);
@@ -193,10 +191,10 @@ public class EventOverviewCtrlTest extends ApplicationTest {
     }
 
     @Test
-    public void testShowInviteCodeCancel() {
+    public void testShowInviteCodeCancel() throws InterruptedException {
         sut.setEvent(event);
         Platform.runLater(() -> sut.showInviteCode());
-        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(500);
         Button cancelButton = lookup(Translator.getTranslation(Text.EditName.cancel)).queryButton();
         clickOn(cancelButton);
         verify(mainCtrl, times(2)).showEventOverview(event);

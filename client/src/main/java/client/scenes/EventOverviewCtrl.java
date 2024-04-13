@@ -64,10 +64,13 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     private ToggleGroup selectExpenses;
     @FXML
     private ToggleButton allExpensesButton;
+    private AtomicReference<String> allExpensesStyle;
     @FXML
     private ToggleButton includingExpensesButton;
+    private AtomicReference<String> includingExpensesStyle;
     @FXML
     private ToggleButton fromExpensesButton;
+    private AtomicReference<String> fromExpensesStyle;
     @FXML
     private HBox buttonBar;
     @FXML
@@ -149,28 +152,24 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     }
 
     private void toggleButtonHover() {
-        buttonBar.getChildren().forEach(node -> {
-            if (node instanceof ToggleButton) {
-                node.focusedProperty().addListener((obs, oldVal, newVal) -> {
-                    if (!newVal) {
-                        ((ToggleButton) node).setSelected(false);
-                    }
-                });
-            }
+        fromExpensesStyle = new AtomicReference<>();
+        includingExpensesStyle = new AtomicReference<>();
+        allExpensesStyle = new AtomicReference<>();
+
+        toggleButtonListener(allExpensesButton, allExpensesStyle);
+        toggleButtonListener(fromExpensesButton, fromExpensesStyle);
+        toggleButtonListener(includingExpensesButton, includingExpensesStyle);
+    }
+
+    private void toggleButtonListener(ToggleButton toggleButton,
+                                      AtomicReference<String> previousStyle) {
+        toggleButton.setOnMouseEntered(event -> {
+            previousStyle.set(toggleButton.getStyle());
+            toggleButton.setStyle("-fx-background-color: #CFBDFF;");
         });
-
-        for (Node node : buttonBar.getChildren()) {
-            AtomicReference<String> previousStyle = new AtomicReference<>();
-            ToggleButton toggleButton = (ToggleButton) node;
-            toggleButton.setOnMouseEntered(event -> {
-                previousStyle.set(toggleButton.getStyle());
-                toggleButton.setStyle("-fx-background-color: #CFBDFF;");
-            });
-
-            toggleButton.setOnMouseExited(event -> {
-                toggleButton.setStyle(previousStyle.get());
-            });
-        }
+        toggleButton.setOnMouseExited(event -> {
+            toggleButton.setStyle(previousStyle.get());
+        });
     }
 
     /**
@@ -396,6 +395,9 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
             String choice = selected.getId();
             selected.setStyle("-fx-background-color: #331575;" +
                     "-fx-text-fill: #fefdfd");
+            fromExpensesStyle.set(fromExpensesButton.getStyle());
+            allExpensesStyle.set(allExpensesButton.getStyle());
+            includingExpensesStyle.set(includingExpensesButton.getStyle());
             for (Node node : buttonBar.getChildren()) {
                 ToggleButton button = (ToggleButton) node;
                 if (button != selected) {
@@ -446,9 +448,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                     for (Participant p : transaction.getParticipants()) {
                         if (p.equals(participant)) {
                             transactionsParticipant.add(transaction);
-                        }
-                        if (transaction.getPayer().equals(participant)) {
-                            transactionsPayer.add(transaction);
                         }
                     }
                 }
@@ -654,13 +653,13 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 content.putString(event.getInviteCode());
                 clipboard.setContent(content);
                 mainCtrl.showEventOverview(event);
-            }
-            return null;
+            } return null;
         });
         dialog.setResultConverter(buttonType -> {
             if (buttonType == cancelButtonType) {
                 mainCtrl.showEventOverview(event);
-            } return null;
+            }
+            return null;
         });
         dialog.showAndWait();
     }
