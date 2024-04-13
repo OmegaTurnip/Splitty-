@@ -18,4 +18,7 @@ Long Polling is done on the EventOverviewCtrl for adding/deleting expenses. regi
 
 Whenever you update or delete a participant, it's going to clear the action history of all users. This is to avoid null-pointer bugs, but also to prevent the reverting of changes to participant when you redo/undo expenses. The alternative solution is to add undo/redo functionality to participants but this strays from the rubric.
 
+In StartUpCtrl, you can right-click or press DELETE on an event to try and delete it.
+
+In AdminCtrl, double click on the eventName column cell to go to that Event page.
 

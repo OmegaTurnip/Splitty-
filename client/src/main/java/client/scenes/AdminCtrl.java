@@ -71,6 +71,78 @@ public class AdminCtrl extends TextPage implements Initializable {
     private String password;
 
     /**
+     * Initializes the {@code AdminCtrl}
+     * @param location
+     * The location used to resolve relative paths for the root object, or
+     * {@code null} if the location is not known.
+     *
+     * @param resources
+     * The resources used to localize the root object, or {@code null} if
+     * the root object was not localized.
+     */
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        fetchLanguages();
+        rto.setOnAction(event -> mainCtrl.showStartUp());
+        restoreEventBtn.setVisible(false);
+        restoreEventBtn.setManaged(false);
+        restoreEventChoiceBox.setVisible(false);
+        restoreEventChoiceBox.setManaged(false);
+        eventsTable.setOnKeyPressed(event -> {
+            switch(event.getCode()) {
+                case DELETE:
+                    deleteEvent();
+                    break;
+            }
+        });
+        registerForNewEvent();
+        eventName.setCellValueFactory(
+                new PropertyValueFactory<Event, String>("eventName"));
+        setOnClickToShowEvent();
+        creationDate.setCellValueFactory(
+                new PropertyValueFactory<Event, LocalDate>(
+                        "eventCreationDate"));
+        lastActivity.setCellValueFactory(
+                new PropertyValueFactory<Event, LocalDateTime>("lastActivity"));
+//        refresh();
+
+    }
+
+    private void setOnClickToShowEvent() {
+        eventName.setCellFactory(col -> {
+            return new TableCell<Event, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        setText(item);
+                        setOnMouseClicked(e -> {
+                            if (!isEmpty()) {
+                                Event event = getTableView()
+                                        .getItems().get(getIndex());
+                                if (event != null) {
+                                    mainCtrl.showEventOverview(event);
+                                }
+                            }
+                        });
+                    }
+                }
+            };
+        });
+    }
+
+    private void registerForNewEvent() {
+        server.registerForMessages("/topic/admin", Event.class, e -> {
+            events.put(e.getId(), e);
+            System.out.println("Received event: " + e.getEventName());
+            refresh();
+        });
+    }
+
+    /**
      * Constructor
      * @param server the server.
      * @param mainCtrl the main controller.
@@ -336,50 +408,7 @@ public class AdminCtrl extends TextPage implements Initializable {
 //    }
 
 
-    /**
-     * Initializes the {@code AdminCtrl}
-     * @param location
-     * The location used to resolve relative paths for the root object, or
-     * {@code null} if the location is not known.
-     *
-     * @param resources
-     * The resources used to localize the root object, or {@code null} if
-     * the root object was not localized.
-     */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        fetchLanguages();
-        rto.setOnAction(event -> mainCtrl.showStartUp());
-        restoreEventBtn.setVisible(false);
-        restoreEventBtn.setManaged(false);
-        restoreEventChoiceBox.setVisible(false);
-        restoreEventChoiceBox.setManaged(false);
 
-        eventsTable.setOnKeyPressed(event -> {
-            switch(event.getCode()) {
-                case DELETE:
-                    deleteEvent();
-                    break;
-            }
-        });
-
-//        events = server.getAllEvents(password);
-
-        server.registerForMessages("/topic/admin", Event.class, e -> {
-            events.put(e.getId(), e);
-            System.out.println("Received event: " + e.getEventName());
-            refresh();
-        });
-        eventName.setCellValueFactory(
-                new PropertyValueFactory<Event, String>("eventName"));
-        creationDate.setCellValueFactory(
-                new PropertyValueFactory<Event, LocalDate>(
-                        "eventCreationDate"));
-        lastActivity.setCellValueFactory(
-                new PropertyValueFactory<Event, LocalDateTime>("lastActivity"));
-//        refresh();
-
-    }
     /**
      * Refreshes the contents of the admin page
      */
