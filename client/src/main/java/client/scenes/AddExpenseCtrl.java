@@ -536,7 +536,6 @@ public class AddExpenseCtrl extends TextPage
             expenseName.clear();
             price.clear();
             date.setValue(startUpDate);
-//            date.setValue(LocalDate.now());
         }
         System.out.println("Page has been refreshed!");
     }
