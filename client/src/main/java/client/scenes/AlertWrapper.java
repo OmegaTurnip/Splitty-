@@ -3,6 +3,7 @@ package client.scenes;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 
 public class AlertWrapper {
     /**
@@ -36,7 +37,9 @@ public class AlertWrapper {
             , String title, String content) throws RuntimeException{
         Alert alert = new Alert(type);
         alert.setTitle(title);
-        alert.setContentText(content);
+        Label label = new Label(content);
+        label.setWrapText(true);
+        alert.getDialogPane().setContent(label);
         var result = alert.showAndWait();
         if (result.isEmpty()){
             throw new RuntimeException();
