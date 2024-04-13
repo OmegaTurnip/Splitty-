@@ -7,6 +7,7 @@ import client.utils.ServerUtils;
 import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.*;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -15,10 +16,13 @@ import javafx.scene.layout.AnchorPane;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.Currency;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class DebtPageCtrl extends TextPage implements Initializable {
+public class DebtPageCtrl extends TextPage
+        implements Initializable, PriceHandler {
 
     /*
      * ServerUtils:
@@ -41,10 +45,12 @@ public class DebtPageCtrl extends TextPage implements Initializable {
     private MainCtrl mainCtrl;
     private ServerUtils server;
     private AlertWrapper alertWrapper;
+    private LocalDate startUpDate;
 
     /**
      * Initializes the controller
-     * @param server the serverUtils
+     *
+     * @param server   the serverUtils
      * @param mainCtrl the mainctrl
      */
     @Inject
@@ -56,13 +62,13 @@ public class DebtPageCtrl extends TextPage implements Initializable {
 
     /**
      * Initialise the page.
-     * @param location
-     * The location used to resolve relative paths for the root object, or
-     * {@code null} if the location is not known.
      *
-     * @param resources
-     * The resources used to localize the root object, or {@code null} if
-     * the root object was not localized.
+     * @param location  The location used to resolve relative paths
+     *                  for the root object, or
+     *                  {@code null} if the location is not known.
+     * @param resources The resources used to localize the root
+     *                  object, or {@code null} if
+     *                  the root object was not localized.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -76,7 +82,7 @@ public class DebtPageCtrl extends TextPage implements Initializable {
         Set<Debt> debts = server
                 .simplifyDebts(event, UserConfig.get().getPreferredCurrency());
         openDebtsList.getPanes().clear();
-        for(Debt debt : debts) {
+        for (Debt debt : debts) {
             populateAccordion(event, debt);
         }
         refreshText();
@@ -93,13 +99,13 @@ public class DebtPageCtrl extends TextPage implements Initializable {
 
     /**
      * Populates the accordion with a debt
+     *
      * @param event the event
-     * @param debt the debt
+     * @param debt  the debt
      */
-    @SuppressWarnings("checkstyle:MethodLength")
     private void populateAccordion(Event event, Debt debt) {
         if (!debt.from().getName().equals(debt.to().getName())) {
-            String title = String.format("%s: %.2f %s => %s",
+            String title = String.format("%s owes %.2f %s to %s",
                     debt.from().getName(),
                     debt.amount().getAmount(),
                     debt.amount().getCurrency(),
@@ -108,43 +114,76 @@ public class DebtPageCtrl extends TextPage implements Initializable {
             openDebtsList.getPanes().add(tp);
             AnchorPane anchorPane = new AnchorPane();
             Label info = new Label();
-            Button mark = new Button();
-            mark.setVisible(true);
-            mark.setText("Settle debt");
-            mark.setOnAction(x ->
-            {
-                addPayoff(event, debt.from(), debt.amount(),
-                        debt.to(), mainCtrl.getStartUpDate());
-                mark.setText("Settled");
-            });
-            if (debt.to().getBic()==null ||
-                    debt.to().getIban() == null) {
+            Button settle = new Button();
+            settle.setVisible(true);
+            settle.setText("Settle debt");
+            settle.setOnAction(x -> payOff(event, debt, settle));
+            if (debt.to().getBic().isEmpty() ||
+                    debt.to().getIban().isEmpty()) {
                 info.setText("Payment instructions unavailable");
             } else {
                 String data = debt.to().getName() + "\nIBAN: " +
                         debt.to().getIban() + "\nBIC: " +
                         debt.to().getBic();
-
                 info.setText(data);
-
             }
 
             anchorPane.getChildren().add(info);
-            anchorPane.getChildren().add(mark);
+            anchorPane.getChildren().add(settle);
 
             anchorPane.setTopAnchor(info, 10.0);
             anchorPane.setLeftAnchor(info, 10.0);
 
-            anchorPane.setTopAnchor(mark,
+            anchorPane.setTopAnchor(settle,
                     AnchorPane.getTopAnchor(info) +
                             info.getPrefHeight() + 30.0);
-            anchorPane.setLeftAnchor(mark,
+            anchorPane.setLeftAnchor(settle,
                     AnchorPane.getLeftAnchor(info) +
                             info.getPrefWidth() + 300.0);
             tp.setContent(anchorPane);
         }
     }
 
+    private void payOff(Event event, Debt debt, Button mark) {
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Money transfer");
+        ButtonType settleTransfer = new ButtonType("Settle transfer",
+                ButtonBar.ButtonData.APPLY);
+        dialog.getDialogPane().getButtonTypes()
+                .addAll(ButtonType.CANCEL, settleTransfer);
+        TextField amount = new TextField();
+        amount.setText(debt.amount().getAmount().toString());
+        dialog.getDialogPane().setContent(amount);
+        AtomicBoolean doNotAllowClose = new AtomicBoolean(true);
+        dialog.setResultConverter(button -> {
+            if (button == settleTransfer) {
+                String payment = amount.getText();
+                if (verifyPrice(payment, alertWrapper)) {
+                    Money paymentAmount = new Money(new BigDecimal(payment),
+                            Currency.getInstance(UserConfig.get()
+                                    .getPreferredCurrency().getCurrencyCode()));
+                    if (isValidPayoffAmount(debt.amount(), paymentAmount,
+                            startUpDate)) {
+                        addPayoff(event, debt.from(), paymentAmount, debt.to(),
+                                startUpDate);
+                        doNotAllowClose.set(false);
+                    } else {
+                        alertWrapper.showAlert(Alert.AlertType.ERROR,
+                                "Not valid", "Not vailid");
+                        return null;
+                    }
+                }
+                return null;
+            }
+            return null;
+        });
+        dialog.setOnCloseRequest(e -> {
+            if (doNotAllowClose.get()) {
+                e.consume(); // Prevent the dialog from closing
+            }
+        });
+        dialog.showAndWait();
+    }
 
     /**
      * Check whether the payoff amount is valid. Aka if {@code 0 < payoffAmount
@@ -205,14 +244,25 @@ public class DebtPageCtrl extends TextPage implements Initializable {
 
     /**
      * Setter
+     *
      * @param event the event
      */
     public void setEvent(Event event) {
         this.event = event;
+        server.registerForUpdates(t -> {
+            try {
+                Platform.runLater(this::refresh);
+                System.out.println("Received transaction: " + t.getName());
+            } catch (Exception e) {
+                System.err.println("An error occurred: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }, event);
     }
 
     /**
      * Setter
+     *
      * @param mainCtrl the mainCtrl
      */
     public void setMainCtrl(MainCtrl mainCtrl) {
@@ -221,6 +271,7 @@ public class DebtPageCtrl extends TextPage implements Initializable {
 
     /**
      * Setter
+     *
      * @param server the server
      */
     public void setServer(ServerUtils server) {
@@ -229,9 +280,18 @@ public class DebtPageCtrl extends TextPage implements Initializable {
 
     /**
      * Setter
+     *
      * @param alertWrapper the alertWrapper
      */
     public void setAlertWrapper(AlertWrapper alertWrapper) {
         this.alertWrapper = alertWrapper;
+    }
+
+    /**
+     * Setter
+     * @param now date of the page load
+     */
+    public void setStartUpDate(LocalDate now) {
+        this.startUpDate = now;
     }
 }

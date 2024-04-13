@@ -30,10 +30,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class AddExpenseCtrl extends TextPage implements Initializable {
+public class AddExpenseCtrl extends TextPage
+        implements Initializable, PriceHandler {
 
     @FXML
     private Button cancel;
@@ -71,11 +70,11 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
     private Event event;
     private ServerUtils server;
     private MainCtrl mainCtrl;
-    private final Pattern pricePattern;
     private Transaction expenseToOverwrite;
     private AlertWrapper alertWrapper;
     private ActionHistory actionHistory;
     private EventOverviewCtrl eventOverviewCtrl;
+    private LocalDate startUpDate;
 
     /**
      * Setter
@@ -105,7 +104,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         this.mainCtrl = mainCtrl;
         this.participantList = new ArrayList<>();
         this.alertWrapper = new AlertWrapper();
-        pricePattern = Pattern.compile("^[0-9]+(?:[.,][0-9]+)?$");
     }
 
     /**
@@ -211,6 +209,14 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
      */
     public ActionHistory getActionHistory() {
         return actionHistory;
+    }
+
+    /**
+     * Setter
+     * @param startUpDate the startUpDate
+     */
+    public void setStartUpDate(LocalDate startUpDate) {
+        this.startUpDate = startUpDate;
     }
 
     static class MyLocalDateStringConverter extends StringConverter<LocalDate> {
@@ -419,7 +425,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
 
     @SuppressWarnings("checkstyle:CyclomaticComplexity")
     private boolean verifyInput() {
-        if (!verifyPrice(price.getText())) {
+        if (!verifyPrice(price.getText(), alertWrapper)) {
             return false;
         }
         if (expenseName.getText().isEmpty()
@@ -443,7 +449,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             wrongDate();
             return false;
         }
-        if (date.getValue().isAfter(mainCtrl.getStartUpDate())) {
+        if (date.getValue().isAfter(startUpDate)) {
             dateTooFarAhead();
             return false;
         } else if (date.getValue().isBefore(
@@ -529,8 +535,7 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
             payer.getSelectionModel().select(0);
             expenseName.clear();
             price.clear();
-            date.setValue(mainCtrl.getStartUpDate());
-//            date.setValue(LocalDate.now());
+            date.setValue(startUpDate);
         }
         System.out.println("Page has been refreshed!");
     }
@@ -739,48 +744,6 @@ public class AddExpenseCtrl extends TextPage implements Initializable {
         alert.showAndWait();
     }
 
-    boolean verifyPrice(String input) {
-        Matcher matcher = pricePattern.matcher(input);
-
-        if (!matcher.matches()) {
-            choosePriceAlert(input);
-            return false;
-        } else return true;
-
-    }
-
-    private void choosePriceAlert(String input) {
-        if (input.isEmpty()) {
-            showAlert(Translator.getTranslation(
-                            Text.AddExpense.Alert.invalidPrice),
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.emptyString));
-        } else if (input.matches("[a-zA-Z]")) {
-            showAlert(Translator.getTranslation(
-                            Text.AddExpense.Alert.invalidPrice),
-                    Translator.getTranslation(Text.AddExpense.Alert.noLetters));
-        } else if (input.chars().filter(ch -> ch == ',').count() > 1
-                || input.chars().filter(ch -> ch == '.').count() > 1
-                || (input.chars().filter(ch -> ch == ',').count() > 0
-                && input.chars().filter(ch -> ch == '.').count() > 0)) {
-            showAlert(Translator.getTranslation(
-                            Text.AddExpense.Alert.invalidPrice),
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.onlyOnePeriodOrComma));
-        } else if (!Character.isDigit(input.charAt(0))
-                || !Character.isDigit(input.charAt(input.length() - 1))) {
-            showAlert(Translator.getTranslation(
-                            Text.AddExpense.Alert.invalidPrice),
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.startWithDigit));
-            // If none of the above, consider it as general invalid format
-        } else {
-            showAlert(Translator.getTranslation(
-                            Text.AddExpense.Alert.invalidPrice),
-                    Translator.getTranslation(
-                            Text.AddExpense.Alert.generallyInvalid));
-        }
-    }
 
 
     Transaction getExpense() {

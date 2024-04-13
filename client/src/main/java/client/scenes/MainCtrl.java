@@ -46,7 +46,6 @@ public class MainCtrl {
     private Scene add;
     private StartUpCtrl startUpCtrl;
     private Scene startUp;
-    private LocalDate startUpDate;
 
     private AddExpenseCtrl addExpenseCtrl;
     private Scene addExpense;
@@ -78,7 +77,6 @@ public class MainCtrl {
             Pair<AdminCtrl, Parent> adminPage,
             Pair<DebtPageCtrl, Parent> debtPage) {
 
-        startUpDate = LocalDate.now();
         this.startUpCtrl = startUp.getKey();
         this.startUp = new Scene(startUp.getValue());
         this.startUp.getStylesheets().add(getClass()
@@ -262,13 +260,6 @@ public class MainCtrl {
         return overview;
     }
 
-    /**
-     * Getter
-     * @return start up date
-     */
-    public LocalDate getStartUpDate() {
-        return startUpDate;
-    }
 
     /**
      * go to the add expense page (by changing the content of the window).
@@ -277,6 +268,7 @@ public class MainCtrl {
     public void showAddExpense(Event event) {
         addExpenseCtrl.setEvent(event);
         addExpenseCtrl.setExpenseToOverwrite(null);
+        addExpenseCtrl.setStartUpDate(LocalDate.now());
         addExpenseCtrl.refresh();
         primaryStage.setScene(addExpense);
     }
@@ -293,6 +285,7 @@ public class MainCtrl {
         addExpenseCtrl.setExpenseToOverwrite(transaction);
         addExpenseCtrl.setActionHistory(actionHistory);
         addExpenseCtrl.setEventOverviewCtrl(overviewCtrl);
+        addExpenseCtrl.setStartUpDate(LocalDate.now());
         addExpenseCtrl.refresh();
         primaryStage.setScene(addExpense);
     }
@@ -329,6 +322,7 @@ public class MainCtrl {
     public void showOpenDebts(Event event) {
         debtPageCtrl.setEvent(event);
         debtPageCtrl.refresh();
+        debtPageCtrl.setStartUpDate(LocalDate.now());
         primaryStage.setScene(debtPage);
     }
 
