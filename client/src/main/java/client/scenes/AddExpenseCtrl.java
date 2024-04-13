@@ -84,13 +84,6 @@ public class AddExpenseCtrl extends TextPage
         this.actionHistory = actionHistory;
     }
 
-    /**
-     * Setter
-     * @param mainCtrl the mainCtrl to set
-     */
-    public void setMainCtrl(MainCtrl mainCtrl) {
-        this.mainCtrl = mainCtrl;
-    }
 
     /**
      * Initializes the controller
@@ -466,17 +459,20 @@ public class AddExpenseCtrl extends TextPage
     }
 
     private void noName() {
-        showAlert(Translator.getTranslation(
+        alertWrapper.showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
                         Text.AddExpense.Alert.noNameTitle),
                 Translator.getTranslation(
                         Text.AddExpense.Alert.noNameContent));
     }
 
     private void noParticipants() {
-        showAlert(Translator.getTranslation(
+        alertWrapper.showAlert(Alert.AlertType.ERROR,
+                Translator.getTranslation(
                         Text.AddExpense.Alert.noParticipantsTitle),
                 Translator.getTranslation(
                         Text.AddExpense.Alert.noParticipantsContent));
+
     }
 
     private void dateTooFarBehind() {
@@ -736,14 +732,13 @@ public class AddExpenseCtrl extends TextPage
         }
     }
 
-    void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    /**
+     * sets mainCtrl
+     * @param mainCtrl mainCtrl
+     */
+    public void setMainCtrl(MainCtrl mainCtrl){
+        this.mainCtrl = mainCtrl;
     }
-
 
 
     Transaction getExpense() {
