@@ -243,6 +243,7 @@ public class EventControllerTest {
         ResponseEntity<Set<Debt>> intResult2 = ResponseEntity.notFound().build();
         assertEquals(sut.getSimplification(eventId, currency), intResult2);
         when(event.getParticipants()).thenReturn(participants);
+
         when(ds.getExchangeRateFactory().getKnownCurrencies()).thenReturn(new HashSet<>(List.of(currency)));
 
         Set<Debt> expectedDebts = new HashSet<>();
