@@ -256,6 +256,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 expensesDropDown.setConverter(new ParticipantStringConverter());
                 getExpenses();
             }
+
         });
 
 
