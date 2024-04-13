@@ -30,6 +30,7 @@ import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 
@@ -408,8 +409,11 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                         Translator.getTranslation(
                                 Text.EventOverview.Alert.notSelectedContent));
             }
+            List<Transaction> transactionList =
+                    event.getTransactions().stream()
+                            .filter(t -> !t.isPayoff()).toList();
             transactions =
-                    FXCollections.observableArrayList(event.getTransactions());
+                    FXCollections.observableArrayList(transactionList);
             showSelectedExpenses(selected, participant, transactions);
         }
     }
@@ -685,5 +689,13 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
      */
     public ListView<Transaction> getExpensesListView() {
         return expensesListView;
+    }
+
+    /**
+     * Changes the page to open debts
+     */
+    public void showSettleDebtsPage() {
+        server.stopLongPolling();
+        mainCtrl.showOpenDebts(event);
     }
 }
