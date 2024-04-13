@@ -4,6 +4,7 @@ import commons.*;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import server.database.EventRepository;
@@ -23,6 +24,7 @@ public class TransactionController {
     private final ExchangeRateFactory exchangeRateFactory;
 
     private Map<Object, Consumer<Transaction>> listeners;
+    private SimpMessagingTemplate messagingTemplate;
 
 
     /**
@@ -34,14 +36,19 @@ public class TransactionController {
      *          The event repository.
      * @param   exchangeRateFactory
      *          The {@link ExchangeRateFactory} used in this controller.
+     *
+     * @param  messagingTemplate
+     *         The messaging template used in this controller.
      */
     public TransactionController(TransactionRepository repo,
                                  EventRepository eventRepository,
-                                 ExchangeRateFactory exchangeRateFactory) {
+                                 ExchangeRateFactory exchangeRateFactory,
+                                 SimpMessagingTemplate messagingTemplate) {
         this.eventRepository = eventRepository;
         this.repo = repo;
         this.exchangeRateFactory = exchangeRateFactory;
         this.listeners = new ConcurrentHashMap<>();
+        this.messagingTemplate = messagingTemplate;
     }
 
     /**
@@ -224,6 +231,48 @@ public class TransactionController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Basically same as addEvent but using websockets instead of
+     * polling
+     *
+     * @param eventId     The id of the event
+     * @param transaction The transaction to add
+     * @return Transaction added
+     */
+    @PostMapping("/undoDelete")
+    @ResponseBody
+    public ResponseEntity<Transaction>
+        undoDelete(@PathVariable("eventId") Long eventId,
+               @RequestBody Transaction transaction) {
+        if (transaction == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        var event = eventRepository.findById(eventId);
+        if (event.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        transaction.setEvent(event.get());
+        transaction.setPayer(event.get().getParticipantById(
+                transaction.getPayer().getParticipantId()
+        ));
+        List<Participant> participants = new ArrayList<>();
+        for (Participant participant : transaction.getParticipants()) {
+            participants.add(event.get().getParticipantById(
+                    participant.getParticipantId()
+            ));
+        }
+        transaction.setParticipants(participants);
+        if (transaction.getTag() != null) {
+            transaction.setTag(event.get().getTagById(
+                    transaction.getTag().getTagId()
+            ));
+        }
+        transaction.setLongPollingEventId(eventId);
+        Transaction response = repo.save(transaction);
+        messagingTemplate.convertAndSend("/topic/undoDelete", transaction);
+        return ResponseEntity.ok(response);
+    }
+
 
     /**
      * Delete a transaction from an event
@@ -258,6 +307,9 @@ public class TransactionController {
         repo.delete(transaction);
         event.removeTransaction(transaction);
         Event test = eventRepository.save(event);
+
+        messagingTemplate.convertAndSend("/topic/transaction/delete",
+                transaction);
 
         return ResponseEntity.ok(transaction);
     }

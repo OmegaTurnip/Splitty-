@@ -89,7 +89,7 @@ class TransactionCellControllerTest {
         ActionHistory actionHistory = sut.getActionHistory();
         assertEquals(0, event.getTransactions().size());
         actionHistory.undo();
-        verify(server, times(1)).saveTransaction(any(Transaction.class));
+        verify(server, times(1)).undoDeleteTransaction(any(Transaction.class));
         actionHistory.redo();
         verify(server, times(1)).removeTransaction(any(Transaction.class));
         assertThrows(NoRedoActionsLeftException.class, () -> sut.getActionHistory().redo());

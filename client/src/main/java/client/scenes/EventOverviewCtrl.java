@@ -111,11 +111,33 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 new ParticipantCellFactory());
         expensesListView.setCellFactory(param ->
                 new TransactionCellFactory());
+        registerForEventUpdate();
+        registerForEventDeletion();
+        registerForActionHistoryClearing();
+        registerForUndoDeleteTransactions();
+        registerForDeleteTransactions();
+        refresh();
+    }
+
+    private void registerForEventUpdate() {
         server.registerForMessages("/topic/admin", Event.class, e -> {
             if (event.equals(e)) event = e; //Overwrite current event
             System.out.println("Received event: " + event.getEventName());
             refresh();
         });
+    }
+
+    private void registerForActionHistoryClearing() {
+        server.registerForMessages("/topic/actionHistory", Event.class, e -> {
+            if (event.equals(e)) {
+                actionHistory.clear();
+                System.out.println("Action history cleared");
+            }
+
+        });
+    }
+
+    private void registerForEventDeletion() {
         server.registerForMessages("/topic/admin/delete", Event.class, e -> {
             if (event.equals(e)) {
                 Platform.runLater(() -> {
@@ -130,14 +152,42 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 });
             }
         });
-        server.registerForMessages("/topic/actionHistory", Event.class, e -> {
-            if (event.equals(e)) {
-                actionHistory.clear();
-                System.out.println("Action history cleared");
-            }
+    }
 
-        });
-        refresh();
+    private void registerForUndoDeleteTransactions() {
+        server.registerForMessages("/topic/undoDelete",
+                Transaction.class, t -> {
+                    try {
+                        Platform.runLater(() -> updateTransactions(t));
+                        Platform.runLater(this::refresh);
+                        System.out.println("Received transaction: "
+                                + t.getName());
+                    } catch (Exception e) {
+                        System.err.println("An error occurred: "
+                                + e.getMessage());
+                        e.printStackTrace();
+                    }
+                });
+    }
+
+    private void registerForDeleteTransactions() {
+        server.registerForMessages("/topic/transaction/delete",
+                Transaction.class, t -> {
+                    if (t.getLongPollingEventId().equals(event.getId())) {
+                        try {
+                            event.removeTransaction(t);
+                            Platform.runLater(() -> getExpenses());
+                            Platform.runLater(this::refresh);
+                            System.out.println("Deleted transaction: "
+                                    + t.getName());
+                        } catch (Exception e) {
+                            System.err.println("An error occurred: "
+                                    + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+
+                });
     }
 
     /**
