@@ -1,15 +1,17 @@
 package client.scenes;
 
 
-
 import client.history.ActionHistory;
 import client.language.Language;
 import client.language.Text;
+import client.utils.UserConfig;
+import commons.ParticipantValuePair;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import client.language.TextPage;
 import client.language.Translator;
@@ -24,14 +26,16 @@ import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.util.StringConverter;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class EventOverviewCtrl extends TextPage implements Initializable {
@@ -53,6 +57,8 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     @FXML
     private Button addExpenseButton;
     @FXML
+    private Label sumOfExpenses;
+    @FXML
     private ComboBox<Object> expensesDropDown;
     @FXML
     private Button settleDebtsButton;
@@ -62,10 +68,15 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     private ToggleGroup selectExpenses;
     @FXML
     private ToggleButton allExpensesButton;
+    private AtomicReference<String> allExpensesStyle;
     @FXML
     private ToggleButton includingExpensesButton;
+    private AtomicReference<String> includingExpensesStyle;
     @FXML
     private ToggleButton fromExpensesButton;
+    private AtomicReference<String> fromExpensesStyle;
+    @FXML
+    private HBox buttonBar;
     @FXML
     private ListView<Participant> participantsListView;
     @FXML
@@ -81,10 +92,12 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
 
     private TransactionCellController transactionCellController;
     private ActionHistory actionHistory;
+    private Map<Participant, BigDecimal> participantBalances;
 
     /**
      * Initializes the controller
-     * @param server .
+     *
+     * @param server   .
      * @param mainCtrl .
      */
     @Inject
@@ -97,21 +110,26 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
 
     /**
      * Initialise the page.
-     * @param location
-     * The location used to resolve relative paths for the root object, or
-     * {@code null} if the location is not known.
      *
-     * @param resources
-     * The resources used to localize the root object, or {@code null} if
-     * the root object was not localized.
+     * @param location  The location used to resolve relative paths
+     *                  for the root object, or
+     *                  {@code null} if the location is not known.
+     * @param resources The resources used to localize the root object,
+     *                  or {@code null} if
+     *                  the root object was not localized.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         fetchLanguages();
+        participantBalances = new HashMap<>();
         participantsListView.setCellFactory(param ->
                 new ParticipantCellFactory());
         expensesListView.setCellFactory(param ->
                 new TransactionCellFactory());
+        toggleButtonHover();
+        participantsListView.setFocusTraversable(false);
+        expensesListView.setFocusTraversable(false);
+        expensesListView.getSelectionModel().clearSelection();
         registerForEventUpdate();
         registerForEventDeletion();
         registerForActionHistoryClearing();
@@ -153,6 +171,12 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 });
             }
         });
+
+        server.registerForMessages("/topic/actionHistory", String.class, b -> {
+            actionHistory.clear();
+            System.out.println(b);
+        });
+        refresh();
     }
 
     private void registerForUndoDeleteTransactions() {
@@ -191,8 +215,30 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 });
     }
 
+    private void toggleButtonHover() {
+        fromExpensesStyle = new AtomicReference<>();
+        includingExpensesStyle = new AtomicReference<>();
+        allExpensesStyle = new AtomicReference<>();
+
+        toggleButtonListener(allExpensesButton, allExpensesStyle);
+        toggleButtonListener(fromExpensesButton, fromExpensesStyle);
+        toggleButtonListener(includingExpensesButton, includingExpensesStyle);
+    }
+
+    private void toggleButtonListener(ToggleButton toggleButton,
+                                      AtomicReference<String> previousStyle) {
+        toggleButton.setOnMouseEntered(event -> {
+            previousStyle.set(toggleButton.getStyle());
+            toggleButton.setStyle("-fx-background-color: #CFBDFF;");
+        });
+        toggleButton.setOnMouseExited(event -> {
+            toggleButton.setStyle(previousStyle.get());
+        });
+    }
+
     /**
      * Getter.
+     *
      * @return Get action history.
      */
     public ActionHistory getActionHistory() {
@@ -231,6 +277,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
 
     /**
      * Sets the alertWrapper
+     *
      * @param alertWrapper alertWrapper
      */
     public void setAlertWrapper(AlertWrapper alertWrapper) {
@@ -244,6 +291,13 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         Platform.runLater(() -> {
             refreshText();
             if (event != null) {
+                Currency currency = UserConfig.get().getPreferredCurrency();
+                sumOfExpenses.setText("Sum of expenses: " +
+                        server.getSumOfAllExpenses(event,
+                                currency).getAmount().toString() +
+                        " " + currency.getCurrencyCode());
+                setParticipantBalances(
+                        server.getBalanceOfParticipants(event, currency));
                 ObservableList<Participant> observableParticipants =
                         FXCollections.observableArrayList(
                                 event.getParticipants());
@@ -251,12 +305,16 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 ObservableList<Object> participantsEvent =
                         FXCollections.observableArrayList(
                                 event.getParticipants());
+                participantsListView.getSelectionModel().clearSelection();
                 expensesDropDown.setItems(participantsEvent);
+                expensesDropDown
+                        .setStyle("-fx-selection-bar-text-fill: #fefdfd");
                 expensesDropDown.setCellFactory(lv ->
                         new ParticipantListCell());
                 expensesDropDown.setConverter(new ParticipantStringConverter());
                 getExpenses();
             }
+
         });
 
 
@@ -264,6 +322,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
 
     /**
      * Setter for mainCtrl
+     *
      * @param mainCtrl the MainCtrl to set
      */
     public void setMainCtrl(MainCtrl mainCtrl) {
@@ -272,6 +331,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
 
     /**
      * Getter for mainCtrl
+     *
      * @return return mainCtrl
      */
     public MainCtrl getMainCtrl() {
@@ -280,6 +340,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
 
     /**
      * Setter
+     *
      * @param server the server to set
      */
     public void setServer(ServerUtils server) {
@@ -323,6 +384,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         /**
          * Converts the given object to its string
          * representation using the internal converter.
+         *
          * @param o The object to convert.
          * @return The string representation of the object's name,
          * or an empty string if the object is null.
@@ -334,6 +396,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
 
         /**
          * Converts the given string to an object using the internal converter.
+         *
          * @param s The string to convert.
          * @return Always returns null,
          * as the conversion from string to object is not implemented.
@@ -349,7 +412,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
             setFont(Font.font("Arial", 14));
-            setTextFill(Color.WHITESMOKE);
+            setTextFill(Paint.valueOf("#0d0d0d"));
 
             if (empty || item == null) {
                 setText("");
@@ -362,6 +425,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
 
     /**
      * This method adds the transaction to the correct list.
+     *
      * @param transaction The transaction that was added.
      * @return Transaction that is added
      */
@@ -383,7 +447,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
      * Makes sure that the all threads stop
      */
 
-    public void stop(){
+    public void stop() {
         server.stop();
     }
 
@@ -402,7 +466,19 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
 
         if (selected != null) {
             String choice = selected.getId();
-            if(!choice.equals("AllExpenses") && participant == null){
+            selected.setStyle("-fx-background-color: #331575;" +
+                    "-fx-text-fill: #fefdfd");
+            fromExpensesStyle.set(fromExpensesButton.getStyle());
+            allExpensesStyle.set(allExpensesButton.getStyle());
+            includingExpensesStyle.set(includingExpensesButton.getStyle());
+            for (Node node : buttonBar.getChildren()) {
+                ToggleButton button = (ToggleButton) node;
+                if (button != selected) {
+                    button.setStyle("-fx-background-color: #E0DDF2; " +
+                            "-fx-text-fill: #0d0d0d");
+                }
+            }
+            if (!choice.equals("AllExpenses") && participant == null) {
                 alertWrapper.showAlert(Alert.AlertType.ERROR,
                         Translator.getTranslation(
                                 Text.EventOverview.Alert.notSelectedTitle),
@@ -420,14 +496,15 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
 
     /**
      * Shows the selected expenses.
-     * @param selected The selected toggle.
-     * @param participant The participant.
+     *
+     * @param selected     The selected toggle.
+     * @param participant  The participant.
      * @param transactions The transactions.
      */
     @SuppressWarnings("checkstyle:CyclomaticComplexity")
     public void showSelectedExpenses(ToggleButton selected,
                                      Participant participant,
-                                     ObservableList<Transaction> transactions){
+                                     ObservableList<Transaction> transactions) {
         String choice = selected.getId();
         setEvents(transactions);
         expensesListView.getItems().clear();
@@ -441,16 +518,14 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 transactionsParticipant =
                         FXCollections.observableArrayList();
                 for (Transaction transaction : transactions) {
-                    for(Participant p : transaction.getParticipants()) {
+                    for (Participant p : transaction.getParticipants()) {
                         if (p.equals(participant)) {
                             transactionsParticipant.add(transaction);
-                        }
-                        if (transaction.getPayer().equals(participant)) {
-                            transactionsPayer.add(transaction);
                         }
                     }
                 }
                 expensesListView.setItems(transactionsParticipant);
+                expensesListView.getSelectionModel().clearSelection();
                 break;
             case "ExpensePaidParticipant":
                 System.out.println("Paid by participant clicked");
@@ -468,7 +543,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
 
     private void setEvents(ObservableList<Transaction> transactions) {
         for (Transaction transaction : transactions) {
-            for(Participant p : transaction.getParticipants()) {
+            for (Participant p : transaction.getParticipants()) {
                 p.setEvent(event);
             }
             transaction.getPayer().setEvent(event);
@@ -507,18 +582,19 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         expensesDropDown.setPromptText(Translator
                 .getTranslation(client.language
                         .Text.EventOverview.expensesDropDown));
-        if(transactionCellController != null){
+        if (transactionCellController != null) {
             transactionCellController.refreshText();
             expensesListView.refresh();
         }
-        if (event != null ) eventNameLabel.setText(event.getEventName());
+        if (event != null) eventNameLabel.setText(event.getEventName());
         refreshIcon(Translator.getCurrentLanguage().getLanguageCode(),
                 languageMenu, Language.languages);
     }
+
     /**
      * Add participant to event
      */
-    public void addParticipant(){
+    public void addParticipant() {
         mainCtrl.showAddParticipant(event);
     }
 
@@ -529,12 +605,18 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         mainCtrl.showAddExpense(event);
     }
 
-
-    public void editName() {mainCtrl.showEditName(event);}
+    /**
+     * Switches to edit name scene
+     */
+    public void editName() {
+        mainCtrl.showEditName(event);
+    }
 
     private class ParticipantCellFactory extends ListCell<Participant> {
 
         private FXMLLoader loader;
+
+
         @Override
         protected void updateItem(Participant item, boolean empty) {
             super.updateItem(item, empty);
@@ -559,7 +641,12 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                     }
                 }
                 ParticipantCellController controller = loader.getController();
-                controller.setParticipantCellLabelText(item.getName());
+                String participantInfo = item.getName();
+                if (participantBalances.containsKey(item)) {
+                    participantInfo += " has paid " +
+                            participantBalances.get(item);
+                }
+                controller.setParticipantCellLabelText(participantInfo);
                 controller.setEvent(event);
                 controller.setParticipant(item);
                 controller.setServer(server);
@@ -573,6 +660,17 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         }
     }
 
+    /**
+     * Makes a map out of the balances for participants
+     * @param participantValuePairSet the set of participantvaluepairs
+     */
+    public void setParticipantBalances(Set<ParticipantValuePair>
+                                               participantValuePairSet) {
+        participantBalances.clear();
+        for (ParticipantValuePair p : participantValuePairSet) {
+            participantBalances.put(p.participant(), p.money().getAmount());
+        }
+    }
     private class TransactionCellFactory extends ListCell<Transaction> {
 
         private FXMLLoader loader;
@@ -614,7 +712,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     /**
      * Shows the invite code of the event
      */
-    public void showInviteCode(){
+    public void showInviteCode() {
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle(Translator.getTranslation(client.language.
                 Text.EditName.Alert.showInviteTitle));
@@ -644,12 +742,12 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 content.putString(event.getInviteCode());
                 clipboard.setContent(content);
                 mainCtrl.showEventOverview(event);
-            }
-            return null;
+            } return null;
         });
         dialog.setResultConverter(buttonType -> {
             if (buttonType == cancelButtonType) {
-                mainCtrl.showEventOverview(event);}
+                mainCtrl.showEventOverview(event);
+            }
             return null;
         });
         dialog.showAndWait();
@@ -658,6 +756,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
 
     /**
      * Setter.
+     *
      * @param event Event to be set.
      */
     public void setEvent(Event event) {
@@ -667,8 +766,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 Platform.runLater(() -> updateTransactions(t));
                 Platform.runLater(this::refresh);
                 System.out.println("Received transaction: " + t.getName());
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 System.err.println("An error occurred: " + e.getMessage());
                 e.printStackTrace();
             }
@@ -685,6 +783,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
 
     /**
      * Getter for expenseListView
+     *
      * @return the ListView of expenses
      */
     public ListView<Transaction> getExpensesListView() {
