@@ -26,12 +26,12 @@
                  </padding>
                  <Label fx:id="openDebtsLabel" styleClass="title" text="Open Debts">
                     <font>
-                        <Font name="System" size="24.0" />
+                        <Font size="24.0" />
                     </font>
                  </Label>
                  <Label fx:id="noOpenDebtsLabel" styleClass="title" text="There are no open debts currently.">
                   <font>
-                     <Font name="System" size="18.0" />
+                     <Font size="18.0" />
                   </font></Label>
                  <Accordion fx:id="openDebtsList" VBox.vgrow="ALWAYS">
                     <cursor>

@@ -20,7 +20,7 @@ public class Transaction {
     @Column(name = "amount", length = 1024)
     private Money amount;
     private Boolean payoff;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Participant> participants;
     @ManyToOne
     private Tag tag;

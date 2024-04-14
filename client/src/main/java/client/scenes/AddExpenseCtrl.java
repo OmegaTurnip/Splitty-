@@ -412,14 +412,9 @@ public class AddExpenseCtrl extends TextPage
     public void registerExpense(Transaction expense) {
         if (expenseToOverwrite == null) {
             Transaction returnedE = server.saveTransaction(expense, event);
-//            event.removeTransaction(expense);
             expense.setTransactionId(returnedE.getTransactionId());
-//            event.addTransaction(expense);
-            System.out.println("Added expense " + expense);
         } else {
             event.removeTransaction(expenseToOverwrite);
-            // I reversed the order of this
-            // because it looked dangerous
             expense.setTransactionId(
                     expenseToOverwrite.getTransactionId());
             server.saveEvent(event);
@@ -428,7 +423,6 @@ public class AddExpenseCtrl extends TextPage
                     server, event, eventOverviewCtrl,
                     mainCtrl);
             actionHistory.addAction(editAction);
-            System.out.println("Edited expense " + expense);
         }
     }
 
@@ -549,7 +543,6 @@ public class AddExpenseCtrl extends TextPage
             price.clear();
             date.setValue(startUpDate);
         }
-        System.out.println("Page has been refreshed!");
     }
 
     /**
@@ -740,7 +733,6 @@ public class AddExpenseCtrl extends TextPage
      * Updates {@code participantList} to the checked participants
      */
     public void getCheckedParticipants() {
-        // added below
         participantList.clear();
         var list = participants.getCheckModel().getCheckedItems();
         for (Object o : list) {
@@ -855,20 +847,16 @@ public class AddExpenseCtrl extends TextPage
 
         @Override
         public void undo() {
-            oldTransaction.setTransactionId(newTransaction.getTransactionId());
             event.removeTransaction(newTransaction);
             event.addTransaction(oldTransaction);
             server.saveEvent(event);
-            mainCtrl.showEventOverview(event);
         }
 
         @Override
         public void redo() {
-            newTransaction.setTransactionId(oldTransaction.getTransactionId());
             event.removeTransaction(oldTransaction);
             event.addTransaction(newTransaction);
             server.saveEvent(event);
-            mainCtrl.showEventOverview(event);
         }
     }
 }

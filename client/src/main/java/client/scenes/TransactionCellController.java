@@ -78,7 +78,6 @@ public class TransactionCellController {
                 event.deleteTransaction(transaction);
                 server.saveEvent(event);
                 eventOverviewCtrl.refresh();
-                System.out.println("Delete transaction button clicked");
                 Action deleteAction = new ExpenseDeleteAction(
                         transaction, server,
                         event, eventOverviewCtrl,
@@ -223,20 +222,21 @@ public class TransactionCellController {
         @Override
         public void undo() {
 //            Transaction returnedE = server.saveTransaction(transaction);
-            Transaction returnedE = server
-                    .undoDeleteTransaction(transaction, event);
+//            Transaction returnedE = server
+//                    .undoDeleteTransaction(transaction, event);
             //Automatically adds to event thru longpolling
-            transaction = returnedE;
-//            server.saveEvent(event);
-            mainCtrl.showEventOverview(event);
+//            transaction = returnedE;
+            event.addTransaction(transaction);
+            server.saveEvent(event);
+//            mainCtrl.showEventOverview(event);
         }
 
         @Override
         public void redo() {
-            server.removeTransaction(transaction, event);
-//            event.deleteTransaction(transaction);
-//            server.saveEvent(event);
-            mainCtrl.showEventOverview(event);
+//            server.removeTransaction(transaction, event);
+            event.deleteTransaction(transaction);
+            server.saveEvent(event);
+//            mainCtrl.showEventOverview(event);
         }
     }
 

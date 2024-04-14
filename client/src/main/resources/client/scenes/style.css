@@ -7,7 +7,7 @@
     -fx-alignment: center;
 }
 .date-picker {
-    -fx-font: System;
+    -fx-font-family: System;
     -fx-background-color: #8E3EDD;
     -fx-control-inner-background: #8E3EDD;
     -fx-border-color: #E0DDF2;
@@ -252,7 +252,7 @@
 }
 .choice-box .label {
     -fx-text-fill: white;
-    -fx-font: System;
+    -fx-font-family: System;
 }
 .combo-box .arrow,
 .choice-box .arrow {

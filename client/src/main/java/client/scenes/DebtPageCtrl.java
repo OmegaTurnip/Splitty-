@@ -79,7 +79,6 @@ public class DebtPageCtrl extends TextPage
             Platform.runLater(() -> {
                 if (event == null) return;
                 if (event.equals(e)) event = e;
-                System.out.println("Received event: " + event.getEventName());
                 refresh();
             });
         });
@@ -277,7 +276,6 @@ public class DebtPageCtrl extends TextPage
         server.registerForUpdates(t -> {
             try {
                 Platform.runLater(this::refresh);
-                System.out.println("Received transaction: " + t.getName());
             } catch (Exception e) {
                 System.err.println("An error occurred: " + e.getMessage());
                 e.printStackTrace();

@@ -142,8 +142,10 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     private void registerForEventUpdate() {
         server.registerForMessages("/topic/admin", Event.class, e -> {
             if (event.equals(e)) event = e; //Overwrite current event
-            System.out.println("Received event: " + event.getEventName());
-            refresh();
+            Platform.runLater(() -> {
+                refresh();
+                getExpenses();
+            });
         });
     }
 
@@ -151,7 +153,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         server.registerForMessages("/topic/actionHistory", Event.class, e -> {
             if (event.equals(e)) {
                 actionHistory.clear();
-                System.out.println("Action history cleared");
             }
 
         });
@@ -175,7 +176,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
 
         server.registerForMessages("/topic/actionHistory", String.class, b -> {
             actionHistory.clear();
-            System.out.println(b);
         });
         refresh();
     }
@@ -186,8 +186,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                     try {
                         Platform.runLater(() -> updateTransactions(t));
                         Platform.runLater(this::refresh);
-                        System.out.println("Received transaction: "
-                                + t.getName());
                     } catch (Exception e) {
                         System.err.println("An error occurred: "
                                 + e.getMessage());
@@ -204,8 +202,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                             event.removeTransaction(t);
                             Platform.runLater(() -> getExpenses());
                             Platform.runLater(this::refresh);
-                            System.out.println("Deleted transaction: "
-                                    + t.getName());
                         } catch (Exception e) {
                             System.err.println("An error occurred: "
                                     + e.getMessage());
@@ -252,12 +248,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     public void undo() {
         if (actionHistory.hasUndoActions()) {
             actionHistory.undo();
-        } else {
-//            alertWrapper.showAlert(Alert.AlertType.INFORMATION,
-//                    Translator.getTranslation(
-//                            Text.EventOverview.Alert.noUndoTitle),
-//                    Translator.getTranslation(
-//                            Text.EventOverview.Alert.noUndoContent));
         }
     }
 
@@ -267,12 +257,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     public void redo() {
         if (actionHistory.hasRedoActions()) {
             actionHistory.redo();
-        } else {
-//            alertWrapper.showAlert(Alert.AlertType.INFORMATION,
-//                    Translator.getTranslation(
-//                            Text.EventOverview.Alert.noRedoTitle),
-//                    Translator.getTranslation(
-//                            Text.EventOverview.Alert.noRedoContent));
         }
     }
 
@@ -508,7 +492,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         expensesListView.getItems().clear();
         switch (choice) {
             case "AllExpenses":
-                System.out.println("all clicked");
                 expensesListView.setItems(transactions);
                 break;
             case "ExpenseIncludingParticipant":
