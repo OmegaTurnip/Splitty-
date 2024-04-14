@@ -7,6 +7,7 @@
     -fx-alignment: center;
 }
 .date-picker {
+    -fx-font: System;
     -fx-background-color: #8E3EDD;
     -fx-control-inner-background: #8E3EDD;
     -fx-border-color: #E0DDF2;
@@ -14,11 +15,88 @@
     -fx-border-width: 1.5pt;
     -fx-prompt-text-fill: #fefdfd;
     -fx-text-fill: #fefdfd;
+    -fx-font-size: 12pt;
+}
+.date-picker:hover, .date-picker:focused {
+    -fx-control-inner-background: #9370DB;
+    -fx-text-fill: #fefdfd;
+    -fx-faint-focus-color: transparent;
+    -fx-focus-color: transparent;
+}
+.date-picker .text-field {
+    -fx-text-fill: #fefdfd;
+}
+.date-picker:hover .text-field, date-picker:focused .text-field, date-picker:selected .text-field{
+    -fx-text-fill: #fefdfd;
+    -fx-faint-focus-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-control-inner-background: #9370DB;
+}
+.date-picker .arrow-button {
+    -fx-background-color: transparent;
+}
+.date-picker .arrow-button:hover {
+    -fx-background-color: #fefdfd;
+}
+.date-picker .arrow-button .arrow {
+    -fx-background-color: white;
+}
+.date-picker .arrow-button:hover .arrow {
+    -fx-background-color: #9370db;
+}
+.date-picker .selected {
+    -fx-background-color: #9370db;
+    -fx-text-fill: white;
+}
+.date-picker .cell {
+    -fx-background-color: white;
+}
+.date-picker .cell:hover {
+    -fx-background-color: #B89AE1;
+}
+.date-picker .cell:focused {
+    -fx-background-color: #B89AE1;
+}
+.date-picker .selected {
+    -fx-background-color: #9370db;
+    -fx-text-fill: white;
+}
+.date-picker .selected:focused {
+    -fx-background-color: #8e3edd;
+    -fx-text-fill: white;
+}
+.date-picker-popup  {
+    -fx-border-color: transparent;
+}
+.date-picker-popup .month-year-pane {
+    -fx-background-color: #8e3edd;
+}
+.date-picker-popup .month-year-pane .label {
+    -fx-text-fill: white;
+}
+.date-picker-popup .week-number-cell {
+    -fx-text-fill: #8e3edd;
+}
+
+.date-picker-popup .week-number-cell:hover, .date-picker-popup .week-number-cell:focused {
+    -fx-text-fill: #fefdfd;
+}
+.date-picker-popup .spinner .button .left-arrow,
+.date-picker-popup .spinner .button .right-arrow {
+    -fx-background-color: white;
+}
+.date-picker-popup .spinner .button .left-arrow:hover,
+.date-picker-popup .spinner .button .right-arrow:hover {
+    -fx-background-color: #0d0d0d;
+}
+.date-picker-popup .spinner .button,
+.date-picker-popup .spinner .button {
+    -fx-background-color: transparent;
 }
 /*Start-up*/
 .menu-bar {
     -fx-background-color: #fefdfd;
-    -fx-font-family: Arial;
+    -fx-font-family: System;
 }
 
 .menu-bar .menu-item:focused, .menu:showing, .menu:hover {
@@ -61,7 +139,7 @@
     -fx-text-fill: #fefdfd;
     -fx-font-size: 12pt;
 }
-.text-field-splitty:focused {
+.text-field-splitty:focused, .text-field-splitty:hover {
     -fx-font-size: 13pt;
 }
 
@@ -78,7 +156,7 @@
     -fx-border-color: transparent;
     -fx-padding: 10;
     -fx-background-radius: 10;
-    -fx-font-family: Arial;
+    -fx-font-family: System;
     -fx-font-size: 18px;
 }
 
@@ -87,7 +165,7 @@
     -fx-border-color: transparent;
     -fx-padding: 10;
     -fx-background-radius: 10;
-    -fx-font-family: Arial;
+    -fx-font-family: System;
     -fx-font-size: 18px;
 }
 
@@ -162,19 +240,44 @@
 }
 
 .choice-box-normal {
-    -fx-font-family: Arial;
+    -fx-font-family: System;
     -fx-cursor: hand;
     -fx-background-radius: 5pt;
     -fx-background-color: #8e3edd;
     -fx-border-color: #e0ddf2;
     -fx-border-radius: 5pt;
     -fx-border-width: 1.5pt;
-    -fx-text-fill: #0d0d0d;
+    -fx-text-fill: #fefdfd;
     -fx-font-size: 12pt;
 }
-.choice-box>.list-cell {
+.choice-box .label {
+    -fx-text-fill: white;
+    -fx-font: System;
+}
+.combo-box .arrow,
+.choice-box .arrow {
+    -fx-background-color: #fefdfd;
+}
+.combo-box-base {
+    -fx-background-color: transparent;
+    -fx-background-radius: 5pt;
+    -fx-border-color: #e0ddf2;
+    -fx-border-radius: 5pt;
+    -fx-border-width: 1.5pt;
+    -fx-font-size: 16;
+}
+.combo-box-base .combo-box {
+    -fx-border-width: 0pt;
+}
+
+.combo-box-base:hover, .combo-box-base:focused {
+    -fx-background-color: #9370DB;
+}
+
+.choice-box > .list-cell {
     -fx-text-fill: white;
 }
+
 .combo-box>.list-cell {
     -fx-text-fill: white;
 }
@@ -183,9 +286,6 @@
     -fx-background-color: #9370DB;
 }
 
-/*.list-view:focused {*/
-/*    -fx-background-color: radial-gradient(center 96.2% 89.9%, radius 100%,  rgb(184, 154, 225)  0%, rgb(51, 21, 117) 92%);*/
-/*}*/
 .text {
     -fx-text-fill: #fefdfd;
 }

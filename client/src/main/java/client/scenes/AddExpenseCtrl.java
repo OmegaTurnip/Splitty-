@@ -49,7 +49,7 @@ public class AddExpenseCtrl extends TextPage
 
     //    Payer of the expense
     @FXML
-    private ChoiceBox<Object> payer;
+    private ComboBox<Object> payer;
     private Participant expensePayer;
 
     //    Participants in the expense
@@ -159,6 +159,8 @@ public class AddExpenseCtrl extends TextPage
                 event.consume();
             }
         });
+        date.getEditor().setStyle("-fx-prompt-text-fill: #fefdfd;");
+        date.getEditor().setFont(Font.font("System", 16));
         date.setValue(LocalDate.now());
         date.setConverter(new MyLocalDateStringConverter("dd/MM/yyyy"));
         refresh();
@@ -623,7 +625,7 @@ public class AddExpenseCtrl extends TextPage
         @Override
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
-            setFont(Font.font("Arial", 14));
+            setFont(Font.font("System", 14));
 
             if (empty || item == null) {
                 setBackground(Background.EMPTY);
@@ -650,7 +652,9 @@ public class AddExpenseCtrl extends TextPage
             // the Web Content Accessibility Guidelines (WCAG)
             boolean useWhiteText = 0.2126 * red +
                     0.7152 * green + 0.0722 * blue < 0.5;
-
+            setStyle("-fx-background-color: " +
+                    tag.getColour() + ";");
+            if (!useWhiteText) setTextFill(Color.BLACK);
             if (useWhiteText) setTextFill(Color.WHITE);
             setOnMouseEntered(event -> {
                 setStyle("-fx-background-color: " + tag.getColour() +
