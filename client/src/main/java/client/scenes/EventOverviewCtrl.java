@@ -135,7 +135,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         registerForActionHistoryClearing();
         registerForUndoDeleteTransactions();
         registerForDeleteTransactions();
-        expensesDropDown.setOnAction(event -> getExpenses());
+        expensesDropDown.setOnAction(event -> Platform.runLater(() -> getExpenses()));
         refresh();
     }
 
@@ -469,7 +469,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                                 Text.EventOverview.Alert.notSelectedContent));
                 selectExpenses.getSelectedToggle().setSelected(false);
                 selectExpenses.selectToggle(allExpensesButton);
-                getExpenses();
+                Platform.runLater(() -> getExpenses());
                 return;
             }
             List<Transaction> transactionList =
