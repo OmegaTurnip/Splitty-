@@ -120,11 +120,13 @@ public class AdminCtrl extends TextPage implements Initializable {
                     } else {
                         setText(item);
                         setOnMouseClicked(e -> {
-                            if (!isEmpty() && e.getClickCount() == 2) {
-                                Event event = getTableView()
-                                        .getItems().get(getIndex());
-                                if (event != null) {
-                                    mainCtrl.showEventOverview(event);
+                            if (e.getClickCount() == 2) {
+                                if (!isEmpty()) {
+                                    Event event = getTableView()
+                                            .getItems().get(getIndex());
+                                    if (event != null) {
+                                        mainCtrl.showEventOverview(event);
+                                    }
                                 }
                             }
                         });
