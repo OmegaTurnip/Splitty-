@@ -98,7 +98,7 @@ public class AdminCtrl extends TextPage implements Initializable {
         registerForNewEvent();
         eventName.setCellValueFactory(
                 new PropertyValueFactory<Event, String>("eventName"));
-        setOnClickToShowEvent();
+        setOnDoubleClickToShowEvent();
         creationDate.setCellValueFactory(
                 new PropertyValueFactory<Event, LocalDate>(
                         "eventCreationDate"));
@@ -108,7 +108,7 @@ public class AdminCtrl extends TextPage implements Initializable {
 
     }
 
-    private void setOnClickToShowEvent() {
+    private void setOnDoubleClickToShowEvent() {
         eventName.setCellFactory(col -> {
             return new TableCell<Event, String>() {
                 @Override
@@ -120,11 +120,13 @@ public class AdminCtrl extends TextPage implements Initializable {
                     } else {
                         setText(item);
                         setOnMouseClicked(e -> {
-                            if (!isEmpty()) {
-                                Event event = getTableView()
-                                        .getItems().get(getIndex());
-                                if (event != null) {
-                                    mainCtrl.showEventOverview(event);
+                            if (e.getClickCount() == 2) {
+                                if (!isEmpty()) {
+                                    Event event = getTableView()
+                                            .getItems().get(getIndex());
+                                    if (event != null) {
+                                        mainCtrl.showEventOverview(event);
+                                    }
                                 }
                             }
                         });
