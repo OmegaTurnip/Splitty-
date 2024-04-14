@@ -207,13 +207,13 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     public boolean saveParticipant() throws WebApplicationException {
         try{
-            if (!(emptyCheck() && formatCheck() && uniqueCheck())){
+            if (!(emptyCheck() && formatCheck())){
                 return false;
             }
             if (participantToOverwrite != null) {
                 overwriteParticipant();
                 clearFields();
-            } else {
+            } else if (uniqueCheck()) {
                 createParticipant();
                 clearFields();
             }
@@ -232,6 +232,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
                         ibanTextField.getText(),
                         bicTextField.getText());
         Participant returnedP = server.saveParticipant(participant, event);
+        event = server.saveEvent(event);
         participant.setParticipantId(returnedP.getParticipantId());
         System.out.println("Created " + participant.toString());
         event.removeParticipant(participant);
