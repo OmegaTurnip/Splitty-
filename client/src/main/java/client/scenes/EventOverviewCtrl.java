@@ -141,7 +141,10 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     private void registerForEventUpdate() {
         server.registerForMessages("/topic/admin", Event.class, e -> {
             if (event.equals(e)) event = e; //Overwrite current event
-            refresh();
+            Platform.runLater(() -> {
+                refresh();
+                getExpenses();
+            });
         });
     }
 
