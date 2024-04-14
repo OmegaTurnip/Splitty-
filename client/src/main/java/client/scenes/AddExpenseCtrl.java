@@ -847,20 +847,16 @@ public class AddExpenseCtrl extends TextPage
 
         @Override
         public void undo() {
-            oldTransaction.setTransactionId(newTransaction.getTransactionId());
             event.removeTransaction(newTransaction);
             event.addTransaction(oldTransaction);
             server.saveEvent(event);
-            mainCtrl.showEventOverview(event);
         }
 
         @Override
         public void redo() {
-            newTransaction.setTransactionId(oldTransaction.getTransactionId());
             event.removeTransaction(oldTransaction);
             event.addTransaction(newTransaction);
             server.saveEvent(event);
-            mainCtrl.showEventOverview(event);
         }
     }
 }
