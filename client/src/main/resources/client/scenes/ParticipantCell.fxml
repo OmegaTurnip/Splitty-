@@ -22,16 +22,13 @@
                <Font name="System" size="12.0" />
             </font>
          </Button>
-         <Button fx:id="deleteParticipantButton" alignment="CENTER" mnemonicParsing="false" styleClass="button-delete">
+         <Button fx:id="deleteParticipantButton" alignment="CENTER" mnemonicParsing="false" prefHeight="38.0" prefWidth="24.0" styleClass="button-delete">
             <HBox.margin>
-               <Insets />
+               <Insets left="10.0" />
             </HBox.margin>
             <font>
                <Font name="System" size="12.0" />
             </font>
-            <padding>
-               <Insets left="10.0" />
-            </padding>
          </Button>
       </HBox>
       <padding>

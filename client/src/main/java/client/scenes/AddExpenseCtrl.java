@@ -49,7 +49,7 @@ public class AddExpenseCtrl extends TextPage
 
     //    Payer of the expense
     @FXML
-    private ComboBox<Object> payer;
+    private ChoiceBox<Object> payer;
     private Participant expensePayer;
 
     //    Participants in the expense

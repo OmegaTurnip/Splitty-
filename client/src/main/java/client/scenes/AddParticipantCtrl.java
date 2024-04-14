@@ -278,8 +278,11 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
         for (Participant participant: participants){
             participantNames.add(participant.getName());
         }
-        if (participantNames.contains(usernameTextField.getText())
-                && participantToOverwrite == null){
+        if ((participantNames.contains(usernameTextField.getText())
+                && participantToOverwrite == null) ||
+                ((participantNames.contains(usernameTextField.getText())
+                        && !participantToOverwrite.getName()
+                        .equals(usernameTextField.getText())))) {
             if (sendDuplicateNameError() == ButtonType.OK){
                 return false;
             }

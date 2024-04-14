@@ -152,7 +152,8 @@ public class AddExpenseCtrlTest extends ApplicationTest {
     }
 
     @Test
-    void payerSelectionTest() {
+    void
+    payerSelectionTest() {
         ArrayList<Object> list = new ArrayList<>();
         Participant test1 = event.addParticipant("Billy");
         list.add("Boo");

@@ -38,7 +38,7 @@
                 </styleClass>
             </ChoiceBox>
         </HBox>
-        <ComboBox fx:id="payer" maxWidth="1.7976931348623157E308" prefHeight="40.0" VBox.vgrow="ALWAYS">
+        <ChoiceBox fx:id="payer" maxWidth="1.7976931348623157E308" prefHeight="40.0" VBox.vgrow="ALWAYS">
             <cursor>
                 <Cursor fx:constant="HAND" />
             </cursor>
@@ -46,7 +46,7 @@
                 <String fx:value="choice-box-normal" />
                 <String fx:value="combo-box" />
             </styleClass>
-        </ComboBox>
+        </ChoiceBox>
         <DatePicker fx:id="date" maxWidth="1.7976931348623157E308" prefHeight="40.0" promptText="Date of the expense" styleClass="date-picker" VBox.vgrow="ALWAYS">
             <cursor>
                 <Cursor fx:constant="HAND" />
