@@ -97,7 +97,6 @@ public class DebtPageCtrl extends TextPage
             populateAccordion(event, debt);
         }
         noOpenDebtsLabel.setVisible(debts.isEmpty());
-        refreshText();
     }
 
     /**
