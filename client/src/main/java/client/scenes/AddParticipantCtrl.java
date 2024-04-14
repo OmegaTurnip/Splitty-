@@ -231,7 +231,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
                         emailTextField.getText(),
                         ibanTextField.getText(),
                         bicTextField.getText());
-        Participant returnedP = server.saveParticipant(participant);
+        Participant returnedP = server.saveParticipant(participant, event);
         participant.setParticipantId(returnedP.getParticipantId());
         System.out.println("Created " + participant.toString());
         event.removeParticipant(participant);

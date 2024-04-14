@@ -118,10 +118,10 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         sut.setEvent(event);
         event.addParticipant("testParticipant1");
         Participant participant1 = event.getParticipants().get(0);
-        server.saveParticipant(participant1);
+        server.saveParticipant(participant1, event);
         event.addParticipant("testparticipant2");
         Participant participant2 = event.getParticipants().get(1);
-        server.saveParticipant(participant2);
+        server.saveParticipant(participant2, event);
 
         sut.addExpense();
         AddExpenseCtrl addExpenseCtrlMock = new AddExpenseCtrl(server,mainCtrl);

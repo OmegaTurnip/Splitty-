@@ -127,12 +127,12 @@ class AddParticipantCtrlTest extends ApplicationTest {
         testParticipant2.setParticipantId(1L);
         testEvent1.removeParticipant(testParticipant2); //This is the participant object that should return
 
-        Mockito.when(server.saveParticipant(any())).thenReturn(testParticipant2); //Saving an event makes id non-null
+        Mockito.when(server.saveParticipant(any(), any())).thenReturn(testParticipant2); //Saving an event makes id non-null
 
         sut.getUsernameTextField().setText("testParticipant2");
         sut.saveParticipant();
 
-        verify(server, times(1)).saveParticipant(any());
+        verify(server, times(1)).saveParticipant(any(), any());
         assertEquals(testParticipant2, testEvent1.getParticipants().get(1));
 
     }
@@ -157,7 +157,7 @@ class AddParticipantCtrlTest extends ApplicationTest {
             sut.getUsernameTextField().setText("");
             when(alertWrapper.showAlertButton(Mockito.any(Alert.AlertType.class),
                     Mockito.anyString(), Mockito.anyString())).thenReturn(ButtonType.OK);
-            Mockito.when(server.saveParticipant(any())).thenReturn(testParticipant1);
+            Mockito.when(server.saveParticipant(any(), any())).thenReturn(testParticipant1);
             sut.addParticipant();
             assertEquals(before, testEvent1.getParticipants());
 //            WaitForAsyncUtils.waitForFxEvents();

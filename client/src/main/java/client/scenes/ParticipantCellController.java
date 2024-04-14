@@ -92,7 +92,7 @@ public class ParticipantCellController {
                 //For telling users that actionHistory was updated
                 //by participant editing/deleting, so it has to be cleared
                 //for undo/redo on expenses to work.
-                server.removeParticipant(participant);
+                server.removeParticipant(participant, event);
                 event.removeParticipant(participant);
             }
         }

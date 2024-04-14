@@ -367,7 +367,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
      */
     public Transaction updateTransactions(Transaction transaction) {
         if (transaction.getLongPollingEventId().equals(event.getId())){
-            transaction.setEvent(event);
             if(event.getTransactions().isEmpty() ||
                     !event.getTransactions().getLast().getTransactionId()
                             .equals(transaction.getTransactionId())){
@@ -429,7 +428,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                                      Participant participant,
                                      ObservableList<Transaction> transactions){
         String choice = selected.getId();
-        setEvents(transactions);
         expensesListView.getItems().clear();
         switch (choice) {
             case "AllExpenses":
@@ -463,15 +461,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 }
                 expensesListView.setItems(transactionsPayer);
                 break;
-        }
-    }
-
-    private void setEvents(ObservableList<Transaction> transactions) {
-        for (Transaction transaction : transactions) {
-            for(Participant p : transaction.getParticipants()) {
-                p.setEvent(event);
-            }
-            transaction.getPayer().setEvent(event);
         }
     }
 

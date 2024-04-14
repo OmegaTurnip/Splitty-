@@ -74,7 +74,7 @@ public class TransactionCellController {
                             .Alert.deleteExpenseContent)
             );
             if (result == ButtonType.OK) {
-                server.removeTransaction(transaction);
+                server.removeTransaction(transaction, event);
                 event.deleteTransaction(transaction);
                 server.saveEvent(event);
                 eventOverviewCtrl.refresh();
@@ -222,7 +222,8 @@ public class TransactionCellController {
         @Override
         public void undo() {
 //            Transaction returnedE = server.saveTransaction(transaction);
-            Transaction returnedE = server.undoDeleteTransaction(transaction);
+            Transaction returnedE = server
+                    .undoDeleteTransaction(transaction, event);
             //Automatically adds to event thru longpolling
             transaction = returnedE;
 //            server.saveEvent(event);
@@ -231,7 +232,7 @@ public class TransactionCellController {
 
         @Override
         public void redo() {
-            server.removeTransaction(transaction);
+            server.removeTransaction(transaction, event);
 //            event.deleteTransaction(transaction);
 //            server.saveEvent(event);
             mainCtrl.showEventOverview(event);
