@@ -136,10 +136,9 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         when(mockCurrency.getValue()).thenReturn("EUR");
         Money amount = new Money(new BigDecimal(5),  Currency.getInstance("EUR"));
         when(server.convertMoney(any(Money.class), any(Currency.class), any(LocalDate.class))).thenReturn(amount);
-
+        when(server.getSumOfAllExpenses(any(Event.class), any(Currency.class))).thenReturn(amount);
         Transaction transaction = addExpenseCtrlMock.getExpense();
         server.saveEvent(event);
-        when(server.getSumOfAllExpenses(any(Event.class), any(Currency.class))).thenReturn(amount);
         sut.refresh();
         Transaction equalTransaction = new Transaction(participant1, name.getText(), amount, participantList,event, null, null, false);
         transaction.setTransactionId(1L);

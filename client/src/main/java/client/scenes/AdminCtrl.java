@@ -9,8 +9,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import commons.Event;
-import commons.Participant;
-import commons.Transaction;
 import jakarta.inject.Inject;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -100,7 +98,7 @@ public class AdminCtrl extends TextPage implements Initializable {
         registerForNewEvent();
         eventName.setCellValueFactory(
                 new PropertyValueFactory<Event, String>("eventName"));
-        setOnClickToShowEvent();
+        setOnDoubleClickToShowEvent();
         creationDate.setCellValueFactory(
                 new PropertyValueFactory<Event, LocalDate>(
                         "eventCreationDate"));
@@ -108,7 +106,7 @@ public class AdminCtrl extends TextPage implements Initializable {
                 new PropertyValueFactory<Event, LocalDateTime>("lastActivity"));
     }
 
-    private void setOnClickToShowEvent() {
+    private void setOnDoubleClickToShowEvent() {
         eventName.setCellFactory(col -> {
             return new TableCell<Event, String>() {
                 @Override
@@ -120,11 +118,13 @@ public class AdminCtrl extends TextPage implements Initializable {
                     } else {
                         setText(item);
                         setOnMouseClicked(e -> {
-                            if (!isEmpty()) {
-                                Event event = getTableView()
-                                        .getItems().get(getIndex());
-                                if (event != null) {
-                                    mainCtrl.showEventOverview(event);
+                            if (e.getClickCount() == 2) {
+                                if (!isEmpty()) {
+                                    Event event = getTableView()
+                                            .getItems().get(getIndex());
+                                    if (event != null) {
+                                        mainCtrl.showEventOverview(event);
+                                    }
                                 }
                             }
                         });
@@ -354,9 +354,6 @@ public class AdminCtrl extends TextPage implements Initializable {
             if (result == ButtonType.OK) {
                 try {
                     events.remove(selectedEvent.getId());
-//                    for (Transaction t : selectedEvent.getTransactions()) {
-//                        server.removeTransaction(t, selectedEvent);
-//                    }
                     server.deleteEvent(selectedEvent, password);
                     refresh();
                 } catch (Exception e) {
