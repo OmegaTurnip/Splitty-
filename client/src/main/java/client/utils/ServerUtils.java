@@ -275,23 +275,6 @@ public class ServerUtils {
         this.server = server;
     }
 
-        /**
-         * Creates a participant
-         * @param participant participant to create
-         * @param event the event
-         * @return created participant
-         */
-    public Participant saveParticipant(Participant participant, Event event){ // ********
-        Participant returned = client
-                .target(server).path("/api/event/"
-                        + event.getId() + "/participants")
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .post(Entity.entity(participant, APPLICATION_JSON),
-                        Participant.class);
-        return returned;
-    }
-
     /**
      * Connects to the  websocket server
      * @param url the url for the websocket server

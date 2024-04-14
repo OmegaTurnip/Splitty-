@@ -116,10 +116,8 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         sut.setEvent(event);
         event.addParticipant("testParticipant1");
         Participant participant1 = event.getParticipants().get(0);
-        server.saveParticipant(participant1, event);
         event.addParticipant("testparticipant2");
         Participant participant2 = event.getParticipants().get(1);
-        server.saveParticipant(participant2, event);
 
         sut.addExpense();
         AddExpenseCtrl addExpenseCtrlMock = new AddExpenseCtrl(server,mainCtrl);
@@ -141,12 +139,12 @@ public class EventOverviewCtrlTest extends ApplicationTest {
 
         Transaction transaction = addExpenseCtrlMock.getExpense();
         server.saveEvent(event);
+        when(server.getSumOfAllExpenses(any(Event.class), any(Currency.class))).thenReturn(amount);
         sut.refresh();
         Transaction equalTransaction = new Transaction(participant1, name.getText(), amount, participantList,event, null, null, false);
         transaction.setTransactionId(1L);
         equalTransaction.setTransactionId(1L);
         assertEquals(transaction, equalTransaction);
-        when(server.getSumOfAllExpenses(any(Event.class), any(Currency.class))).thenReturn(amount);
         Thread.sleep(500);
         Transaction transaction1 = sut.getExpensesListView().getItems().getFirst();
         assertEquals(transaction1, transaction);

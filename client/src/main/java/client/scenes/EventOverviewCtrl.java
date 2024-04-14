@@ -244,12 +244,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     public void undo() {
         if (actionHistory.hasUndoActions()) {
             actionHistory.undo();
-        } else {
-//            alertWrapper.showAlert(Alert.AlertType.INFORMATION,
-//                    Translator.getTranslation(
-//                            Text.EventOverview.Alert.noUndoTitle),
-//                    Translator.getTranslation(
-//                            Text.EventOverview.Alert.noUndoContent)); *********
         }
     }
 
@@ -259,12 +253,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     public void redo() {
         if (actionHistory.hasRedoActions()) {
             actionHistory.redo();
-        } else {
-//            alertWrapper.showAlert(Alert.AlertType.INFORMATION,
-//                    Translator.getTranslation(
-//                            Text.EventOverview.Alert.noRedoTitle),
-//                    Translator.getTranslation(
-//                            Text.EventOverview.Alert.noRedoContent)); *********
         }
     }
 
