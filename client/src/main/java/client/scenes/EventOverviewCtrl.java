@@ -732,8 +732,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
             if (buttonType == copyButtonType) {
                 Clipboard clipboard = Clipboard.getSystemClipboard();
                 ClipboardContent content = new ClipboardContent();
-                String str = event.getInviteCode();
-                content.putString(str);
+                content.putString(event.getInviteCode());
                 clipboard.setContent(content);
                 mainCtrl.showEventOverview(event);
             } return null;
