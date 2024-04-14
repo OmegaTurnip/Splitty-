@@ -135,6 +135,8 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         registerForActionHistoryClearing();
         registerForUndoDeleteTransactions();
         registerForDeleteTransactions();
+        expensesDropDown.setOnAction(event ->
+                Platform.runLater(() -> getExpenses()));
         refresh();
     }
 
@@ -441,10 +443,9 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
      * Shows the list of expenses.
      */
     public void getExpenses() {
-        Participant participant = (Participant) expensesDropDown.getValue();
         ToggleButton selected =
                 (ToggleButton) selectExpenses.getSelectedToggle();
-
+        Participant participant = (Participant) expensesDropDown.getValue();
         if (selected != null) {
             String choice = selected.getId();
             selected.setStyle("-fx-background-color: #331575;" +
@@ -465,6 +466,10 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                                 Text.EventOverview.Alert.notSelectedTitle),
                         Translator.getTranslation(
                                 Text.EventOverview.Alert.notSelectedContent));
+                selectExpenses.getSelectedToggle().setSelected(false);
+                selectExpenses.selectToggle(allExpensesButton);
+                Platform.runLater(() -> getExpenses());
+                return;
             }
             List<Transaction> transactionList =
                     event.getTransactions().stream()
@@ -786,7 +791,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         server.registerForUpdates(t -> {
             try {
                 Platform.runLater(() -> updateTransactions(t));
-                Platform.runLater(this::refresh);
                 System.out.println("Received transaction: " + t.getName());
             } catch (Exception e) {
                 System.err.println("An error occurred: " + e.getMessage());
