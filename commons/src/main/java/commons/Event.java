@@ -1,7 +1,5 @@
 package commons;
 
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -12,7 +10,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.List;
 @Entity
-@Table(name = "event")
 public class Event {
 
     @Id
@@ -21,15 +18,15 @@ public class Event {
     private String eventName;
     private LocalDate eventCreationDate;
     private String inviteCode;
-    @JsonManagedReference
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
+
+    @OneToMany(cascade = CascadeType.ALL)
     private Collection<Transaction> transactions;
-    @JsonManagedReference
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
+
+    @OneToMany(cascade = CascadeType.ALL)
     private Collection<Participant> participants;
     private LocalDateTime lastActivity;
-    @JsonManagedReference
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
+
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Tag> tags;
 
     /**

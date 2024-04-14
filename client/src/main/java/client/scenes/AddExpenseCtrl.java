@@ -409,7 +409,7 @@ public class AddExpenseCtrl extends TextPage
      */
     public void registerExpense(Transaction expense) {
         if (expenseToOverwrite == null) {
-            Transaction returnedE = server.saveTransaction(expense);
+            Transaction returnedE = server.saveTransaction(expense, event);
 //            event.removeTransaction(expense);
             expense.setTransactionId(returnedE.getTransactionId());
 //            event.addTransaction(expense);

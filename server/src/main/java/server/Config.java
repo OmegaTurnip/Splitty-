@@ -17,6 +17,8 @@ package server;
 
 import java.util.Random;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import server.financial.DebtSimplifier;
@@ -54,5 +56,16 @@ public class Config {
     @Bean
     public DebtSimplifier getDebtSimplifier() {
         return new DebtSimplifier(getExchangeRateFactory());
+    }
+
+    /**
+     * Automatically converts entity classes to JSON format
+     * @return the object mapper
+     */
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        return objectMapper;
     }
 }

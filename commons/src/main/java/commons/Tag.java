@@ -1,22 +1,15 @@
 package commons;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.util.Objects;
 
 @Entity
-@IdClass(TagId.class)
 public class Tag {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long tagId;
-    @Id
-    @ManyToOne
-    @JoinColumn(name="event_id", nullable = false)
-    @JsonBackReference
-    private Event event;
     private String name;
     private String colour;
 
@@ -56,8 +49,7 @@ public class Tag {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Tag tag = (Tag) o;
-        return Objects.equals(tagId, tag.tagId)
-                && Objects.equals(event, tag.event);
+        return Objects.equals(tagId, tag.tagId);
     }
 
     /**
@@ -109,14 +101,6 @@ public class Tag {
     }
 
     /**
-     * Sets the tag of the event
-     * @param event Event of the tag
-     */
-    public void setEvent(Event event) {
-        this.event = event;
-    }
-
-    /**
      * Equals method that only checks name.
      * @param o Tag to test equality on.
      * @return True or false depending on equality.
@@ -134,7 +118,7 @@ public class Tag {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(tagId, event);
+        return Objects.hash(tagId);
     }
 }
 

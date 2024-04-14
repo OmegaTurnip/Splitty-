@@ -63,7 +63,6 @@ public class ParticipantController {
         var event = eventRepo.findById(eventId);
         if (event.isEmpty()) return ResponseEntity.badRequest().build();
 
-        participant.setEvent(event.get());
         repo.save(participant);
         messagingTemplate.convertAndSend("/topic/admin", event.get());
         return ResponseEntity.ok(participant);
