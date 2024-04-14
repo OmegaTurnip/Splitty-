@@ -84,7 +84,6 @@ public class ServerUtils {
         this.webSocketServer = generateWsURL(server);
         //Make this configurable rather than hard coded.
         session = connect(webSocketServer);
-        System.out.println("WebSocketServer: " + webSocketServer);
     }
 
     /**
@@ -268,34 +267,6 @@ public class ServerUtils {
                 .delete(new GenericType<>() {});
     }
 
-//    /**
-//     * Save events
-//     * @param events The events to save
-//     * @return The saved events
-//     */
-//    public List<Event> saveEvents(List<Event> events) {
-//        return client //
-//                .target(server).path("api/event") //
-//                .request(APPLICATION_JSON) //
-//                .accept(APPLICATION_JSON) //
-//                .put(Entity.entity(events, APPLICATION_JSON),
-//                        new GenericType<List<Event>>() {});
-//    }
-
-    /**
-     * Gets participants for event
-     * @param event the Event to get participants from
-     * @return a list of Participant
-     */
-
-    public List<Participant> getParticipantsOfEvent(Event event) {
-        return client.target(server)
-                .path("api/event/" + event.getId() + "/participants")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<>() {});
-    }
-
     /**
      * Setter for the server URL
      * @param server the server url
@@ -303,13 +274,14 @@ public class ServerUtils {
     public void setServer(String server) {
         this.server = server;
     }
+
         /**
          * Creates a participant
          * @param participant participant to create
          * @param event the event
          * @return created participant
          */
-    public Participant saveParticipant(Participant participant, Event event){
+    public Participant saveParticipant(Participant participant, Event event){ // ********
         Participant returned = client
                 .target(server).path("/api/event/"
                         + event.getId() + "/participants")
@@ -319,18 +291,6 @@ public class ServerUtils {
                         Participant.class);
         return returned;
     }
-
-//    /**
-//     * Deletes an Event
-//     * @param selectedEvent the event to delete
-//     * @return Response with status code
-//     */
-//    public Response deleteEvent(Event selectedEvent) {
-//        return client.target(server)
-//                .path("api/event/" + selectedEvent.getId())
-//                .request()
-//                .delete();
-//    }
 
     /**
      * Connects to the  websocket server
@@ -381,29 +341,6 @@ public class ServerUtils {
         });
     }
 
-//    /**
-//     * Send an object to this destination.
-//     * @param dest The destination to send to.
-//     * @param o The object to send.
-//     */
-//    public void send(String dest, Object o) {
-//        session.send(dest, o);
-//    }
-    //This isn't needed. We can just use REST requests to send messages,
-    //and the messages can be rerouted to the websocket.
-
-    /**
-     * Get all transactions of the event
-     * @param event Event of which needs to be returned
-     * @return list of transactions
-     */
-    public List<Transaction> getTransactionsOfEvent(Event event){
-        return client.target(server)
-                .path("api/event/" + event.getId() + "/transactions")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<List<Transaction>>() {});
-    }
 
     /**
      * Simplify debts of an event in a certain currency. Aka get the payment
@@ -421,27 +358,7 @@ public class ServerUtils {
                 .path("api/event/" + event.getId() + "/simplify/" + currency)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<Set<Debt>>() {});
-    }
-
-    /**
-     * Gets all transactions of the event in a certain currency.
-     *
-     * @param   event
-     *          Event of which the transactions need to be converted.
-     * @param   currency
-     *          The currency of the transactions.
-     *
-     * @return  List of pairs of transactions and converted amounts.
-     */
-    public List<TransactionConversionPair> getTransactionsOfEvent(
-            Event event, Currency currency){
-        return client.target(server)
-                .path("api/event/" + event.getId() + "/transactions/currency/"
-                        + currency)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<List<TransactionConversionPair>>() {});
+                .get(new GenericType<>() {});
     }
 
     /**
@@ -459,7 +376,7 @@ public class ServerUtils {
                 .path("api/event/" + event.getId() + "/sum/" + currency)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<Money>() {});
+                .get(new GenericType<>() {});
     }
 
     /**

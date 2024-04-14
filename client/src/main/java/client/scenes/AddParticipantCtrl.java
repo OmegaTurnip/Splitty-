@@ -234,7 +234,6 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
         Participant returnedP = server.saveParticipant(participant, event);
         event = server.saveEvent(event);
         participant.setParticipantId(returnedP.getParticipantId());
-        System.out.println("Created " + participant.toString());
         event.removeParticipant(participant);
         event.addParticipant(returnedP);
     }
@@ -245,10 +244,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
         participantToOverwrite.setEmail(emailTextField.getText());
         participantToOverwrite.setIban(ibanTextField.getText());
         participantToOverwrite.setBic(bicTextField.getText());
-//        Participant returnedP = server
-//                .saveParticipant(participantToOverwrite);
-//        event.removeParticipant(participantToOverwrite);
-//        event.addParticipant(returnedP);
+
         event.removeParticipant(participantToOverwrite);
         event.addParticipant(participantToOverwrite);
         server.saveEvent(event);

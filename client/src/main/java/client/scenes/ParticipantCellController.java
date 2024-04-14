@@ -58,11 +58,9 @@ public class ParticipantCellController {
     public void initialize() {
         editParticipantButton.setOnAction(event -> {
             editParticipant(participant);
-            System.out.println("Edit participant button clicked");
         });
         deleteParticipantButton.setOnAction(event -> {
             deleteParticipant(participant);
-            System.out.println("Delete participant button clicked");
         });
         root.setFocusTraversable(false);
         this.alertWrapper = new AlertWrapper();

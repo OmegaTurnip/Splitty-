@@ -109,15 +109,6 @@ class AddParticipantCtrlTest extends ApplicationTest {
         System.setProperty("java.awt.headless", "true");
     }
 
-//    @Test
-//    void addParticipantButtonTest() {
-//        Button addParticipantButton = sut.getAdd();
-//        Platform.runLater(addParticipantButton::fire);
-//        WaitForAsyncUtils.waitForFxEvents();
-//
-//        verify(sutSpy, times(1)).createParticipant(); I HAVE NO CLUE WHY THIS IS NOT WORKING
-//    }
-
     @Test
     void createParticipantTest() {
         sut.setParticipant(null);
@@ -161,8 +152,6 @@ class AddParticipantCtrlTest extends ApplicationTest {
             Mockito.when(server.saveEvent(any())).thenReturn(testEvent1);
             sut.addParticipant();
             assertEquals(before, testEvent1.getParticipants());
-//            WaitForAsyncUtils.waitForFxEvents();
-//            FxAssert.verifyThat(window(Alert.AlertType.ERROR.name()), WindowMatchers.isShowing());
         });
 
     }
@@ -312,14 +301,4 @@ class AddParticipantCtrlTest extends ApplicationTest {
         assertFalse(sut.saveParticipant());
     }
 
-
-
-//    @Test
-//    void cancelTest() {
-//        Button cancelButton = sut.getCancel();
-//        Platform.runLater(cancelButton::fire);
-//        WaitForAsyncUtils.waitForFxEvents();
-//
-//        verify(sutSpy, times(1)).cancel();
-//    }
 }

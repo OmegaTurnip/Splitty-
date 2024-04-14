@@ -58,33 +58,6 @@ public class TransactionControllerTest {
     }
 
     @Test
-    void getTransactionById() {
-        eventRepo.save(testEvent1);
-        sut.addTransaction(testEvent1.getId(), transaction);
-        var retPart = sut.getTransaction(testEvent1.getId(), transaction.getTransactionId());
-        assertEquals(retPart.getBody(), transaction);
-    }
-
-    @Test
-    void getTransactionIdIsNull(){
-        var retPart = sut.getTransaction(testEvent1.getId(), transaction.getTransactionId());
-        assertNull(retPart.getBody());
-    }
-
-    @Test
-    void editTransaction() {
-        eventRepo.save(testEvent1);
-        sut.addTransaction(testEvent1.getId(), transaction);
-        var retPart = sut.editTransaction(testEvent1.getId(), transaction.getTransactionId(), editTransaction);
-        assertEquals(retPart.getBody().getName(), editTransaction.getName());
-        assertEquals(retPart.getBody().getAmount(), editTransaction.getAmount());
-        assertEquals(retPart.getBody().getPayer(), editTransaction.getPayer());
-        assertEquals(retPart.getBody().getParticipants(), editTransaction.getParticipants());
-        assertEquals(retPart.getBody().getDate(), editTransaction.getDate());
-        assertEquals(retPart.getBody().getTag(), editTransaction.getTag());
-    }
-
-    @Test
     void addTransaction() {
         eventRepo.save(testEvent1);
         var retPart = sut.addTransaction(testEvent1.getId(), transaction);

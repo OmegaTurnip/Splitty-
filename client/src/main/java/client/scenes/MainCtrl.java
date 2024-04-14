@@ -182,7 +182,6 @@ public class MainCtrl {
                 e.consume();
             }
         });
-//        event.addParticipant("test"); // test line, remove later
         overviewCtrl.refresh();
     }
 

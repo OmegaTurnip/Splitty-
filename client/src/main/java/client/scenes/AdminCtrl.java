@@ -104,8 +104,6 @@ public class AdminCtrl extends TextPage implements Initializable {
                         "eventCreationDate"));
         lastActivity.setCellValueFactory(
                 new PropertyValueFactory<Event, LocalDateTime>("lastActivity"));
-//        refresh();
-
     }
 
     private void setOnClickToShowEvent() {
@@ -137,7 +135,6 @@ public class AdminCtrl extends TextPage implements Initializable {
     private void registerForNewEvent() {
         server.registerForMessages("/topic/admin", Event.class, e -> {
             events.put(e.getId(), e);
-            System.out.println("Received event: " + e.getEventName());
             refresh();
         });
     }
@@ -197,10 +194,6 @@ public class AdminCtrl extends TextPage implements Initializable {
                 tempList = objectMapper.readValue(file,
                         new TypeReference<HashMap<Long, Event>>() {});
             }
-//            if (tempList.contains(selectedEvent)) {
-//                tempList.remove(selectedEvent);
-//                //Overwriting the event if it exists
-//            }
 
             try (PrintWriter writer = new PrintWriter(file)) {
                 saveToJsonProper(selectedEvent, writer, tempList);
@@ -262,7 +255,6 @@ public class AdminCtrl extends TextPage implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("Saved to JSON");
     }
 
     /**
@@ -292,14 +284,12 @@ public class AdminCtrl extends TextPage implements Initializable {
                     .readValue(file,
                             new TypeReference<HashMap<Long, Event>>() {});
         } catch (Exception e) {
-            System.out.println("Could not load from JSON");
             e.printStackTrace();
         }
         restoreEventChoiceBox.getItems().clear();
         for (Event e : restoredEvents.values()) {
             restoreEventChoiceBox.getItems().add(e);
         }
-        System.out.println("Loaded from JSON");
         restoreEventBtn.setVisible(true);
         restoreEventBtn.setManaged(true);
         restoreEventChoiceBox.setVisible(true);
@@ -377,35 +367,6 @@ public class AdminCtrl extends TextPage implements Initializable {
                             .JSONUnselectedContent));
         }
     }
-
-//    private void sortByEventName() {
-//        SortedList<Event> sortedEvents = sortEvents(Comparator
-//                .comparing(Event::getEventName));
-//        eventsTable.setItems(sortedEvents);
-//    }
-//
-//    private void sortByCreationDate() {
-//        SortedList<Event> sortedEvents = sortEvents(Comparator
-//                .comparing(Event::getEventCreationDate).reversed());
-//        eventsTable.setItems(sortedEvents);
-//    }
-//
-//    private void sortByLastActivity() {
-//        SortedList<Event> sortedEvents = sortEvents(Comparator
-//                .comparing(Event::getLastActivity).reversed());
-//        eventsTable.setItems(sortedEvents);
-//    }
-//
-//    /**
-//     * Sorts the events using a comparator
-//     * @param comparator the comparator to use
-//     * @return  a sorted list of events
-//     */
-//    public SortedList<Event> sortEvents(Comparator<Event> comparator) {
-//        ObservableList<Event> observableEvents =
-//                FXCollections.observableArrayList(events);
-//        return new SortedList<>(observableEvents, comparator);
-//    }
 
 
 

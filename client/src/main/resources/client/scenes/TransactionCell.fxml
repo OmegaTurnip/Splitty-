@@ -19,7 +19,7 @@
       <HBox alignment="CENTER_RIGHT" prefHeight="35.0" prefWidth="110.0" HBox.hgrow="NEVER">
          <Button id="editTransactionButton" fx:id="editTransactionButton" maxWidth="-Infinity" mnemonicParsing="false" prefHeight="39.0" prefWidth="19.0" styleClass="button-edit-normal">
             <font>
-               <Font name="System" size="12.0" />
+               <Font size="12.0" />
             </font>
          </Button>
          <Button id="deleteTransactionButton" fx:id="deleteTransactionButton" alignment="CENTER" maxWidth="-Infinity" mnemonicParsing="false" prefHeight="39.0" prefWidth="24.0" styleClass="button-delete-normal">
@@ -27,7 +27,7 @@
                <Insets left="10.0" />
             </HBox.margin>
             <font>
-               <Font name="System" size="12.0" />
+               <Font size="12.0" />
             </font>
          </Button>
       </HBox>
