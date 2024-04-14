@@ -540,6 +540,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     /**
      * Refreshes the text of EventOverview
      */
+    @SuppressWarnings("checkstyle:MethodLength")
     @Override
     public void refreshText() {
         languageMenu.setText(
