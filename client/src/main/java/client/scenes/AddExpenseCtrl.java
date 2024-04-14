@@ -16,6 +16,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
@@ -143,6 +145,18 @@ public class AddExpenseCtrl extends TextPage
                 }
             } catch (WebApplicationException e) {
                 e.printStackTrace();
+            }
+        });
+        participants.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                participants.show();
+                event.consume();
+            }
+        });
+        currency.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                currency.show();
+                event.consume();
             }
         });
         date.setValue(LocalDate.now());
