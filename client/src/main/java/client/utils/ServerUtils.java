@@ -472,11 +472,12 @@ public class ServerUtils {
      */
     public Set<ParticipantValuePair> getBalanceOfParticipants(
             Event event, Currency currency) {
-        return client.target(server)
+        Set<ParticipantValuePair> b = client.target(server)
                 .path("api/event/" + event.getId() + "/balance/" + currency)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<>() {});
+        return b;
     }
 
     /**

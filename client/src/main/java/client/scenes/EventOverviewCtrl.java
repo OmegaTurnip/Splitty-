@@ -668,6 +668,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                                                participantValuePairSet) {
         participantBalances.clear();
         for (ParticipantValuePair p : participantValuePairSet) {
+            p.participant().setEvent(event);
             participantBalances.put(p.participant(), p.money().getAmount());
         }
     }

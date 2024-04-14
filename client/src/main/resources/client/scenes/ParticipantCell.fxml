@@ -24,7 +24,7 @@
          </Button>
          <Button fx:id="deleteParticipantButton" alignment="CENTER" mnemonicParsing="false" prefHeight="27.0" prefWidth="38.0" styleClass="button-delete">
             <HBox.margin>
-               <Insets left="10.0" />
+               <Insets />
             </HBox.margin>
             <font>
                <Font name="Arial" size="12.0" />
