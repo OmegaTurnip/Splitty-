@@ -1,9 +1,6 @@
 package client.scenes;
 
-import client.language.Language;
-import client.language.Text;
-import client.language.TextPage;
-import client.language.Translator;
+import client.language.*;
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
 import com.google.inject.Inject;
@@ -17,6 +14,7 @@ import javafx.scene.layout.AnchorPane;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -80,7 +78,7 @@ public class DebtPageCtrl extends TextPage
                 if (event == null) return;
                 if (event.equals(e)) event = e;
                 System.out.println("Received event: " + event.getEventName());
-                refresh();
+                refreshText();
             });
         });
         server.registerForMessages("/topic/admin/delete", Event.class, e -> {
@@ -112,7 +110,6 @@ public class DebtPageCtrl extends TextPage
             populateAccordion(event, debt);
         }
         noOpenDebtsLabel.setVisible(debts.isEmpty());
-        refreshText();
     }
 
     /**
@@ -120,8 +117,14 @@ public class DebtPageCtrl extends TextPage
      */
     @Override
     public void refreshText() {
+        refresh();
         refreshIcon(Translator.getCurrentLanguage().getLanguageCode(),
                 languageMenu, Language.languages);
+        noOpenDebtsLabel.setText(Translator.getTranslation(
+                Text.DebtPage.noOpenDebts));
+        openDebtsLabel.setText(Translator.getTranslation(
+                Text.DebtPage.openDebts));
+
     }
 
     /**
@@ -130,24 +133,34 @@ public class DebtPageCtrl extends TextPage
      * @param event the event
      * @param debt  the debt
      */
+    @SuppressWarnings("checkstyle:MethodLength")
     private void populateAccordion(Event event, Debt debt) {
         if (!debt.from().getName().equals(debt.to().getName())) {
-            String title = String.format("%s owes %.2f %s to %s",
-                    debt.from().getName(),
-                    debt.amount().getAmount(),
-                    debt.amount().getCurrency(),
-                    debt.to().getName());
+
+            HashMap<String, String> params = new HashMap<>();
+            params.put("from", debt.from().getName());
+            params.put("amount", debt.amount().format(Translator.getLocale()));
+            params.put("to", debt.to().getName());
+
+            String title = Formatter.format(Translator.getTranslation(
+                    Text.DebtPage.debtTitle),
+                    params
+            );
+
             TitledPane tp = new TitledPane(title, null);
             openDebtsList.getPanes().add(tp);
             AnchorPane anchorPane = new AnchorPane();
             Label info = new Label();
             Button settle = new Button();
             settle.setVisible(true);
-            settle.setText("Settle debt");
+            settle.setText(Translator.getTranslation(
+                    Text.DebtPage.settleDebt));
             settle.setOnAction(x -> payOff(event, debt, settle));
             if (debt.to().getBic().isEmpty() ||
                     debt.to().getIban().isEmpty()) {
-                info.setText("Payment instructions unavailable");
+                info.setText(Translator.getTranslation(
+                        Text.DebtPage.noPaymentInstructions
+                ));
             } else {
                 String data = debt.to().getName() + "\nIBAN: " +
                         debt.to().getIban() + "\nBIC: " +
@@ -170,13 +183,19 @@ public class DebtPageCtrl extends TextPage
         }
     }
 
+
+    @SuppressWarnings("checkstyle:MethodLength")
     private void payOff(Event event, Debt debt, Button mark) {
         Dialog<String> dialog = new Dialog<>();
-        dialog.setTitle("Money transfer");
-        ButtonType settleTransfer = new ButtonType("Settle transfer",
+        dialog.setTitle(Translator.getTranslation(Text.DebtPage.moneyTransfer));
+        ButtonType settleTransfer = new ButtonType(
+                Translator.getTranslation(Text.DebtPage.settleTransfer),
                 ButtonBar.ButtonData.APPLY);
+        ButtonType cancel = new ButtonType(
+                Translator.getTranslation(Text.DebtPage.cancel),
+                ButtonBar.ButtonData.CANCEL_CLOSE);
         dialog.getDialogPane().getButtonTypes()
-                .addAll(ButtonType.CANCEL, settleTransfer);
+                .addAll(cancel, settleTransfer);
         TextField amount = new TextField();
         amount.setText(debt.amount().getAmount().toString());
         dialog.getDialogPane().setContent(amount);
@@ -193,9 +212,13 @@ public class DebtPageCtrl extends TextPage
                                 startUpDate);
                         doNotAllowClose.set(false);
                     } else {
-                        alertWrapper.showAlert(Alert.AlertType.ERROR,
-                                "Invalid payoff amount",
-                                "You cannot pay off more money than you owe.");
+                        alertWrapper.showAlert(
+                                Alert.AlertType.ERROR,
+                                Translator.getTranslation(Text.DebtPage.Alert.
+                                        invalidPayoffAmountTitle),
+                                Translator.getTranslation(Text.DebtPage.Alert.
+                                        invalidPayoffAmountContent)
+                        );
                         return null;
                     }
                 }
@@ -276,7 +299,7 @@ public class DebtPageCtrl extends TextPage
         this.event = event;
         server.registerForUpdates(t -> {
             try {
-                Platform.runLater(this::refresh);
+                Platform.runLater(this::refreshText);
                 System.out.println("Received transaction: " + t.getName());
             } catch (Exception e) {
                 System.err.println("An error occurred: " + e.getMessage());
