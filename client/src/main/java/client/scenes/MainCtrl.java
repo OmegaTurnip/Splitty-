@@ -46,7 +46,6 @@ public class MainCtrl {
     private Scene add;
     private StartUpCtrl startUpCtrl;
     private Scene startUp;
-    private LocalDate startUpDate;
 
     private AddExpenseCtrl addExpenseCtrl;
     private Scene addExpense;
@@ -56,6 +55,10 @@ public class MainCtrl {
     private ServerUtils server;
 
     private AlertWrapper alertWrapper;
+    private Scene debtPage;
+    private DebtPageCtrl debtPageCtrl;
+
+    private boolean filterAdded;
 
     /**
      * @param overview the fx for the event overview page.
@@ -64,16 +67,19 @@ public class MainCtrl {
      * @param addExpense The fx for the add expense page.
      * @param adminPage The fx for the admin page.
      * @param editName The fx for the edit name page.
+     * @param debtPage The fx for the open debts page.
      */
+    @SuppressWarnings({"checkstyle:ParameterNumber", "checkstyle:MethodLength"})
     public void initialize(
             Pair<EventOverviewCtrl, Parent> overview,
             Pair<AddParticipantCtrl, Parent> add,
             Pair<StartUpCtrl, Parent> startUp,
             Pair<AddExpenseCtrl, Parent> addExpense,
             Pair<EditEventNameCtrl, Parent> editName,
-            Pair<AdminCtrl, Parent> adminPage) {
-
-        startUpDate = LocalDate.now();
+            Pair<AdminCtrl, Parent> adminPage,
+            Pair<DebtPageCtrl, Parent> debtPage) {
+        
+        filterAdded = false;
         this.startUpCtrl = startUp.getKey();
         this.startUp = new Scene(startUp.getValue());
         this.startUp.getStylesheets().add(getClass()
@@ -104,9 +110,12 @@ public class MainCtrl {
         this.admin.getStylesheets().add(getClass()
                 .getResource("style.css").toExternalForm());
 
+        this.debtPageCtrl = debtPage.getKey();
+        this.debtPage = new Scene(debtPage.getValue());
+        this.debtPage.getStylesheets().add(getClass()
+                .getResource("style.css").toExternalForm());
+
         this.alertWrapper = new AlertWrapper();
-
-
 
         showStartUp();
         primaryStage.show();
@@ -153,13 +162,17 @@ public class MainCtrl {
         overviewCtrl.setEvent(server.getUpdatedEvent(event));
         primaryStage.setTitle("Splitty!");
         primaryStage.setScene(overview);
-        overview.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
-            if (e.getCode() == KeyCode.ESCAPE) {
-                overviewCtrl.getActionHistory().clear();
-                showStartUp();
-                e.consume();
-            }
-        });
+        if (!filterAdded) {
+            overview.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+                if (e.getCode() == KeyCode.ESCAPE) {
+                    overviewCtrl.getActionHistory().clear();
+                    showStartUp();
+                    e.consume();
+                }
+            });
+            filterAdded = true;
+        }
+
         overview.setOnKeyPressed(e -> {
             if (e.isControlDown() && e.getCode() == KeyCode.Z) {
                 overviewCtrl.undo();
@@ -254,13 +267,6 @@ public class MainCtrl {
         return overview;
     }
 
-    /**
-     * Getter
-     * @return start up date
-     */
-    public LocalDate getStartUpDate() {
-        return startUpDate;
-    }
 
     /**
      * go to the add expense page (by changing the content of the window).
@@ -269,6 +275,7 @@ public class MainCtrl {
     public void showAddExpense(Event event) {
         addExpenseCtrl.setEvent(event);
         addExpenseCtrl.setExpenseToOverwrite(null);
+        addExpenseCtrl.setStartUpDate(LocalDate.now());
         addExpenseCtrl.refresh();
         primaryStage.setScene(addExpense);
     }
@@ -285,6 +292,7 @@ public class MainCtrl {
         addExpenseCtrl.setExpenseToOverwrite(transaction);
         addExpenseCtrl.setActionHistory(actionHistory);
         addExpenseCtrl.setEventOverviewCtrl(overviewCtrl);
+        addExpenseCtrl.setStartUpDate(LocalDate.now());
         addExpenseCtrl.refresh();
         primaryStage.setScene(addExpense);
     }
@@ -312,6 +320,17 @@ public class MainCtrl {
                     Translator.getTranslation(Text.Admin
                             .Alert.unauthorisedContent));
         }
+    }
+
+    /**
+     * CHanges the stage to show debtPage
+     * @param event the event
+     */
+    public void showOpenDebts(Event event) {
+        debtPageCtrl.setEvent(event);
+        debtPageCtrl.refresh();
+        debtPageCtrl.setStartUpDate(LocalDate.now());
+        primaryStage.setScene(debtPage);
     }
 
 }

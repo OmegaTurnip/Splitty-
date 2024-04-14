@@ -211,7 +211,7 @@ public class EventController {
 
         Event event = eventRepository.findById(id).orElse(null);
 
-        if (event == null || event.getParticipants().isEmpty()) {
+        if (event == null) {
             return ResponseEntity.notFound().build();
         }
 
