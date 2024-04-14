@@ -77,12 +77,14 @@ public class DebtPageCtrl extends TextPage
         fetchLanguages();
         server.registerForMessages("/topic/admin", Event.class, e -> {
             Platform.runLater(() -> {
+                if (event == null) return;
                 if (event.equals(e)) event = e;
                 System.out.println("Received event: " + event.getEventName());
                 refresh();
             });
         });
         server.registerForMessages("/topic/admin/delete", Event.class, e -> {
+            if (event == null) return;
             if (event.equals(e)) {
                 Platform.runLater(() -> {
                     mainCtrl.showStartUp();
