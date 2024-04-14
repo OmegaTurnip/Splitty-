@@ -77,8 +77,7 @@ public class DebtPageCtrl extends TextPage
             Platform.runLater(() -> {
                 if (event == null) return;
                 if (event.equals(e)) event = e;
-                System.out.println("Received event: " + event.getEventName());
-                refreshText();
+                refresh();
             });
         });
         server.registerForMessages("/topic/admin/delete", Event.class, e -> {
@@ -110,6 +109,7 @@ public class DebtPageCtrl extends TextPage
             populateAccordion(event, debt);
         }
         noOpenDebtsLabel.setVisible(debts.isEmpty());
+        refreshText();
     }
 
     /**
@@ -299,8 +299,7 @@ public class DebtPageCtrl extends TextPage
         this.event = event;
         server.registerForUpdates(t -> {
             try {
-                Platform.runLater(this::refreshText);
-                System.out.println("Received transaction: " + t.getName());
+                Platform.runLater(this::refresh);
             } catch (Exception e) {
                 System.err.println("An error occurred: " + e.getMessage());
                 e.printStackTrace();

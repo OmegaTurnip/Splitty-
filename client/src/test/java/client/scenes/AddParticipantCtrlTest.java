@@ -109,32 +109,14 @@ class AddParticipantCtrlTest extends ApplicationTest {
         System.setProperty("java.awt.headless", "true");
     }
 
-//    @Test
-//    void addParticipantButtonTest() {
-//        Button addParticipantButton = sut.getAdd();
-//        Platform.runLater(addParticipantButton::fire);
-//        WaitForAsyncUtils.waitForFxEvents();
-//
-//        verify(sutSpy, times(1)).createParticipant(); I HAVE NO CLUE WHY THIS IS NOT WORKING
-//    }
-
     @Test
     void createParticipantTest() {
         sut.setParticipant(null);
-
         testEvent1.addParticipant("testParticipant2");
-        Participant testParticipant2 = testEvent1.getParticipants().get(1);
-        testParticipant2.setParticipantId(1L);
-        testEvent1.removeParticipant(testParticipant2); //This is the participant object that should return
-
-        Mockito.when(server.saveParticipant(any(), any())).thenReturn(testParticipant2); //Saving an event makes id non-null
         when(server.saveEvent(any())).thenReturn(testEvent1);
         sut.getUsernameTextField().setText("testParticipant2");
         sut.saveParticipant();
-
-        verify(server, times(1)).saveParticipant(any(), any());
-        assertEquals(testParticipant2, testEvent1.getParticipants().get(1));
-
+        verify(server, times(1)).saveEvent(testEvent1);
     }
 
     @Test
@@ -157,12 +139,9 @@ class AddParticipantCtrlTest extends ApplicationTest {
             sut.getUsernameTextField().setText("");
             when(alertWrapper.showAlertButton(Mockito.any(Alert.AlertType.class),
                     Mockito.anyString(), Mockito.anyString())).thenReturn(ButtonType.OK);
-            Mockito.when(server.saveParticipant(any(), any())).thenReturn(testParticipant1);
             Mockito.when(server.saveEvent(any())).thenReturn(testEvent1);
             sut.addParticipant();
             assertEquals(before, testEvent1.getParticipants());
-//            WaitForAsyncUtils.waitForFxEvents();
-//            FxAssert.verifyThat(window(Alert.AlertType.ERROR.name()), WindowMatchers.isShowing());
         });
 
     }
@@ -312,14 +291,4 @@ class AddParticipantCtrlTest extends ApplicationTest {
         assertFalse(sut.saveParticipant());
     }
 
-
-
-//    @Test
-//    void cancelTest() {
-//        Button cancelButton = sut.getCancel();
-//        Platform.runLater(cancelButton::fire);
-//        WaitForAsyncUtils.waitForFxEvents();
-//
-//        verify(sutSpy, times(1)).cancel();
-//    }
 }

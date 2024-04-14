@@ -96,8 +96,7 @@ public class ParticipantController {
         event.removeParticipant(participant);
         List<Transaction> transactions = new ArrayList<>(
                 event.getTransactions());
-        //Remember to not
-        // modify the list you're iterating over...
+
         for (Transaction t : transactions) {
 
             if (t.getPayer().equals(participant)) {

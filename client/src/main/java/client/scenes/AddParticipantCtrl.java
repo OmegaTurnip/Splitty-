@@ -49,14 +49,17 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Setter.
+     *
      * @param actionHistory The action history to set.
      */
     public void setActionHistory(ActionHistory actionHistory) {
         this.actionHistory = actionHistory;
     }
+
     /**
      * Initializes the controller
-     * @param server .
+     *
+     * @param server   .
      * @param mainCtrl .
      */
     @Inject
@@ -68,13 +71,13 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Initializes the controller
-     * @param location
-     * The location used to resolve relative paths for the root object, or
-     * {@code null} if the location is not known.
      *
-     * @param resources
-     * The resources used to localize the root object, or {@code null} if
-     * the root object was not localized.
+     * @param location  The location used to resolve relative paths
+     *                  for the root object, or
+     *                  {@code null} if the location is not known.
+     * @param resources The resources used to localize the root object,
+     *                  or {@code null} if
+     *                  the root object was not localized.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -83,6 +86,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Getter.
+     *
      * @return The email text field.
      */
     public TextField getEmailTextField() {
@@ -91,6 +95,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Getter.
+     *
      * @return The iban text field.
      */
     public TextField getIbanTextField() {
@@ -99,6 +104,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Getter.
+     *
      * @return The bic text field.
      */
     public TextField getBicTextField() {
@@ -107,6 +113,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Getter.
+     *
      * @return The languages-menu.
      */
     public Menu getLanguages() {
@@ -128,6 +135,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Sets alertWrapper
+     *
      * @param alertWrapper alertWrapper to be set
      */
     public void setAlertWrapper(AlertWrapper alertWrapper) {
@@ -166,6 +174,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Getter.
+     *
      * @return The cancel button.
      */
     public Button getCancel() {
@@ -175,7 +184,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
     /**
      * Cancels the action in the addParticipant window
      */
-    public void cancel(){
+    public void cancel() {
         clearFields();
         mainCtrl.showEventOverview(event);
     }
@@ -183,8 +192,8 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
     /**
      * Method still in construction
      */
-    public void addParticipant(){
-        if(saveParticipant()){
+    public void addParticipant() {
+        if (saveParticipant()) {
             this.mainCtrl.showEventOverview(event);
         }
     }
@@ -192,6 +201,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Setter.
+     *
      * @param event The event to be set.
      */
     public void setEvent(Event event) {
@@ -200,14 +210,15 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Method that creates the participant in the database
+     *
      * @return Boolean that states if the creation was successful such
      * that the window can be closed
      * @throws WebApplicationException Alert when something goes wrong
      */
 
     public boolean saveParticipant() throws WebApplicationException {
-        try{
-            if (!(emptyCheck() && formatCheck() && uniqueCheck())){
+        try {
+            if (!(emptyCheck() && formatCheck() && uniqueCheck())) {
                 return false;
             }
             if (participantToOverwrite != null) {
@@ -217,7 +228,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
                 createParticipant();
                 clearFields();
             }
-        } catch(WebApplicationException e){
+        } catch (WebApplicationException e) {
             e.printStackTrace();
             return false;
         }
@@ -226,17 +237,11 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
     }
 
     private void createParticipant() {
-        Participant participant =
-                event.addParticipant(usernameTextField.getText(),
-                        emailTextField.getText(),
-                        ibanTextField.getText(),
-                        bicTextField.getText());
-        Participant returnedP = server.saveParticipant(participant, event);
-        event = server.saveEvent(event);
-        participant.setParticipantId(returnedP.getParticipantId());
-        System.out.println("Created " + participant.toString());
-        event.removeParticipant(participant);
-        event.addParticipant(returnedP);
+        event.addParticipant(usernameTextField.getText(),
+                emailTextField.getText(),
+                ibanTextField.getText(),
+                bicTextField.getText());
+        server.saveEvent(event);
     }
 
     private void overwriteParticipant() {
@@ -245,10 +250,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
         participantToOverwrite.setEmail(emailTextField.getText());
         participantToOverwrite.setIban(ibanTextField.getText());
         participantToOverwrite.setBic(bicTextField.getText());
-//        Participant returnedP = server
-//                .saveParticipant(participantToOverwrite);
-//        event.removeParticipant(participantToOverwrite);
-//        event.addParticipant(returnedP);
+
         event.removeParticipant(participantToOverwrite);
         event.addParticipant(participantToOverwrite);
         server.saveEvent(event);
@@ -256,11 +258,12 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Checks whether all fields are non-empty
+     *
      * @return boolean whether check failed or succeeded
      */
-    public boolean emptyCheck(){
+    public boolean emptyCheck() {
         if (usernameTextField.getText().isEmpty()) {
-            if (sendEmptyCheckError() == ButtonType.OK){
+            if (sendEmptyCheckError() == ButtonType.OK) {
                 return false;
             }
         }
@@ -270,12 +273,13 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
     /**
      * Checks if the entered participants name is unique compared
      * to all other participants
+     *
      * @return boolean whether check fails or passes
      */
-    public boolean uniqueCheck(){
+    public boolean uniqueCheck() {
         List<Participant> participants = event.getParticipants();
         ArrayList<String> participantNames = new ArrayList<>();
-        for (Participant participant: participants){
+        for (Participant participant : participants) {
             participantNames.add(participant.getName());
         }
         if ((participantNames.contains(usernameTextField.getText())
@@ -283,7 +287,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
                 ((participantNames.contains(usernameTextField.getText())
                         && !participantToOverwrite.getName()
                         .equals(usernameTextField.getText())))) {
-            if (sendDuplicateNameError() == ButtonType.OK){
+            if (sendDuplicateNameError() == ButtonType.OK) {
                 return false;
             }
         }
@@ -292,9 +296,10 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Formats the alert of a duplication error
+     *
      * @return returns resulting buttonPress of alert
      */
-    public ButtonType sendDuplicateNameError(){
+    public ButtonType sendDuplicateNameError() {
         HashMap<String, String> parameters = new HashMap<>();
         parameters.put("name", usernameTextField.getText());
         return alertWrapper.showAlertButton(Alert.AlertType.ERROR,
@@ -307,9 +312,10 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Formats the alert of an empty error
+     *
      * @return returns resulting buttonPress of alert
      */
-    public ButtonType sendEmptyCheckError(){
+    public ButtonType sendEmptyCheckError() {
         return alertWrapper.showAlertButton(Alert.AlertType.ERROR,
                 Translator.getTranslation(
                         Text.AddParticipant.Alert.EmptyError),
@@ -321,7 +327,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
     /**
      * Clears all input fields
      */
-    public void clearFields(){
+    public void clearFields() {
         usernameTextField.setText("");
         emailTextField.setText("");
         ibanTextField.setText("");
@@ -330,15 +336,16 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Checks whether the format of the fields is correct
+     *
      * @return boolean whether check fails or not
      */
-    public boolean formatCheck(){
+    public boolean formatCheck() {
         if (!isValidEmail(emailTextField.getText())) {
             alertWrapper.showAlertButton(Alert.AlertType.ERROR,
                     Translator.getTranslation(
                             Text.AddParticipant.Alert.FormatError),
                     Translator.getTranslation(
-                    Text.AddParticipant.Alert.InvalidMail
+                            Text.AddParticipant.Alert.InvalidMail
                     ));
             return false;
         }
@@ -373,35 +380,40 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
     private static final Pattern BIC_PATTERN = Pattern.compile(
             "^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}(?>[A-Z0-9]{3})?$"
     );
+
     /**
      * Checks whether the supplied email is valid.
-     * @param   email
-     *          The email to be checked.
-     * @return  Whether the supplied email is valid.
+     *
+     * @param email The email to be checked.
+     * @return Whether the supplied email is valid.
      */
     static boolean isValidEmail(String email) {
         return email.isEmpty() || EMAIL_PATTERN.matcher(email).matches();
     }
+
     /**
      * Checks whether the supplied IBAN is valid.
-     * @param   iban
-     *          The IBAN to be checked.
-     * @return  Whether the supplied IBAN is valid.
+     *
+     * @param iban The IBAN to be checked.
+     * @return Whether the supplied IBAN is valid.
      */
     static boolean isValidIban(String iban) {
         return iban.isEmpty() || IBAN_PATTERN.matcher(iban).matches();
     }
+
     /**
      * Checks whether the supplied BIC is valid.
-     * @param   bic
-     *          The BIC to be checked.
-     * @return  Whether the supplied BIC is valid.
+     *
+     * @param bic The BIC to be checked.
+     * @return Whether the supplied BIC is valid.
      */
     static boolean isValidBic(String bic) {
         return bic.isEmpty() || BIC_PATTERN.matcher(bic).matches();
     }
+
     /**
      * Setter.
+     *
      * @param participant The participant to be set.
      */
     public void setParticipant(Participant participant) {
@@ -410,6 +422,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Getter.
+     *
      * @return The username text field.
      */
     public TextField getUsernameTextField() {
@@ -418,6 +431,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Getter.
+     *
      * @return The title label.
      */
     public Label getTitle() {
@@ -426,6 +440,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Getter.
+     *
      * @return The username label.
      */
     public Label getUsername() {
@@ -434,6 +449,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Getter.
+     *
      * @return The add participant label.
      */
     public Button getAdd() {
@@ -442,13 +458,16 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Getter.
+     *
      * @return The server utils.
      */
     public ServerUtils getServer() {
         return server;
     }
+
     /**
      * Getter.
+     *
      * @return The main controller.
      */
     public MainCtrl getMainCtrl() {
@@ -457,6 +476,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Setter.
+     *
      * @param server The server utils to be set.
      */
     public void setServer(ServerUtils server) {
@@ -465,6 +485,7 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     /**
      * Setter.
+     *
      * @param mainCtrl The main controller to be set.
      */
     public void setMainCtrl(MainCtrl mainCtrl) {

@@ -51,60 +51,6 @@ public class TransactionController {
         this.messagingTemplate = messagingTemplate;
     }
 
-    /**
-     * Method returns all the transactions of the event
-     * @param eventId eventId
-     * @return List of transactions
-     */
-    @GetMapping("/")
-    @ResponseBody
-    public ResponseEntity<List<Transaction>> getAllTransactions(
-            @PathVariable("eventId") Long eventId){
-        Event event = eventRepository.findById(eventId).orElse(null);
-        if (event == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(event.getTransactions());
-    }
-
-    /**
-     * Get all transactions of the event in a certain currency.
-     *
-     * @param   eventId
-     *          Event of which needs to be returned
-     * @param   currency
-     *          The currency of the transactions.
-     *
-     * @return  List of pairs of transactions and converted amounts.
-     */
-    @GetMapping("/currency/{currency}")
-    @ResponseBody
-    public ResponseEntity<List<TransactionConversionPair>> getAllTransactions(
-            @PathVariable("eventId") Long eventId,
-            @PathVariable("currency") Currency currency) {
-        if (currency == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        Event event = eventRepository.findById(eventId).orElse(null);
-
-        if (event == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        List<TransactionConversionPair> pairs = new LinkedList<>();;
-
-        for (Transaction transaction : event.getTransactions()) {
-            pairs.add(new TransactionConversionPair(transaction,
-                    exchangeRateFactory.getExchangeRate(
-                            transaction.getDate(),
-                            transaction.getAmount().getCurrency(),
-                            currency
-                    ).convert(transaction.getAmount())));
-        }
-
-        return ResponseEntity.ok(pairs);
-    }
 
     /**
      * Updates of add expense using long-polling
@@ -128,61 +74,6 @@ public class TransactionController {
         res.onCompletion(() -> listeners.remove(key));
 
         return res;
-    }
-
-    /**
-     * Get transaction
-     * @param eventId id of the event
-     * @param transactionId  id of the transaction
-     * @return  Transaction
-     */
-    @GetMapping("/{transactionId}")
-    @ResponseBody
-    public ResponseEntity<Transaction> getTransaction(
-            @PathVariable("eventId") Long eventId,
-            @PathVariable("transactionId") Long transactionId) {
-        Transaction transaction = repo.findById(transactionId).orElse(null);
-        Event event = eventRepository.findById(eventId).orElse(null);
-
-        if (event == null || transaction == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(transaction);
-    }
-
-    /**
-     * Edit a transaction
-     * @param eventId The id of the event
-     * @param transactionId The id of the transaction
-     * @param transaction the transaction to what it should be updated
-     * @return updated transaction
-     */
-    @PutMapping("/{transactionId}")
-    @ResponseBody
-    public ResponseEntity<Transaction> editTransaction(
-            @PathVariable("eventId") Long eventId,
-            @PathVariable("transactionId") Long transactionId,
-            @RequestBody Transaction transaction) {
-        Transaction updateTransaction = repo.findById(transactionId)
-                                        .orElse(null);
-        Event event = eventRepository.findById(eventId).orElse(null);
-        if(updateTransaction == null || event == null) {
-            return ResponseEntity.notFound().build();
-        }
-        if (!transaction.validate()) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        updateTransaction.setName(transaction.getName());
-        updateTransaction.setAmount(transaction.getAmount());
-        updateTransaction.setPayer(transaction.getPayer());
-        updateTransaction.setParticipants(transaction.getParticipants());
-        updateTransaction.setDate(transaction.getDate());
-        updateTransaction.setTag(transaction.getTag());
-
-        repo.save(updateTransaction);
-
-        return ResponseEntity.ok(updateTransaction);
     }
 
     /**

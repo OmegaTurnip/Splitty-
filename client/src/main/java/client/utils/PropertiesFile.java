@@ -64,7 +64,6 @@ public class PropertiesFile {
      * @return  whether the attribute is present.
      */
     public boolean hasAttribute(String key) {
-        // equivalent to content.getProperty(key) != null
         return content.containsKey(key);
     }
 

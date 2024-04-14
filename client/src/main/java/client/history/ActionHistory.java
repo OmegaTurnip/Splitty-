@@ -34,21 +34,6 @@ public class ActionHistory {
      * change.
      */
     public void clear() {
-        // If the clear function doesn't actually free memory fast enough,
-        // uncomment this code. This code would "unnecessarily" make the clear
-        // function O(n) instead of O(1), but it helps a (the) generational GC
-        // if the discarded nodes inhabit more than one generation.
-
-        /*
-         * ActionNode cursor = head.next;
-         * while (cursor != tail) {
-         *     ActionNode temp = cursor;
-         *     cursor = cursor.next;
-         *     temp.action = null;
-         *     temp.previous = null;
-         *     temp.next = null;
-         * }
-         */
 
         head.next = tail;
         tail.previous = head;
