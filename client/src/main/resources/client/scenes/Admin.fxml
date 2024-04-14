@@ -86,12 +86,12 @@
                      <buttons>
                          <Button fx:id="saveToJSON" mnemonicParsing="false" onAction="#saveToJson" styleClass="blackButton" text="Save to JSON">
                              <font>
-                                 <Font name="System" size="12.0" />
+                                 <Font size="12.0" />
                              </font>
                          </Button>
                          <Button fx:id="deleteEvent" mnemonicParsing="false" onAction="#deleteEvent" styleClass="blackButton" text="Delete Event">
                              <font>
-                                 <Font name="System" size="12.0" />
+                                 <Font size="12.0" />
                              </font>
                          </Button>
                      </buttons>

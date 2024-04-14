@@ -18,14 +18,14 @@
         </padding>
         <TextField fx:id="expenseName" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" prefWidth="306.0" promptText="Enter name of the expense..." styleClass="text-field-splitty">
             <font>
-                <Font name="System" size="16.0" />
+                <Font size="16.0" />
             </font>
     </TextField>
         <HBox spacing="20.0">
             <!--                <Button fx:id="addExpense" cancelButton="true" layoutX="217.0" layoutY="208.0" mnemonicParsing="false" onAction="#addExpense" prefHeight="26.0" prefWidth="55.0" style="-fx-background-color: #0d0d0d;" text="Add" textFill="#fefdfd" />-->
             <TextField fx:id="price" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="40.0" promptText="Enter price..." styleClass="text-field-splitty" HBox.hgrow="ALWAYS">
                 <font>
-                    <Font name="System" size="16.0" />
+                    <Font size="16.0" />
                 </font>
             </TextField>
             <ChoiceBox fx:id="currency" prefHeight="40.0" prefWidth="69.0">
@@ -70,7 +70,7 @@
         <HBox spacing="20.0">
             <Button fx:id="cancel" cancelButton="true" minWidth="250.0" mnemonicParsing="false" onAction="#cancel" prefHeight="40.0" styleClass="blackButton" HBox.hgrow="ALWAYS">
                 <font>
-                    <Font name="System" size="18.0" />
+                    <Font size="18.0" />
                 </font>
                 <cursor>
                     <Cursor fx:constant="HAND" />
@@ -78,7 +78,7 @@
             </Button>
             <Button fx:id="addExpense" maxWidth="1.7976931348623157E308" minWidth="300.0" mnemonicParsing="false" prefHeight="40.0" styleClass="blackButton" text="Add Expense" HBox.hgrow="ALWAYS">
                 <font>
-                    <Font name="System" size="18.0" />
+                    <Font size="18.0" />
                 </font>
                 <cursor>
                     <Cursor fx:constant="HAND" />

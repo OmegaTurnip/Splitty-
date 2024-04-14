@@ -26,10 +26,4 @@ public class MainCtrlTest {
     public void setup() {
         sut = new MainCtrl();
     }
-
-    @Test
-    public void writeSomeTests() {
-        // TODO create replacement objects and write some tests
-        // sut.initialize(null, null, null);
-    }
 }
