@@ -135,6 +135,9 @@ public class AddExpenseCtrl extends TextPage
         payerSelection();
         tagSelection();
         participantSelection();
+        payer.getStyleClass().add("expense_choice_box");
+        currency.getStyleClass().add("expense_choice_box");
+        participants.getStyleClass().add("participants_check_combo_box");
         addExpense.setOnAction(event -> {
             getCheckedParticipants();
             try {
