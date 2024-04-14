@@ -22,18 +22,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class DebtPageCtrl extends TextPage
         implements Initializable, PriceHandler {
 
-    /*
-     * ServerUtils:
-     * simplifyDebts(Event, Currency)
-     * getTransactionsOfEvent(Event, Currency)
-     * getSumOfAllExpenses(Event, Currency)
-     * getBalanceOfParticipants(Event, Currency)
-     *
-     * Any additional information needed in the payment instruction is 'stored'
-     * in debt.to() (retrieved using simplifyDebts(Event, Currency)).
-     *
-     * All requests should be made using the preferred currency of the user.
-     */
 
     @FXML
     private Accordion openDebtsList;
