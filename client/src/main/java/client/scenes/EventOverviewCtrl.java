@@ -2,6 +2,7 @@ package client.scenes;
 
 
 import client.history.ActionHistory;
+import client.language.Formatter;
 import client.language.Language;
 import client.language.Text;
 import client.utils.UserConfig;
@@ -292,10 +293,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
             refreshText();
             if (event != null) {
                 Currency currency = UserConfig.get().getPreferredCurrency();
-                sumOfExpenses.setText("Sum of expenses: " +
-                        server.getSumOfAllExpenses(event,
-                                currency).getAmount().toString() +
-                        " " + currency.getCurrencyCode());
                 setParticipantBalances(
                         server.getSharesOfParticipants(event, currency));
                 ObservableList<Participant> observableParticipants =
@@ -575,9 +572,20 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
             transactionCellController.refreshText();
             expensesListView.refresh();
         }
-        if (event != null) eventNameLabel.setText(event.getEventName());
-        refreshIcon(Translator.getCurrentLanguage().getLanguageCode(),
+        if (event != null) {
+            eventNameLabel.setText(event.getEventName());
+            refreshIcon(Translator.getCurrentLanguage().getLanguageCode(),
                 languageMenu, Language.languages);
+
+            HashMap<String, String> params = new HashMap<>();
+            // me and all my homies hate caching
+            params.put("sum", server.getSumOfAllExpenses(event,
+                UserConfig.get().getPreferredCurrency())
+                    .format(Translator.getLocale()));
+            sumOfExpenses.setText(Formatter.format(
+                Translator.getTranslation(
+                        Text.EventOverview.sumOfExpenses),
+                params));}
     }
 
     /**

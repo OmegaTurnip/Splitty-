@@ -32,6 +32,9 @@ public class Text {
         public static final String participantsLabel = level
                 + "participantsLabel";
 
+        public static final String sumOfExpenses = level
+                + "sumOfExpenses";
+
         public static final String expensesDropDown = level
                 + "expensesDropDown";
 
