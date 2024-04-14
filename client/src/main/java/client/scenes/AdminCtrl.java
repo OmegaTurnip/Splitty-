@@ -9,6 +9,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import commons.Event;
+import commons.Participant;
+import commons.Transaction;
 import jakarta.inject.Inject;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -352,6 +354,9 @@ public class AdminCtrl extends TextPage implements Initializable {
             if (result == ButtonType.OK) {
                 try {
                     events.remove(selectedEvent.getId());
+//                    for (Transaction t : selectedEvent.getTransactions()) {
+//                        server.removeTransaction(t, selectedEvent);
+//                    }
                     server.deleteEvent(selectedEvent, password);
                     refresh();
                 } catch (Exception e) {
