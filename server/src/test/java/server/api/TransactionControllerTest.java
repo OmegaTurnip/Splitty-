@@ -82,7 +82,6 @@ public class TransactionControllerTest {
         assertEquals(retPart.getBody().getParticipants(), editTransaction.getParticipants());
         assertEquals(retPart.getBody().getDate(), editTransaction.getDate());
         assertEquals(retPart.getBody().getTag(), editTransaction.getTag());
-        assertEquals(retPart.getBody().getEvent(), editTransaction.getEvent());
     }
 
     @Test
@@ -104,14 +103,5 @@ public class TransactionControllerTest {
     void deleteTransactionNotFound() {
         var retTransaction = sut.deleteTransaction(testEvent1.getId(), transaction.getTransactionId());
         assertEquals(ResponseEntity.notFound().build(), retTransaction);
-    }
-
-    @Test
-    void deleteTransactionBadRequest() {
-        eventRepo.save(testEvent1);
-        sut.addTransaction(testEvent1.getId(), transaction);
-        transaction.setEvent(new Event());
-        var retPart = sut.deleteTransaction(testEvent1.getId(), transaction.getTransactionId());
-        assertEquals(retPart, ResponseEntity.badRequest().build());
     }
 }

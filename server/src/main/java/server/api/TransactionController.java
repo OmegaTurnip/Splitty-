@@ -147,11 +147,6 @@ public class TransactionController {
         if (event == null || transaction == null) {
             return ResponseEntity.notFound().build();
         }
-
-        if( transaction.getEvent() == null
-                || !Objects.equals(transaction.getEvent().getId(), eventId)){
-            return ResponseEntity.badRequest().build();
-        }
         return ResponseEntity.ok(transaction);
     }
 
@@ -174,8 +169,7 @@ public class TransactionController {
         if(updateTransaction == null || event == null) {
             return ResponseEntity.notFound().build();
         }
-        if (!transaction.validate()
-                || !(transaction.getEvent().getId().equals(eventId))) {
+        if (!transaction.validate()) {
             return ResponseEntity.badRequest().build();
         }
 
@@ -209,7 +203,6 @@ public class TransactionController {
         if (event.isEmpty()){
             return ResponseEntity.badRequest().build();
         }
-        transaction.setEvent(event.get());
         transaction.setPayer(event.get().getParticipantById(
                 transaction.getPayer().getParticipantId()
         ));
@@ -251,7 +244,6 @@ public class TransactionController {
         if (event.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        transaction.setEvent(event.get());
         transaction.setPayer(event.get().getParticipantById(
                 transaction.getPayer().getParticipantId()
         ));
@@ -296,11 +288,6 @@ public class TransactionController {
         var optionalEvent = eventRepository.findById(eventId);
         if(optionalEvent.isEmpty()) return ResponseEntity.badRequest().build();
         Event event = optionalEvent.get();
-
-        if(transaction.getEvent() == null
-                || !Objects.equals(transaction.getEvent().getId(), eventId)){
-            return ResponseEntity.badRequest().build();
-        };
 
         event.deleteTransaction(transaction);
 

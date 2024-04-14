@@ -74,7 +74,7 @@ class TransactionCellControllerTest {
         sut.setTransaction(transaction);
         doNothing().when(eventOverviewCtrl).refresh();
         when(alertWrapper.showAlertButton(any(Alert.AlertType.class), anyString(), anyString())).thenReturn(ButtonType.OK);
-        when(server.removeTransaction(any(Transaction.class))).thenReturn(transaction);
+        when(server.removeTransaction(any(Transaction.class), any(Event.class))).thenReturn(transaction);
     }
 
     @Test
@@ -89,9 +89,9 @@ class TransactionCellControllerTest {
         ActionHistory actionHistory = sut.getActionHistory();
         assertEquals(0, event.getTransactions().size());
         actionHistory.undo();
-        verify(server, times(1)).undoDeleteTransaction(any(Transaction.class));
+        verify(server, times(1)).undoDeleteTransaction(any(Transaction.class), any());
         actionHistory.redo();
-        verify(server, times(1)).removeTransaction(any(Transaction.class));
+        verify(server, times(1)).removeTransaction(any(Transaction.class), any(Event.class));
         assertThrows(NoRedoActionsLeftException.class, () -> sut.getActionHistory().redo());
     }
 

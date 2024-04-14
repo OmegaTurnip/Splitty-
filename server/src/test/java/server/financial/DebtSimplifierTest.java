@@ -85,7 +85,7 @@ class DebtSimplifierTest {
         assertNotEquals(debt2, debt3);
 
         assertEquals(debt1.hashCode(), debt2.hashCode());
-        assertEquals("Debt { from Participant { 'Anna' (id: 0) in the event 'test event' } to Participant { 'Bram' (id: 1) in the event 'test event' } is Money { 10.00 EUR } }",
+        assertEquals("Debt { from Participant { 'Anna' (id: 0) } to Participant { 'Bram' (id: 1) } is Money { 10.00 EUR } }",
                 debt1.toString());
     }
 
@@ -389,13 +389,13 @@ class DebtSimplifierTest {
         Set<Debt> expected = new HashSet<>();
 
         expected.add(new Debt(
-                participants.get(0),
+                participants.get(2),
                 participants.get(3),
                 money1
         ));
 
         expected.add(new Debt(
-                participants.get(2),
+                participants.get(0),
                 participants.get(5),
                 money1
         ));

@@ -162,10 +162,11 @@ public class ServerUtils {
     /**
      * Removes a participant from the database
      * @param participant the participant to remove
+     * @param event the event
      * @return removed participant
      */
-    public Participant removeParticipant(Participant participant) {
-        var path = "api/event/" + participant.getEvent().getId() +
+    public Participant removeParticipant(Participant participant, Event event) {
+        var path = "api/event/" + event.getId() +
                 "/participants/" + participant.getParticipantId();
         return client
                 .target(server).path(path)
@@ -227,11 +228,13 @@ public class ServerUtils {
      * @return The event
      */
     public Event joinEvent(String code) {
-        return client
+        List<Event> events = client
                 .target(server).path("api/event/invite/" + code)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(Event.class);
+                .get(new GenericType<>() {});
+        if (!events.isEmpty()) return events.get(0);
+        return null;
     }
 
     /**
@@ -303,17 +306,17 @@ public class ServerUtils {
         /**
          * Creates a participant
          * @param participant participant to create
+         * @param event the event
          * @return created participant
          */
-    public Participant saveParticipant(Participant participant){
+    public Participant saveParticipant(Participant participant, Event event){
         Participant returned = client
-                .target(server).path("/api/event/" + participant.getEvent()
-                        .getId() + "/participants")
+                .target(server).path("/api/event/"
+                        + event.getId() + "/participants")
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(participant, APPLICATION_JSON),
                         Participant.class);
-        returned.setEvent(participant.getEvent());
         return returned;
     }
 
@@ -584,10 +587,11 @@ public class ServerUtils {
     /**
      * Remove transaction from db
      * @param transaction the transaction to remove
+     * @param event event
      * @return the removed transaction
      */
-    public Transaction removeTransaction(Transaction transaction) {
-        var path = "api/event/" + transaction.getEvent().getId() +
+    public Transaction removeTransaction(Transaction transaction, Event event) {
+        var path = "api/event/" + event.getId() +
                 "/transactions/" + transaction.getTransactionId();
         return client
                 .target(server).path(path)
@@ -599,21 +603,17 @@ public class ServerUtils {
     /**
      * saves an transaction
      * @param transaction transaction to be saved
+     * @param event event
      * @return Transaction that is saved
      */
-    public Transaction saveTransaction(Transaction transaction) {
+    public Transaction saveTransaction(Transaction transaction, Event event) {
         Transaction returned = client
-                .target(server).path("/api/event/" + transaction.getEvent()
-                        .getId() + "/transactions")
+                .target(server).path("/api/event/" +
+                        event.getId() + "/transactions")
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(transaction, APPLICATION_JSON),
                         Transaction.class);
-        returned.setEvent(transaction.getEvent());
-        returned.getPayer().setEvent(transaction.getEvent());
-        for (Participant participant : returned.getParticipants()) {
-            participant.setEvent(transaction.getEvent());
-        }
         return returned;
     }
 
@@ -631,21 +631,17 @@ public class ServerUtils {
     /**
      * Undo delete transaction
      * @param transaction the transaction to undo delete
+     * @param event event
      * @return the transaction that is undone
      */
-    public Transaction undoDeleteTransaction(Transaction transaction) {
-        Transaction returned = client
-                .target(server).path("/api/event/" + transaction.getEvent()
-                        .getId() + "/transactions/undoDelete")
+    public Transaction undoDeleteTransaction(Transaction transaction,
+                                             Event event) {
+        return client
+                .target(server).path("/api/event/" +
+                        event.getId() + "/transactions/undoDelete")
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(transaction, APPLICATION_JSON),
                         Transaction.class);
-        returned.setEvent(transaction.getEvent());
-        returned.getPayer().setEvent(transaction.getEvent());
-        for (Participant participant : returned.getParticipants()) {
-            participant.setEvent(transaction.getEvent());
-        }
-        return returned;
     }
 }

@@ -67,12 +67,6 @@ class TransactionTest {
         assertEquals(Money.fromLong(736574, "EUR"), testTransaction1.getAmount());
     }
 
-
-    @Test
-    void getEvent() {
-        assertEquals(testEvent, testTransaction1.getEvent());
-    }
-
     @Test
     void getId() {
         testTransaction3.setTransactionId((long) 2);

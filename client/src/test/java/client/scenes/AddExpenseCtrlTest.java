@@ -262,7 +262,7 @@ public class AddExpenseCtrlTest extends ApplicationTest {
         event.removeTransaction(expectedResult);
         expectedResult.setTransactionId(1L);
 
-        when(server.saveTransaction(any(Transaction.class))).thenReturn(expectedResult);
+        when(server.saveTransaction(any(Transaction.class), any(Event.class))).thenReturn(expectedResult);
         sut.registerExpense(test);
         assertEquals(expectedResult, event.getTransactions().getLast());
     }
