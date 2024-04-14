@@ -37,6 +37,10 @@ public class Text {
 
         public static final String expensesDropDown = level
                 + "expensesDropDown";
+        public static final String participantInfoOwes = level +
+                "participantInfoOwes";
+        public static final String participantInfoIsOwed = level +
+                "participantInfoIsOwed";
 
         public static final class ExpenseListing {
             private static final String level = EventOverview.level +

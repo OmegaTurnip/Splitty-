@@ -297,7 +297,6 @@ public class StartUpCtrl extends TextPage implements Initializable {
             currentEvents.add(result);
             eventCodes.add(code);
             server.getUserSettings().setEventCodes(eventCodes);
-            System.out.println("Event: " + result.getEventName() + " joined!");
         } catch (NotFoundException e) {
             alertWrapper.showAlert(Alert.AlertType.INFORMATION,
                     "Invalid invite code",
@@ -336,10 +335,6 @@ public class StartUpCtrl extends TextPage implements Initializable {
             List<String> eventCodes = server.getUserSettings().getEventCodes();
             eventCodes.add(result.getInviteCode());
             server.getUserSettings().setEventCodes(eventCodes);
-//            currentEvents.add(result); //Might lead to bugs in the UI
-            System.out.println("Event: " + result.getEventName() + " created!" +
-                    " Invite code: " + result.getInviteCode() + " added!" +
-                    " Time of last edit: " + result.getLastActivity());
         } catch (WebApplicationException e) {
             e.printStackTrace();
             return;
@@ -348,7 +343,6 @@ public class StartUpCtrl extends TextPage implements Initializable {
         }
 
         clearFields();
-//        mainCtrl.showStartUp();
         refresh();
     }
 
@@ -402,7 +396,6 @@ public class StartUpCtrl extends TextPage implements Initializable {
 
             refreshText();
             yourEvents.getSelectionModel().clearSelection();
-            System.out.println("Page has been refreshed!");
         });
 
     }
@@ -461,9 +454,6 @@ public class StartUpCtrl extends TextPage implements Initializable {
                     eventCodes.remove(selected.getInviteCode());
                     server.getUserSettings().setEventCodes(eventCodes);
                     currentEvents.remove(selected);
-                    System.out.println("Event: "
-                            + selected.getEventName()
-                            + " removed!");
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

@@ -12,9 +12,6 @@ class ActionHistoryTest {
     private ActionHistory history3;
     private Action testAction1;
 
-    // **PLEASE** don't do this in the actual codebase. If your Action needs to
-    // store state or other attributes, please actually properly implement the
-    // Action interface with a real class.
     private String lastCall;
 
     @BeforeEach

@@ -34,11 +34,6 @@ public class UserConfig {
     // key: "currency"
     private Currency preferredCurrency;
 
-    // When adding new attributes, don't forget to:
-    //  - add getters, setters
-    //  - update read()
-    //  - update the attribute only after writing to the file to prevent desyncs
-    //    in the case an IOException is thrown.
 
 
     /**

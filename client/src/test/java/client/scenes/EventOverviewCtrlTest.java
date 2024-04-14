@@ -9,10 +9,7 @@ import client.utils.ServerUtils;
 import client.utils.UserConfig;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import commons.Event;
-import commons.Money;
-import commons.Participant;
-import commons.Transaction;
+import commons.*;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
@@ -116,10 +113,8 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         sut.setEvent(event);
         event.addParticipant("testParticipant1");
         Participant participant1 = event.getParticipants().get(0);
-        server.saveParticipant(participant1, event);
         event.addParticipant("testparticipant2");
         Participant participant2 = event.getParticipants().get(1);
-        server.saveParticipant(participant2, event);
 
         sut.addExpense();
         AddExpenseCtrl addExpenseCtrlMock = new AddExpenseCtrl(server,mainCtrl);
@@ -138,7 +133,12 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         when(mockCurrency.getValue()).thenReturn("EUR");
         Money amount = new Money(new BigDecimal(5),  Currency.getInstance("EUR"));
         when(server.convertMoney(any(Money.class), any(Currency.class), any(LocalDate.class))).thenReturn(amount);
-
+        when(server.getSumOfAllExpenses(any(Event.class), any(Currency.class))).thenReturn(amount);
+        Set<ParticipantValuePair> map = new HashSet<>();
+        map.add(new ParticipantValuePair(participant1, amount));
+        map.add(new ParticipantValuePair(participant2, amount));
+        when(server.getBalanceOfParticipants(any(Event.class), any(Currency.class))).thenReturn(map);
+        when(server.getSharesOfParticipants(any(Event.class), any(Currency.class))).thenReturn(map);
         Transaction transaction = addExpenseCtrlMock.getExpense();
         server.saveEvent(event);
         sut.refresh();
@@ -146,7 +146,6 @@ public class EventOverviewCtrlTest extends ApplicationTest {
         transaction.setTransactionId(1L);
         equalTransaction.setTransactionId(1L);
         assertEquals(transaction, equalTransaction);
-        when(server.getSumOfAllExpenses(any(Event.class), any(Currency.class))).thenReturn(amount);
         Thread.sleep(500);
         Transaction transaction1 = sut.getExpensesListView().getItems().getFirst();
         assertEquals(transaction1, transaction);

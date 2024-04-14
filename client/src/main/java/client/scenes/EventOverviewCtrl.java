@@ -6,7 +6,7 @@ import client.language.Formatter;
 import client.language.Language;
 import client.language.Text;
 import client.utils.UserConfig;
-import commons.ParticipantValuePair;
+import commons.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,9 +18,6 @@ import client.language.TextPage;
 import client.language.Translator;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
-import commons.Event;
-import commons.Participant;
-import commons.Transaction;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -93,7 +90,8 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
 
     private TransactionCellController transactionCellController;
     private ActionHistory actionHistory;
-    private Map<Participant, BigDecimal> participantBalances;
+    private Map<Participant, Money> participantShares;
+    private Map<Participant, Money> participantBalances;
 
     /**
      * Initializes the controller
@@ -122,6 +120,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         fetchLanguages();
+        participantShares = new HashMap<>();
         participantBalances = new HashMap<>();
         participantsListView.setCellFactory(param ->
                 new ParticipantCellFactory());
@@ -142,7 +141,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     private void registerForEventUpdate() {
         server.registerForMessages("/topic/admin", Event.class, e -> {
             if (event.equals(e)) event = e; //Overwrite current event
-            System.out.println("Received event: " + event.getEventName());
             refresh();
         });
     }
@@ -151,7 +149,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         server.registerForMessages("/topic/actionHistory", Event.class, e -> {
             if (event.equals(e)) {
                 actionHistory.clear();
-                System.out.println("Action history cleared");
             }
 
         });
@@ -175,7 +172,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
 
         server.registerForMessages("/topic/actionHistory", String.class, b -> {
             actionHistory.clear();
-            System.out.println(b);
         });
         refresh();
     }
@@ -186,8 +182,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                     try {
                         Platform.runLater(() -> updateTransactions(t));
                         Platform.runLater(this::refresh);
-                        System.out.println("Received transaction: "
-                                + t.getName());
                     } catch (Exception e) {
                         System.err.println("An error occurred: "
                                 + e.getMessage());
@@ -204,8 +198,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                             event.removeTransaction(t);
                             Platform.runLater(() -> getExpenses());
                             Platform.runLater(this::refresh);
-                            System.out.println("Deleted transaction: "
-                                    + t.getName());
                         } catch (Exception e) {
                             System.err.println("An error occurred: "
                                     + e.getMessage());
@@ -252,12 +244,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     public void undo() {
         if (actionHistory.hasUndoActions()) {
             actionHistory.undo();
-        } else {
-//            alertWrapper.showAlert(Alert.AlertType.INFORMATION,
-//                    Translator.getTranslation(
-//                            Text.EventOverview.Alert.noUndoTitle),
-//                    Translator.getTranslation(
-//                            Text.EventOverview.Alert.noUndoContent));
         }
     }
 
@@ -267,12 +253,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
     public void redo() {
         if (actionHistory.hasRedoActions()) {
             actionHistory.redo();
-        } else {
-//            alertWrapper.showAlert(Alert.AlertType.INFORMATION,
-//                    Translator.getTranslation(
-//                            Text.EventOverview.Alert.noRedoTitle),
-//                    Translator.getTranslation(
-//                            Text.EventOverview.Alert.noRedoContent));
         }
     }
 
@@ -293,8 +273,10 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
             refreshText();
             if (event != null) {
                 Currency currency = UserConfig.get().getPreferredCurrency();
-                setParticipantBalances(
+                setParticipantShares(
                         server.getSharesOfParticipants(event, currency));
+                setParticipantBalances(
+                        server.getBalanceOfParticipants(event, currency));
                 ObservableList<Participant> observableParticipants =
                         FXCollections.observableArrayList(
                                 event.getParticipants());
@@ -505,7 +487,6 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         expensesListView.getItems().clear();
         switch (choice) {
             case "AllExpenses":
-                System.out.println("all clicked");
                 expensesListView.setItems(transactions);
                 break;
             case "ExpenseIncludingParticipant":
@@ -579,14 +560,19 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                 languageMenu, Language.languages);
 
             HashMap<String, String> params = new HashMap<>();
-            // me and all my homies hate caching
             params.put("sum", server.getSumOfAllExpenses(event,
                 UserConfig.get().getPreferredCurrency())
                     .format(Translator.getLocale()));
             sumOfExpenses.setText(Formatter.format(
                 Translator.getTranslation(
                         Text.EventOverview.sumOfExpenses),
-                params));}
+                params));
+            getExpenses();
+            ObservableList<Participant> observableParticipants =
+                    FXCollections.observableArrayList(
+                            event.getParticipants());
+            participantsListView.setItems(observableParticipants);
+        }
     }
 
     /**
@@ -639,12 +625,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                     }
                 }
                 ParticipantCellController controller = loader.getController();
-                String participantInfo = item.getName();
-                if (participantBalances.containsKey(item)) {
-                    participantInfo += " has paid " +
-                            participantBalances.get(item);
-                }
-                controller.setParticipantCellLabelText(participantInfo);
+                setParticipantInfo(item, controller);
                 controller.setEvent(event);
                 controller.setParticipant(item);
                 controller.setServer(server);
@@ -656,6 +637,43 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
             }
 
         }
+
+        private void setParticipantInfo(Participant item,
+                                        ParticipantCellController controller) {
+            HashMap<String, String> participantInfo = new HashMap<>();
+            participantInfo.put("participant", item.getName());
+            participantInfo.put("share",
+                    participantShares.get(item)
+                            .format(Translator.getLocale()));
+            participantInfo.put("debt",
+                    participantBalances.get(item)
+                            .format(Translator.getLocale()));
+            if (participantBalances.get(item).getAmount()
+                    .compareTo(BigDecimal.ZERO) <= 0) {
+                controller.setParticipantCellLabelText(Formatter.format(
+                        Translator.getTranslation(
+                                Text.EventOverview.participantInfoOwes),
+                        participantInfo));
+            } else if (participantBalances.get(item).getAmount()
+                    .compareTo(BigDecimal.ZERO) > 0) {
+                controller.setParticipantCellLabelText(Formatter.format(
+                        Translator.getTranslation(
+                                Text.EventOverview.participantInfoIsOwed),
+                        participantInfo));
+            }
+        }
+    }
+
+    /**
+     * Makes a map out of the shares for participants
+     * @param participantValuePairSet the set of participantvaluepairs
+     */
+    public void setParticipantShares(Set<ParticipantValuePair>
+                                               participantValuePairSet) {
+        participantShares.clear();
+        for (ParticipantValuePair p : participantValuePairSet) {
+            participantShares.put(p.participant(), p.money());
+        }
     }
 
     /**
@@ -663,12 +681,15 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
      * @param participantValuePairSet the set of participantvaluepairs
      */
     public void setParticipantBalances(Set<ParticipantValuePair>
-                                               participantValuePairSet) {
+                                             participantValuePairSet) {
         participantBalances.clear();
         for (ParticipantValuePair p : participantValuePairSet) {
-            participantBalances.put(p.participant(), p.money().getAmount());
+            participantBalances.put(p.participant(),
+                    new Money(p.money().getAmount().abs(),
+                            p.money().getCurrency()));
         }
     }
+
     private class TransactionCellFactory extends ListCell<Transaction> {
 
         private FXMLLoader loader;
