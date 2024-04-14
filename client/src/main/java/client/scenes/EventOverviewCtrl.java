@@ -656,7 +656,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
             if (participantBalances.get(item).getAmount()
                     .compareTo(BigDecimal.ZERO) <= 0) {
                 Money money = new Money(participantBalances
-                        .get(item).getAmount(),
+                        .get(item).getAmount().abs(),
                         participantBalances.get(item).getCurrency());
                 participantInfo.put("debt",
                         money.format(Translator.getLocale()));
