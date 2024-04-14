@@ -32,8 +32,15 @@ public class Text {
         public static final String participantsLabel = level
                 + "participantsLabel";
 
+        public static final String sumOfExpenses = level
+                + "sumOfExpenses";
+
         public static final String expensesDropDown = level
                 + "expensesDropDown";
+        public static final String participantInfoOwes = level +
+                "participantInfoOwes";
+        public static final String participantInfoIsOwed = level +
+                "participantInfoIsOwed";
 
         public static final class ExpenseListing {
             private static final String level = EventOverview.level +
@@ -325,6 +332,40 @@ public class Text {
             public static final String noCurrencyContent = level +
                     "noCurrencyContent";
         }
+
+    }
+
+    public static final class DebtPage {
+        private static final String level = "DebtPage.";
+        public static final String noPaymentInstructions = level +
+                "noPaymentInstructions";
+
+        public static final String moneyTransfer = level + "moneyTransfer";
+
+        public static final String settleTransfer = level + "settleTransfer";
+
+        public static final String noOpenDebts = level + "noOpenDebts";
+
+        public static final String openDebts = level + "openDebts";
+
+        public static final String debtTitle = level + "debtTitle";
+
+        public static final String settleDebt = level + "settleDebt";
+
+        public static final String cancel = level + "cancel";
+
+        public static final class Alert {
+            public static final String level = DebtPage.level + "Alert.";
+
+            public static final String invalidPayoffAmountTitle = level +
+                    "invalidPayoffAmountTitle";
+
+            public static final String invalidPayoffAmountContent = level +
+                    "invalidPayoffAmountContent";
+
+
+        }
+
 
     }
 
