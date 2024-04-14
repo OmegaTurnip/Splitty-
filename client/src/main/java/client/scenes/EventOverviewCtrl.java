@@ -483,6 +483,10 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                                 Text.EventOverview.Alert.notSelectedTitle),
                         Translator.getTranslation(
                                 Text.EventOverview.Alert.notSelectedContent));
+                selectExpenses.getSelectedToggle().setSelected(false);
+                selectExpenses.selectToggle(allExpensesButton);
+                getExpenses();
+                return;
             }
             List<Transaction> transactionList =
                     event.getTransactions().stream()
@@ -728,7 +732,8 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
             if (buttonType == copyButtonType) {
                 Clipboard clipboard = Clipboard.getSystemClipboard();
                 ClipboardContent content = new ClipboardContent();
-                content.putString(event.getInviteCode());
+                String str = event.getInviteCode();
+                content.putString(str);
                 clipboard.setContent(content);
                 mainCtrl.showEventOverview(event);
             } return null;
