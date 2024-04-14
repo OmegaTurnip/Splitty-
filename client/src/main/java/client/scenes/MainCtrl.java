@@ -327,7 +327,7 @@ public class MainCtrl {
      */
     public void showOpenDebts(Event event) {
         debtPageCtrl.setEvent(event);
-        debtPageCtrl.refresh();
+        debtPageCtrl.refreshText();
         debtPageCtrl.setStartUpDate(LocalDate.now());
         primaryStage.setScene(debtPage);
     }
