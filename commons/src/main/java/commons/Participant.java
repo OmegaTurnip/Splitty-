@@ -1,21 +1,14 @@
 package commons;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.util.Objects;
 @Entity
-@IdClass(ParticipantId.class)
 public class Participant {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long participantId;
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "event_id", nullable = false)
-    @JsonBackReference
-    private Event event;
     private String name;
     private String email;
     private String iban;
@@ -31,7 +24,6 @@ public class Participant {
      */
     Participant(String name, Event event) {
         this.name = name;
-        this.event = event;
     }
 
     /**
@@ -44,7 +36,6 @@ public class Participant {
      */
     Participant(Event event, String name,
                 String email, String iban, String bic) {
-        this.event = event;
         this.name = name;
         this.email = email;
         this.iban = iban;
@@ -75,22 +66,6 @@ public class Participant {
     }
 
     /**
-     * Getter for event
-     * @return event
-     */
-    public Event getEvent() {
-        return event;
-    }
-
-    /**
-     * Sets the event for a participant
-     * @param event the event to set
-     */
-    public void setEvent(Event event) {
-        this.event = event;
-    }
-
-    /**
      * Equals method.
      *
      * @param o Participant to test equality on.
@@ -101,8 +76,7 @@ public class Participant {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Participant that = (Participant) o;
-        return Objects.equals(event, that.event)
-                && Objects.equals(participantId, that.participantId);
+        return Objects.equals(participantId, that.participantId);
     }
 
     /**
@@ -112,7 +86,7 @@ public class Participant {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(event, participantId);
+        return Objects.hash(participantId);
     }
 
     /**
@@ -123,7 +97,7 @@ public class Participant {
     @Override
     public String toString() {
         return "Participant { '" + name +  "' (id: " + participantId +
-                ") in the event '" + event.getEventName() + "' }";
+                ") }";
     }
 
     /**

@@ -73,16 +73,8 @@ public class EventController {
         if (event.getEventName().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        for(Tag tag : event.getTags()){
-            tag.setEvent(event);
-        }
-// checks that the participants that are equal become the same instance
-        for (Participant participant : event.getParticipants()) {
-            participant.setEvent(event);
-        }
 
         for (Transaction transaction : event.getTransactions()) {
-            transaction.setEvent(event);
             transaction.setPayer(event.getParticipantById(
                     transaction.getPayer().getParticipantId()
             ));

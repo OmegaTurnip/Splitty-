@@ -7,6 +7,7 @@ import client.utils.ServerUtils;
 import client.utils.UserConfig;
 import commons.Event;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -292,12 +293,15 @@ public class StartUpCtrl extends TextPage implements Initializable {
                 );
             }
             Event result = server.joinEvent(code);
+            if (result == null) throw new NotFoundException();
             currentEvents.add(result);
             eventCodes.add(code);
             server.getUserSettings().setEventCodes(eventCodes);
             System.out.println("Event: " + result.getEventName() + " joined!");
-        } catch (WebApplicationException e) {
-            e.printStackTrace();
+        } catch (NotFoundException e) {
+            alertWrapper.showAlert(Alert.AlertType.INFORMATION,
+                    "Invalid invite code",
+                    "No event with that invite code exists");
             return;
         } catch (IOException e) {
             throw new RuntimeException(e);

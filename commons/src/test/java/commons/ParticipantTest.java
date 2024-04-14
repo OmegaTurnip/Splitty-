@@ -48,26 +48,10 @@ class ParticipantTest{
             testParticipant1.setName("Joshua");
             assertEquals("Joshua", testParticipant1.getName());
         }
-
-        @Test
-        void getEvent() {
-            assertEquals(testParticipant1.getEvent(), testParticipant2.getEvent());
-        }
-
-//        @Test
-//        void testEquals() {
-//            assertNotEquals(testParticipant1, testParticipant3);
-//        }
         @Test
         void testNotEquals() {
             assertNotEquals(testParticipant1, testParticipant2);
         }
-
-//        @Test
-//        void differentNamesNotEquals() {
-//            testParticipant1.setName("Joshua");
-//            assertNotEquals(testParticipant1, testParticipant3);
-//        }
 
         @Test
         void testHashCode() {

@@ -1,7 +1,6 @@
 package commons;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -10,17 +9,10 @@ import java.util.*;
 
 
 @Entity
-@IdClass(TransactionId.class)
-//@JsonIgnoreProperties(ignoreUnknown = true)
 public class Transaction {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long transactionId;
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "event_id", nullable = false)
-    @JsonBackReference
-    private Event event;
     @ManyToOne
     private Participant payer;
     private String name;
@@ -65,8 +57,7 @@ public class Transaction {
         this.date = date;
         this.amount = amount;
         this.participants = participants;
-        this.event = event;
-//        event.updateLastActivity();
+        //        event.updateLastActivity();
         this.tag = tag;
         this.payoff = isPayoff;
         event.updateLastActivity();
@@ -226,14 +217,6 @@ public class Transaction {
     }
 
     /**
-     * Getter method for event
-     * @return the corresponding Event
-     */
-    public Event getEvent() {
-        return event;
-    }
-
-    /**
      * Getter of the tag
      * @return tag
      */
@@ -248,7 +231,7 @@ public class Transaction {
      * @return  Whether this {@code Transaction} is valid.
      */
     public boolean validate() {
-        return event != null && name != null && !name.isEmpty() && payer != null
+        return name != null && !name.isEmpty() && payer != null
                 && amount != null && participants != null
                 && !participants.isEmpty();
     }
@@ -266,8 +249,7 @@ public class Transaction {
         if (this == other) return true;
         if (other == null || getClass() != other.getClass()) return false;
         Transaction that = (Transaction) other;
-        return Objects.equals(transactionId, that.transactionId)
-                && Objects.equals(event, that.event);
+        return Objects.equals(transactionId, that.transactionId);
     }
 
     /**
@@ -277,7 +259,7 @@ public class Transaction {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(event, transactionId);
+        return Objects.hash(transactionId);
     }
 
     /**
@@ -313,14 +295,6 @@ public class Transaction {
     }
 
     /**
-     * Setter for event
-     * @param event the event to set
-     */
-    public void setEvent(Event event) {
-        this.event = event;
-    }
-
-    /**
      * getter for EventId
      * @return the eventId
      */
@@ -346,7 +320,6 @@ public class Transaction {
     public String toString() {
         return "Transaction{" +
                 "transactionId=" + transactionId +
-                ", event=" + event +
                 ", payer=" + payer +
                 ", name='" + name + '\'' +
                 ", date=" + date +
