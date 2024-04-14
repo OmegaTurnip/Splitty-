@@ -467,6 +467,10 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                                 Text.EventOverview.Alert.notSelectedTitle),
                         Translator.getTranslation(
                                 Text.EventOverview.Alert.notSelectedContent));
+                selectExpenses.getSelectedToggle().setSelected(false);
+                selectExpenses.selectToggle(allExpensesButton);
+                getExpenses();
+                return;
             }
             List<Transaction> transactionList =
                     event.getTransactions().stream()
