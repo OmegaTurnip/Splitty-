@@ -135,7 +135,8 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         registerForActionHistoryClearing();
         registerForUndoDeleteTransactions();
         registerForDeleteTransactions();
-        expensesDropDown.setOnAction(event -> Platform.runLater(() -> getExpenses()));
+        expensesDropDown.setOnAction(event ->
+                Platform.runLater(() -> getExpenses()));
         refresh();
     }
 
