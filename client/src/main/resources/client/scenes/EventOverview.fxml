@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox prefHeight="793.0" prefWidth="598.0" styleClass="backGround" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EventOverviewCtrl">
+<VBox prefHeight="793.0" prefWidth="640.0" styleClass="backGround" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EventOverviewCtrl">
     <MenuBar prefWidth="917.0">
         <Menu fx:id="languageMenu" mnemonicParsing="false" text="Languages" />
         <Menu fx:id="rtoButton" mnemonicParsing="false" text="Return to Overview">

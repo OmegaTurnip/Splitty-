@@ -653,17 +653,22 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
             participantInfo.put("share",
                     participantShares.get(item)
                             .format(Translator.getLocale()));
-            participantInfo.put("debt",
-                    participantBalances.get(item)
-                            .format(Translator.getLocale()));
             if (participantBalances.get(item).getAmount()
                     .compareTo(BigDecimal.ZERO) <= 0) {
+                Money money = new Money(participantBalances
+                        .get(item).getAmount(),
+                        participantBalances.get(item).getCurrency());
+                participantInfo.put("debt",
+                        money.format(Translator.getLocale()));
                 controller.setParticipantCellLabelText(Formatter.format(
                         Translator.getTranslation(
                                 Text.EventOverview.participantInfoOwes),
                         participantInfo));
             } else if (participantBalances.get(item).getAmount()
                     .compareTo(BigDecimal.ZERO) > 0) {
+                participantInfo.put("debt",
+                        participantBalances.get(item)
+                                .format(Translator.getLocale()));
                 controller.setParticipantCellLabelText(Formatter.format(
                         Translator.getTranslation(
                                 Text.EventOverview.participantInfoIsOwed),
@@ -692,9 +697,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                                              participantValuePairSet) {
         participantBalances.clear();
         for (ParticipantValuePair p : participantValuePairSet) {
-            participantBalances.put(p.participant(),
-                    new Money(p.money().getAmount().abs(),
-                            p.money().getCurrency()));
+            participantBalances.put(p.participant(),p.money());
         }
     }
 

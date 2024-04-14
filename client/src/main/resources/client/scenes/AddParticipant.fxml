@@ -32,55 +32,48 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox prefHeight="793.0" prefWidth="640.0" stylesheets="style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddParticipantCtrl">
+<VBox prefHeight="793.0" prefWidth="640.0" styleClass="backGround" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddParticipantCtrl">
   <children>
-    <MenuBar VBox.vgrow="NEVER" styleClass="menu-bar">
+    <MenuBar styleClass="menu-bar" VBox.vgrow="NEVER">
       <menus>
             <Menu fx:id="languageMenu" mnemonicParsing="false" text="Languages" />
       </menus>
     </MenuBar>
-    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="238.0" prefWidth="287.0" VBox.vgrow="ALWAYS" styleClass="backGround">
+      <VBox spacing="20.0">
          <children>
-            <TextField fx:id="usernameTextField" layoutX="86.0" layoutY="45.0" prefHeight="26.0" prefWidth="186.0" />
-            <Label fx:id="title" layoutX="14.0" layoutY="4.0" text="Add a participant" styleClass="title-transparent-bg">
+            <Label fx:id="title" styleClass="title" text="Add a participant">
                <font>
-                  <Font name="System Bold" size="18.0" />
+                  <Font name="System Bold" size="24.0" />
                </font>
             </Label>
-            <Label fx:id="username" layoutX="17.0" layoutY="47.0" text="Name:">
+            <TextField fx:id="usernameTextField" maxWidth="1.7976931348623157E308" prefHeight="40.0" styleClass="text-field-splitty" />
+            <TextField fx:id="emailTextField" maxWidth="1.7976931348623157E308" prefHeight="40.0" styleClass="text-field-splitty" />
+            <TextField fx:id="ibanTextField" maxWidth="1.7976931348623157E308" prefHeight="40.0" styleClass="text-field-splitty" />
+            <TextField fx:id="bicTextField" maxWidth="1.7976931348623157E308" prefHeight="40.0" styleClass="text-field-splitty" />
+         </children>
+         <padding>
+            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+         </padding>
+      </VBox>
+      <HBox spacing="20.0" VBox.vgrow="ALWAYS">
+         <children>
+            <Button fx:id="cancel" cancelButton="true" minWidth="250.0" mnemonicParsing="false" onAction="#cancel" prefHeight="40.0" styleClass="blackButton" text="Cancel" HBox.hgrow="ALWAYS">
                <font>
-                  <Font size="15.0" />
-               </font>
-            </Label>
-            <Button fx:id="cancel" cancelButton="true" layoutX="151.0" layoutY="208.0" mnemonicParsing="false" onAction="#cancel" prefHeight="26.0" prefWidth="55.0" text="Cancel" styleClass="blackButton"/>
-            <Button fx:id="addParticipant" cancelButton="true" layoutX="217.0" layoutY="208.0" mnemonicParsing="false" onAction="#addParticipant" prefHeight="26.0" prefWidth="55.0" text="Add" styleClass="blackButton"/>
-            <TextField fx:id="emailTextField" layoutX="85.0" layoutY="85.0" prefHeight="26.0" prefWidth="186.0" styleClass="text-field-splitty"/>
-            <Label fx:id="username1" layoutX="16.0" layoutY="87.0" text="Email:">
+                  <Font size="18.0" />
+               </font></Button>
+            <Button fx:id="addParticipant" cancelButton="true" maxWidth="1.7976931348623157E308" minWidth="300.0" mnemonicParsing="false" onAction="#addParticipant" prefHeight="40.0" styleClass="blackButton" text="Add" HBox.hgrow="ALWAYS">
                <font>
-                  <Font size="15.0" />
-               </font>
-            </Label>
-            <TextField fx:id="ibanTextField" layoutX="85.0" layoutY="125.0" prefHeight="26.0" prefWidth="186.0" styleClass="text-field-splitty"/>
-            <Label fx:id="username2" layoutX="16.0" layoutY="127.0" text="IBAN:">
-               <font>
-                  <Font size="15.0" />
-               </font>
-            </Label>
-            <TextField fx:id="bicTextField" layoutX="84.0" layoutY="165.0" prefHeight="26.0" prefWidth="186.0" styleClass="text-field-splitty"/>
-            <Label fx:id="username11" layoutX="15.0" layoutY="167.0" text="BIC:">
-               <font>
-                  <Font size="15.0" />
-               </font>
-            </Label>
-         </children></AnchorPane>
+                  <Font size="18.0" />
+               </font></Button>
+         </children>
+         <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </padding>
+      </HBox>
   </children>
 </VBox>

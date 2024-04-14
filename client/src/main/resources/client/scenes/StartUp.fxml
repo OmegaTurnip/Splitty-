@@ -39,7 +39,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox prefHeight="793.0" prefWidth="598.0" styleClass="backGround" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StartUpCtrl">
+<VBox prefHeight="793.0" prefWidth="640.0" styleClass="backGround" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StartUpCtrl">
   <children>
     <MenuBar fx:id="menuBar" styleClass="menu-bar">
       <menus>
