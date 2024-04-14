@@ -101,6 +101,7 @@ public class TransactionCellController {
     void refreshText() {
         paid = Translator.getTranslation(
                 Text.EventOverview.ExpenseListing.paid);
+        transactionInfoLabel.setStyle("-fx-text-fill: #fefdfd");
     }
 
     /**

@@ -24,7 +24,7 @@
                  <padding>
                      <Insets top="25.0" />
                  </padding>
-                 <Label fx:id="openDebtsLabel" styleClass="title-transparent-bg" text="Open Debts">
+                 <Label fx:id="openDebtsLabel" styleClass="title" text="Open Debts">
                     <font>
                         <Font name="Arial" size="24.0" />
                     </font>

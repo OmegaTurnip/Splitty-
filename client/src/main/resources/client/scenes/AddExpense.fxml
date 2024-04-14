@@ -57,7 +57,7 @@
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></ComboBox>
-            <CheckComboBox fx:id="participants" layoutX="86.0" layoutY="245.0" prefHeight="40.0" prefWidth="306.0" styleClass="text-field-splitty">
+            <CheckComboBox fx:id="participants" layoutX="86.0" layoutY="245.0" prefHeight="40.0" prefWidth="306.0" styleClass="choice-box-normal">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></CheckComboBox>
