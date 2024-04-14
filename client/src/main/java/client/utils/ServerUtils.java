@@ -228,11 +228,13 @@ public class ServerUtils {
      * @return The event
      */
     public Event joinEvent(String code) {
-        return client
+        List<Event> events = client
                 .target(server).path("api/event/invite/" + code)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(Event.class);
+                .get(new GenericType<>() {});
+        if (!events.isEmpty()) return events.get(0);
+        return null;
     }
 
     /**
