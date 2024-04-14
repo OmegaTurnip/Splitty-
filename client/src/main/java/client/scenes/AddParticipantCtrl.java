@@ -22,8 +22,6 @@ import java.util.regex.Pattern;
 public class AddParticipantCtrl extends TextPage implements Initializable {
 
     @FXML
-    private Label username;
-    @FXML
     private Label title;
     @FXML
     private Button cancel;
@@ -149,9 +147,12 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
     public void refreshText() {
         languageMenu.setText(
                 Translator.getTranslation(Text.Menu.Languages));
-        username.setText(
+        usernameTextField.setPromptText(
                 Translator.getTranslation(Text.AddParticipant.Username)
         );
+        emailTextField.setPromptText("E-mail");
+        ibanTextField.setPromptText("IBAN");
+        bicTextField.setPromptText("BIC");
         addParticipant.setText(
                 Translator.getTranslation(Text.AddParticipant.Add)
         );
@@ -438,14 +439,14 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
         return title;
     }
 
-    /**
-     * Getter.
-     *
-     * @return The username label.
-     */
-    public Label getUsername() {
-        return username;
-    }
+//    /**
+//     * Getter.
+//     *
+//     * @return The username label.
+//     */
+//    public Label getUsername() {
+//        return username;
+//    }
 
     /**
      * Getter.
