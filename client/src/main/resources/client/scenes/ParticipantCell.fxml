@@ -5,29 +5,29 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<StackPane fx:id="root" alignment="CENTER_RIGHT" minWidth="231.0" prefHeight="44.0" styleClass="participant-cell" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ParticipantCellController">
+<StackPane fx:id="root" alignment="CENTER_RIGHT" maxHeight="-Infinity" minHeight="-Infinity" minWidth="231.0" prefHeight="44.0" styleClass="participant-cell" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ParticipantCellController">
    <HBox alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="22.0">
       <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
          <children>
             <Label fx:id="participantCellLabel" maxWidth="1.7976931348623157E308" text="Label" HBox.hgrow="ALWAYS">
                <font>
-                  <Font name="Arial" size="14.0" />
+                  <Font size="16.0" />
                </font>
             </Label>
          </children>
       </HBox>
       <HBox alignment="CENTER_RIGHT" HBox.hgrow="NEVER">
-         <Button fx:id="editParticipantButton" mnemonicParsing="false" prefHeight="27.0" prefWidth="38.0" styleClass="button-edit">
+         <Button fx:id="editParticipantButton" mnemonicParsing="false" styleClass="button-edit">
             <font>
-               <Font name="Arial" size="12.0" />
+               <Font name="System" size="12.0" />
             </font>
          </Button>
-         <Button fx:id="deleteParticipantButton" alignment="CENTER" mnemonicParsing="false" prefHeight="27.0" prefWidth="38.0" styleClass="button-delete">
+         <Button fx:id="deleteParticipantButton" alignment="CENTER" mnemonicParsing="false" prefHeight="38.0" prefWidth="24.0" styleClass="button-delete">
             <HBox.margin>
                <Insets left="10.0" />
             </HBox.margin>
             <font>
-               <Font name="Arial" size="12.0" />
+               <Font name="System" size="12.0" />
             </font>
          </Button>
       </HBox>

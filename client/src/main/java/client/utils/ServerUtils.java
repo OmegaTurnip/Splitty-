@@ -496,10 +496,10 @@ public class ServerUtils {
     public Set<ParticipantValuePair> getSharesOfParticipants(
             Event event, Currency currency) {
         return client.target(server)
-                .path("api/event/" + event.getId() + "/shares/" + currency)
+                .path("api/event/" + event.getId() + "/share/" + currency)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<Set<ParticipantValuePair>>() {});
+                .get(new GenericType<>() {});
     }
 
     /**

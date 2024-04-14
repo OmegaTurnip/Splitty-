@@ -297,7 +297,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
                                 currency).getAmount().toString() +
                         " " + currency.getCurrencyCode());
                 setParticipantBalances(
-                        server.getBalanceOfParticipants(event, currency));
+                        server.getSharesOfParticipants(event, currency));
                 ObservableList<Participant> observableParticipants =
                         FXCollections.observableArrayList(
                                 event.getParticipants());
@@ -411,7 +411,7 @@ public class EventOverviewCtrl extends TextPage implements Initializable {
         @Override
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
-            setFont(Font.font("Arial", 14));
+            setFont(Font.font("System", 14));
             setTextFill(Paint.valueOf("#0d0d0d"));
 
             if (empty || item == null) {

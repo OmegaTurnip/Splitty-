@@ -53,7 +53,7 @@
             <TextField fx:id="usernameTextField" layoutX="86.0" layoutY="45.0" prefHeight="26.0" prefWidth="186.0" />
             <Label fx:id="title" layoutX="14.0" layoutY="4.0" text="Add a participant" styleClass="title-transparent-bg">
                <font>
-                  <Font name="Arial Bold" size="18.0" />
+                  <Font name="System Bold" size="18.0" />
                </font>
             </Label>
             <Label fx:id="username" layoutX="17.0" layoutY="47.0" text="Name:">

@@ -207,13 +207,13 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
 
     public boolean saveParticipant() throws WebApplicationException {
         try{
-            if (!(emptyCheck() && formatCheck())){
+            if (!(emptyCheck() && formatCheck() && uniqueCheck())){
                 return false;
             }
             if (participantToOverwrite != null) {
                 overwriteParticipant();
                 clearFields();
-            } else if (uniqueCheck()) {
+            } else {
                 createParticipant();
                 clearFields();
             }
@@ -278,7 +278,11 @@ public class AddParticipantCtrl extends TextPage implements Initializable {
         for (Participant participant: participants){
             participantNames.add(participant.getName());
         }
-        if (participantNames.contains(usernameTextField.getText())){
+        if ((participantNames.contains(usernameTextField.getText())
+                && participantToOverwrite == null) ||
+                ((participantNames.contains(usernameTextField.getText())
+                        && !participantToOverwrite.getName()
+                        .equals(usernameTextField.getText())))) {
             if (sendDuplicateNameError() == ButtonType.OK){
                 return false;
             }

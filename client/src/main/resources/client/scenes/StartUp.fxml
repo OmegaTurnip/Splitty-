@@ -59,12 +59,12 @@
                         <Cursor fx:constant="TEXT" />
                      </cursor>
                      <font>
-                        <Font name="Arial" size="16.0" />
+                        <Font name="System" size="16.0" />
                      </font>
                   </TextField>
                   <Button fx:id="newEventButton1" mnemonicParsing="false" onAction="#createEvent" prefHeight="40.0" prefWidth="173.0" styleClass="blackButton">
                      <font>
-                        <Font name="Arial" size="18.0" />
+                        <Font name="System" size="18.0" />
                      </font>
                      <cursor>
                         <Cursor fx:constant="HAND" />
@@ -82,12 +82,12 @@
                         <Cursor fx:constant="TEXT" />
                      </cursor>
                      <font>
-                        <Font name="Arial" size="16.0" />
+                        <Font name="System" size="16.0" />
                      </font>
                   </TextField>
                   <Button fx:id="joinEventButton1" maxHeight="-Infinity" minHeight="-Infinity" mnemonicParsing="false" onAction="#joinEvent" prefHeight="40.0" prefWidth="173.0" styleClass="blackButton" HBox.hgrow="NEVER">
                      <font>
-                        <Font name="Arial" size="18.0" />
+                        <Font name="System" size="18.0" />
                      </font>
                      <cursor>
                         <Cursor fx:constant="HAND" />
@@ -102,7 +102,7 @@
                <children>
                   <Label fx:id="yourEventsLabel" styleClass="title" text="Your Events">
                      <font>
-                        <Font name="Arial" size="36.0" />
+                        <Font name="System" size="36.0" />
                      </font>
                   </Label>
                </children>
@@ -127,12 +127,12 @@
 <!--            <Cursor fx:constant="TEXT" />-->
 <!--         </cursor>-->
 <!--            <font>-->
-<!--               <Font name="Arial" size="16.0" />-->
+<!--               <Font name="System" size="16.0" />-->
 <!--            </font>-->
 <!--         </TextField>-->
 <!--         <Button fx:id="newEventButton1" layoutX="398.0" layoutY="46.0" mnemonicParsing="false" onAction="#createEvent" prefHeight="40.0" prefWidth="173.0" styleClass="blackButton">-->
 <!--            <font>-->
-<!--               <Font name="Arial" size="18.0" />-->
+<!--               <Font name="System" size="18.0" />-->
 <!--            </font>-->
 <!--            <cursor>-->
 <!--                 <Cursor fx:constant="HAND" />-->
@@ -143,13 +143,13 @@
 <!--               <Cursor fx:constant="TEXT" />-->
 <!--            </cursor>-->
 <!--            <font>-->
-<!--               <Font name="Arial" size="16.0" />-->
+<!--               <Font name="System" size="16.0" />-->
 <!--            </font>-->
 <!--         </TextField>-->
 <!--         <Button fx:id="joinEventButton1" layoutX="398.0" layoutY="103.0" maxHeight="-Infinity" minHeight="-Infinity" mnemonicParsing="false" onAction="#joinEvent" prefHeight="40.0" prefWidth="173.0" styleClass="blackButton">-->
 
 <!--         <font>-->
-<!--            <Font name="Arial" size="18.0" />-->
+<!--            <Font name="System" size="18.0" />-->
 <!--         </font>-->
 <!--            <cursor>-->
 <!--               <Cursor fx:constant="HAND" />-->
@@ -157,7 +157,7 @@
 <!--         </Button>-->
 <!--         <Label fx:id="yourEventsLabel" layoutX="68.0" layoutY="188.0" prefHeight="58.0" prefWidth="269.0" styleClass="title" text="Your Events">-->
 <!--            <font>-->
-<!--               <Font name="Arial" size="36.0" />-->
+<!--               <Font name="System" size="36.0" />-->
 <!--            </font>-->
 <!--         </Label>-->
 <!--      </AnchorPane>-->

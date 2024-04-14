@@ -11,23 +11,23 @@
          <children>
             <Label id="transactionInfoLabel" fx:id="transactionInfoLabel" graphicTextGap="0.0" maxWidth="1.7976931348623157E308" minWidth="318.0" prefHeight="22.0" styleClass="list-cell" stylesheets="@style.css" text="Label" HBox.hgrow="ALWAYS">
                <font>
-                  <Font name="Arial" size="14.0" />
+                  <Font size="16.0" />
                </font>
             </Label>
          </children>
       </HBox>
       <HBox alignment="CENTER_RIGHT" prefHeight="35.0" prefWidth="110.0" HBox.hgrow="NEVER">
-         <Button id="editTransactionButton" fx:id="editTransactionButton" mnemonicParsing="false" prefHeight="27.0" prefWidth="38.0" styleClass="button-edit-normal">
+         <Button id="editTransactionButton" fx:id="editTransactionButton" maxWidth="-Infinity" mnemonicParsing="false" prefHeight="39.0" prefWidth="19.0" styleClass="button-edit-normal">
             <font>
-               <Font name="Arial" size="12.0" />
+               <Font name="System" size="12.0" />
             </font>
          </Button>
-         <Button id="deleteTransactionButton" fx:id="deleteTransactionButton" alignment="CENTER" mnemonicParsing="false" prefHeight="27.0" prefWidth="38.0" styleClass="button-delete-normal">
+         <Button id="deleteTransactionButton" fx:id="deleteTransactionButton" alignment="CENTER" maxWidth="-Infinity" mnemonicParsing="false" prefHeight="39.0" prefWidth="24.0" styleClass="button-delete-normal">
             <HBox.margin>
                <Insets left="10.0" />
             </HBox.margin>
             <font>
-               <Font name="Arial" size="12.0" />
+               <Font name="System" size="12.0" />
             </font>
          </Button>
       </HBox>

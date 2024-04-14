@@ -199,27 +199,30 @@ public class TransactionController {
         if(transaction == null){
             return ResponseEntity.badRequest().build();
         }
-        var event = eventRepository.findById(eventId);
-        if (event.isEmpty()){
+        var optionalEvent = eventRepository.findById(eventId);
+        if (optionalEvent.isEmpty()){
             return ResponseEntity.badRequest().build();
         }
-        transaction.setPayer(event.get().getParticipantById(
+        Event event = optionalEvent.get();
+        transaction.setPayer(event.getParticipantById(
                 transaction.getPayer().getParticipantId()
         ));
         List<Participant> participants = new ArrayList<>();
         for (Participant participant : transaction.getParticipants()) {
-            participants.add(event.get().getParticipantById(
+            participants.add(event.getParticipantById(
                     participant.getParticipantId()
             ));
         }
         transaction.setParticipants(participants);
         if (transaction.getTag() != null) {
-            transaction.setTag(event.get().getTagById(
+            transaction.setTag(event.getTagById(
                     transaction.getTag().getTagId()
             ));
         }
         transaction.setLongPollingEventId(eventId);
         Transaction response = repo.save(transaction);
+        event.addTransaction(response);
+        eventRepository.save(event);
         listeners.forEach((k, l) -> l.accept(response));
         return ResponseEntity.ok(response);
     }
